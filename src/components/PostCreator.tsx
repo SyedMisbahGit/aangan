@@ -1,11 +1,10 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Send, Shield, AlertTriangle, Heart, Brain, Megaphone, Lightbulb, Feather } from "lucide-react";
+import { Send, Shield, AlertTriangle, Heart, Brain, Megaphone, Lightbulb, Feather, Moon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ModerationFeedback } from "@/components/ModerationFeedback";
 
@@ -19,7 +18,22 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [moderationResult, setModerationResult] = useState<any>(null);
   const [toneHint, setToneHint] = useState("");
+  const [selectedZone, setSelectedZone] = useState("");
+  const [isMidnightWindow, setIsMidnightWindow] = useState(false);
   const { toast } = useToast();
+
+  // Check if we're in midnight window
+  useEffect(() => {
+    const checkMidnightWindow = () => {
+      const now = new Date();
+      const currentHour = now.getHours();
+      setIsMidnightWindow(currentHour === 0); // 12 AM - 1 AM
+    };
+
+    checkMidnightWindow();
+    const interval = setInterval(checkMidnightWindow, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
 
   const categories = [
     { id: "confession", label: "💬 गुप्त बात (Confession)", icon: Heart },
@@ -28,6 +42,15 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
     { id: "mental-health", label: "🧠 मानसिक स्वास्थ्य (Mental Health)", icon: Brain },
     { id: "innovation", label: "🧪 नवाचार/इवेंट (Innovation)", icon: Lightbulb },
     { id: "callout", label: "❗ समस्या/शिकायत (Issue)", icon: AlertTriangle },
+    ...(isMidnightWindow ? [{ id: "midnight", label: "🌒 Midnight Thoughts", icon: Moon }] : []),
+  ];
+
+  const whisperZones = [
+    "📚 Central Library",
+    "🏠 Hostel A", "🏠 Hostel B", "🏠 Hostel C", "🏠 Hostel D", "🏠 Hostel E", "🏠 Hostel F",
+    "☕ Main Canteen", "☕ Food Court", 
+    "🎯 Sports Complex", "🌳 Campus Garden", "🚌 Bus Stop",
+    "🏛️ Main Building", "🔬 Lab Complex", "📡 IT Center"
   ];
 
   const analyzeContent = (text: string) => {
@@ -126,12 +149,17 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
     });
 
     setTimeout(() => {
+      const toastTitle = isMidnightWindow && category === "midnight" 
+        ? "🌒 Midnight whisper shared"
+        : "आपकी आवाज़ सुनी गई (Whisper Shared)";
+      
       toast({
-        title: "आपकी आवाज़ सुनी गई (Whisper Shared)",
+        title: toastTitle,
         description: "Your voice has been heard safely and anonymously.",
       });
       setContent("");
       setCategory("");
+      setSelectedZone("");
       setModerationResult(null);
       setToneHint("");
       setIsSubmitting(false);
@@ -143,27 +171,46 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
 
   return (
     <div className="space-y-4">
-      <Card className="bg-white/5 backdrop-blur-lg border-white/10 p-6 shadow-2xl hover:shadow-purple-500/20 transition-all duration-500">
+      <Card className={`backdrop-blur-lg border-white/10 p-6 shadow-2xl transition-all duration-500 ${
+        isMidnightWindow && category === "midnight"
+          ? "bg-gradient-to-br from-indigo-900/30 to-purple-900/30 border-indigo-500/30 shadow-indigo-500/20"
+          : "bg-white/5 hover:shadow-purple-500/20"
+      }`}>
         <div className="space-y-4">
           <div className="flex items-center space-x-3 mb-4">
             <div className="relative">
-              <Feather className="h-5 w-5 text-purple-300 animate-pulse" />
-              <div className="absolute -inset-1 bg-purple-400/20 rounded-full blur animate-pulse"></div>
+              {isMidnightWindow ? (
+                <Moon className="h-5 w-5 text-indigo-300 animate-pulse" />
+              ) : (
+                <Feather className="h-5 w-5 text-purple-300 animate-pulse" />
+              )}
+              <div className={`absolute -inset-1 rounded-full blur animate-pulse ${
+                isMidnightWindow ? "bg-indigo-400/20" : "bg-purple-400/20"
+              }`}></div>
             </div>
-            <span className="text-white font-medium">अपनी बात कहें</span>
+            <span className="text-white font-medium">
+              {isMidnightWindow ? "Midnight confessions are open" : "अपनी बात कहें"}
+            </span>
             <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-200 animate-pulse">
               गुमनाम सुरक्षित
             </Badge>
           </div>
 
           <Textarea
-            placeholder="Whisper your thoughts... क्या चल रहा है campus में? Share anonymously - confessions, concerns, या कोई भी बात..."
+            placeholder={isMidnightWindow 
+              ? "The veil is thinnest now... whisper what daylight couldn't hear..."
+              : "Whisper your thoughts... क्या चल रहा है campus में? Share anonymously - confessions, concerns, या कोई भी बात..."
+            }
             value={content}
             onChange={(e) => {
               setContent(e.target.value);
               setToneHint(analyzeContent(e.target.value));
             }}
-            className="bg-white/5 border-white/20 text-white placeholder:text-gray-400 resize-none h-32 focus:border-purple-400/50 transition-all duration-300 rounded-xl backdrop-blur-md"
+            className={`border-white/20 text-white placeholder:text-gray-400 resize-none h-32 transition-all duration-300 rounded-xl backdrop-blur-md ${
+              isMidnightWindow 
+                ? "bg-indigo-900/20 focus:border-indigo-400/50 placeholder:text-indigo-300/70"
+                : "bg-white/5 focus:border-purple-400/50"
+            }`}
             maxLength={500}
           />
 
@@ -185,6 +232,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
             )}
           </div>
 
+          {/* Category Selection */}
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="bg-white/5 border-white/20 text-white rounded-xl backdrop-blur-md hover:bg-white/10 transition-all duration-300">
               <SelectValue placeholder="Choose your whisper category..." />
@@ -197,6 +245,24 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
                   className="text-white focus:bg-white/10 hover:bg-white/5 transition-all duration-200"
                 >
                   {cat.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Zone Selection */}
+          <Select value={selectedZone} onValueChange={setSelectedZone}>
+            <SelectTrigger className="bg-white/5 border-white/20 text-white rounded-xl backdrop-blur-md hover:bg-white/10 transition-all duration-300">
+              <SelectValue placeholder="Where are you whispering from? (optional)" />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-800/90 border-white/20 backdrop-blur-lg">
+              {whisperZones.map((zone) => (
+                <SelectItem 
+                  key={zone} 
+                  value={zone} 
+                  className="text-white focus:bg-white/10 hover:bg-white/5 transition-all duration-200"
+                >
+                  {zone}
                 </SelectItem>
               ))}
             </SelectContent>

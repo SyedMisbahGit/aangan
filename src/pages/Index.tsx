@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { PostCreator } from "@/components/PostCreator";
-import { PostFeed } from "@/components/PostFeed";
+import { LiveWhispersFeed } from "@/components/LiveWhispersFeed";
 import { TrendingTopics } from "@/components/TrendingTopics";
 import { CommunityStats } from "@/components/CommunityStats";
 import { InviteSystem } from "@/components/InviteSystem";
@@ -11,8 +11,10 @@ import { EngagementAnalytics } from "@/components/EngagementAnalytics";
 import { ContentSeeder } from "@/components/ContentSeeder";
 import { WeeklyDigest } from "@/components/WeeklyDigest";
 import { ModerationSandbox } from "@/components/ModerationSandbox";
+import { MidnightDrop } from "@/components/MidnightDrop";
+import { MoodMapping } from "@/components/MoodMapping";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Users, Shield, BarChart3, Sparkles, FileText, TestTube } from "lucide-react";
+import { MessageCircle, Users, Shield, BarChart3, Sparkles, FileText, TestTube, Moon, Heart } from "lucide-react";
 
 const Index = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -23,10 +25,12 @@ const Index = () => {
   };
 
   const tabs = [
-    { id: "whispers", label: "Latest Whispers", icon: MessageCircle },
+    { id: "whispers", label: "Live Whispers", icon: MessageCircle },
+    { id: "midnight", label: "Midnight Drop", icon: Moon },
+    { id: "mood", label: "Campus Pulse", icon: Heart },
     { id: "invite", label: "Campus Circle", icon: Users },
     { id: "safety", label: "Safety Watch", icon: Shield },
-    { id: "analytics", label: "Campus Pulse", icon: BarChart3 },
+    { id: "analytics", label: "Insights", icon: BarChart3 },
     { id: "seeder", label: "Community Voices", icon: Sparkles },
     { id: "digest", label: "Weekly Digest", icon: FileText },
     { id: "sandbox", label: "Moderation Lab", icon: TestTube },
@@ -39,6 +43,7 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
             {/* Left Sidebar */}
             <div className="lg:col-span-1 space-y-6">
+              <MidnightDrop />
               <TrendingTopics />
               <CommunityStats />
             </div>
@@ -46,7 +51,29 @@ const Index = () => {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               <PostCreator onNewPost={handleNewPost} />
-              <PostFeed refreshTrigger={refreshTrigger} />
+              <LiveWhispersFeed />
+            </div>
+          </div>
+        );
+      case "midnight":
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
+            <div className="lg:col-span-1 space-y-6">
+              <MidnightDrop />
+              <MoodMapping />
+            </div>
+            <div className="lg:col-span-2 space-y-6">
+              <PostCreator onNewPost={handleNewPost} />
+              <LiveWhispersFeed />
+            </div>
+          </div>
+        );
+      case "mood":
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
+            <MoodMapping />
+            <div className="space-y-6">
+              <EngagementAnalytics />
             </div>
           </div>
         );
@@ -69,11 +96,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900 relative overflow-hidden">
-      {/* Subtle floating whisper effects */}
+      {/* Enhanced floating whisper effects */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-purple-400 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-indigo-400 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-3/4 w-20 h-20 bg-pink-400 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        <div className="absolute top-1/3 right-1/3 w-16 h-16 bg-purple-300 rounded-full blur-2xl animate-pulse delay-3000"></div>
       </div>
 
       <Header />
@@ -90,7 +118,7 @@ const Index = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center space-x-2 whitespace-nowrap transition-all duration-300 hover:scale-105 ${
                   activeTab === tab.id
-                    ? "bg-purple-600/80 text-white shadow-lg backdrop-blur-md border border-purple-400/30"
+                    ? "bg-purple-600/80 text-white shadow-lg backdrop-blur-md border border-purple-400/30 shadow-purple-500/25"
                     : "text-gray-300 hover:text-white hover:bg-white/10 backdrop-blur-sm"
                 } animate-fade-in`}
                 style={{ animationDelay: `${index * 100}ms` }}
