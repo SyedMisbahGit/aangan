@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Send, Shield, AlertTriangle, Heart, Brain, Megaphone, Lightbulb } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ModerationFeedback } from "@/components/ModerationFeedback";
 
 interface PostCreatorProps {
   onNewPost: () => void;
@@ -16,6 +16,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [moderationResult, setModerationResult] = useState<any>(null);
   const { toast } = useToast();
 
   const categories = [
@@ -29,10 +30,13 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
 
   const moderateContent = (text: string) => {
     const flags = [];
+    let confidence = 0.95;
+    let suggestions: string[] = [];
     
     // Check for personal information
     if (/\b\d{10}\b|\b[A-Z]{2}\d{6}\b/g.test(text)) {
       flags.push("Contains potential personal information");
+      suggestions.push("Consider removing phone numbers, ID numbers, or other identifiable information");
     }
     
     // Check for harmful content
@@ -43,9 +47,23 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
     
     if (harmfulPatterns.some(pattern => pattern.test(text))) {
       flags.push("Contains potentially harmful language");
+      suggestions.push("Consider rephrasing to express feelings in a safer way");
+      suggestions.push("Remember: campus counseling services are available if you need support");
+    }
+
+    // Check for tone and suggest improvements
+    if (text.toUpperCase() === text && text.length > 20) {
+      suggestions.push("Consider using regular capitalization for better readability");
+      confidence = 0.8;
+    }
+
+    // Positive sentiment detection
+    const positiveWords = /\b(amazing|great|awesome|love|thank|helpful|wonderful)\b/gi;
+    if (positiveWords.test(text) && flags.length === 0) {
+      confidence = 0.98;
     }
     
-    return flags;
+    return { flags, confidence, suggestions };
   };
 
   const handleSubmit = async () => {
@@ -60,18 +78,33 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
 
     setIsSubmitting(true);
     
-    // Content moderation
-    const flags = moderateContent(content);
+    // Content moderation with enhanced feedback
+    const moderation = moderateContent(content);
     
-    if (flags.length > 0) {
+    if (moderation.flags.length > 0) {
+      setModerationResult({
+        action: "flagged",
+        confidence: moderation.confidence,
+        reason: moderation.flags.join(". "),
+        suggestions: moderation.suggestions,
+      });
+      
       toast({
         title: "Content Review Required",
-        description: flags.join(". ") + ". Please review your post.",
+        description: moderation.flags.join(". ") + ". Please review your post.",
         variant: "destructive",
       });
       setIsSubmitting(false);
       return;
     }
+
+    // Show successful moderation result
+    setModerationResult({
+      action: "approved",
+      confidence: moderation.confidence,
+      reason: "Post meets community guidelines",
+      suggestions: moderation.suggestions.length > 0 ? moderation.suggestions : undefined,
+    });
 
     // Simulate post submission
     setTimeout(() => {
@@ -81,6 +114,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
       });
       setContent("");
       setCategory("");
+      setModerationResult(null);
       setIsSubmitting(false);
       onNewPost();
     }, 1500);
@@ -89,67 +123,74 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
   const selectedCategory = categories.find(cat => cat.id === category);
 
   return (
-    <Card className="bg-white/5 backdrop-blur-md border-white/10 p-6">
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2 mb-4">
-          <Shield className="h-5 w-5 text-green-400" />
-          <span className="text-white font-medium">Share Anonymously</span>
-          <Badge variant="secondary" className="bg-purple-500/20 text-purple-200">
-            Protected
-          </Badge>
-        </div>
-
-        <Textarea
-          placeholder="What's happening on campus? Share your thoughts, confessions, or concerns anonymously..."
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="bg-white/5 border-white/20 text-white placeholder:text-gray-400 resize-none h-32"
-          maxLength={500}
-        />
-
-        <div className="flex items-center justify-between text-sm text-gray-400">
-          <span>{content.length}/500 characters</span>
-          {content && (
-            <span className="flex items-center space-x-1">
-              <Shield className="h-3 w-3 text-green-400" />
-              <span>Content being analyzed...</span>
-            </span>
-          )}
-        </div>
-
-        <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger className="bg-white/5 border-white/20 text-white">
-            <SelectValue placeholder="Select category..." />
-          </SelectTrigger>
-          <SelectContent className="bg-slate-800 border-white/20">
-            {categories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id} className="text-white focus:bg-white/10">
-                {cat.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        {selectedCategory && (
-          <div className="flex items-center space-x-2 p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
-            <selectedCategory.icon className="h-4 w-4 text-purple-400" />
-            <span className="text-purple-200 text-sm">Posting in {selectedCategory.label}</span>
+    <div className="space-y-4">
+      <Card className="bg-white/5 backdrop-blur-md border-white/10 p-6">
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2 mb-4">
+            <Shield className="h-5 w-5 text-green-400" />
+            <span className="text-white font-medium">Share Anonymously</span>
+            <Badge variant="secondary" className="bg-purple-500/20 text-purple-200">
+              Protected
+            </Badge>
           </div>
-        )}
 
-        <Button 
-          onClick={handleSubmit}
-          disabled={!content.trim() || !category || isSubmitting}
-          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-        >
-          <Send className="h-4 w-4 mr-2" />
-          {isSubmitting ? "Sharing Anonymously..." : "Share Anonymously"}
-        </Button>
+          <Textarea
+            placeholder="What's happening on campus? Share your thoughts, confessions, or concerns anonymously..."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="bg-white/5 border-white/20 text-white placeholder:text-gray-400 resize-none h-32"
+            maxLength={500}
+          />
 
-        <div className="text-xs text-gray-400 text-center">
-          Your identity remains completely anonymous. Posts are moderated for safety.
+          <div className="flex items-center justify-between text-sm text-gray-400">
+            <span>{content.length}/500 characters</span>
+            {content && (
+              <span className="flex items-center space-x-1">
+                <Shield className="h-3 w-3 text-green-400" />
+                <span>Content being analyzed...</span>
+              </span>
+            )}
+          </div>
+
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger className="bg-white/5 border-white/20 text-white">
+              <SelectValue placeholder="Select category..." />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-800 border-white/20">
+              {categories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id} className="text-white focus:bg-white/10">
+                  {cat.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {selectedCategory && (
+            <div className="flex items-center space-x-2 p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
+              <selectedCategory.icon className="h-4 w-4 text-purple-400" />
+              <span className="text-purple-200 text-sm">Posting in {selectedCategory.label}</span>
+            </div>
+          )}
+
+          <Button 
+            onClick={handleSubmit}
+            disabled={!content.trim() || !category || isSubmitting}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+          >
+            <Send className="h-4 w-4 mr-2" />
+            {isSubmitting ? "Sharing Anonymously..." : "Share Anonymously"}
+          </Button>
+
+          <div className="text-xs text-gray-400 text-center">
+            Your identity remains completely anonymous. Posts are moderated for safety.
+          </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+
+      {/* Moderation Feedback */}
+      {moderationResult && (
+        <ModerationFeedback moderationResult={moderationResult} />
+      )}
+    </div>
   );
 };
