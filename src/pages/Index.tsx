@@ -1,12 +1,37 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState } from "react";
+import { Header } from "@/components/Header";
+import { PostCreator } from "@/components/PostCreator";
+import { PostFeed } from "@/components/PostFeed";
+import { TrendingTopics } from "@/components/TrendingTopics";
+import { CommunityStats } from "@/components/CommunityStats";
 
 const Index = () => {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleNewPost = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <Header />
+      
+      <main className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Sidebar */}
+          <div className="lg:col-span-1 space-y-6">
+            <TrendingTopics />
+            <CommunityStats />
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            <PostCreator onNewPost={handleNewPost} />
+            <PostFeed refreshTrigger={refreshTrigger} />
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
