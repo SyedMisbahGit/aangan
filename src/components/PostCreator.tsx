@@ -19,6 +19,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [moderationResult, setModerationResult] = useState<any>(null);
   const [toneHint, setToneHint] = useState("");
+  const [languageHint, setLanguageHint] = useState("");
   const [isMidnightWindow, setIsMidnightWindow] = useState(false);
   const { toast } = useToast();
 
@@ -45,24 +46,35 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
     ...(isMidnightWindow ? [{ id: "midnight", label: "Midnight Confessions", icon: Moon }] : []),
   ];
 
-  const analyzeContent = (text: string) => {
-    if (text.length < 10) return "";
+  const detectLanguageAndContext = (text: string) => {
+    if (text.length < 5) return { tone: "", language: "" };
+    
+    // Language detection patterns
+    const hinglishPattern = /\b(bhai|yaar|boss|kya|hai|nahi|achha|thik|pareshaan|tension|chill|maar|dekh|arre|yahan|wahan|kuch|koi|matlab|samjha|pagal|bindaas|bakwas|chutiya|bc|mc)\b/gi;
+    const southIndianPattern = /\b(enna|da|ra|machcha|mama|anna|akka|scene|illa|super|mass|kalakkal|bindass|scene|set|lite)\b/gi;
+    const englishSlangs = /\b(bruh|dude|mate|lit|fire|sus|cap|bet|facts|mood|vibe|flex|salty|cringe|stan|periodt)\b/gi;
+    
+    let language = "English";
+    if (hinglishPattern.test(text)) language = "Hinglish";
+    else if (southIndianPattern.test(text)) language = "Regional Mix";
+    else if (englishSlangs.test(text)) language = "Gen-Z English";
     
     // Campus context detection
-    const campusTerms = /\b(hostel|library|canteen|mess|prof|professor|exam|assignment|placement|internship|semester|lab|class|lecture)\b/gi;
-    const emotionalTerms = /\b(stressed|anxious|excited|worried|happy|sad|confused|overwhelmed|lonely|grateful)\b/gi;
-    const hinglishSlang = /\b(bhai|yaar|boss|dude|tension|pareshaan|khushi|thak gaya)\b/gi;
-
+    const campusTerms = /\b(hostel|library|canteen|mess|prof|professor|exam|assignment|placement|internship|semester|lab|class|lecture|admin|sports|ground|block|wing|floor|warden|dean|hod|cr|attendance|bunk|campus|college|university|fest|techfest|cultfest)\b/gi;
+    const emotionalTerms = /\b(stressed|anxious|excited|worried|happy|sad|confused|overwhelmed|lonely|grateful|frustrated|exhausted|pumped|nervous|chill|vibes|mood|feels|energy)\b/gi;
+    
+    let tone = "";
     if (campusTerms.test(text)) {
-      return "Campus vibes detected 🏫";
+      tone = "Campus vibes detected 🏫";
     } else if (emotionalTerms.test(text)) {
-      return "Emotional depth sensed 💙";
-    } else if (hinglishSlang.test(text)) {
-      return "Casual and relatable 😊";
-    } else if (text.includes("...") || text.includes("😔")) {
-      return "Heavy feelings acknowledged 🤗";
+      tone = "Emotional depth sensed 💙";
+    } else if (text.includes("...") || text.includes("😔") || text.includes("💔")) {
+      tone = "Heavy feelings acknowledged 🤗";
+    } else {
+      tone = "Ready to whisper this thought 🌙";
     }
-    return "Ready to whisper this thought 🌙";
+    
+    return { tone, language };
   };
 
   const moderateContent = (text: string) => {
@@ -70,30 +82,49 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
     let confidence = 0.95;
     let suggestions: string[] = [];
     
-    // PII detection
-    if (/\b\d{10}\b|\b[A-Z]{2}\d{6}\b|roll\s*no|student\s*id/gi.test(text)) {
-      flags.push("Contains potential personal information");
-      suggestions.push("Consider removing specific numbers or IDs");
+    // Enhanced PII detection for multilingual content
+    const phonePattern = /\b(\d{10}|\+91\d{10}|91\d{10})\b/gi;
+    const rollNumberPattern = /\b(roll\s*no|student\s*id|reg\s*no|admission\s*no|exam\s*roll|id\s*no)[\s:]*([A-Z0-9]{6,15})\b/gi;
+    const namePattern = /\b(my name is|i am|naam hai|called me|mera naam)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b/gi;
+    
+    if (phonePattern.test(text)) {
+      flags.push("Contains phone number");
+      suggestions.push("Consider removing phone numbers for privacy");
     }
-
-    // Identity leaks
-    const namePattern = /\b[A-Z][a-z]+\s+(from|CSE|ECE|ME|Civil|IT)\b/gi;
+    
+    if (rollNumberPattern.test(text)) {
+      flags.push("Contains potential student ID");
+      suggestions.push("Try using 'my roll number' instead of the actual number");
+    }
+    
     if (namePattern.test(text)) {
-      flags.push("May reveal someone's identity");
-      suggestions.push("Try using 'someone from [department]' instead");
+      flags.push("May reveal personal name");
+      suggestions.push("Consider using 'someone' or 'a friend' instead");
     }
 
-    // Mental health signals
-    const distressSignals = /\b(suicide|kill myself|end it all|can't take it|give up)\b/gi;
+    // Enhanced identity leaks for Indian context
+    const locationPattern = /\b(room\s*no|room\s*number|flat\s*no|house\s*no)[\s:]*([A-Z0-9]{2,10})\b/gi;
+    const specificLocationPattern = /\b(hostel [A-Z]|block [A-Z]|wing [A-Z]|floor \d+|room \d+)\b/gi;
+    
+    if (locationPattern.test(text) || specificLocationPattern.test(text)) {
+      flags.push("Contains specific location details");
+      suggestions.push("Try using general terms like 'my hostel' or 'my floor'");
+    }
+
+    // Mental health signals (multilingual)
+    const distressSignals = /\b(suicide|kill myself|end it all|can't take it|give up|marna hai|mar jaana|khatam kar|death|die|finished|done|over|khatam)\b/gi;
     if (distressSignals.test(text)) {
       flags.push("Mental health concern detected");
       suggestions.push("Campus counseling services are available 24/7");
       suggestions.push("You're not alone - please reach out for support");
+      suggestions.push("Consider speaking with a trusted friend or counselor");
     }
 
-    // Discrimination detection
-    const discriminatory = /\b(chamar|bhangi|quota|reservation abuse)\b/gi;
-    if (discriminatory.test(text)) {
+    // Enhanced discrimination detection
+    const discriminatoryTerms = /\b(chamar|bhangi|quota|reservation\s*abuse|caste|brahmin|lower\s*caste|upper\s*caste|sc|st|obc|general\s*category)\b/gi;
+    const regionalDiscrimination = /\b(northie|southie|bhaiya|madrasi|chinki|nepali|bihari|up\s*wala)\b/gi;
+    
+    if (discriminatoryTerms.test(text) || regionalDiscrimination.test(text)) {
       flags.push("Contains potentially discriminatory language");
       suggestions.push("Let's keep discussions respectful to all communities");
     }
@@ -141,7 +172,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
 
     setTimeout(() => {
       const toastTitle = isMidnightWindow && category === "midnight" 
-        ? "Midnight whisper shared into the void"
+        ? "Midnight whisper released into the void"
         : "Your whisper has been heard";
       
       toast({
@@ -152,6 +183,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
       setCategory("");
       setModerationResult(null);
       setToneHint("");
+      setLanguageHint("");
       setIsSubmitting(false);
       onNewPost();
     }, 1500);
@@ -184,7 +216,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
                 {isMidnightWindow ? "Midnight Confession Window" : "Share Your Whisper"}
               </h2>
               <p className="text-sm text-gray-300">
-                {isMidnightWindow ? "The veil is thinnest now..." : "Anonymous and safe"}
+                {isMidnightWindow ? "The veil is thinnest now..." : "Express in any language, English script only"}
               </p>
             </div>
             {isMidnightWindow && (
@@ -196,12 +228,14 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
           <Textarea
             placeholder={isMidnightWindow 
               ? "Whisper what daylight couldn't hear..."
-              : "Whisper your thoughts..."
+              : "Type in any language using English letters... bhai, what's on your mind?"
             }
             value={content}
             onChange={(e) => {
               setContent(e.target.value);
-              setToneHint(analyzeContent(e.target.value));
+              const { tone, language } = detectLanguageAndContext(e.target.value);
+              setToneHint(tone);
+              setLanguageHint(language);
             }}
             className={`border-white/20 text-white placeholder:text-gray-400 resize-none h-32 transition-all duration-300 rounded-xl backdrop-blur-md ${
               isMidnightWindow 
@@ -211,10 +245,16 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
             maxLength={500}
           />
 
-          {/* Character Count & Tone Hint */}
+          {/* Character Count & Language Detection */}
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-4">
               <span className="text-gray-400">{content.length}/500</span>
+              {languageHint && (
+                <span className="text-blue-300 animate-fade-in flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                  <span>{languageHint}</span>
+                </span>
+              )}
               {toneHint && (
                 <span className="text-purple-300 animate-fade-in flex items-center space-x-2">
                   <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
@@ -270,7 +310,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
 
           {/* Safety Notice */}
           <div className="text-xs text-gray-400 text-center bg-white/5 p-4 rounded-xl backdrop-blur-md">
-            Your identity remains completely anonymous • Safe campus whispers
+            Express in any language • English script only • Complete anonymity guaranteed
           </div>
         </div>
       </Card>

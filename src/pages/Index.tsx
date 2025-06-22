@@ -8,8 +8,12 @@ import { CommunityStats } from "@/components/CommunityStats";
 import { MidnightDrop } from "@/components/MidnightDrop";
 import { MoodMapping } from "@/components/MoodMapping";
 import { WeeklyDigest } from "@/components/WeeklyDigest";
+import { WhisperNotifications } from "@/components/WhisperNotifications";
+import { UserProfile } from "@/components/UserProfile";
+import { EmotionThemes } from "@/components/EmotionThemes";
+import { CampusConstellation } from "@/components/CampusConstellation";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, TrendingUp, Heart, FileText } from "lucide-react";
+import { MessageCircle, TrendingUp, Heart, FileText, Map, User, Palette } from "lucide-react";
 
 const Index = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -23,6 +27,8 @@ const Index = () => {
     { id: "whispers", label: "Live Whispers", icon: MessageCircle },
     { id: "trending", label: "Campus Pulse", icon: TrendingUp },
     { id: "mood", label: "Mood Waves", icon: Heart },
+    { id: "constellation", label: "Campus Map", icon: Map },
+    { id: "profile", label: "My Aura", icon: User },
     { id: "digest", label: "Weekly Stories", icon: FileText },
   ];
 
@@ -40,6 +46,7 @@ const Index = () => {
 
             {/* Main Content */}
             <div className="lg:col-span-3 space-y-8">
+              <WhisperNotifications />
               <PostCreator onNewPost={handleNewPost} />
               <LiveWhispersFeed key={refreshTrigger} />
             </div>
@@ -49,6 +56,7 @@ const Index = () => {
         return (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
             <div className="lg:col-span-1 space-y-6">
+              <WhisperNotifications />
               <MidnightDrop />
               <CommunityStats />
             </div>
@@ -63,8 +71,36 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
             <MoodMapping />
             <div className="space-y-6">
+              <WhisperNotifications />
               <CommunityStats />
               <TrendingTopics />
+            </div>
+          </div>
+        );
+      case "constellation":
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
+            <div className="lg:col-span-2">
+              <CampusConstellation />
+            </div>
+            <div className="space-y-6">
+              <WhisperNotifications />
+              <TrendingTopics />
+              <CommunityStats />
+            </div>
+          </div>
+        );
+      case "profile":
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
+            <div className="space-y-6">
+              <UserProfile />
+              <EmotionThemes />
+            </div>
+            <div className="space-y-6">
+              <WhisperNotifications />
+              <MoodMapping />
+              <CommunityStats />
             </div>
           </div>
         );
@@ -90,7 +126,7 @@ const Index = () => {
       <div className="container mx-auto px-6 py-8 max-w-7xl relative z-10">
         {/* Tab Navigation */}
         <div className="flex justify-center mb-8">
-          <div className="flex space-x-1 bg-white/5 backdrop-blur-lg rounded-2xl p-2 border border-white/10">
+          <div className="flex flex-wrap justify-center space-x-1 bg-white/5 backdrop-blur-lg rounded-2xl p-2 border border-white/10">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -98,14 +134,14 @@ const Index = () => {
                   key={tab.id}
                   variant="ghost"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-6 py-3 rounded-xl transition-all duration-300 ${
+                  className={`flex items-center space-x-2 px-4 py-3 rounded-xl transition-all duration-300 ${
                     activeTab === tab.id
                       ? "bg-white/15 text-white shadow-lg backdrop-blur-md border border-white/20"
                       : "text-gray-300 hover:text-white hover:bg-white/10"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
-                  <span className="font-medium">{tab.label}</span>
+                  <span className="font-medium text-sm">{tab.label}</span>
                 </Button>
               );
             })}
