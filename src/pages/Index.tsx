@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { PostCreator } from "@/components/PostCreator";
@@ -16,8 +15,12 @@ import { WhisperDiary } from "@/components/WhisperDiary";
 import { TimeCapsules } from "@/components/TimeCapsules";
 import { WhisperLounge } from "@/components/WhisperLounge";
 import { GroupFeels } from "@/components/GroupFeels";
+import { WhisperRituals } from "@/components/WhisperRituals";
+import { MirrorMode } from "@/components/MirrorMode";
+import { LockedWhispers } from "@/components/LockedWhispers";
+import { SendAndRelease } from "@/components/SendAndRelease";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, TrendingUp, Heart, Map, User, FileText, BookOpen, Clock, Coffee } from "lucide-react";
+import { MessageCircle, TrendingUp, Heart, Map, User, FileText, BookOpen, Clock, Coffee, Sparkles, Mirror, Lock, Wind } from "lucide-react";
 
 const Index = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
