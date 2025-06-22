@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
-import { Link, MessageCircle, Heart, Sparkles, Chain, Users, Clock, ArrowRight } from "lucide-react";
+import { Link, MessageCircle, Heart, Sparkles, Users, Clock, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ChainMessage {
@@ -277,7 +277,7 @@ export const ConfessionChains = () => {
         <Card className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 backdrop-blur-lg border-purple-500/20 p-6">
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <Chain className="h-6 w-6 text-purple-300" />
+              <Link className="h-6 w-6 text-purple-300" />
               <h2 className="text-xl font-light text-white">{selectedChain.title}</h2>
             </div>
             <p className="text-gray-300 text-sm">{selectedChain.description}</p>
@@ -313,6 +313,8 @@ export const ConfessionChains = () => {
 
           <div className="flex space-x-3">
             <Textarea
+              id="chain-message"
+              name="chain-message"
               placeholder={replyTo ? "Write your reply..." : "Join the conversation..."}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
@@ -340,7 +342,7 @@ export const ConfessionChains = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <Chain className="h-6 w-6 text-purple-400" />
+          <Link className="h-6 w-6 text-purple-400" />
           <h2 className="text-2xl font-light text-white">Confession Chains</h2>
         </div>
         <Button
@@ -359,12 +361,16 @@ export const ConfessionChains = () => {
             <div className="space-y-3">
               <input
                 type="text"
+                id="chain-title"
+                name="chain-title"
                 placeholder="Chain title..."
                 value={newChainTitle}
                 onChange={(e) => setNewChainTitle(e.target.value)}
                 className="w-full bg-white/5 border border-white/20 text-white placeholder:text-gray-400 rounded-lg px-3 py-2"
               />
               <textarea
+                id="chain-description"
+                name="chain-description"
                 placeholder="Describe what this chain is about..."
                 value={newChainDescription}
                 onChange={(e) => setNewChainDescription(e.target.value)}

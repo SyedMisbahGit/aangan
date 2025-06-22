@@ -1,247 +1,154 @@
-import { useState } from "react";
-import { Header } from "@/components/Header";
-import { PostCreator } from "@/components/PostCreator";
-import { LiveWhispersFeed } from "@/components/LiveWhispersFeed";
-import { TrendingTopics } from "@/components/TrendingTopics";
-import { CommunityStats } from "@/components/CommunityStats";
-import { MidnightDrop } from "@/components/MidnightDrop";
-import { MoodMapping } from "@/components/MoodMapping";
-import { WeeklyDigest } from "@/components/WeeklyDigest";
-import { WhisperNotifications } from "@/components/WhisperNotifications";
-import { UserProfile } from "@/components/UserProfile";
-import { EmotionThemes } from "@/components/EmotionThemes";
-import { CampusConstellation } from "@/components/CampusConstellation";
-import { WhisperDiary } from "@/components/WhisperDiary";
-import { TimeCapsules } from "@/components/TimeCapsules";
-import { WhisperLounge } from "@/components/WhisperLounge";
-import { GroupFeels } from "@/components/GroupFeels";
-import { WhisperRituals } from "@/components/WhisperRituals";
-import { MirrorMode } from "@/components/MirrorMode";
-import { LockedWhispers } from "@/components/LockedWhispers";
-import { SendAndRelease } from "@/components/SendAndRelease";
-import { RainMode } from "@/components/RainMode";
-import { WhisperShrines } from "@/components/WhisperShrines";
-import { EmotionCompass } from "@/components/EmotionCompass";
-import { EmotionSlowMode } from "@/components/EmotionSlowMode";
-import { ConfessionChains } from "@/components/ConfessionChains";
-import { MetamorphosisTracker } from "@/components/MetamorphosisTracker";
-import { Button } from "@/components/ui/button";
-import { MessageCircle, TrendingUp, Heart, Map, User, FileText, BookOpen, Clock, Coffee, Sparkles, Lock, Wind, CloudRain, Compass, Eye, Home, Link, Star } from "lucide-react";
+import React, { useState } from 'react';
+import WhisperVerseNav from '../components/WhisperVerseNav';
+import CampusPulse from '../components/CampusPulse';
+import WhisperDiary from '../components/WhisperDiary';
+import WhisperShrines from '../components/WhisperShrines';
+import EmotionCompass from '../components/EmotionCompass';
+import MidnightConfessional from '../components/MidnightConfessional';
+import MetamorphosisTracker from '../components/MetamorphosisTracker';
+import { ParticleBackground } from '../components/ParticleBackground';
+import CUJCampusPulse from '../components/CUJCampusPulse';
+import CUJWhisperDiary from '../components/CUJWhisperDiary';
+import CUJNarrativeTemplates from '../components/CUJNarrativeTemplates';
+import CUJBadgeSystem from '../components/CUJBadgeSystem';
+import FloatingDiaryOrbs from '../components/FloatingDiaryOrbs';
+import WhisperConstellation from '../components/WhisperConstellation';
+import AIWhisperClustering from '../components/AIWhisperClustering';
+import SmartCampusLearning from '../components/SmartCampusLearning';
+import DogriHinglishPrompts from '../components/DogriHinglishPrompts';
 
-const Index = () => {
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [activeTab, setActiveTab] = useState("whispers");
+// Sample data for demonstration
+const sampleDiaryEntries = [
+  {
+    id: '1',
+    content: 'Udaan ke baad ka scene? Sab log alag ho gaye...',
+    mood: 'nostalgia' as const,
+    timestamp: new Date(),
+    zone: 'Udaan Lawn',
+    isPublic: true
+  },
+  {
+    id: '2',
+    content: 'Library mein padhte padhte aankh lag gayi',
+    mood: 'anxiety' as const,
+    timestamp: new Date(),
+    zone: 'Library Silence Zone',
+    isPublic: false
+  },
+  {
+    id: '3',
+    content: 'Hostel G ke rooftop pe stargazing with friends',
+    mood: 'joy' as const,
+    timestamp: new Date(),
+    zone: 'PG Hostel Rooftop',
+    isPublic: true
+  }
+];
 
-  const handleNewPost = () => {
-    setRefreshTrigger(prev => prev + 1);
-  };
+const sampleWhispers = [
+  {
+    id: '1',
+    content: 'Udaan ke baad ka scene? Sab log alag ho gaye...',
+    zone: 'Udaan Lawn',
+    mood: 'nostalgia' as const,
+    intensity: 8,
+    timestamp: new Date(),
+    isActive: true
+  },
+  {
+    id: '2',
+    content: 'Library mein padhte padhte aankh lag gayi',
+    zone: 'Library Silence Zone',
+    mood: 'anxiety' as const,
+    intensity: 6,
+    timestamp: new Date(),
+    isActive: false
+  },
+  {
+    id: '3',
+    content: 'Hostel G ke rooftop pe stargazing with friends',
+    zone: 'PG Hostel Rooftop',
+    mood: 'joy' as const,
+    intensity: 9,
+    timestamp: new Date(),
+    isActive: true
+  }
+];
 
-  const tabs = [
-    { id: "whispers", label: "Live Whispers", icon: MessageCircle },
-    { id: "lounge", label: "Quiet Lounge", icon: Coffee },
-    { id: "diary", label: "Private Diary", icon: BookOpen },
-    { id: "shrines", label: "Whisper Shrines", icon: Eye },
-    { id: "chains", label: "Confession Chains", icon: Link },
-    { id: "growth", label: "Growth Tracker", icon: Star },
-    { id: "capsules", label: "Time Capsules", icon: Clock },
-    { id: "trending", label: "Campus Pulse", icon: TrendingUp },
-    { id: "mood", label: "Collective Hearts", icon: Heart },
-    { id: "constellation", label: "Campus Map", icon: Map },
-    { id: "profile", label: "My Aura", icon: User },
-    { id: "digest", label: "Weekly Stories", icon: FileText },
-  ];
+const tabComponents: Record<string, React.ReactNode> = {
+  whisperverse: (
+    <div className="whisper-orb emotion-aura-joy p-8 mt-8">
+      <h1 className="kinetic-text text-4xl md:text-5xl font-bold whisper-gradient-text mb-4 text-center">Welcome to WhisperVerse</h1>
+      <p className="kinetic-text-slow text-lg text-center max-w-2xl mx-auto mb-6">A living, poetic, anonymous galaxy for CUJ. Float through your emotions, discover new zones, and let your whispers become constellations.</p>
+      
+      {/* Floating Diary Orbs */}
+      <div className="mb-12">
+        <h2 className="kinetic-text text-2xl font-bold whisper-gradient-text mb-6 text-center">Your Emotional Galaxy</h2>
+        <FloatingDiaryOrbs 
+          entries={sampleDiaryEntries}
+          onOrbClick={(entry) => console.log('Clicked diary orb:', entry)}
+        />
+      </div>
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "whispers":
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 animate-fade-in">
-            {/* Sidebar */}
-            <div className="lg:col-span-1 space-y-6">
-              <MidnightDrop />
-              <RainMode />
-              <EmotionSlowMode />
-              <TrendingTopics />
-              <GroupFeels />
-            </div>
+      {/* Whisper Constellation */}
+      <div className="mb-12">
+        <h2 className="kinetic-text text-2xl font-bold whisper-gradient-text mb-6 text-center">Live Whisper Constellation</h2>
+        <WhisperConstellation 
+          whispers={sampleWhispers}
+          onWhisperClick={(whisper) => console.log('Clicked whisper:', whisper)}
+        />
+      </div>
 
-            {/* Main Content */}
-            <div className="lg:col-span-3 space-y-8">
-              <WhisperNotifications />
-              <PostCreator onNewPost={handleNewPost} />
-              <LiveWhispersFeed key={refreshTrigger} />
-            </div>
-          </div>
-        );
-      case "lounge":
-        return (
-          <div className="max-w-4xl mx-auto animate-fade-in">
-            <WhisperLounge />
-          </div>
-        );
-      case "diary":
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
-            <div className="lg:col-span-2">
-              <WhisperDiary />
-            </div>
-            <div className="space-y-6">
-              <RainMode />
-              <EmotionSlowMode />
-              <GroupFeels />
-              <CommunityStats />
-            </div>
-          </div>
-        );
-      case "shrines":
-        return (
-          <div className="max-w-6xl mx-auto animate-fade-in">
-            <WhisperShrines />
-          </div>
-        );
-      case "chains":
-        return (
-          <div className="max-w-6xl mx-auto animate-fade-in">
-            <ConfessionChains />
-          </div>
-        );
-      case "growth":
-        return (
-          <div className="max-w-6xl mx-auto animate-fade-in">
-            <MetamorphosisTracker />
-          </div>
-        );
-      case "capsules":
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
-            <div className="lg:col-span-2">
-              <TimeCapsules />
-            </div>
-            <div className="space-y-6">
-              <WhisperNotifications />
-              <RainMode />
-              <EmotionSlowMode />
-              <GroupFeels />
-            </div>
-          </div>
-        );
-      case "trending":
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
-            <div className="lg:col-span-1 space-y-6">
-              <WhisperNotifications />
-              <MidnightDrop />
-              <RainMode />
-              <EmotionSlowMode />
-              <GroupFeels />
-            </div>
-            <div className="lg:col-span-2 space-y-6">
-              <TrendingTopics />
-              <LiveWhispersFeed key={refreshTrigger} />
-            </div>
-          </div>
-        );
-      case "mood":
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
-            <div className="space-y-6">
-              <EmotionCompass />
-              <GroupFeels />
-              <MoodMapping />
-            </div>
-            <div className="space-y-6">
-              <WhisperNotifications />
-              <RainMode />
-              <EmotionSlowMode />
-              <CommunityStats />
-              <TrendingTopics />
-            </div>
-          </div>
-        );
-      case "constellation":
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
-            <div className="lg:col-span-2">
-              <CampusConstellation />
-            </div>
-            <div className="space-y-6">
-              <WhisperNotifications />
-              <RainMode />
-              <EmotionSlowMode />
-              <GroupFeels />
-              <CommunityStats />
-            </div>
-          </div>
-        );
-      case "profile":
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
-            <div className="space-y-6">
-              <UserProfile />
-              <EmotionThemes />
-            </div>
-            <div className="space-y-6">
-              <WhisperNotifications />
-              <RainMode />
-              <EmotionSlowMode />
-              <GroupFeels />
-              <CommunityStats />
-            </div>
-          </div>
-        );
-      case "digest":
-        return <WeeklyDigest />;
-      default:
-        return null;
-    }
-  };
+      <MetamorphosisTracker />
+      <div className="mt-8">
+        <CUJBadgeSystem />
+      </div>
+    </div>
+  ),
+  midnight: (
+    <div className="whisper-orb emotion-aura-loneliness p-8 mt-8">
+      <MidnightConfessional />
+    </div>
+  ),
+  'campus-pulse': (
+    <div className="whisper-orb emotion-aura-joy p-8 mt-8">
+      <CUJCampusPulse />
+    </div>
+  ),
+  'mirror-diary': (
+    <div className="whisper-orb emotion-aura-nostalgia p-8 mt-8">
+      <CUJWhisperDiary />
+      <CUJNarrativeTemplates />
+    </div>
+  ),
+  'whisper-shrines': (
+    <div className="whisper-shrine p-8 mt-8">
+      <WhisperShrines />
+    </div>
+  ),
+  'emotion-compass': (
+    <div className="whisper-orb emotion-aura-calm p-8 mt-8">
+      <EmotionCompass />
+    </div>
+  ),
+};
+
+const IndexPage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('whisperverse');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-indigo-950 relative overflow-hidden">
-      {/* Floating whisper effects */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-1/4 left-1/4 w-40 h-40 bg-purple-400 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute top-3/4 right-1/4 w-32 h-32 bg-indigo-400 rounded-full blur-3xl animate-float delay-1000"></div>
-        <div className="absolute top-1/2 left-3/4 w-24 h-24 bg-pink-400 rounded-full blur-3xl animate-float delay-2000"></div>
+    <div className="whisperverse min-h-screen relative flex flex-col items-center justify-start overflow-x-hidden">
+      <ParticleBackground />
+      {/* Floating 3D Navigation */}
+      <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
+        <WhisperVerseNav activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
-
-      <Header />
-      
-      {/* Main Container */}
-      <div className="container mx-auto px-6 py-8 max-w-7xl relative z-10">
-        {/* Tab Navigation */}
-        <div className="flex justify-center mb-8">
-          <div className="flex flex-wrap justify-center space-x-1 bg-white/5 backdrop-blur-lg rounded-2xl p-2 border border-white/10">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <Button
-                  key={tab.id}
-                  variant="ghost"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-3 rounded-xl transition-all duration-300 ${
-                    activeTab === tab.id
-                      ? "bg-white/15 text-white shadow-lg backdrop-blur-md border border-white/20"
-                      : "text-gray-300 hover:text-white hover:bg-white/10"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span className="font-medium text-sm hidden sm:inline">{tab.label}</span>
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Tab Content */}
-        <main>
-          <div className="animate-scale-in">
-            {renderTabContent()}
-          </div>
-        </main>
-      </div>
+      {/* Main Content Area */}
+      <main className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center pt-48 pb-16 px-4">
+        {tabComponents[activeTab]}
+      </main>
     </div>
   );
 };
 
-export default Index;
+export default IndexPage;

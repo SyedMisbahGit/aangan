@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-import { Butterfly, Star, Target, Calendar, TrendingUp, Heart, Sparkles, BookOpen } from "lucide-react";
+import { Star, Target, Calendar, TrendingUp, Heart, Sparkles, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface GrowthMilestone {
@@ -28,17 +28,26 @@ interface GrowthPhase {
   progress: number; // 0-100
 }
 
-export const MetamorphosisTracker = () => {
+const stages = [
+  { label: 'Seed', color: 'from-green-400 to-lime-400', size: 32 },
+  { label: 'Sprout', color: 'from-lime-400 to-yellow-300', size: 48 },
+  { label: 'Bud', color: 'from-yellow-300 to-pink-400', size: 64 },
+  { label: 'Bloom', color: 'from-pink-400 to-purple-500', size: 80 },
+  { label: 'Constellation', color: 'from-purple-500 to-blue-400', size: 96 },
+];
+
+export const MetamorphosisTracker: React.FC = () => {
   const [milestones, setMilestones] = useState<GrowthMilestone[]>([]);
   const [phases, setPhases] = useState<GrowthPhase[]>([]);
   const [currentPhase, setCurrentPhase] = useState<GrowthPhase | null>(null);
   const [newMilestone, setNewMilestone] = useState("");
   const [newMilestoneDescription, setNewMilestoneDescription] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<"emotional" | "academic" | "social" | "personal">("emotional");
+  const [stage, setStage] = useState(3); // Example: user is at 'Bloom'
   const { toast } = useToast();
 
   // Sample growth phases
-  useEffect(() => {
+  React.useEffect(() => {
     const samplePhases: GrowthPhase[] = [
       {
         id: "1",
@@ -73,7 +82,7 @@ export const MetamorphosisTracker = () => {
   }, []);
 
   // Sample milestones
-  useEffect(() => {
+  React.useEffect(() => {
     const sampleMilestones: GrowthMilestone[] = [
       {
         id: "1",
@@ -185,20 +194,29 @@ export const MetamorphosisTracker = () => {
     : 0;
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <div className="flex items-center justify-center space-x-2">
-          <Butterfly className="h-6 w-6 text-purple-400 animate-pulse" />
-          <h2 className="text-2xl font-light text-white">Metamorphosis Tracker</h2>
-          <Butterfly className="h-6 w-6 text-purple-400 animate-pulse" />
-        </div>
-        <p className="text-gray-300 text-sm">
-          Track your journey of personal transformation...
-        </p>
+    <div className="flex flex-col items-center justify-center mt-8">
+      <h3 className="kinetic-text text-xl font-bold whisper-gradient-text mb-2 text-center">Your Growth in the WhisperVerse</h3>
+      <div className="flex items-end gap-6 mt-4">
+        {stages.map((s, i) => (
+          <div key={s.label} className="flex flex-col items-center">
+            <div
+              className={`whisper-orb floating-orb rounded-full bg-gradient-to-br ${s.color} shadow-whisper-glow-primary transition-all duration-500 ${i <= stage ? 'opacity-100 scale-110' : 'opacity-40 scale-90'}`}
+              style={{ width: s.size, height: s.size }}
+            >
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-xs font-bold text-white drop-shadow-lg">{s.label[0]}</span>
+              </div>
+            </div>
+            <span className={`mt-2 kinetic-text text-xs font-medium ${i <= stage ? 'whisper-gradient-text' : 'text-gray-400'}`}>{s.label}</span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 text-sm text-gray-300 text-center max-w-xs">
+        As you reflect, confess, and grow, your bloom evolves. Reach <span className="whisper-gradient-text font-semibold">Constellation</span> to unlock new rituals and auras.
       </div>
 
       {/* Growth Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
         <Card className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 backdrop-blur-lg border-purple-500/20 p-4">
           <div className="text-center space-y-2">
             <Target className="h-8 w-8 text-purple-300 mx-auto" />
@@ -224,11 +242,11 @@ export const MetamorphosisTracker = () => {
 
       {/* Current Phase */}
       {currentPhase && (
-        <Card className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 backdrop-blur-lg border-blue-500/20 p-6">
+        <Card className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 backdrop-blur-lg border-blue-500/20 p-6 mt-8">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Butterfly className="h-6 w-6 text-blue-300" />
+                <Star className="h-6 w-6 text-blue-300" />
                 <h3 className="text-lg font-light text-white">{currentPhase.name}</h3>
               </div>
               <Badge className="bg-blue-500/20 text-blue-200">
@@ -262,13 +280,15 @@ export const MetamorphosisTracker = () => {
       )}
 
       {/* Add New Milestone */}
-      <Card className="bg-white/5 backdrop-blur-lg border-white/10 p-6">
+      <Card className="bg-white/5 backdrop-blur-lg border-white/10 p-6 mt-8">
         <div className="space-y-4">
           <h3 className="text-lg font-light text-white">Add Growth Milestone</h3>
           
           <div className="space-y-3">
             <input
               type="text"
+              id="milestone-title"
+              name="milestone-title"
               placeholder="Milestone title..."
               value={newMilestone}
               onChange={(e) => setNewMilestone(e.target.value)}
@@ -276,6 +296,8 @@ export const MetamorphosisTracker = () => {
             />
             
             <Textarea
+              id="milestone-description"
+              name="milestone-description"
               placeholder="Describe this moment of growth..."
               value={newMilestoneDescription}
               onChange={(e) => setNewMilestoneDescription(e.target.value)}
@@ -285,6 +307,8 @@ export const MetamorphosisTracker = () => {
 
             <div className="flex items-center space-x-3">
               <select
+                id="milestone-category"
+                name="milestone-category"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value as any)}
                 className="bg-white/5 border border-white/20 text-white rounded-lg px-3 py-2"
@@ -309,7 +333,7 @@ export const MetamorphosisTracker = () => {
       </Card>
 
       {/* Milestones List */}
-      <div className="space-y-4">
+      <div className="space-y-4 mt-8">
         <h3 className="text-lg font-light text-white">Your Growth Journey</h3>
         
         <div className="space-y-4">
@@ -362,4 +386,6 @@ export const MetamorphosisTracker = () => {
       </div>
     </div>
   );
-}; 
+};
+
+export default MetamorphosisTracker; 

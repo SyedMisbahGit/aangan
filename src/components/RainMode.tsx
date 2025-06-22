@@ -158,6 +158,8 @@ export const RainMode = () => {
         ) : (
           <div className="space-y-4">
             <Textarea
+              id="rain-thought"
+              name="rain-thought"
               placeholder="Let your thoughts flow like rain..."
               value={content}
               onChange={(e) => setContent(e.target.value)}

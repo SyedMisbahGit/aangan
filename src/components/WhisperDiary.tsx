@@ -1,4 +1,6 @@
-
+import React from 'react';
+import PostCreator from './PostCreator';
+import { cn } from '@/lib/utils';
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,7 +17,7 @@ interface DiaryEntry {
   mood: string;
 }
 
-export const WhisperDiary = () => {
+const WhisperDiary: React.FC = () => {
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
   const [currentEntry, setCurrentEntry] = useState("");
   const [selectedPrompt, setSelectedPrompt] = useState<string | null>(null);
@@ -23,14 +25,16 @@ export const WhisperDiary = () => {
   const { toast } = useToast();
 
   const emotionalPrompts = [
-    "What hurt but you never said?",
-    "A memory you buried?",
-    "Something you wish someone knew?",
-    "A feeling you can't name?",
-    "What would you tell your younger self?",
-    "A secret that feels too heavy?",
-    "What made you smile today, really?",
-    "Something you miss deeply?",
+    "What's weighing on your chest right now?",
+    "Whispers are heavier tonight. Be kind.",
+    "A moment that made your heart flutter?",
+    "Something you're holding close to your chest?",
+    "A dream that keeps you awake?",
+    "What does your heart need to say?",
+    "A memory that visits you like an old friend?",
+    "Something you're learning about yourself?",
+    "A hope that feels too fragile to speak aloud?",
+    "What's the weather like in your heart today?",
   ];
 
   useEffect(() => {
@@ -99,6 +103,12 @@ export const WhisperDiary = () => {
     setIsLocked(false);
   };
 
+  const handlePost = (content: string, zone: string) => {
+    // TODO: Integrate with backend or state for new post
+    // For now, just log
+    console.log('New Whisper:', { content, zone });
+  };
+
   if (isLocked) {
     return (
       <Card className="bg-white/5 backdrop-blur-lg border-white/10 p-8 text-center">
@@ -126,105 +136,13 @@ export const WhisperDiary = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Writing Area */}
-      <Card className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 backdrop-blur-lg border-white/10 p-8">
-        <div className="space-y-6">
-          <div className="flex items-center space-x-3">
-            <BookOpen className="h-6 w-6 text-purple-300 animate-pulse" />
-            <h2 className="text-xl font-light text-white">Your Quiet Corner</h2>
-          </div>
-
-          {/* Prompt Selection */}
-          <div className="space-y-3">
-            <p className="text-sm text-gray-300">Need inspiration?</p>
-            <div className="flex flex-wrap gap-2">
-              {emotionalPrompts.slice(0, 4).map((prompt, index) => (
-                <Button
-                  key={index}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedPrompt(prompt)}
-                  className={`text-xs rounded-full transition-all duration-300 ${
-                    selectedPrompt === prompt 
-                      ? "bg-purple-500/20 text-purple-200 border border-purple-400/30"
-                      : "text-gray-400 hover:text-purple-300 hover:bg-purple-500/10"
-                  }`}
-                >
-                  {prompt}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {selectedPrompt && (
-            <div className="p-4 bg-purple-500/10 rounded-xl border border-purple-400/20 animate-fade-in">
-              <p className="text-purple-200 text-sm italic">"{selectedPrompt}"</p>
-            </div>
-          )}
-
-          <Textarea
-            placeholder={selectedPrompt || "No pressure. Just whisper..."}
-            value={currentEntry}
-            onChange={(e) => setCurrentEntry(e.target.value)}
-            className="bg-white/5 border-white/20 text-white placeholder:text-gray-400 resize-none h-32 rounded-xl backdrop-blur-md focus:border-purple-400/50"
-            maxLength={1000}
-          />
-
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400 text-sm">{currentEntry.length}/1000</span>
-            <div className="flex items-center space-x-3">
-              <Button
-                onClick={saveEntry}
-                disabled={!currentEntry.trim()}
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl"
-              >
-                <Heart className="h-4 w-4 mr-2" />
-                Keep Safe
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Recent Entries */}
-      {entries.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-light text-white">Your Recent Thoughts</h3>
-          {entries.slice(0, 3).map((entry) => (
-            <Card key={entry.id} className="bg-white/5 backdrop-blur-lg border-white/10 p-6 hover:bg-white/10 transition-all duration-300">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Badge className="bg-purple-500/20 text-purple-200 text-xs">
-                    {entry.mood}
-                  </Badge>
-                  <span className="text-gray-400 text-xs">
-                    {entry.timestamp.toLocaleDateString()}
-                  </span>
-                </div>
-                
-                {entry.prompt && (
-                  <p className="text-purple-300 text-sm italic">"{entry.prompt}"</p>
-                )}
-                
-                <p className="text-white leading-relaxed text-sm line-clamp-3">
-                  {entry.content}
-                </p>
-                
-                <Button
-                  onClick={() => transformToDraft(entry)}
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-purple-300 hover:bg-purple-500/10"
-                >
-                  <Send className="h-3 w-3 mr-2" />
-                  Share anonymously
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
+    <div className="whisper-orb floating-orb emotion-aura-nostalgia p-8 max-w-2xl mx-auto mt-8">
+      <h2 className="kinetic-text text-3xl font-bold whisper-gradient-text mb-2 text-center">Mirror Diary</h2>
+      <p className="kinetic-text-slow text-base text-center text-gray-300 mb-6">Reflect, confess, and let your emotions float in the WhisperVerse. Your diary entries become glowing orbs in your emotional galaxy.</p>
+      <PostCreator onPost={handlePost} />
+      {/* TODO: Render diary entries as floating orbs */}
     </div>
   );
 };
+
+export default WhisperDiary;

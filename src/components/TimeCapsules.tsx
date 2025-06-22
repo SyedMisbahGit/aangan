@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -185,6 +184,8 @@ export const TimeCapsules = () => {
           </p>
 
           <Textarea
+            id="time-capsule-content"
+            name="time-capsule-content"
             placeholder="What do you want to remember? What hope do you want to send forward?"
             value={newContent}
             onChange={(e) => setNewContent(e.target.value)}

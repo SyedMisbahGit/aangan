@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -156,6 +155,8 @@ export const ModerationSandbox = () => {
       <Card className="bg-white/5 backdrop-blur-lg border-white/10 p-6">
         <div className="space-y-4">
           <Textarea
+            id="moderation-test-content"
+            name="moderation-test-content"
             placeholder="Test content for cultural moderation... Try: 'Bhai placement ke liye bohot tension hai' or 'Anjali from CSE ko message kiya'"
             value={testContent}
             onChange={(e) => setTestContent(e.target.value)}

@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -8,14 +7,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Send, Shield, AlertTriangle, Heart, Brain, Megaphone, Lightbulb, Feather, Moon, Sparkles, Mic, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ModerationFeedback } from "@/components/ModerationFeedback";
+import { cn } from '@/lib/utils';
 
 interface PostCreatorProps {
-  onNewPost: () => void;
+  onPost: (content: string, zone: string) => void;
+  loading?: boolean;
 }
 
-export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
-  const [content, setContent] = useState("");
-  const [category, setCategory] = useState("");
+const zonePlaceholder = [
+  'Behind Admin Block Bench',
+  'PG Hostel Rooftop',
+  'Tapri near Bus Gate',
+  'Canteen Steps',
+  'Library Silence Zone',
+  'Hostel G Whisper Wall',
+  'Udaan Lawn',
+  'Exam Fog Corner',
+];
+
+const PostCreator: React.FC<PostCreatorProps> = ({ onPost, loading }) => {
+  const [content, setContent] = useState('');
+  const [zone, setZone] = useState('');
+  const [zoneHint, setZoneHint] = useState(() => zonePlaceholder[Math.floor(Math.random() * zonePlaceholder.length)]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [moderationResult, setModerationResult] = useState<any>(null);
   const [toneHint, setToneHint] = useState("");
@@ -193,11 +206,12 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
     }, 2000);
   };
 
-  const handleSubmit = async () => {
-    if (!content.trim() || !category) {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!content.trim() || !zone) {
       toast({
         title: "Incomplete whisper",
-        description: "Please add your thoughts and choose a category.",
+        description: "Please add your thoughts and choose a zone.",
         variant: "destructive",
       });
       return;
@@ -232,7 +246,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
     });
 
     setTimeout(() => {
-      const toastTitle = isMidnightWindow && category === "midnight" 
+      const toastTitle = isMidnightWindow && zone === "midnight" 
         ? "Midnight whisper released into the void"
         : "Your whisper has been heard";
       
@@ -241,22 +255,22 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
         description: "Shared safely and anonymously with the campus.",
       });
       setContent("");
-      setCategory("");
+      setZone("");
       setModerationResult(null);
       setToneHint("");
       setLanguageHint("");
       setIsSubmitting(false);
       setDraftLoaded(false);
-      onNewPost();
+      onPost(content, zone);
     }, 1500);
   };
 
-  const selectedCategory = categories.find(cat => cat.id === category);
+  const selectedCategory = categories.find(cat => cat.id === zone);
 
   return (
     <div className="space-y-6">
       <Card className={`backdrop-blur-lg border-white/10 p-8 shadow-2xl transition-all duration-500 ${
-        isMidnightWindow && category === "midnight"
+        isMidnightWindow && zone === "midnight"
           ? "bg-gradient-to-br from-indigo-900/30 to-purple-900/30 border-indigo-500/30 shadow-indigo-500/20 midnight-glow"
           : "bg-white/5 hover:shadow-purple-500/20"
       }`}>
@@ -297,6 +311,8 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
           {/* Content Input */}
           <div className="relative">
             <Textarea
+              id="whisper-content"
+              name="whisper-content"
               placeholder={isMidnightWindow 
                 ? "Whisper what daylight couldn't hear..."
                 : "Express in any language using English letters... your thoughts are safe here."
@@ -353,10 +369,10 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
             )}
           </div>
 
-          {/* Category Selection */}
-          <Select value={category} onValueChange={setCategory}>
+          {/* Zone Selection */}
+          <Select value={zone} onValueChange={setZone}>
             <SelectTrigger className="bg-white/5 border-white/20 text-white rounded-xl backdrop-blur-md hover:bg-white/10 transition-all duration-300">
-              <SelectValue placeholder="Choose your whisper type..." />
+              <SelectValue placeholder="Choose your zone..." />
             </SelectTrigger>
             <SelectContent className="bg-slate-800/90 border-white/20 backdrop-blur-lg">
               {categories.map((cat) => (
@@ -371,21 +387,29 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
             </SelectContent>
           </Select>
 
-          {/* Selected Category Display */}
+          {/* Selected Zone Display */}
           {selectedCategory && (
             <div className="flex items-center space-x-3 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20 backdrop-blur-md animate-scale-in">
               <selectedCategory.icon className="h-5 w-5 text-purple-400" />
               <span className="text-purple-200 font-medium">
-                Whispering about {selectedCategory.label.toLowerCase()}
+                Whispering from {selectedCategory.label.toLowerCase()}
               </span>
             </div>
           )}
 
+          {/* Zone Hint */}
+          <div className="text-xs text-gray-400 text-center bg-white/5 p-4 rounded-xl backdrop-blur-md">
+            {zoneHint}
+          </div>
+
           {/* Submit Button */}
           <Button 
             onClick={handleSubmit}
-            disabled={!content.trim() || !category || isSubmitting}
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-[1.02] backdrop-blur-md py-4"
+            disabled={!content.trim() || !zone || isSubmitting}
+            className={cn(
+              'w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-[1.02] backdrop-blur-md py-4',
+              loading && 'opacity-60 pointer-events-none'
+            )}
           >
             <Send className="h-5 w-5 mr-2" />
             {isSubmitting ? "Whispering..." : "Share Anonymously"}
@@ -404,3 +428,5 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
     </div>
   );
 };
+
+export default PostCreator;

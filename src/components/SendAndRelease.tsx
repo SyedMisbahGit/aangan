@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -113,6 +112,8 @@ export const SendAndRelease = () => {
           </div>
 
           <Textarea
+            id="release-message"
+            name="release-message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="What do you need to release into the universe?"
