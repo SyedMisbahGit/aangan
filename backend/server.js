@@ -66,10 +66,10 @@ async function initializeDatabase() {
   `);
 
   // Insert default admin user if not exists
-  const adminExists = await db.get('SELECT id FROM admin_users WHERE username = ?', ['admin']);
+  const adminExists = await db.get('SELECT id FROM admin_users WHERE username = ?', [process.env.ADMIN_USERNAME || 'admin']);
   if (!adminExists) {
     const passwordHash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 10);
-    await db.run('INSERT INTO admin_users (username, password_hash) VALUES (?, ?)', ['admin', passwordHash]);
+    await db.run('INSERT INTO admin_users (username, password_hash) VALUES (?, ?)', [process.env.ADMIN_USERNAME || 'admin', passwordHash]);
   }
 
   // Insert default feature toggles
@@ -102,7 +102,9 @@ app.use(cors({
     'http://localhost:8083',
     'http://localhost:8084',
     'http://localhost:8085',
-    'http://localhost:8086'
+    'http://localhost:8086',
+    'http://localhost:8087',
+    'http://localhost:8088'
   ],
   credentials: true
 }));
@@ -397,6 +399,4 @@ async function startServer() {
   }
 }
 
-startServer();
-#   D a t a b a s e   r e s e t   t r i g g e r  
- 
+startServer(); 
