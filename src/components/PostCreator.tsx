@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Send, Shield, AlertTriangle, Heart, Brain, Megaphone, Lightbulb, Feather, Moon, Sparkles } from "lucide-react";
+import { Send, Shield, AlertTriangle, Heart, Brain, Megaphone, Lightbulb, Feather, Moon, Sparkles, Mic, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ModerationFeedback } from "@/components/ModerationFeedback";
 
@@ -21,6 +21,8 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
   const [toneHint, setToneHint] = useState("");
   const [languageHint, setLanguageHint] = useState("");
   const [isMidnightWindow, setIsMidnightWindow] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [draftLoaded, setDraftLoaded] = useState(false);
   const { toast } = useToast();
 
   // Check midnight window (12 AM - 1 AM)
@@ -36,6 +38,27 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
     return () => clearInterval(interval);
   }, []);
 
+  // Load draft from diary if available
+  useEffect(() => {
+    const draft = localStorage.getItem('whisper-draft');
+    if (draft && !draftLoaded) {
+      try {
+        const parsed = JSON.parse(draft);
+        setContent(parsed.content);
+        setToneHint(parsed.mood ? `${parsed.mood} thoughts detected` : "");
+        setDraftLoaded(true);
+        localStorage.removeItem('whisper-draft');
+        
+        toast({
+          title: "Draft loaded from diary",
+          description: "Your private thoughts are ready to share.",
+        });
+      } catch (e) {
+        // Invalid draft format, ignore
+      }
+    }
+  }, [draftLoaded, toast]);
+
   const categories = [
     { id: "confession", label: "Secret Thoughts", icon: Heart },
     { id: "academic", label: "Study Struggles", icon: Brain },
@@ -49,28 +72,40 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
   const detectLanguageAndContext = (text: string) => {
     if (text.length < 5) return { tone: "", language: "" };
     
-    // Language detection patterns
-    const hinglishPattern = /\b(bhai|yaar|boss|kya|hai|nahi|achha|thik|pareshaan|tension|chill|maar|dekh|arre|yahan|wahan|kuch|koi|matlab|samjha|pagal|bindaas|bakwas|chutiya|bc|mc)\b/gi;
-    const southIndianPattern = /\b(enna|da|ra|machcha|mama|anna|akka|scene|illa|super|mass|kalakkal|bindass|scene|set|lite)\b/gi;
-    const englishSlangs = /\b(bruh|dude|mate|lit|fire|sus|cap|bet|facts|mood|vibe|flex|salty|cringe|stan|periodt)\b/gi;
+    // Enhanced campus context detection
+    const campusTerms = /\b(hostel|library|canteen|mess|prof|professor|exam|assignment|placement|internship|semester|lab|class|lecture|admin|sports|ground|block|wing|floor|warden|dean|hod|cr|attendance|bunk|campus|college|university|fest|techfest|cultfest|roommate|seniors|juniors|batch|branch|department|cse|ece|mech|civil|biotech|chemical|hostel\s*[a-z]|block\s*[a-z]|room\s*\d+|floor\s*\d+)\b/gi;
+    
+    const emotionalTerms = /\b(stressed|anxious|excited|worried|happy|sad|confused|overwhelmed|lonely|grateful|frustrated|exhausted|pumped|nervous|chill|vibes|mood|feels|energy|peaceful|restless|hopeful|vulnerable|curious|melancholy)\b/gi;
+    
+    const academicStress = /\b(assignment|deadline|exam|test|quiz|viva|presentation|project|submission|marks|grades|cgpa|sgpa|backlog|fail|pass|study|revision|syllabus|portion|internal|external|midsem|endsem)\b/gi;
+    
+    const socialContext = /\b(friends|friendship|relationship|crush|love|breakup|alone|group|party|hang|out|gossip|drama|fight|misunderstanding|support|care|trust|betray)\b/gi;
+
+    // Language detection patterns (enhanced)
+    const hinglishPattern = /\b(bhai|yaar|boss|kya|hai|nahi|achha|thik|pareshaan|tension|chill|maar|dekh|arre|yahan|wahan|kuch|koi|matlab|samjha|pagal|bindaas|bakwas|chutiya|bc|mc|sala|arre|yeh|woh|toh|mere|tera|uska|kitna|bahut|thoda|kaafi|bilkul|sach|jhooth|dekho|suno|bolo|chalo|aao|jao|karo|mat|kyun|kaise|kahan|kab|kaun)\b/gi;
+    
+    const southIndianPattern = /\b(enna|da|ra|machcha|mama|anna|akka|scene|illa|super|mass|kalakkal|bindass|scene|set|lite|saaar|machan|dude|bro|dei|poda|adipoli|semma|gethu|vera|level)\b/gi;
+    
+    const englishSlangs = /\b(bruh|dude|mate|lit|fire|sus|cap|bet|facts|mood|vibe|flex|salty|cringe|stan|periodt|no cap|fr|ong|lowkey|highkey|mid|based|cringe|bussin|slaps|hits different)\b/gi;
     
     let language = "English";
-    if (hinglishPattern.test(text)) language = "Hinglish";
-    else if (southIndianPattern.test(text)) language = "Regional Mix";
+    if (hinglishPattern.test(text)) language = "Hinglish Mix";
+    else if (southIndianPattern.test(text)) language = "Regional English";
     else if (englishSlangs.test(text)) language = "Gen-Z English";
     
-    // Campus context detection
-    const campusTerms = /\b(hostel|library|canteen|mess|prof|professor|exam|assignment|placement|internship|semester|lab|class|lecture|admin|sports|ground|block|wing|floor|warden|dean|hod|cr|attendance|bunk|campus|college|university|fest|techfest|cultfest)\b/gi;
-    const emotionalTerms = /\b(stressed|anxious|excited|worried|happy|sad|confused|overwhelmed|lonely|grateful|frustrated|exhausted|pumped|nervous|chill|vibes|mood|feels|energy)\b/gi;
-    
+    // Enhanced tone detection
     let tone = "";
-    if (campusTerms.test(text)) {
-      tone = "Campus vibes detected 🏫";
+    if (campusTerms.test(text) && academicStress.test(text)) {
+      tone = "Academic stress detected 📚";
+    } else if (campusTerms.test(text) && socialContext.test(text)) {
+      tone = "Campus social vibes 👥";
+    } else if (campusTerms.test(text)) {
+      tone = "Campus life context 🏫";
     } else if (emotionalTerms.test(text)) {
       tone = "Emotional depth sensed 💙";
     } else if (text.includes("...") || text.includes("😔") || text.includes("💔")) {
       tone = "Heavy feelings acknowledged 🤗";
-    } else {
+    } else if (text.length > 10) {
       tone = "Ready to whisper this thought 🌙";
     }
     
@@ -82,10 +117,11 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
     let confidence = 0.95;
     let suggestions: string[] = [];
     
-    // Enhanced PII detection for multilingual content
+    // Enhanced identity detection for multilingual content
     const phonePattern = /\b(\d{10}|\+91\d{10}|91\d{10})\b/gi;
-    const rollNumberPattern = /\b(roll\s*no|student\s*id|reg\s*no|admission\s*no|exam\s*roll|id\s*no)[\s:]*([A-Z0-9]{6,15})\b/gi;
-    const namePattern = /\b(my name is|i am|naam hai|called me|mera naam)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b/gi;
+    const rollNumberPattern = /\b(roll\s*no|student\s*id|reg\s*no|admission\s*no|exam\s*roll|id\s*no|registration|enrollment)[\s:]*([A-Z0-9]{6,15})\b/gi;
+    const namePattern = /\b(my name is|i am|naam hai|called me|mera naam|i'm)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b/gi;
+    const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/gi;
     
     if (phonePattern.test(text)) {
       flags.push("Contains phone number");
@@ -101,42 +137,67 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
       flags.push("May reveal personal name");
       suggestions.push("Consider using 'someone' or 'a friend' instead");
     }
-
-    // Enhanced identity leaks for Indian context
-    const locationPattern = /\b(room\s*no|room\s*number|flat\s*no|house\s*no)[\s:]*([A-Z0-9]{2,10})\b/gi;
-    const specificLocationPattern = /\b(hostel [A-Z]|block [A-Z]|wing [A-Z]|floor \d+|room \d+)\b/gi;
     
-    if (locationPattern.test(text) || specificLocationPattern.test(text)) {
+    if (emailPattern.test(text)) {
+      flags.push("Contains email address");
+      suggestions.push("Remove email for complete anonymity");
+    }
+
+    // Enhanced location detection
+    const specificLocationPattern = /\b(hostel [A-Z]|block [A-Z]|wing [A-Z]|floor \d+|room \d+|[A-Z]\d{3}|hostel\s*[a-z]|block\s*[a-z])\b/gi;
+    const addressPattern = /\b(house\s*no|flat\s*no|door\s*no|pin\s*code|pincode|zipcode)[\s:]*([A-Z0-9]{2,10})\b/gi;
+    
+    if (specificLocationPattern.test(text) || addressPattern.test(text)) {
       flags.push("Contains specific location details");
       suggestions.push("Try using general terms like 'my hostel' or 'my floor'");
     }
 
-    // Mental health signals (multilingual)
-    const distressSignals = /\b(suicide|kill myself|end it all|can't take it|give up|marna hai|mar jaana|khatam kar|death|die|finished|done|over|khatam)\b/gi;
-    if (distressSignals.test(text)) {
+    // Mental health detection (enhanced for multilingual)
+    const distressSignals = /\b(suicide|kill myself|end it all|can't take it|give up|marna hai|mar jaana|khatam kar|death|die|finished|done|over|khatam|enough|can't handle|breaking point|no point|useless|worthless)\b/gi;
+    const selfHarmSignals = /\b(cut myself|hurt myself|harm|self harm|self-harm|blade|razor|pain|deserve pain)\b/gi;
+    
+    if (distressSignals.test(text) || selfHarmSignals.test(text)) {
       flags.push("Mental health concern detected");
       suggestions.push("Campus counseling services are available 24/7");
       suggestions.push("You're not alone - please reach out for support");
       suggestions.push("Consider speaking with a trusted friend or counselor");
+      suggestions.push("Your wellbeing matters more than any academic pressure");
     }
 
     // Enhanced discrimination detection
-    const discriminatoryTerms = /\b(chamar|bhangi|quota|reservation\s*abuse|caste|brahmin|lower\s*caste|upper\s*caste|sc|st|obc|general\s*category)\b/gi;
-    const regionalDiscrimination = /\b(northie|southie|bhaiya|madrasi|chinki|nepali|bihari|up\s*wala)\b/gi;
+    const casteDiscrimination = /\b(chamar|bhangi|quota|reservation\s*abuse|caste|brahmin|lower\s*caste|upper\s*caste|sc|st|obc|general\s*category|merit|deserving|undeserving)\b/gi;
+    const regionalDiscrimination = /\b(northie|southie|bhaiya|madrasi|chinki|nepali|bihari|up\s*wala|punjabi|mallu|gulti|ghati|bong)\b/gi;
+    const genderDiscrimination = /\b(slut|whore|characterless|easy|desperate|gold digger|feminazi|simp|beta|alpha|toxic masculinity)\b/gi;
     
-    if (discriminatoryTerms.test(text) || regionalDiscrimination.test(text)) {
+    if (casteDiscrimination.test(text) || regionalDiscrimination.test(text) || genderDiscrimination.test(text)) {
       flags.push("Contains potentially discriminatory language");
       suggestions.push("Let's keep discussions respectful to all communities");
+      suggestions.push("Campus is diverse - embrace differences with kindness");
     }
 
     return { flags, confidence, suggestions };
   };
 
+  // Voice to text placeholder function
+  const startVoiceInput = () => {
+    setIsListening(true);
+    
+    // Placeholder for voice input
+    toast({
+      title: "Voice input",
+      description: "Voice-to-whisper feature coming soon...",
+    });
+    
+    setTimeout(() => {
+      setIsListening(false);
+    }, 2000);
+  };
+
   const handleSubmit = async () => {
     if (!content.trim() || !category) {
       toast({
-        title: "Incomplete Whisper",
-        description: "Please add your thoughts and select a category.",
+        title: "Incomplete whisper",
+        description: "Please add your thoughts and choose a category.",
         variant: "destructive",
       });
       return;
@@ -155,8 +216,8 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
       });
       
       toast({
-        title: "Content Review",
-        description: "Please review your whisper before sharing.",
+        title: "Content needs review",
+        description: "Please review the suggestions before sharing.",
         variant: "destructive",
       });
       setIsSubmitting(false);
@@ -185,6 +246,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
       setToneHint("");
       setLanguageHint("");
       setIsSubmitting(false);
+      setDraftLoaded(false);
       onNewPost();
     }, 1500);
   };
@@ -200,52 +262,73 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
       }`}>
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex items-center space-x-4 mb-6">
-            <div className="relative">
-              {isMidnightWindow ? (
-                <Moon className="h-6 w-6 text-indigo-300 animate-pulse" />
-              ) : (
-                <Feather className="h-6 w-6 text-purple-300 animate-pulse" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                {isMidnightWindow ? (
+                  <Moon className="h-6 w-6 text-indigo-300 animate-pulse" />
+                ) : (
+                  <Feather className="h-6 w-6 text-purple-300 animate-pulse" />
+                )}
+                <div className={`absolute -inset-2 rounded-full blur animate-pulse ${
+                  isMidnightWindow ? "bg-indigo-400/20" : "bg-purple-400/20"
+                }`}></div>
+              </div>
+              <div>
+                <h2 className="text-xl font-light text-white">
+                  {isMidnightWindow ? "Midnight Confession Window" : "Share Your Whisper"}
+                </h2>
+                <p className="text-sm text-gray-300">
+                  {isMidnightWindow ? "The veil is thinnest now..." : "No pressure. Just whisper."}
+                </p>
+              </div>
+              {draftLoaded && (
+                <Badge className="bg-blue-500/20 text-blue-200 animate-pulse flex items-center space-x-1">
+                  <FileText className="h-3 w-3" />
+                  <span>From diary</span>
+                </Badge>
               )}
-              <div className={`absolute -inset-2 rounded-full blur animate-pulse ${
-                isMidnightWindow ? "bg-indigo-400/20" : "bg-purple-400/20"
-              }`}></div>
-            </div>
-            <div>
-              <h2 className="text-xl font-medium text-white">
-                {isMidnightWindow ? "Midnight Confession Window" : "Share Your Whisper"}
-              </h2>
-              <p className="text-sm text-gray-300">
-                {isMidnightWindow ? "The veil is thinnest now..." : "Express in any language, English script only"}
-              </p>
             </div>
             {isMidnightWindow && (
-              <Sparkles className="h-5 w-5 text-indigo-400 animate-pulse ml-auto" />
+              <Sparkles className="h-5 w-5 text-indigo-400 animate-pulse" />
             )}
           </div>
 
           {/* Content Input */}
-          <Textarea
-            placeholder={isMidnightWindow 
-              ? "Whisper what daylight couldn't hear..."
-              : "Type in any language using English letters... bhai, what's on your mind?"
-            }
-            value={content}
-            onChange={(e) => {
-              setContent(e.target.value);
-              const { tone, language } = detectLanguageAndContext(e.target.value);
-              setToneHint(tone);
-              setLanguageHint(language);
-            }}
-            className={`border-white/20 text-white placeholder:text-gray-400 resize-none h-32 transition-all duration-300 rounded-xl backdrop-blur-md ${
-              isMidnightWindow 
-                ? "bg-indigo-900/20 focus:border-indigo-400/50 placeholder:text-indigo-300/70"
-                : "bg-white/5 focus:border-purple-400/50"
-            }`}
-            maxLength={500}
-          />
+          <div className="relative">
+            <Textarea
+              placeholder={isMidnightWindow 
+                ? "Whisper what daylight couldn't hear..."
+                : "Express in any language using English letters... your thoughts are safe here."
+              }
+              value={content}
+              onChange={(e) => {
+                setContent(e.target.value);
+                const { tone, language } = detectLanguageAndContext(e.target.value);
+                setToneHint(tone);
+                setLanguageHint(language);
+              }}
+              className={`border-white/20 text-white placeholder:text-gray-400 resize-none h-32 transition-all duration-300 rounded-xl backdrop-blur-md pr-12 ${
+                isMidnightWindow 
+                  ? "bg-indigo-900/20 focus:border-indigo-400/50 placeholder:text-indigo-300/70"
+                  : "bg-white/5 focus:border-purple-400/50"
+              }`}
+              maxLength={500}
+            />
+            
+            {/* Voice Input Button */}
+            <Button
+              onClick={startVoiceInput}
+              variant="ghost"
+              size="sm"
+              className="absolute bottom-3 right-3 text-gray-400 hover:text-purple-300 hover:bg-purple-500/10 p-2"
+              disabled={isListening}
+            >
+              <Mic className={`h-4 w-4 ${isListening ? 'animate-pulse text-red-400' : ''}`} />
+            </Button>
+          </div>
 
-          {/* Character Count & Language Detection */}
+          {/* Character Count & Context Detection */}
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-4">
               <span className="text-gray-400">{content.length}/500</span>
@@ -265,7 +348,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
             {content && (
               <span className="flex items-center space-x-2 text-emerald-400">
                 <Shield className="h-4 w-4 animate-pulse" />
-                <span>Analyzing...</span>
+                <span>Protecting your identity...</span>
               </span>
             )}
           </div>
@@ -310,7 +393,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
 
           {/* Safety Notice */}
           <div className="text-xs text-gray-400 text-center bg-white/5 p-4 rounded-xl backdrop-blur-md">
-            Express in any language • English script only • Complete anonymity guaranteed
+            Your thoughts are safe here • Complete anonymity guaranteed • Express in any language
           </div>
         </div>
       </Card>
