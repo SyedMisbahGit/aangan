@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Shrine, Heart, Candle, Sparkles, MapPin, Clock, Users } from "lucide-react";
+import { Home, Heart, Flame, Sparkles, MapPin, Clock, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ShrineLocation {
@@ -89,11 +89,11 @@ export const WhisperShrines = () => {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case "love": return Heart;
-      case "academic": return Shrine;
+      case "academic": return Home;
       case "friendship": return Users;
       case "growth": return Sparkles;
-      case "peace": return Candle;
-      default: return Shrine;
+      case "peace": return Flame;
+      default: return Home;
     }
   };
 
@@ -147,9 +147,9 @@ export const WhisperShrines = () => {
     <div className="space-y-6">
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center space-x-2">
-          <Shrine className="h-6 w-6 text-purple-400 animate-pulse" />
+          <Home className="h-6 w-6 text-purple-400 animate-pulse" />
           <h2 className="text-2xl font-light text-white">Whisper Shrines</h2>
-          <Shrine className="h-6 w-6 text-purple-400 animate-pulse" />
+          <Home className="h-6 w-6 text-purple-400 animate-pulse" />
         </div>
         <p className="text-gray-300 text-sm">
           Sacred spaces where thoughts find their home...

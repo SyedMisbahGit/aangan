@@ -22,8 +22,11 @@ import { SendAndRelease } from "@/components/SendAndRelease";
 import { RainMode } from "@/components/RainMode";
 import { WhisperShrines } from "@/components/WhisperShrines";
 import { EmotionCompass } from "@/components/EmotionCompass";
+import { EmotionSlowMode } from "@/components/EmotionSlowMode";
+import { ConfessionChains } from "@/components/ConfessionChains";
+import { MetamorphosisTracker } from "@/components/MetamorphosisTracker";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, TrendingUp, Heart, Map, User, FileText, BookOpen, Clock, Coffee, Sparkles, Lock, Wind, CloudRain, Compass, Eye, Home } from "lucide-react";
+import { MessageCircle, TrendingUp, Heart, Map, User, FileText, BookOpen, Clock, Coffee, Sparkles, Lock, Wind, CloudRain, Compass, Eye, Home, Link, Star } from "lucide-react";
 
 const Index = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -38,6 +41,8 @@ const Index = () => {
     { id: "lounge", label: "Quiet Lounge", icon: Coffee },
     { id: "diary", label: "Private Diary", icon: BookOpen },
     { id: "shrines", label: "Whisper Shrines", icon: Eye },
+    { id: "chains", label: "Confession Chains", icon: Link },
+    { id: "growth", label: "Growth Tracker", icon: Star },
     { id: "capsules", label: "Time Capsules", icon: Clock },
     { id: "trending", label: "Campus Pulse", icon: TrendingUp },
     { id: "mood", label: "Collective Hearts", icon: Heart },
@@ -55,6 +60,7 @@ const Index = () => {
             <div className="lg:col-span-1 space-y-6">
               <MidnightDrop />
               <RainMode />
+              <EmotionSlowMode />
               <TrendingTopics />
               <GroupFeels />
             </div>
@@ -81,6 +87,7 @@ const Index = () => {
             </div>
             <div className="space-y-6">
               <RainMode />
+              <EmotionSlowMode />
               <GroupFeels />
               <CommunityStats />
             </div>
@@ -92,6 +99,18 @@ const Index = () => {
             <WhisperShrines />
           </div>
         );
+      case "chains":
+        return (
+          <div className="max-w-6xl mx-auto animate-fade-in">
+            <ConfessionChains />
+          </div>
+        );
+      case "growth":
+        return (
+          <div className="max-w-6xl mx-auto animate-fade-in">
+            <MetamorphosisTracker />
+          </div>
+        );
       case "capsules":
         return (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
@@ -101,6 +120,7 @@ const Index = () => {
             <div className="space-y-6">
               <WhisperNotifications />
               <RainMode />
+              <EmotionSlowMode />
               <GroupFeels />
             </div>
           </div>
@@ -112,6 +132,7 @@ const Index = () => {
               <WhisperNotifications />
               <MidnightDrop />
               <RainMode />
+              <EmotionSlowMode />
               <GroupFeels />
             </div>
             <div className="lg:col-span-2 space-y-6">
@@ -131,6 +152,7 @@ const Index = () => {
             <div className="space-y-6">
               <WhisperNotifications />
               <RainMode />
+              <EmotionSlowMode />
               <CommunityStats />
               <TrendingTopics />
             </div>
@@ -145,6 +167,7 @@ const Index = () => {
             <div className="space-y-6">
               <WhisperNotifications />
               <RainMode />
+              <EmotionSlowMode />
               <GroupFeels />
               <CommunityStats />
             </div>
@@ -160,6 +183,7 @@ const Index = () => {
             <div className="space-y-6">
               <WhisperNotifications />
               <RainMode />
+              <EmotionSlowMode />
               <GroupFeels />
               <CommunityStats />
             </div>
