@@ -5,16 +5,11 @@ import { PostCreator } from "@/components/PostCreator";
 import { LiveWhispersFeed } from "@/components/LiveWhispersFeed";
 import { TrendingTopics } from "@/components/TrendingTopics";
 import { CommunityStats } from "@/components/CommunityStats";
-import { InviteSystem } from "@/components/InviteSystem";
-import { SafetyDashboard } from "@/components/SafetyDashboard";
-import { EngagementAnalytics } from "@/components/EngagementAnalytics";
-import { ContentSeeder } from "@/components/ContentSeeder";
-import { WeeklyDigest } from "@/components/WeeklyDigest";
-import { ModerationSandbox } from "@/components/ModerationSandbox";
 import { MidnightDrop } from "@/components/MidnightDrop";
 import { MoodMapping } from "@/components/MoodMapping";
+import { WeeklyDigest } from "@/components/WeeklyDigest";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Users, Shield, BarChart3, Sparkles, FileText, TestTube, Moon, Heart } from "lucide-react";
+import { MessageCircle, TrendingUp, Heart, FileText } from "lucide-react";
 
 const Index = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -26,22 +21,17 @@ const Index = () => {
 
   const tabs = [
     { id: "whispers", label: "Live Whispers", icon: MessageCircle },
-    { id: "midnight", label: "Midnight Drop", icon: Moon },
-    { id: "mood", label: "Campus Pulse", icon: Heart },
-    { id: "invite", label: "Campus Circle", icon: Users },
-    { id: "safety", label: "Safety Watch", icon: Shield },
-    { id: "analytics", label: "Insights", icon: BarChart3 },
-    { id: "seeder", label: "Community Voices", icon: Sparkles },
-    { id: "digest", label: "Weekly Digest", icon: FileText },
-    { id: "sandbox", label: "Moderation Lab", icon: TestTube },
+    { id: "trending", label: "Campus Pulse", icon: TrendingUp },
+    { id: "mood", label: "Mood Waves", icon: Heart },
+    { id: "digest", label: "Weekly Stories", icon: FileText },
   ];
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "whispers":
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
-            {/* Left Sidebar */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-fade-in">
+            {/* Sidebar */}
             <div className="lg:col-span-1 space-y-6">
               <MidnightDrop />
               <TrendingTopics />
@@ -49,22 +39,22 @@ const Index = () => {
             </div>
 
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-3 space-y-8">
               <PostCreator onNewPost={handleNewPost} />
-              <LiveWhispersFeed />
+              <LiveWhispersFeed key={refreshTrigger} />
             </div>
           </div>
         );
-      case "midnight":
+      case "trending":
         return (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
             <div className="lg:col-span-1 space-y-6">
               <MidnightDrop />
-              <MoodMapping />
+              <CommunityStats />
             </div>
             <div className="lg:col-span-2 space-y-6">
-              <PostCreator onNewPost={handleNewPost} />
-              <LiveWhispersFeed />
+              <TrendingTopics />
+              <LiveWhispersFeed key={refreshTrigger} />
             </div>
           </div>
         );
@@ -73,65 +63,57 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
             <MoodMapping />
             <div className="space-y-6">
-              <EngagementAnalytics />
+              <CommunityStats />
+              <TrendingTopics />
             </div>
           </div>
         );
-      case "invite":
-        return <InviteSystem />;
-      case "safety":
-        return <SafetyDashboard />;
-      case "analytics":
-        return <EngagementAnalytics />;
-      case "seeder":
-        return <ContentSeeder />;
       case "digest":
         return <WeeklyDigest />;
-      case "sandbox":
-        return <ModerationSandbox />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900 relative overflow-hidden">
-      {/* Enhanced floating whisper effects */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-purple-400 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-indigo-400 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-3/4 w-20 h-20 bg-pink-400 rounded-full blur-3xl animate-pulse delay-2000"></div>
-        <div className="absolute top-1/3 right-1/3 w-16 h-16 bg-purple-300 rounded-full blur-2xl animate-pulse delay-3000"></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-indigo-950 relative overflow-hidden">
+      {/* Floating whisper effects */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-1/4 left-1/4 w-40 h-40 bg-purple-400 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute top-3/4 right-1/4 w-32 h-32 bg-indigo-400 rounded-full blur-3xl animate-float delay-1000"></div>
+        <div className="absolute top-1/2 left-3/4 w-24 h-24 bg-pink-400 rounded-full blur-3xl animate-float delay-2000"></div>
       </div>
 
       <Header />
       
-      {/* Tab Navigation */}
-      <div className="container mx-auto px-4 py-4 max-w-6xl relative z-10">
-        <div className="flex space-x-2 mb-6 overflow-x-auto pb-2">
-          {tabs.map((tab, index) => {
-            const Icon = tab.icon;
-            return (
-              <Button
-                key={tab.id}
-                variant={activeTab === tab.id ? "default" : "ghost"}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 whitespace-nowrap transition-all duration-300 hover:scale-105 ${
-                  activeTab === tab.id
-                    ? "bg-purple-600/80 text-white shadow-lg backdrop-blur-md border border-purple-400/30 shadow-purple-500/25"
-                    : "text-gray-300 hover:text-white hover:bg-white/10 backdrop-blur-sm"
-                } animate-fade-in`}
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <Icon className="h-4 w-4" />
-                <span className="font-medium">{tab.label}</span>
-              </Button>
-            );
-          })}
+      {/* Main Container */}
+      <div className="container mx-auto px-6 py-8 max-w-7xl relative z-10">
+        {/* Tab Navigation */}
+        <div className="flex justify-center mb-8">
+          <div className="flex space-x-1 bg-white/5 backdrop-blur-lg rounded-2xl p-2 border border-white/10">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <Button
+                  key={tab.id}
+                  variant="ghost"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center space-x-2 px-6 py-3 rounded-xl transition-all duration-300 ${
+                    activeTab === tab.id
+                      ? "bg-white/15 text-white shadow-lg backdrop-blur-md border border-white/20"
+                      : "text-gray-300 hover:text-white hover:bg-white/10"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="font-medium">{tab.label}</span>
+                </Button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Tab Content */}
-        <main className="max-w-6xl">
+        <main>
           <div className="animate-scale-in">
             {renderTabContent()}
           </div>

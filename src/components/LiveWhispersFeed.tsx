@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Flame, Droplets, Clock, MapPin } from "lucide-react";
+import { Heart, MessageCircle, Flame, Droplets, Clock, MapPin, Sparkles, RefreshCw } from "lucide-react";
 
 interface Whisper {
   id: string;
@@ -16,53 +16,61 @@ interface Whisper {
     tears: number;
     shock: number;
   };
-  zone?: string;
+  detectedZone?: string;
+  detectedTopics: string[];
   isMidnight?: boolean;
   fadeTime?: Date;
+  similarity?: boolean;
 }
 
 export const LiveWhispersFeed = () => {
   const [whispers, setWhispers] = useState<Whisper[]>([]);
   const [newWhispersCount, setNewWhispersCount] = useState(0);
   const [activeTab, setActiveTab] = useState<"latest" | "trending">("latest");
+  const [lastRefresh, setLastRefresh] = useState(new Date());
 
+  // Enhanced sample whispers with AI-detected campus context
   const sampleWhispers: Whisper[] = [
     {
       id: "1",
       content: "The silence in the library at 3 AM hits different when you're questioning every life choice...",
-      category: "💭 Midnight Thoughts",
+      category: "Midnight Confessions",
       timestamp: new Date(Date.now() - 30 * 60 * 1000),
       reactions: { fire: 12, heart: 8, tears: 3, shock: 2 },
-      zone: "📚 Central Library",
+      detectedZone: "Central Library",
+      detectedTopics: ["Late Night", "Self Reflection", "Academic Stress"],
       isMidnight: true,
       fadeTime: new Date(Date.now() + 18 * 60 * 60 * 1000),
     },
     {
       id: "2", 
       content: "That moment when you realize everyone else also has no idea what they're doing...",
-      category: "💫 Realizations",
+      category: "Inner Feelings",
       timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
       reactions: { fire: 24, heart: 15, tears: 6, shock: 8 },
-      zone: "🏠 Hostel F",
+      detectedZone: "Hostel F",
+      detectedTopics: ["Life Realizations", "Imposter Syndrome", "Growth"],
       fadeTime: new Date(Date.now() + 22 * 60 * 60 * 1000),
     },
     {
       id: "3",
       content: "Someone just smiled at me in the canteen and now I'm overthinking it for the next 6 hours",
-      category: "😅 Campus Life", 
+      category: "Secret Thoughts", 
       timestamp: new Date(Date.now() - 45 * 60 * 1000),
       reactions: { fire: 18, heart: 25, tears: 2, shock: 12 },
-      zone: "☕ Main Canteen",
+      detectedZone: "Main Canteen",
+      detectedTopics: ["Social Interactions", "Overthinking", "Campus Life"],
       fadeTime: new Date(Date.now() + 23 * 60 * 60 * 1000),
+      similarity: true,
     }
   ];
 
   useEffect(() => {
     setWhispers(sampleWhispers);
     
-    // Simulate new whispers arriving
+    // Auto-refresh simulation
     const interval = setInterval(() => {
-      setNewWhispersCount(prev => prev + Math.floor(Math.random() * 2));
+      setNewWhispersCount(prev => prev + Math.floor(Math.random() * 3));
     }, 30000);
 
     return () => clearInterval(interval);
@@ -70,7 +78,19 @@ export const LiveWhispersFeed = () => {
 
   const handleRefresh = () => {
     setNewWhispersCount(0);
-    // Simulate refresh animation
+    setLastRefresh(new Date());
+    // Simulate adding new whispers
+    const newWhisper = {
+      id: Date.now().toString(),
+      content: "Just witnessed the most wholesome interaction between a senior and junior in the corridor...",
+      category: "Campus Moments",
+      timestamp: new Date(),
+      reactions: { fire: 0, heart: 0, tears: 0, shock: 0 },
+      detectedZone: "Main Building",
+      detectedTopics: ["Positive Vibes", "Senior-Junior", "Heartwarming"],
+      fadeTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    };
+    setWhispers(prev => [newWhisper, ...prev]);
   };
 
   const getTimeUntilFade = (fadeTime: Date) => {
@@ -79,6 +99,19 @@ export const LiveWhispersFeed = () => {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours}h ${minutes}m`;
+  };
+
+  const getCategoryColor = (category: string) => {
+    const colors: { [key: string]: string } = {
+      "Secret Thoughts": "bg-pink-500/20 text-pink-200",
+      "Study Struggles": "bg-blue-500/20 text-blue-200",
+      "Campus Updates": "bg-red-500/20 text-red-200",
+      "Inner Feelings": "bg-green-500/20 text-green-200",
+      "Ideas & Events": "bg-purple-500/20 text-purple-200",
+      "Concerns": "bg-orange-500/20 text-orange-200",
+      "Midnight Confessions": "bg-indigo-500/20 text-indigo-200",
+    };
+    return colors[category] || "bg-gray-500/20 text-gray-200";
   };
 
   const reactionIcons = {
@@ -102,74 +135,96 @@ export const LiveWhispersFeed = () => {
       {newWhispersCount > 0 && (
         <div 
           onClick={handleRefresh}
-          className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-md border border-purple-400/30 p-4 rounded-xl cursor-pointer hover:from-purple-600/30 hover:to-pink-600/30 transition-all duration-500 animate-pulse"
+          className="bg-gradient-to-r from-purple-600/20 to-indigo-600/20 backdrop-blur-md border border-purple-400/30 p-4 rounded-xl cursor-pointer hover:from-purple-600/30 hover:to-indigo-600/30 transition-all duration-500 animate-pulse group"
         >
-          <div className="flex items-center justify-center space-x-2 text-purple-200">
+          <div className="flex items-center justify-center space-x-3 text-purple-200">
             <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium">
-              {newWhispersCount} whisper{newWhispersCount > 1 ? 's' : ''} arrived while you were away
+              {newWhispersCount} new whisper{newWhispersCount > 1 ? 's' : ''} arrived while you were away
             </span>
-            <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+            <RefreshCw className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
+          </div>
+        </div>
+      )}
+
+      {/* Whisper Echo Banner */}
+      {whispers.some(w => w.similarity) && (
+        <div className="bg-gradient-to-r from-pink-600/20 to-purple-600/20 backdrop-blur-md border border-pink-400/30 p-4 rounded-xl animate-fade-in">
+          <div className="flex items-center justify-center space-x-3 text-pink-200">
+            <Sparkles className="h-4 w-4 animate-pulse" />
+            <span className="text-sm font-medium">
+              Someone just shared a secret that sounds like yours...
+            </span>
+            <Sparkles className="h-4 w-4 animate-pulse" />
           </div>
         </div>
       )}
 
       {/* Tab Navigation */}
-      <div className="flex space-x-2">
+      <div className="flex justify-center space-x-2">
         <Button
           variant={activeTab === "latest" ? "default" : "ghost"}
           onClick={() => setActiveTab("latest")}
-          className={`flex items-center space-x-2 ${
+          className={`flex items-center space-x-2 px-6 py-3 rounded-xl transition-all duration-300 ${
             activeTab === "latest"
-              ? "bg-purple-600/80 text-white"
+              ? "bg-purple-600/80 text-white shadow-lg"
               : "text-gray-300 hover:text-white hover:bg-white/10"
           }`}
         >
           <Clock className="h-4 w-4" />
-          <span>Latest</span>
+          <span>Latest Whispers</span>
         </Button>
         <Button
           variant={activeTab === "trending" ? "default" : "ghost"}
           onClick={() => setActiveTab("trending")}
-          className={`flex items-center space-x-2 ${
+          className={`flex items-center space-x-2 px-6 py-3 rounded-xl transition-all duration-300 ${
             activeTab === "trending"
-              ? "bg-purple-600/80 text-white"
+              ? "bg-purple-600/80 text-white shadow-lg"
               : "text-gray-300 hover:text-white hover:bg-white/10"
           }`}
         >
           <Flame className="h-4 w-4" />
-          <span>Trending</span>
+          <span>Trending Now</span>
         </Button>
       </div>
 
       {/* Whispers Feed */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {filteredWhispers.map((whisper, index) => {
           const totalReactions = Object.values(whisper.reactions).reduce((sum, val) => sum + val, 0);
           
           return (
             <Card 
               key={whisper.id} 
-              className="bg-white/5 backdrop-blur-lg border-white/10 p-6 hover:bg-white/10 transition-all duration-500 group animate-scale-in"
+              className="whisper-card bg-white/5 backdrop-blur-lg border-white/10 p-6 hover:bg-white/10 transition-all duration-500 group animate-scale-in"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="space-y-4">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Badge className="bg-purple-500/20 text-purple-200">
+                  <div className="flex items-center space-x-3 flex-wrap gap-2">
+                    <Badge className={getCategoryColor(whisper.category)}>
                       {whisper.category}
                     </Badge>
+                    
                     {whisper.isMidnight && (
                       <Badge className="bg-indigo-500/20 text-indigo-200 flex items-center space-x-1">
                         <div className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></div>
                         <span>Midnight Whisper</span>
                       </Badge>
                     )}
-                    {whisper.zone && (
+                    
+                    {whisper.detectedZone && (
                       <Badge className="bg-emerald-500/20 text-emerald-200 flex items-center space-x-1">
                         <MapPin className="h-3 w-3" />
-                        <span>{whisper.zone}</span>
+                        <span>{whisper.detectedZone}</span>
+                      </Badge>
+                    )}
+
+                    {whisper.similarity && (
+                      <Badge className="bg-pink-500/20 text-pink-200 flex items-center space-x-1">
+                        <Sparkles className="h-3 w-3" />
+                        <span>Echo</span>
                       </Badge>
                     )}
                   </div>
@@ -183,9 +238,23 @@ export const LiveWhispersFeed = () => {
                 </div>
 
                 {/* Content */}
-                <p className="text-white leading-relaxed group-hover:text-purple-100 transition-colors duration-300">
+                <p className="text-white leading-relaxed whisper-text group-hover:text-purple-100 transition-colors duration-300">
                   {whisper.content}
                 </p>
+
+                {/* Detected Topics */}
+                {whisper.detectedTopics.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {whisper.detectedTopics.map((topic, idx) => (
+                      <span 
+                        key={idx}
+                        className="text-xs px-2 py-1 bg-white/10 text-gray-300 rounded-full"
+                      >
+                        {topic}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 {/* Reactions */}
                 <div className="flex items-center space-x-6 pt-2 border-t border-white/10">
@@ -198,7 +267,7 @@ export const LiveWhispersFeed = () => {
                         size="sm" 
                         className="text-gray-400 hover:text-purple-400 hover:bg-purple-400/10 transition-all duration-300 group/reaction"
                       >
-                        <Icon className="h-4 w-4 mr-1 group-hover/reaction:scale-110 transition-transform duration-200" />
+                        <Icon className="h-4 w-4 mr-2 group-hover/reaction:scale-110 transition-transform duration-200" />
                         <span className="text-sm">{count}</span>
                       </Button>
                     );
@@ -218,13 +287,15 @@ export const LiveWhispersFeed = () => {
 
       {/* Empty State */}
       {filteredWhispers.length === 0 && (
-        <div className="text-center py-12 space-y-4">
-          <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto animate-pulse">
-            <MessageCircle className="h-6 w-6 text-purple-400" />
+        <div className="text-center py-16 space-y-4">
+          <div className="w-20 h-20 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto animate-pulse">
+            <MessageCircle className="h-8 w-8 text-purple-400" />
           </div>
           <div className="space-y-2">
-            <h3 className="text-white font-medium">Silence says a lot too</h3>
-            <p className="text-gray-400 text-sm">Be the first to whisper something into the void</p>
+            <h3 className="text-white font-medium text-lg">Silence says a lot too</h3>
+            <p className="text-gray-400 text-sm max-w-md mx-auto">
+              Be the first to whisper something into the void. Your thoughts matter, and someone needs to hear them.
+            </p>
           </div>
         </div>
       )}

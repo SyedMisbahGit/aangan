@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Send, Shield, AlertTriangle, Heart, Brain, Megaphone, Lightbulb, Feather, Moon } from "lucide-react";
+import { Send, Shield, AlertTriangle, Heart, Brain, Megaphone, Lightbulb, Feather, Moon, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ModerationFeedback } from "@/components/ModerationFeedback";
 
@@ -18,58 +19,48 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [moderationResult, setModerationResult] = useState<any>(null);
   const [toneHint, setToneHint] = useState("");
-  const [selectedZone, setSelectedZone] = useState("");
   const [isMidnightWindow, setIsMidnightWindow] = useState(false);
   const { toast } = useToast();
 
-  // Check if we're in midnight window
+  // Check midnight window (12 AM - 1 AM)
   useEffect(() => {
     const checkMidnightWindow = () => {
       const now = new Date();
       const currentHour = now.getHours();
-      setIsMidnightWindow(currentHour === 0); // 12 AM - 1 AM
+      setIsMidnightWindow(currentHour === 0);
     };
 
     checkMidnightWindow();
-    const interval = setInterval(checkMidnightWindow, 60000); // Check every minute
+    const interval = setInterval(checkMidnightWindow, 60000);
     return () => clearInterval(interval);
   }, []);
 
   const categories = [
-    { id: "confession", label: "💬 गुप्त बात (Confession)", icon: Heart },
-    { id: "academic", label: "🎓 पढ़ाई की चिंता (Academic)", icon: Brain },
-    { id: "campus-alert", label: "📢 कैम्पस अलर्ट (Alert)", icon: Megaphone },
-    { id: "mental-health", label: "🧠 मानसिक स्वास्थ्य (Mental Health)", icon: Brain },
-    { id: "innovation", label: "🧪 नवाचार/इवेंट (Innovation)", icon: Lightbulb },
-    { id: "callout", label: "❗ समस्या/शिकायत (Issue)", icon: AlertTriangle },
-    ...(isMidnightWindow ? [{ id: "midnight", label: "🌒 Midnight Thoughts", icon: Moon }] : []),
-  ];
-
-  const whisperZones = [
-    "📚 Central Library",
-    "🏠 Hostel A", "🏠 Hostel B", "🏠 Hostel C", "🏠 Hostel D", "🏠 Hostel E", "🏠 Hostel F",
-    "☕ Main Canteen", "☕ Food Court", 
-    "🎯 Sports Complex", "🌳 Campus Garden", "🚌 Bus Stop",
-    "🏛️ Main Building", "🔬 Lab Complex", "📡 IT Center"
+    { id: "confession", label: "Secret Thoughts", icon: Heart },
+    { id: "academic", label: "Study Struggles", icon: Brain },
+    { id: "campus-alert", label: "Campus Updates", icon: Megaphone },
+    { id: "mental-health", label: "Inner Feelings", icon: Brain },
+    { id: "innovation", label: "Ideas & Events", icon: Lightbulb },
+    { id: "callout", label: "Concerns", icon: AlertTriangle },
+    ...(isMidnightWindow ? [{ id: "midnight", label: "Midnight Confessions", icon: Moon }] : []),
   ];
 
   const analyzeContent = (text: string) => {
     if (text.length < 10) return "";
     
-    // Cultural and emotional tone detection
-    const hinglishSlang = /\b(bhai|yaar|boss|dude|chutiya|bhadwa|fattu|chhapri|cringe|salty|bakchodi)\b/gi;
-    const emotionalWords = /\b(thak gaya|pareshaan|tension|stress|upset|hurt|khushi|excited|happy|sad|depressed)\b/gi;
-    const academicWords = /\b(exam|assignment|project|prof|teacher|marks|grade|attendance|placement|internship)\b/gi;
-    const hindiEmotional = /\b(परेशान|खुश|दुखी|गुस्सा|चिंता|डर|प्रेम|खुशी)\b/gi;
+    // Campus context detection
+    const campusTerms = /\b(hostel|library|canteen|mess|prof|professor|exam|assignment|placement|internship|semester|lab|class|lecture)\b/gi;
+    const emotionalTerms = /\b(stressed|anxious|excited|worried|happy|sad|confused|overwhelmed|lonely|grateful)\b/gi;
+    const hinglishSlang = /\b(bhai|yaar|boss|dude|tension|pareshaan|khushi|thak gaya)\b/gi;
 
-    if (hinglishSlang.test(text)) {
-      return "Feels casual and friendly 😊";
-    } else if (emotionalWords.test(text) || hindiEmotional.test(text)) {
-      return "This seems heartfelt 💙";
-    } else if (academicWords.test(text)) {
-      return "Academic vibes detected 📚";
+    if (campusTerms.test(text)) {
+      return "Campus vibes detected 🏫";
+    } else if (emotionalTerms.test(text)) {
+      return "Emotional depth sensed 💙";
+    } else if (hinglishSlang.test(text)) {
+      return "Casual and relatable 😊";
     } else if (text.includes("...") || text.includes("😔")) {
-      return "Sensing some heavy feelings 🤗";
+      return "Heavy feelings acknowledged 🤗";
     }
     return "Ready to whisper this thought 🌙";
   };
@@ -79,32 +70,32 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
     let confidence = 0.95;
     let suggestions: string[] = [];
     
-    // Hindi/English PII detection
+    // PII detection
     if (/\b\d{10}\b|\b[A-Z]{2}\d{6}\b|roll\s*no|student\s*id/gi.test(text)) {
       flags.push("Contains potential personal information");
-      suggestions.push("Avoid sharing phone numbers, roll numbers, or IDs");
+      suggestions.push("Consider removing specific numbers or IDs");
     }
 
-    // Cultural slur detection
-    const casteistSlurs = /\b(chamar|bhangi|scheduled|quota|reservation abuse)\b/gi;
-    if (casteistSlurs.test(text)) {
+    // Identity leaks
+    const namePattern = /\b[A-Z][a-z]+\s+(from|CSE|ECE|ME|Civil|IT)\b/gi;
+    if (namePattern.test(text)) {
+      flags.push("May reveal someone's identity");
+      suggestions.push("Try using 'someone from [department]' instead");
+    }
+
+    // Mental health signals
+    const distressSignals = /\b(suicide|kill myself|end it all|can't take it|give up)\b/gi;
+    if (distressSignals.test(text)) {
+      flags.push("Mental health concern detected");
+      suggestions.push("Campus counseling services are available 24/7");
+      suggestions.push("You're not alone - please reach out for support");
+    }
+
+    // Discrimination detection
+    const discriminatory = /\b(chamar|bhangi|quota|reservation abuse)\b/gi;
+    if (discriminatory.test(text)) {
       flags.push("Contains potentially discriminatory language");
       suggestions.push("Let's keep discussions respectful to all communities");
-    }
-
-    // Hindi mental health signals
-    const hindiDistressSignals = /\b(mar jaana|khatam kar|thak gaya sabse|kuch kar baithunga|zinda nahi|suicide)\b/gi;
-    if (hindiDistressSignals.test(text)) {
-      flags.push("Mental health concern detected");
-      suggestions.push("Campus counseling: Available 24/7 for support");
-      suggestions.push("You're not alone - reach out to mental health resources");
-    }
-
-    // Name detection (Hindi/English)
-    const namePattern = /\b[A-Z][a-z]+\s+(from|se|ka|ki|CSE|ECE|ME|Civil|IT)\b/gi;
-    if (namePattern.test(text)) {
-      flags.push("May contain identifiable information");
-      suggestions.push("Consider using 'someone from [department]' instead");
     }
 
     return { flags, confidence, suggestions };
@@ -113,7 +104,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
   const handleSubmit = async () => {
     if (!content.trim() || !category) {
       toast({
-        title: "अधूरा पोस्ट (Incomplete Post)",
+        title: "Incomplete Whisper",
         description: "Please add your thoughts and select a category.",
         variant: "destructive",
       });
@@ -133,7 +124,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
       });
       
       toast({
-        title: "सावधानी (Content Review)",
+        title: "Content Review",
         description: "Please review your whisper before sharing.",
         variant: "destructive",
       });
@@ -150,16 +141,15 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
 
     setTimeout(() => {
       const toastTitle = isMidnightWindow && category === "midnight" 
-        ? "🌒 Midnight whisper shared"
-        : "आपकी आवाज़ सुनी गई (Whisper Shared)";
+        ? "Midnight whisper shared into the void"
+        : "Your whisper has been heard";
       
       toast({
         title: toastTitle,
-        description: "Your voice has been heard safely and anonymously.",
+        description: "Shared safely and anonymously with the campus.",
       });
       setContent("");
       setCategory("");
-      setSelectedZone("");
       setModerationResult(null);
       setToneHint("");
       setIsSubmitting(false);
@@ -170,36 +160,43 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
   const selectedCategory = categories.find(cat => cat.id === category);
 
   return (
-    <div className="space-y-4">
-      <Card className={`backdrop-blur-lg border-white/10 p-6 shadow-2xl transition-all duration-500 ${
+    <div className="space-y-6">
+      <Card className={`backdrop-blur-lg border-white/10 p-8 shadow-2xl transition-all duration-500 ${
         isMidnightWindow && category === "midnight"
-          ? "bg-gradient-to-br from-indigo-900/30 to-purple-900/30 border-indigo-500/30 shadow-indigo-500/20"
+          ? "bg-gradient-to-br from-indigo-900/30 to-purple-900/30 border-indigo-500/30 shadow-indigo-500/20 midnight-glow"
           : "bg-white/5 hover:shadow-purple-500/20"
       }`}>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-3 mb-4">
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center space-x-4 mb-6">
             <div className="relative">
               {isMidnightWindow ? (
-                <Moon className="h-5 w-5 text-indigo-300 animate-pulse" />
+                <Moon className="h-6 w-6 text-indigo-300 animate-pulse" />
               ) : (
-                <Feather className="h-5 w-5 text-purple-300 animate-pulse" />
+                <Feather className="h-6 w-6 text-purple-300 animate-pulse" />
               )}
-              <div className={`absolute -inset-1 rounded-full blur animate-pulse ${
+              <div className={`absolute -inset-2 rounded-full blur animate-pulse ${
                 isMidnightWindow ? "bg-indigo-400/20" : "bg-purple-400/20"
               }`}></div>
             </div>
-            <span className="text-white font-medium">
-              {isMidnightWindow ? "Midnight confessions are open" : "अपनी बात कहें"}
-            </span>
-            <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-200 animate-pulse">
-              गुमनाम सुरक्षित
-            </Badge>
+            <div>
+              <h2 className="text-xl font-medium text-white">
+                {isMidnightWindow ? "Midnight Confession Window" : "Share Your Whisper"}
+              </h2>
+              <p className="text-sm text-gray-300">
+                {isMidnightWindow ? "The veil is thinnest now..." : "Anonymous and safe"}
+              </p>
+            </div>
+            {isMidnightWindow && (
+              <Sparkles className="h-5 w-5 text-indigo-400 animate-pulse ml-auto" />
+            )}
           </div>
 
+          {/* Content Input */}
           <Textarea
             placeholder={isMidnightWindow 
-              ? "The veil is thinnest now... whisper what daylight couldn't hear..."
-              : "Whisper your thoughts... क्या चल रहा है campus में? Share anonymously - confessions, concerns, या कोई भी बात..."
+              ? "Whisper what daylight couldn't hear..."
+              : "Whisper your thoughts..."
             }
             value={content}
             onChange={(e) => {
@@ -214,20 +211,21 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
             maxLength={500}
           />
 
+          {/* Character Count & Tone Hint */}
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-4">
               <span className="text-gray-400">{content.length}/500</span>
               {toneHint && (
-                <span className="text-purple-300 animate-fade-in flex items-center space-x-1">
+                <span className="text-purple-300 animate-fade-in flex items-center space-x-2">
                   <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
                   <span>{toneHint}</span>
                 </span>
               )}
             </div>
             {content && (
-              <span className="flex items-center space-x-1 text-emerald-400">
-                <Shield className="h-3 w-3 animate-pulse" />
-                <span>Analyzing whisper...</span>
+              <span className="flex items-center space-x-2 text-emerald-400">
+                <Shield className="h-4 w-4 animate-pulse" />
+                <span>Analyzing...</span>
               </span>
             )}
           </div>
@@ -235,7 +233,7 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
           {/* Category Selection */}
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="bg-white/5 border-white/20 text-white rounded-xl backdrop-blur-md hover:bg-white/10 transition-all duration-300">
-              <SelectValue placeholder="Choose your whisper category..." />
+              <SelectValue placeholder="Choose your whisper type..." />
             </SelectTrigger>
             <SelectContent className="bg-slate-800/90 border-white/20 backdrop-blur-lg">
               {categories.map((cat) => (
@@ -250,44 +248,29 @@ export const PostCreator = ({ onNewPost }: PostCreatorProps) => {
             </SelectContent>
           </Select>
 
-          {/* Zone Selection */}
-          <Select value={selectedZone} onValueChange={setSelectedZone}>
-            <SelectTrigger className="bg-white/5 border-white/20 text-white rounded-xl backdrop-blur-md hover:bg-white/10 transition-all duration-300">
-              <SelectValue placeholder="Where are you whispering from? (optional)" />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-800/90 border-white/20 backdrop-blur-lg">
-              {whisperZones.map((zone) => (
-                <SelectItem 
-                  key={zone} 
-                  value={zone} 
-                  className="text-white focus:bg-white/10 hover:bg-white/5 transition-all duration-200"
-                >
-                  {zone}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
+          {/* Selected Category Display */}
           {selectedCategory && (
             <div className="flex items-center space-x-3 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20 backdrop-blur-md animate-scale-in">
-              <selectedCategory.icon className="h-4 w-4 text-purple-400" />
-              <span className="text-purple-200 text-sm font-medium">
-                Whispering in {selectedCategory.label}
+              <selectedCategory.icon className="h-5 w-5 text-purple-400" />
+              <span className="text-purple-200 font-medium">
+                Whispering about {selectedCategory.label.toLowerCase()}
               </span>
             </div>
           )}
 
+          {/* Submit Button */}
           <Button 
             onClick={handleSubmit}
             disabled={!content.trim() || !category || isSubmitting}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-[1.02] backdrop-blur-md"
+            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-[1.02] backdrop-blur-md py-4"
           >
-            <Send className="h-4 w-4 mr-2" />
-            {isSubmitting ? "फुसफुसा रहे हैं..." : "Whisper Anonymously"}
+            <Send className="h-5 w-5 mr-2" />
+            {isSubmitting ? "Whispering..." : "Share Anonymously"}
           </Button>
 
-          <div className="text-xs text-gray-400 text-center bg-white/5 p-3 rounded-lg backdrop-blur-md">
-            आपकी पहचान पूरी तरह गुमनाम रहेगी • Your identity remains completely anonymous
+          {/* Safety Notice */}
+          <div className="text-xs text-gray-400 text-center bg-white/5 p-4 rounded-xl backdrop-blur-md">
+            Your identity remains completely anonymous • Safe campus whispers
           </div>
         </div>
       </Card>
