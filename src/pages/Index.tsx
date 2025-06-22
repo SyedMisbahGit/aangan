@@ -16,6 +16,9 @@ import WhisperConstellation from '../components/WhisperConstellation';
 import AIWhisperClustering from '../components/AIWhisperClustering';
 import SmartCampusLearning from '../components/SmartCampusLearning';
 import DogriHinglishPrompts from '../components/DogriHinglishPrompts';
+import PWAInstallPrompt from '../components/PWAInstallPrompt';
+import WhisperTimeCapsules from '../components/WhisperTimeCapsules';
+import WhisperMurmurs from '../components/WhisperMurmurs';
 
 // Sample data for demonstration
 const sampleDiaryEntries = [
@@ -105,6 +108,11 @@ const tabComponents: Record<string, React.ReactNode> = {
       </div>
     </div>
   ),
+  'time-capsules': (
+    <div className="whisper-orb emotion-aura-nostalgia p-8 mt-8">
+      <WhisperTimeCapsules />
+    </div>
+  ),
   midnight: (
     <div className="whisper-orb emotion-aura-loneliness p-8 mt-8">
       <MidnightConfessional />
@@ -147,6 +155,12 @@ const IndexPage: React.FC = () => {
       <main className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center pt-48 pb-16 px-4">
         {tabComponents[activeTab]}
       </main>
+      
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt />
+      
+      {/* WhisperMurmurs - Ambient Activity */}
+      <WhisperMurmurs />
     </div>
   );
 };

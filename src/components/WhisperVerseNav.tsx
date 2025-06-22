@@ -9,7 +9,8 @@ import {
   Zap,
   Heart,
   MessageCircle,
-  Shield
+  Shield,
+  Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +30,14 @@ const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({ activeTab, onTabChang
       description: 'Your emotional galaxy',
       color: 'from-purple-500 to-pink-500',
       glow: 'shadow-whisper-glow-primary'
+    },
+    {
+      id: 'time-capsules',
+      label: 'Time Capsules',
+      icon: Clock,
+      description: 'Send whispers to the future',
+      color: 'from-yellow-500 to-orange-500',
+      glow: 'shadow-whisper-glow-accent'
     },
     {
       id: 'midnight',
