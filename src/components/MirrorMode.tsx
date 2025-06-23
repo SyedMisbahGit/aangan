@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,31 +35,33 @@ export const MirrorMode = () => {
     setTodayPrompt(reflectionPrompts[promptIndex]);
 
     // Load stored mirror entries
-    const stored = localStorage.getItem('whisper-mirror-entries');
+    const stored = localStorage.getItem("whisper-mirror-entries");
     if (stored) {
-      const parsed = JSON.parse(stored).map((entry: any) => ({
+      const parsed = JSON.parse(stored).map((entry: MirrorEntry) => ({
         ...entry,
-        timestamp: new Date(entry.timestamp)
+        timestamp: new Date(entry.timestamp),
       }));
       setMirrorEntries(parsed);
     }
 
     // Randomly echo back old entries
     const maybeEcho = () => {
-      const stored = localStorage.getItem('whisper-mirror-entries');
+      const stored = localStorage.getItem("whisper-mirror-entries");
       if (stored && Math.random() > 0.7) {
         const entries = JSON.parse(stored);
-        const oldEntries = entries.filter((entry: any) => {
+        const oldEntries = entries.filter((entry: MirrorEntry) => {
           const entryDate = new Date(entry.timestamp);
-          const daysDiff = (Date.now() - entryDate.getTime()) / (1000 * 60 * 60 * 24);
+          const daysDiff =
+            (Date.now() - entryDate.getTime()) / (1000 * 60 * 60 * 24);
           return daysDiff > 3 && !entry.echoed;
         });
-        
+
         if (oldEntries.length > 0) {
-          const randomEntry = oldEntries[Math.floor(Math.random() * oldEntries.length)];
+          const randomEntry =
+            oldEntries[Math.floor(Math.random() * oldEntries.length)];
           setShowEcho({
             ...randomEntry,
-            timestamp: new Date(randomEntry.timestamp)
+            timestamp: new Date(randomEntry.timestamp),
           });
         }
       }
@@ -81,21 +82,27 @@ export const MirrorMode = () => {
 
     const updatedEntries = [newEntry, ...mirrorEntries];
     setMirrorEntries(updatedEntries);
-    
+
     // Store in localStorage
-    localStorage.setItem('whisper-mirror-entries', JSON.stringify(updatedEntries));
-    
+    localStorage.setItem(
+      "whisper-mirror-entries",
+      JSON.stringify(updatedEntries),
+    );
+
     setCurrentReflection("");
   };
 
   const handleEchoRead = () => {
     if (showEcho) {
       // Mark as echoed
-      const updatedEntries = mirrorEntries.map(entry => 
-        entry.id === showEcho.id ? { ...entry, echoed: true } : entry
+      const updatedEntries = mirrorEntries.map((entry) =>
+        entry.id === showEcho.id ? { ...entry, echoed: true } : entry,
       );
       setMirrorEntries(updatedEntries);
-      localStorage.setItem('whisper-mirror-entries', JSON.stringify(updatedEntries));
+      localStorage.setItem(
+        "whisper-mirror-entries",
+        JSON.stringify(updatedEntries),
+      );
       setShowEcho(null);
     }
   };
@@ -103,7 +110,7 @@ export const MirrorMode = () => {
   const formatTimeAgo = (date: Date) => {
     const diff = Date.now() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
+
     if (days === 0) return "today";
     if (days === 1) return "yesterday";
     if (days < 7) return `${days} days ago`;
@@ -133,7 +140,7 @@ export const MirrorMode = () => {
             <p className="text-gray-400 text-sm">
               Sometimes we need to hear our own wisdom again.
             </p>
-            <Button 
+            <Button
               onClick={handleEchoRead}
               className="bg-purple-600/80 hover:bg-purple-600 text-white"
             >
@@ -154,7 +161,9 @@ export const MirrorMode = () => {
           <Mirror className="h-6 w-6 text-purple-300 animate-pulse" />
           <div>
             <h3 className="text-white font-medium">Mirror Mode</h3>
-            <p className="text-gray-400 text-sm">A sacred space for self-reflection</p>
+            <p className="text-gray-400 text-sm">
+              A sacred space for self-reflection
+            </p>
           </div>
         </div>
 
@@ -162,11 +171,11 @@ export const MirrorMode = () => {
         <div className="bg-white/5 rounded-xl p-4 border border-white/10">
           <div className="flex items-center space-x-2 mb-3">
             <Sparkles className="h-4 w-4 text-purple-400" />
-            <span className="text-purple-200 text-sm font-medium">Today's Reflection</span>
+            <span className="text-purple-200 text-sm font-medium">
+              Today's Reflection
+            </span>
           </div>
-          <p className="text-purple-100 italic">
-            "{todayPrompt}"
-          </p>
+          <p className="text-purple-100 italic">"{todayPrompt}"</p>
         </div>
 
         {/* Writing Space */}
@@ -177,12 +186,12 @@ export const MirrorMode = () => {
             placeholder="Speak to your heart. No one else will see this..."
             className="bg-white/5 border-white/10 text-white placeholder-gray-400 min-h-[120px] resize-none focus:ring-purple-400/50"
           />
-          
+
           <div className="flex justify-between items-center">
             <p className="text-gray-500 text-xs">
               Stored privately on your device only
             </p>
-            <Button 
+            <Button
               onClick={handleSaveReflection}
               disabled={!currentReflection.trim()}
               className="bg-purple-600/80 hover:bg-purple-600 disabled:opacity-50 text-white"
@@ -196,10 +205,15 @@ export const MirrorMode = () => {
         {/* Recent Reflections */}
         {mirrorEntries.length > 0 && (
           <div className="space-y-3">
-            <h4 className="text-white text-sm font-medium">Your Recent Reflections</h4>
+            <h4 className="text-white text-sm font-medium">
+              Your Recent Reflections
+            </h4>
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {mirrorEntries.slice(0, 3).map((entry) => (
-                <div key={entry.id} className="bg-white/5 rounded-lg p-3 border border-white/10">
+                <div
+                  key={entry.id}
+                  className="bg-white/5 rounded-lg p-3 border border-white/10"
+                >
                   <p className="text-gray-300 text-sm line-clamp-2">
                     "{entry.content}"
                   </p>
@@ -215,7 +229,8 @@ export const MirrorMode = () => {
         {/* Note */}
         <div className="text-center p-4 bg-white/5 rounded-xl backdrop-blur-md">
           <p className="text-gray-300 text-sm leading-relaxed">
-            Your mirror may echo back your words when you need them most. Silence is also a voice.
+            Your mirror may echo back your words when you need them most.
+            Silence is also a voice.
           </p>
         </div>
       </div>

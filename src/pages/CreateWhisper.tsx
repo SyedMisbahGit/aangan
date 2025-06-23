@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, MapPin, Smile, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Sparkles,
+  MapPin,
+  Smile,
+  Send,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 
 // Mock API function - replace with real API call
 const createWhisper = async (whisperData: {
@@ -13,62 +20,98 @@ const createWhisper = async (whisperData: {
   zone: string;
 }) => {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+
   // Simulate random success/failure
   if (Math.random() > 0.1) {
     return { success: true, id: Date.now().toString() };
   } else {
-    throw new Error('Failed to create whisper');
+    throw new Error("Failed to create whisper");
   }
 };
 
 const emotions = [
-  { key: 'joy', label: 'Joy', color: 'bg-yellow-400', icon: '😊', gradient: 'from-yellow-400/20 to-orange-400/20' },
-  { key: 'nostalgia', label: 'Nostalgia', color: 'bg-purple-400', icon: '🥺', gradient: 'from-purple-400/20 to-pink-400/20' },
-  { key: 'calm', label: 'Calm', color: 'bg-blue-400', icon: '🌊', gradient: 'from-blue-400/20 to-cyan-400/20' },
-  { key: 'anxiety', label: 'Anxiety', color: 'bg-red-400', icon: '😰', gradient: 'from-red-400/20 to-pink-400/20' },
-  { key: 'hope', label: 'Hope', color: 'bg-green-400', icon: '🌱', gradient: 'from-green-400/20 to-emerald-400/20' },
-  { key: 'love', label: 'Love', color: 'bg-pink-400', icon: '💕', gradient: 'from-pink-400/20 to-rose-400/20' },
+  {
+    key: "joy",
+    label: "Joy",
+    color: "bg-yellow-400",
+    icon: "😊",
+    gradient: "from-yellow-400/20 to-orange-400/20",
+  },
+  {
+    key: "nostalgia",
+    label: "Nostalgia",
+    color: "bg-purple-400",
+    icon: "🥺",
+    gradient: "from-purple-400/20 to-pink-400/20",
+  },
+  {
+    key: "calm",
+    label: "Calm",
+    color: "bg-blue-400",
+    icon: "🌊",
+    gradient: "from-blue-400/20 to-cyan-400/20",
+  },
+  {
+    key: "anxiety",
+    label: "Anxiety",
+    color: "bg-red-400",
+    icon: "😰",
+    gradient: "from-red-400/20 to-pink-400/20",
+  },
+  {
+    key: "hope",
+    label: "Hope",
+    color: "bg-green-400",
+    icon: "🌱",
+    gradient: "from-green-400/20 to-emerald-400/20",
+  },
+  {
+    key: "love",
+    label: "Love",
+    color: "bg-pink-400",
+    icon: "💕",
+    gradient: "from-pink-400/20 to-rose-400/20",
+  },
 ];
 
 const zones = [
-  'Udaan Lawn',
-  'Library',
-  'Hostel G',
-  'Cafeteria',
-  'Science Block',
-  'Sports Complex',
-  'Arts Complex',
-  'Administration Building',
+  "Udaan Lawn",
+  "Library",
+  "Hostel G",
+  "Cafeteria",
+  "Science Block",
+  "Sports Complex",
+  "Arts Complex",
+  "Administration Building",
 ];
 
 const CreateWhisper: React.FC = () => {
-  const [content, setContent] = useState('');
-  const [emotion, setEmotion] = useState('joy');
+  const [content, setContent] = useState("");
+  const [emotion, setEmotion] = useState("joy");
   const [zone, setZone] = useState(zones[0]);
   const [showSuccess, setShowSuccess] = useState(false);
-  
+
   const queryClient = useQueryClient();
 
   const createWhisperMutation = useMutation({
     mutationFn: createWhisper,
     onSuccess: () => {
       setShowSuccess(true);
-      setContent('');
+      setContent("");
       // Refetch whispers to show the new one
-      queryClient.invalidateQueries({ queryKey: ['whispers'] });
+      queryClient.invalidateQueries({ queryKey: ["whispers"] });
       setTimeout(() => setShowSuccess(false), 3000);
     },
     onError: (error) => {
-      console.error('Failed to create whisper:', error);
+      console.error("Failed to create whisper:", error);
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
-    
+
     createWhisperMutation.mutate({
       content: content.trim(),
       emotion,
@@ -76,7 +119,8 @@ const CreateWhisper: React.FC = () => {
     });
   };
 
-  const selectedEmotion = emotions.find(e => e.key === emotion) || emotions[0];
+  const selectedEmotion =
+    emotions.find((e) => e.key === emotion) || emotions[0];
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -130,8 +174,10 @@ const CreateWhisper: React.FC = () => {
         className={`glass p-6 rounded-2xl shadow-lg backdrop-blur-md border border-primary/10 bg-gradient-to-br ${selectedEmotion.gradient} space-y-6 relative overflow-hidden`}
       >
         {/* Animated background glow */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${selectedEmotion.gradient} opacity-0 hover:opacity-100 transition-opacity duration-500`} />
-        
+        <div
+          className={`absolute inset-0 bg-gradient-to-br ${selectedEmotion.gradient} opacity-0 hover:opacity-100 transition-opacity duration-500`}
+        />
+
         <div className="relative z-10">
           {/* Content Input */}
           <motion.div
@@ -139,10 +185,12 @@ const CreateWhisper: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <label className="block text-sm font-medium mb-2">Your Whisper</label>
+            <label className="block text-sm font-medium mb-2">
+              Your Whisper
+            </label>
             <Textarea
               value={content}
-              onChange={e => setContent(e.target.value)}
+              onChange={(e) => setContent(e.target.value)}
               placeholder="Type your anonymous whisper..."
               className="w-full min-h-[120px] bg-background/50 backdrop-blur-sm border-primary/20 focus:border-primary/50 transition-colors"
               maxLength={280}
@@ -171,7 +219,9 @@ const CreateWhisper: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <label className="block text-sm font-medium mb-3">How are you feeling?</label>
+            <label className="block text-sm font-medium mb-3">
+              How are you feeling?
+            </label>
             <div className="grid grid-cols-3 gap-2">
               {emotions.map((e, index) => (
                 <motion.button
@@ -183,9 +233,9 @@ const CreateWhisper: React.FC = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className={`p-3 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200 ${
-                    emotion === e.key 
-                      ? `${e.color} text-white shadow-lg scale-105` 
-                      : 'bg-background/50 text-muted-foreground hover:bg-primary/10 backdrop-blur-sm'
+                    emotion === e.key
+                      ? `${e.color} text-white shadow-lg scale-105`
+                      : "bg-background/50 text-muted-foreground hover:bg-primary/10 backdrop-blur-sm"
                   }`}
                   onClick={() => setEmotion(e.key)}
                   disabled={createWhisperMutation.isPending}
@@ -203,15 +253,19 @@ const CreateWhisper: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <label className="block text-sm font-medium mb-2">Where are you?</label>
+            <label className="block text-sm font-medium mb-2">
+              Where are you?
+            </label>
             <select
               className="w-full rounded-lg border px-3 py-2 bg-background/50 backdrop-blur-sm text-foreground border-primary/20 focus:border-primary/50 transition-colors"
               value={zone}
-              onChange={e => setZone(e.target.value)}
+              onChange={(e) => setZone(e.target.value)}
               disabled={createWhisperMutation.isPending}
             >
-              {zones.map(z => (
-                <option key={z} value={z}>{z}</option>
+              {zones.map((z) => (
+                <option key={z} value={z}>
+                  {z}
+                </option>
               ))}
             </select>
           </motion.div>
@@ -222,8 +276,8 @@ const CreateWhisper: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full flex items-center justify-center gap-2 h-12 text-base font-medium"
               disabled={createWhisperMutation.isPending || !content.trim()}
             >
@@ -231,7 +285,11 @@ const CreateWhisper: React.FC = () => {
                 <>
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                   >
                     <Send className="h-4 w-4" />
                   </motion.div>
@@ -275,7 +333,9 @@ const CreateWhisper: React.FC = () => {
             <div className="glass p-4 rounded-xl border border-green-500/20 bg-gradient-to-r from-green-400/20 to-emerald-400/20 backdrop-blur-md shadow-lg">
               <div className="flex items-center gap-2 text-green-400">
                 <CheckCircle className="h-5 w-5" />
-                <span className="font-medium">Whisper sent anonymously! ✨</span>
+                <span className="font-medium">
+                  Whisper sent anonymously! ✨
+                </span>
               </div>
             </div>
           </motion.div>
@@ -285,4 +345,4 @@ const CreateWhisper: React.FC = () => {
   );
 };
 
-export default CreateWhisper; 
+export default CreateWhisper;

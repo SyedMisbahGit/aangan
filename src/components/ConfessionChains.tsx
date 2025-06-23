@@ -4,7 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
-import { Link, MessageCircle, Heart, Sparkles, Users, Clock, ArrowRight } from "lucide-react";
+import {
+  Link,
+  MessageCircle,
+  Heart,
+  Sparkles,
+  Users,
+  Clock,
+  ArrowRight,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ChainMessage {
@@ -38,7 +46,9 @@ interface ConfessionChain {
 
 export const ConfessionChains = () => {
   const [chains, setChains] = useState<ConfessionChain[]>([]);
-  const [selectedChain, setSelectedChain] = useState<ConfessionChain | null>(null);
+  const [selectedChain, setSelectedChain] = useState<ConfessionChain | null>(
+    null,
+  );
   const [messages, setMessages] = useState<ChainMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
@@ -96,7 +106,8 @@ export const ConfessionChains = () => {
       const sampleMessages: ChainMessage[] = [
         {
           id: "1",
-          content: "The silence in the library at 3 AM hits different when you're questioning every life choice...",
+          content:
+            "The silence in the library at 3 AM hits different when you're questioning every life choice...",
           timestamp: new Date(Date.now() - 30 * 60 * 1000),
           author: "burning-teacup",
           chainId: selectedChain.id,
@@ -106,7 +117,8 @@ export const ConfessionChains = () => {
         },
         {
           id: "2",
-          content: "I feel this so much. The fluorescent lights make everything feel surreal.",
+          content:
+            "I feel this so much. The fluorescent lights make everything feel surreal.",
           timestamp: new Date(Date.now() - 25 * 60 * 1000),
           author: "midnight-owl",
           chainId: selectedChain.id,
@@ -117,7 +129,8 @@ export const ConfessionChains = () => {
         },
         {
           id: "3",
-          content: "And when someone else is there, you both pretend not to see each other's existential crisis",
+          content:
+            "And when someone else is there, you both pretend not to see each other's existential crisis",
           timestamp: new Date(Date.now() - 20 * 60 * 1000),
           author: "quiet-observer",
           chainId: selectedChain.id,
@@ -147,7 +160,7 @@ export const ConfessionChains = () => {
       tags: [],
     };
 
-    setChains(prev => [newChain, ...prev]);
+    setChains((prev) => [newChain, ...prev]);
     setNewChainTitle("");
     setNewChainDescription("");
     setIsCreatingChain(false);
@@ -173,16 +186,22 @@ export const ConfessionChains = () => {
       depth: replyTo ? 1 : 0,
     };
 
-    setMessages(prev => [message, ...prev]);
+    setMessages((prev) => [message, ...prev]);
     setNewMessage("");
     setReplyTo(null);
 
     // Update chain stats
-    setChains(prev => prev.map(chain => 
-      chain.id === selectedChain.id 
-        ? { ...chain, messageCount: chain.messageCount + 1, lastActivity: new Date() }
-        : chain
-    ));
+    setChains((prev) =>
+      prev.map((chain) =>
+        chain.id === selectedChain.id
+          ? {
+              ...chain,
+              messageCount: chain.messageCount + 1,
+              lastActivity: new Date(),
+            }
+          : chain,
+      ),
+    );
 
     toast({
       title: "Message sent",
@@ -195,18 +214,20 @@ export const ConfessionChains = () => {
     const diff = now.getTime() - date.getTime();
     const minutes = Math.floor(diff / (1000 * 60));
     const hours = Math.floor(diff / (1000 * 60 * 60));
-    
+
     if (minutes < 60) return `${minutes}m ago`;
     if (hours < 24) return `${hours}h ago`;
     return `${Math.floor(hours / 24)}d ago`;
   };
 
   const renderMessage = (message: ChainMessage) => {
-    const replies = messages.filter(m => m.parentId === message.id);
-    
+    const replies = messages.filter((m) => m.parentId === message.id);
+
     return (
       <div key={message.id} className="space-y-3">
-        <Card className={`bg-white/5 backdrop-blur-lg border-white/10 p-4 hover:bg-white/10 transition-all duration-300 ${message.depth > 0 ? 'ml-6' : ''}`}>
+        <Card
+          className={`bg-white/5 backdrop-blur-lg border-white/10 p-4 hover:bg-white/10 transition-all duration-300 ${message.depth > 0 ? "ml-6" : ""}`}
+        >
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -216,8 +237,12 @@ export const ConfessionChains = () => {
                   </div>
                 </Avatar>
                 <div>
-                  <p className="text-white text-sm font-medium">{message.author}</p>
-                  <p className="text-gray-400 text-xs">{getTimeAgo(message.timestamp)}</p>
+                  <p className="text-white text-sm font-medium">
+                    {message.author}
+                  </p>
+                  <p className="text-gray-400 text-xs">
+                    {getTimeAgo(message.timestamp)}
+                  </p>
                 </div>
               </div>
               {message.depth > 0 && (
@@ -239,11 +264,19 @@ export const ConfessionChains = () => {
                   Reply
                 </Button>
                 <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-pink-400">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-400 hover:text-pink-400"
+                  >
                     <Heart className="h-4 w-4 mr-1" />
                     {message.reactions.heart}
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-yellow-400">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-400 hover:text-yellow-400"
+                  >
                     <Sparkles className="h-4 w-4 mr-1" />
                     {message.reactions.spark}
                   </Button>
@@ -253,7 +286,7 @@ export const ConfessionChains = () => {
           </div>
         </Card>
 
-        {replies.map(reply => renderMessage(reply))}
+        {replies.map((reply) => renderMessage(reply))}
       </div>
     );
   };
@@ -278,7 +311,9 @@ export const ConfessionChains = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <Link className="h-6 w-6 text-purple-300" />
-              <h2 className="text-xl font-light text-white">{selectedChain.title}</h2>
+              <h2 className="text-xl font-light text-white">
+                {selectedChain.title}
+              </h2>
             </div>
             <p className="text-gray-300 text-sm">{selectedChain.description}</p>
             <div className="flex items-center space-x-4 text-xs text-gray-400">
@@ -288,7 +323,9 @@ export const ConfessionChains = () => {
               </div>
               <div className="flex items-center space-x-1">
                 <Clock className="h-3 w-3" />
-                <span>Last active {getTimeAgo(selectedChain.lastActivity)}</span>
+                <span>
+                  Last active {getTimeAgo(selectedChain.lastActivity)}
+                </span>
               </div>
             </div>
           </div>
@@ -298,7 +335,9 @@ export const ConfessionChains = () => {
           {replyTo && (
             <Card className="bg-blue-900/20 border-blue-500/20 p-4">
               <div className="flex items-center justify-between">
-                <p className="text-blue-200 text-sm">Replying to a message...</p>
+                <p className="text-blue-200 text-sm">
+                  Replying to a message...
+                </p>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -315,7 +354,9 @@ export const ConfessionChains = () => {
             <Textarea
               id="chain-message"
               name="chain-message"
-              placeholder={replyTo ? "Write your reply..." : "Join the conversation..."}
+              placeholder={
+                replyTo ? "Write your reply..." : "Join the conversation..."
+              }
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               className="flex-1 bg-white/5 border-white/20 text-white placeholder:text-gray-400 resize-none"
@@ -332,7 +373,7 @@ export const ConfessionChains = () => {
         </div>
 
         <div className="space-y-4">
-          {messages.filter(m => !m.parentId).map(renderMessage)}
+          {messages.filter((m) => !m.parentId).map(renderMessage)}
         </div>
       </div>
     );
@@ -407,14 +448,16 @@ export const ConfessionChains = () => {
           >
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-white">{chain.title}</h3>
+                <h3 className="text-lg font-medium text-white">
+                  {chain.title}
+                </h3>
                 <Badge className="bg-purple-500/20 text-purple-200 text-xs">
                   {chain.category}
                 </Badge>
               </div>
-              
+
               <p className="text-gray-300 text-sm">{chain.description}</p>
-              
+
               <div className="flex items-center justify-between text-xs text-gray-400">
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-1">
@@ -431,7 +474,11 @@ export const ConfessionChains = () => {
 
               <div className="flex flex-wrap gap-1">
                 {chain.tags.slice(0, 3).map((tag, index) => (
-                  <Badge key={index} variant="outline" className="text-xs bg-white/5 border-white/20 text-gray-300">
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="text-xs bg-white/5 border-white/20 text-gray-300"
+                  >
                     {tag}
                   </Badge>
                 ))}
@@ -442,4 +489,4 @@ export const ConfessionChains = () => {
       </div>
     </div>
   );
-}; 
+};

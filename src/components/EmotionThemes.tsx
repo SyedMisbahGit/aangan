@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +30,7 @@ export const EmotionThemes = () => {
     },
     {
       id: "rainlight",
-      name: "Rainlight", 
+      name: "Rainlight",
       trigger: "Sadness-dominant posts",
       description: "Soft drizzle overlay with bluish palette",
       icon: Droplets,
@@ -42,7 +41,7 @@ export const EmotionThemes = () => {
     {
       id: "jester",
       name: "Jester",
-      trigger: "Laughter-based posts", 
+      trigger: "Laughter-based posts",
       description: "Vibrant ripple effects and warm tones",
       icon: Sparkles,
       bgGradient: "from-orange-950 via-pink-950 to-purple-950",
@@ -72,24 +71,26 @@ export const EmotionThemes = () => {
   ]);
 
   const applyTheme = (themeId: string) => {
-    const theme = themes.find(t => t.id === themeId);
+    const theme = themes.find((t) => t.id === themeId);
     if (!theme || !theme.unlocked) return;
-    
+
     setSelectedTheme(themeId);
-    
+
     // Apply theme to document root
     const root = document.documentElement;
-    root.style.setProperty('--theme-bg', theme.bgGradient);
+    root.style.setProperty("--theme-bg", theme.bgGradient);
   };
 
   const checkThemeUnlocks = () => {
     // Simulate theme unlocking based on user behavior
-    setThemes(prev => prev.map(theme => {
-      if (theme.id === "rainlight" && Math.random() > 0.7) {
-        return { ...theme, unlocked: true };
-      }
-      return theme;
-    }));
+    setThemes((prev) =>
+      prev.map((theme) => {
+        if (theme.id === "rainlight" && Math.random() > 0.7) {
+          return { ...theme, unlocked: true };
+        }
+        return theme;
+      }),
+    );
   };
 
   useEffect(() => {
@@ -104,7 +105,7 @@ export const EmotionThemes = () => {
           <Sparkles className="h-5 w-5 text-purple-400 animate-pulse" />
           <h3 className="text-white font-medium">Emotion Themes</h3>
         </div>
-        
+
         <p className="text-sm text-gray-400">
           Express your inner state through ambient visual themes
         </p>
@@ -113,14 +114,14 @@ export const EmotionThemes = () => {
           {themes.map((theme) => {
             const Icon = theme.icon;
             const isSelected = selectedTheme === theme.id;
-            
+
             return (
               <div
                 key={theme.id}
                 className={`relative p-4 rounded-lg border transition-all duration-300 cursor-pointer ${
-                  theme.unlocked 
+                  theme.unlocked
                     ? isSelected
-                      ? "border-purple-400/50 bg-purple-500/10" 
+                      ? "border-purple-400/50 bg-purple-500/10"
                       : "border-white/10 bg-white/5 hover:bg-white/10"
                     : "border-gray-600/30 bg-gray-800/20 cursor-not-allowed opacity-50"
                 }`}
@@ -128,10 +129,14 @@ export const EmotionThemes = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <Icon className={`h-5 w-5 ${theme.unlocked ? "text-purple-300" : "text-gray-500"}`} />
+                    <Icon
+                      className={`h-5 w-5 ${theme.unlocked ? "text-purple-300" : "text-gray-500"}`}
+                    />
                     <div>
                       <div className="flex items-center space-x-2">
-                        <span className={`font-medium ${theme.unlocked ? "text-white" : "text-gray-500"}`}>
+                        <span
+                          className={`font-medium ${theme.unlocked ? "text-white" : "text-gray-500"}`}
+                        >
                           {theme.name}
                         </span>
                         {isSelected && (
@@ -140,16 +145,20 @@ export const EmotionThemes = () => {
                           </Badge>
                         )}
                       </div>
-                      <p className={`text-xs ${theme.unlocked ? "text-gray-400" : "text-gray-600"}`}>
+                      <p
+                        className={`text-xs ${theme.unlocked ? "text-gray-400" : "text-gray-600"}`}
+                      >
                         {theme.description}
                       </p>
                     </div>
                   </div>
-                  
+
                   {!theme.unlocked && (
                     <div className="text-xs text-gray-500 text-right">
                       <div>🔒 Locked</div>
-                      <div className="text-[10px] opacity-75">{theme.trigger}</div>
+                      <div className="text-[10px] opacity-75">
+                        {theme.trigger}
+                      </div>
                     </div>
                   )}
                 </div>

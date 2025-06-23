@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -34,7 +33,7 @@ const tiers: UserTier[] = [
     unlocks: ["Can post, explore, react"],
   },
   {
-    id: "wanderer", 
+    id: "wanderer",
     name: "Wanderer",
     icon: Moon,
     color: "text-blue-400",
@@ -44,7 +43,7 @@ const tiers: UserTier[] = [
   },
   {
     id: "scribe",
-    name: "Scribe", 
+    name: "Scribe",
     icon: Eye,
     color: "text-purple-400",
     bgColor: "bg-purple-500/20",
@@ -55,7 +54,7 @@ const tiers: UserTier[] = [
     id: "phantom",
     name: "Phantom",
     icon: Sparkles,
-    color: "text-indigo-400", 
+    color: "text-indigo-400",
     bgColor: "bg-indigo-500/20",
     requirements: "High karma retention",
     unlocks: ["Visual themes", "Mood customization"],
@@ -65,19 +64,37 @@ const tiers: UserTier[] = [
     name: "Keeper",
     icon: Star,
     color: "text-yellow-400",
-    bgColor: "bg-yellow-500/20", 
+    bgColor: "bg-yellow-500/20",
     requirements: "AI-trusted behavior",
     unlocks: ["Whisper Guard tools", "Community insights"],
   },
 ];
 
 const generateUsername = () => {
-  const adjectives = ["misty", "whispering", "burning", "floating", "dreaming", "silent", "gentle", "wandering"];
-  const nouns = ["raccoon", "kite", "teacup", "butterfly", "shadow", "cloud", "star", "feather"];
-  
+  const adjectives = [
+    "misty",
+    "whispering",
+    "burning",
+    "floating",
+    "dreaming",
+    "silent",
+    "gentle",
+    "wandering",
+  ];
+  const nouns = [
+    "raccoon",
+    "kite",
+    "teacup",
+    "butterfly",
+    "shadow",
+    "cloud",
+    "star",
+    "feather",
+  ];
+
   const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
   const noun = nouns[Math.floor(Math.random() * nouns.length)];
-  
+
   return `${adj}-${noun}`;
 };
 
@@ -91,8 +108,10 @@ export const UserProfile = () => {
     unlockedThemes: ["default"],
   });
 
-  const currentTier = tiers.find(tier => tier.id === userData.tier) || tiers[0];
-  const nextTier = tiers[tiers.findIndex(tier => tier.id === userData.tier) + 1];
+  const currentTier =
+    tiers.find((tier) => tier.id === userData.tier) || tiers[0];
+  const nextTier =
+    tiers[tiers.findIndex((tier) => tier.id === userData.tier) + 1];
 
   return (
     <Card className="bg-white/5 backdrop-blur-lg border-white/10 p-6">
@@ -101,17 +120,25 @@ export const UserProfile = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="relative">
-              <currentTier.icon className={`h-6 w-6 ${currentTier.color} animate-pulse`} />
-              <div className={`absolute -inset-2 ${currentTier.bgColor} rounded-full blur animate-pulse opacity-50`}></div>
+              <currentTier.icon
+                className={`h-6 w-6 ${currentTier.color} animate-pulse`}
+              />
+              <div
+                className={`absolute -inset-2 ${currentTier.bgColor} rounded-full blur animate-pulse opacity-50`}
+              ></div>
             </div>
             <div>
-              <h3 className="text-white font-medium text-lg">{userData.username}</h3>
-              <Badge className={`${currentTier.bgColor} ${currentTier.color} text-xs`}>
+              <h3 className="text-white font-medium text-lg">
+                {userData.username}
+              </h3>
+              <Badge
+                className={`${currentTier.bgColor} ${currentTier.color} text-xs`}
+              >
                 {currentTier.name}
               </Badge>
             </div>
           </div>
-          
+
           <div className="text-right">
             <div className="text-gray-400 text-xs">Karma Aura</div>
             <div className="flex space-x-1">
@@ -119,7 +146,9 @@ export const UserProfile = () => {
                 <div
                   key={i}
                   className={`w-2 h-2 rounded-full ${
-                    i < userData.karmaLevel ? "bg-purple-400 animate-pulse" : "bg-gray-600"
+                    i < userData.karmaLevel
+                      ? "bg-purple-400 animate-pulse"
+                      : "bg-gray-600"
                   }`}
                 />
               ))}
@@ -130,11 +159,15 @@ export const UserProfile = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-white/5 rounded-lg">
-            <div className="text-xl font-light text-white">{userData.whisperCount}</div>
+            <div className="text-xl font-light text-white">
+              {userData.whisperCount}
+            </div>
             <div className="text-xs text-gray-400">Whispers</div>
           </div>
           <div className="text-center p-3 bg-white/5 rounded-lg">
-            <div className="text-xl font-light text-white">{userData.reactionCount}</div>
+            <div className="text-xl font-light text-white">
+              {userData.reactionCount}
+            </div>
             <div className="text-xs text-gray-400">Hearts Felt</div>
           </div>
         </div>
@@ -144,7 +177,10 @@ export const UserProfile = () => {
           <h4 className="text-sm font-medium text-gray-300">Current Access</h4>
           <div className="space-y-1">
             {currentTier.unlocks.map((unlock, index) => (
-              <div key={index} className="flex items-center space-x-2 text-xs text-gray-400">
+              <div
+                key={index}
+                className="flex items-center space-x-2 text-xs text-gray-400"
+              >
                 <div className="w-1 h-1 bg-purple-400 rounded-full"></div>
                 <span>{unlock}</span>
               </div>
@@ -157,7 +193,9 @@ export const UserProfile = () => {
           <div className="space-y-2 pt-2 border-t border-white/10">
             <h4 className="text-sm font-medium text-gray-300">Next Level</h4>
             <div className="flex items-center space-x-2">
-              <nextTier.icon className={`h-4 w-4 ${nextTier.color} opacity-60`} />
+              <nextTier.icon
+                className={`h-4 w-4 ${nextTier.color} opacity-60`}
+              />
               <span className="text-sm text-gray-400">{nextTier.name}</span>
             </div>
             <p className="text-xs text-gray-500">{nextTier.requirements}</p>

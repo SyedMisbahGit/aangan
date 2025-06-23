@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,18 +12,18 @@
   --whisper-orb-muted: 100 116 139;
   --whisper-orb-background: 15 23 42;
   --whisper-orb-foreground: 248 250 252;
-  
+
   /* 3D Glow Effects */
   --whisper-glow-primary: 0 0 20px rgba(147, 51, 234, 0.3);
   --whisper-glow-secondary: 0 0 20px rgba(59, 130, 246, 0.3);
   --whisper-glow-accent: 0 0 20px rgba(236, 72, 153, 0.3);
   --whisper-glow-muted: 0 0 15px rgba(100, 116, 139, 0.2);
-  
+
   /* 3D Shadows */
   --whisper-shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.1);
   --whisper-shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
   --whisper-shadow-deep: 0 12px 40px rgba(0, 0, 0, 0.2);
-  
+
   /* Kinetic Animation Speeds */
   --whisper-float-slow: 6s;
   --whisper-float-medium: 4s;
@@ -59,13 +59,15 @@
 
 /* 3D Whisper Orb Base Styles */
 .whisper-orb {
-  background: radial-gradient(circle at 30% 30%, 
-    rgba(147, 51, 234, 0.1) 0%, 
-    rgba(59, 130, 246, 0.05) 50%, 
-    rgba(15, 23, 42, 0.8) 100%);
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(147, 51, 234, 0.1) 0%,
+    rgba(59, 130, 246, 0.05) 50%,
+    rgba(15, 23, 42, 0.8) 100%
+  );
   backdrop-filter: blur(20px);
   border: 1px solid rgba(147, 51, 234, 0.2);
-  box-shadow: 
+  box-shadow:
     var(--whisper-shadow-soft),
     var(--whisper-glow-primary),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -75,7 +77,7 @@
 
 .whisper-orb:hover {
   transform: translateY(-8px) rotateX(5deg) rotateY(5deg);
-  box-shadow: 
+  box-shadow:
     var(--whisper-shadow-medium),
     var(--whisper-glow-primary),
     0 0 30px rgba(147, 51, 234, 0.4);
@@ -96,10 +98,19 @@
 }
 
 @keyframes kineticFloat {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  25% { transform: translateY(-3px) rotate(0.5deg); }
-  50% { transform: translateY(-5px) rotate(0deg); }
-  75% { transform: translateY(-2px) rotate(-0.5deg); }
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(0.5deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-2px) rotate(-0.5deg);
+  }
 }
 
 /* 3D Floating Animation */
@@ -116,16 +127,17 @@
 }
 
 @keyframes floatingOrb {
-  0%, 100% { 
+  0%,
+  100% {
     transform: translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg);
   }
-  25% { 
+  25% {
     transform: translateY(-8px) translateZ(10px) rotateX(2deg) rotateY(1deg);
   }
-  50% { 
+  50% {
     transform: translateY(-12px) translateZ(20px) rotateX(0deg) rotateY(0deg);
   }
-  75% { 
+  75% {
     transform: translateY(-6px) translateZ(5px) rotateX(-1deg) rotateY(-1deg);
   }
 }
@@ -137,47 +149,56 @@
 }
 
 .emotion-aura::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, 
-    rgba(147, 51, 234, 0.1) 0%, 
-    rgba(59, 130, 246, 0.05) 30%, 
-    transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(147, 51, 234, 0.1) 0%,
+    rgba(59, 130, 246, 0.05) 30%,
+    transparent 70%
+  );
   animation: auraPulse var(--whisper-pulse-medium) ease-in-out infinite;
   pointer-events: none;
 }
 
 .emotion-aura-nostalgia::before {
-  background: radial-gradient(circle, 
-    rgba(236, 72, 153, 0.15) 0%, 
-    rgba(147, 51, 234, 0.08) 30%, 
-    transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(236, 72, 153, 0.15) 0%,
+    rgba(147, 51, 234, 0.08) 30%,
+    transparent 70%
+  );
 }
 
 .emotion-aura-loneliness::before {
-  background: radial-gradient(circle, 
-    rgba(59, 130, 246, 0.2) 0%, 
-    rgba(15, 23, 42, 0.1) 30%, 
-    transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.2) 0%,
+    rgba(15, 23, 42, 0.1) 30%,
+    transparent 70%
+  );
 }
 
 .emotion-aura-joy::before {
-  background: radial-gradient(circle, 
-    rgba(34, 197, 94, 0.15) 0%, 
-    rgba(236, 72, 153, 0.08) 30%, 
-    transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(34, 197, 94, 0.15) 0%,
+    rgba(236, 72, 153, 0.08) 30%,
+    transparent 70%
+  );
 }
 
 @keyframes auraPulse {
-  0%, 100% { 
+  0%,
+  100% {
     transform: scale(1) rotate(0deg);
     opacity: 0.6;
   }
-  50% { 
+  50% {
     transform: scale(1.1) rotate(180deg);
     opacity: 0.8;
   }
@@ -185,10 +206,12 @@
 
 /* 3D Neumorphism Effects */
 .whisper-neumorphism {
-  background: linear-gradient(145deg, 
-    rgba(30, 41, 59, 0.8) 0%, 
-    rgba(15, 23, 42, 0.9) 100%);
-  box-shadow: 
+  background: linear-gradient(
+    145deg,
+    rgba(30, 41, 59, 0.8) 0%,
+    rgba(15, 23, 42, 0.9) 100%
+  );
+  box-shadow:
     8px 8px 16px rgba(0, 0, 0, 0.3),
     -8px -8px 16px rgba(255, 255, 255, 0.05),
     inset 2px 2px 4px rgba(255, 255, 255, 0.1),
@@ -198,39 +221,49 @@
 
 /* Whisper Portal Effects */
 .whisper-portal {
-  background: conic-gradient(from 0deg at 50% 50%,
+  background: conic-gradient(
+    from 0deg at 50% 50%,
     rgba(147, 51, 234, 0.3) 0deg,
     rgba(59, 130, 246, 0.2) 120deg,
     rgba(236, 72, 153, 0.3) 240deg,
-    rgba(147, 51, 234, 0.3) 360deg);
+    rgba(147, 51, 234, 0.3) 360deg
+  );
   animation: portalRotate 10s linear infinite;
   border-radius: 50%;
   position: relative;
 }
 
 .whisper-portal::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 2px;
-  background: radial-gradient(circle, 
-    rgba(15, 23, 42, 0.9) 0%, 
-    rgba(15, 23, 42, 0.7) 70%, 
-    transparent 100%);
+  background: radial-gradient(
+    circle,
+    rgba(15, 23, 42, 0.9) 0%,
+    rgba(15, 23, 42, 0.7) 70%,
+    transparent 100%
+  );
   border-radius: 50%;
 }
 
 @keyframes portalRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* 3D Button Effects */
 .whisper-button-3d {
-  background: linear-gradient(145deg, 
-    rgba(147, 51, 234, 0.8) 0%, 
-    rgba(59, 130, 246, 0.6) 100%);
+  background: linear-gradient(
+    145deg,
+    rgba(147, 51, 234, 0.8) 0%,
+    rgba(59, 130, 246, 0.6) 100%
+  );
   border: none;
-  box-shadow: 
+  box-shadow:
     0 4px 15px rgba(147, 51, 234, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transform-style: preserve-3d;
@@ -239,14 +272,14 @@
 
 .whisper-button-3d:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 
+  box-shadow:
     0 8px 25px rgba(147, 51, 234, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .whisper-button-3d:active {
   transform: translateY(0px) scale(0.98);
-  box-shadow: 
+  box-shadow:
     0 2px 10px rgba(147, 51, 234, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
@@ -256,10 +289,12 @@
   position: relative;
   width: 4px;
   height: 4px;
-  background: radial-gradient(circle, 
-    rgba(147, 51, 234, 0.8) 0%, 
-    rgba(147, 51, 234, 0.4) 50%, 
-    transparent 100%);
+  background: radial-gradient(
+    circle,
+    rgba(147, 51, 234, 0.8) 0%,
+    rgba(147, 51, 234, 0.4) 50%,
+    transparent 100%
+  );
   border-radius: 50%;
   animation: constellationPulse var(--whisper-pulse-medium) ease-in-out infinite;
 }
@@ -267,30 +302,34 @@
 .constellation-line {
   position: absolute;
   height: 1px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(147, 51, 234, 0.3) 50%, 
-    transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(147, 51, 234, 0.3) 50%,
+    transparent 100%
+  );
   animation: constellationFlow 3s ease-in-out infinite;
 }
 
 @keyframes constellationPulse {
-  0%, 100% { 
+  0%,
+  100% {
     transform: scale(1);
     opacity: 0.6;
   }
-  50% { 
+  50% {
     transform: scale(1.5);
     opacity: 1;
   }
 }
 
 @keyframes constellationFlow {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 0.3;
     transform: scaleX(0.8);
   }
-  50% { 
+  50% {
     opacity: 0.8;
     transform: scaleX(1.2);
   }
@@ -298,12 +337,14 @@
 
 /* Whisper Shrine Effects */
 .whisper-shrine {
-  background: radial-gradient(ellipse at center,
+  background: radial-gradient(
+    ellipse at center,
     rgba(147, 51, 234, 0.1) 0%,
     rgba(59, 130, 246, 0.05) 40%,
-    rgba(15, 23, 42, 0.9) 100%);
+    rgba(15, 23, 42, 0.9) 100%
+  );
   border: 1px solid rgba(147, 51, 234, 0.3);
-  box-shadow: 
+  box-shadow:
     var(--whisper-shadow-medium),
     var(--whisper-glow-primary),
     inset 0 0 20px rgba(147, 51, 234, 0.1);
@@ -312,23 +353,31 @@
 }
 
 .whisper-shrine::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(147, 51, 234, 0.1) 50%, 
-    transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(147, 51, 234, 0.1) 50%,
+    transparent 100%
+  );
   animation: shrineGlow 4s ease-in-out infinite;
 }
 
 @keyframes shrineGlow {
-  0% { left: -100%; }
-  50% { left: 100%; }
-  100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 /* Emotion Slow Mode Effects */
@@ -338,11 +387,12 @@
 }
 
 @keyframes slowModeBreath {
-  0%, 100% { 
+  0%,
+  100% {
     filter: blur(1px) brightness(0.8);
     transform: scale(1);
   }
-  50% { 
+  50% {
     filter: blur(2px) brightness(0.9);
     transform: scale(1.02);
   }
@@ -375,11 +425,13 @@
 
 /* WhisperVerse Global Styles */
 body {
-  background: radial-gradient(ellipse at center,
+  background: radial-gradient(
+    ellipse at center,
     rgba(147, 51, 234, 0.05) 0%,
     rgba(59, 130, 246, 0.03) 30%,
-    rgba(15, 23, 42, 1) 100%);
-  font-family: 'Space Grotesk', sans-serif;
+    rgba(15, 23, 42, 1) 100%
+  );
+  font-family: "Space Grotesk", sans-serif;
   color: hsl(var(--foreground));
   overflow-x: hidden;
 }
@@ -394,16 +446,20 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, 
-    rgba(147, 51, 234, 0.6) 0%, 
-    rgba(59, 130, 246, 0.6) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(147, 51, 234, 0.6) 0%,
+    rgba(59, 130, 246, 0.6) 100%
+  );
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, 
-    rgba(147, 51, 234, 0.8) 0%, 
-    rgba(59, 130, 246, 0.8) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(147, 51, 234, 0.8) 0%,
+    rgba(59, 130, 246, 0.8) 100%
+  );
 }
 
 /* WhisperVerse Selection */
@@ -424,17 +480,14 @@ body {
   background: rgba(30, 41, 59, 0.7);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(147, 51, 234, 0.2);
-  box-shadow: 
+  box-shadow:
     var(--whisper-shadow-soft),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* WhisperVerse Text Gradients */
 .whisper-gradient-text {
-  background: linear-gradient(135deg, 
-    #9333ea 0%, 
-    #3b82f6 50%, 
-    #ec4899 100%);
+  background: linear-gradient(135deg, #9333ea 0%, #3b82f6 50%, #ec4899 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -451,8 +504,12 @@ body {
 }
 
 @keyframes whisperSpin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* WhisperVerse Responsive Design */
@@ -460,11 +517,11 @@ body {
   .whisper-orb {
     transform: none !important;
   }
-  
+
   .floating-orb {
     animation: none;
   }
-  
+
   .kinetic-text {
     animation: none;
   }
@@ -473,10 +530,12 @@ body {
 /* WhisperVerse Dark Mode Enhancements */
 @media (prefers-color-scheme: dark) {
   .whisper-orb {
-    background: radial-gradient(circle at 30% 30%, 
-      rgba(147, 51, 234, 0.15) 0%, 
-      rgba(59, 130, 246, 0.08) 50%, 
-      rgba(15, 23, 42, 0.9) 100%);
+    background: radial-gradient(
+      circle at 30% 30%,
+      rgba(147, 51, 234, 0.15) 0%,
+      rgba(59, 130, 246, 0.08) 50%,
+      rgba(15, 23, 42, 0.9) 100%
+    );
   }
 }
 

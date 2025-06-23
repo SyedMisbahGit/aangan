@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,13 +27,18 @@ export const MoodMapping = () => {
       content: 12,
       lonely: 7,
     },
-    trending: ["placement anxiety", "hostel life", "weekend plans", "exam stress"]
+    trending: [
+      "placement anxiety",
+      "hostel life",
+      "weekend plans",
+      "exam stress",
+    ],
   });
 
   const getMoodColor = (mood: string, value: number) => {
     const colors: { [key: string]: string } = {
       anxious: "bg-red-500",
-      hopeful: "bg-green-500", 
+      hopeful: "bg-green-500",
       overwhelmed: "bg-orange-500",
       content: "bg-blue-500",
       lonely: "bg-purple-500",
@@ -43,7 +47,7 @@ export const MoodMapping = () => {
   };
 
   const getMoodIcon = (mood: string) => {
-    const icons: { [key: string]: any } = {
+    const icons: { [key: string]: React.ElementType } = {
       anxious: Zap,
       hopeful: Heart,
       overwhelmed: Brain,
@@ -69,7 +73,9 @@ export const MoodMapping = () => {
 
           {/* Mood Breakdown */}
           <div className="space-y-3">
-            <h4 className="text-sm text-gray-300 font-medium">Emotional Landscape</h4>
+            <h4 className="text-sm text-gray-300 font-medium">
+              Emotional Landscape
+            </h4>
             {Object.entries(moodData.breakdown).map(([mood, percentage]) => {
               const Icon = getMoodIcon(mood);
               return (
@@ -77,11 +83,15 @@ export const MoodMapping = () => {
                   <Icon className="h-4 w-4 text-gray-400" />
                   <div className="flex-1">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm text-gray-300 capitalize">{mood}</span>
-                      <span className="text-xs text-gray-400">{percentage}%</span>
+                      <span className="text-sm text-gray-300 capitalize">
+                        {mood}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {percentage}%
+                      </span>
                     </div>
                     <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className={`h-full ${getMoodColor(mood, percentage)} transition-all duration-500`}
                         style={{ width: `${percentage}%` }}
                       />
@@ -94,11 +104,13 @@ export const MoodMapping = () => {
 
           {/* Trending Feelings */}
           <div className="space-y-2">
-            <h4 className="text-sm text-gray-300 font-medium">What's stirring</h4>
+            <h4 className="text-sm text-gray-300 font-medium">
+              What's stirring
+            </h4>
             <div className="flex flex-wrap gap-2">
               {moodData.trending.map((trend, index) => (
-                <Badge 
-                  key={index} 
+                <Badge
+                  key={index}
                   className="bg-indigo-500/20 text-indigo-200 text-xs animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >

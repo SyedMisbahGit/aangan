@@ -35,13 +35,17 @@ export const RainMode = () => {
 
       // Animate raindrops
       const interval = setInterval(() => {
-        setRaindrops(prev => prev.map(drop => ({
-          ...drop,
-          y: drop.y + drop.speed,
-          x: drop.x + (Math.random() - 0.5) * 0.5,
-        })).map(drop => 
-          drop.y > 100 ? { ...drop, y: -5, x: Math.random() * 100 } : drop
-        ));
+        setRaindrops((prev) =>
+          prev
+            .map((drop) => ({
+              ...drop,
+              y: drop.y + drop.speed,
+              x: drop.x + (Math.random() - 0.5) * 0.5,
+            }))
+            .map((drop) =>
+              drop.y > 100 ? { ...drop, y: -5, x: Math.random() * 100 } : drop,
+            ),
+        );
       }, 50);
 
       return () => clearInterval(interval);
@@ -68,14 +72,14 @@ export const RainMode = () => {
       source: "rain-mode",
     };
 
-    const existing = localStorage.getItem('whisper-diary-entries');
+    const existing = localStorage.getItem("whisper-diary-entries");
     const entries = existing ? JSON.parse(existing) : [];
     entries.unshift(entry);
-    localStorage.setItem('whisper-diary-entries', JSON.stringify(entries));
+    localStorage.setItem("whisper-diary-entries", JSON.stringify(entries));
 
     setContent("");
     setIsWriting(false);
-    
+
     toast({
       title: "Thought preserved in rain",
       description: "Your peaceful moment is safely stored.",
@@ -84,7 +88,10 @@ export const RainMode = () => {
 
   if (!isActive) {
     return (
-      <Card className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 backdrop-blur-lg border-blue-500/20 p-6 hover:bg-blue-900/30 transition-all duration-500 cursor-pointer group" onClick={activateRainMode}>
+      <Card
+        className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 backdrop-blur-lg border-blue-500/20 p-6 hover:bg-blue-900/30 transition-all duration-500 cursor-pointer group"
+        onClick={activateRainMode}
+      >
         <div className="text-center space-y-4">
           <div className="relative">
             <CloudRain className="h-12 w-12 text-blue-300 mx-auto group-hover:scale-110 transition-transform duration-300" />
@@ -167,7 +174,9 @@ export const RainMode = () => {
               maxLength={500}
             />
             <div className="flex items-center justify-between">
-              <span className="text-blue-300 text-sm">{content.length}/500</span>
+              <span className="text-blue-300 text-sm">
+                {content.length}/500
+              </span>
               <div className="flex items-center space-x-3">
                 <Button
                   variant="ghost"
@@ -191,4 +200,4 @@ export const RainMode = () => {
       </div>
     </div>
   );
-}; 
+};

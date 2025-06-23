@@ -3,7 +3,14 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Timer, Heart, Shield, Waves, Sparkles, AlertTriangle } from "lucide-react";
+import {
+  Timer,
+  Heart,
+  Shield,
+  Waves,
+  Sparkles,
+  AlertTriangle,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface SlowModeState {
@@ -13,6 +20,11 @@ interface SlowModeState {
   contentLimit: number;
   currentContent: number;
   reason: string;
+}
+
+interface Post {
+  content: string;
+  timestamp: number;
 }
 
 export const EmotionSlowMode = () => {
@@ -31,13 +43,25 @@ export const EmotionSlowMode = () => {
   useEffect(() => {
     const detectDistress = () => {
       // Check for rapid posting, negative content patterns, etc.
-      const recentPosts = JSON.parse(localStorage.getItem('recent-posts') || '[]');
-      const negativeKeywords = ['hurt', 'pain', 'alone', 'sad', 'angry', 'hate', 'kill', 'die', 'end'];
-      
+      const recentPosts = JSON.parse(
+        localStorage.getItem("recent-posts") || "[]",
+      );
+      const negativeKeywords = [
+        "hurt",
+        "pain",
+        "alone",
+        "sad",
+        "angry",
+        "hate",
+        "kill",
+        "die",
+        "end",
+      ];
+
       let distressScore = 0;
-      recentPosts.forEach((post: any) => {
+      recentPosts.forEach((post: Post) => {
         const content = post.content.toLowerCase();
-        negativeKeywords.forEach(keyword => {
+        negativeKeywords.forEach((keyword) => {
           if (content.includes(keyword)) distressScore += 1;
         });
         if (post.timestamp > Date.now() - 300000) distressScore += 2; // Recent posts
@@ -59,9 +83,14 @@ export const EmotionSlowMode = () => {
     }
   }, [distressLevel, slowMode.isActive]);
 
-  const activateSlowMode = (intensity: "gentle" | "moderate" | "intense", reason: string) => {
-    const timeLimit = intensity === "intense" ? 3600 : intensity === "moderate" ? 1800 : 900; // 1h, 30m, 15m
-    const contentLimit = intensity === "intense" ? 1 : intensity === "moderate" ? 3 : 5;
+  const activateSlowMode = (
+    intensity: "gentle" | "moderate" | "intense",
+    reason: string,
+  ) => {
+    const timeLimit =
+      intensity === "intense" ? 3600 : intensity === "moderate" ? 1800 : 900; // 1h, 30m, 15m
+    const contentLimit =
+      intensity === "intense" ? 1 : intensity === "moderate" ? 3 : 5;
 
     setSlowMode({
       isActive: true,
@@ -79,7 +108,7 @@ export const EmotionSlowMode = () => {
   };
 
   const deactivateSlowMode = () => {
-    setSlowMode(prev => ({ ...prev, isActive: false }));
+    setSlowMode((prev) => ({ ...prev, isActive: false }));
     toast({
       title: "Slow Mode Deactivated",
       description: "You're feeling better now!",
@@ -90,7 +119,7 @@ export const EmotionSlowMode = () => {
   useEffect(() => {
     if (slowMode.isActive && slowMode.timeRemaining > 0) {
       const timer = setInterval(() => {
-        setSlowMode(prev => ({
+        setSlowMode((prev) => ({
           ...prev,
           timeRemaining: prev.timeRemaining - 1,
         }));
@@ -104,24 +133,30 @@ export const EmotionSlowMode = () => {
 
   const getIntensityColor = (intensity: string) => {
     switch (intensity) {
-      case "intense": return "from-red-500/20 to-orange-500/20";
-      case "moderate": return "from-yellow-500/20 to-orange-500/20";
-      default: return "from-blue-500/20 to-purple-500/20";
+      case "intense":
+        return "from-red-500/20 to-orange-500/20";
+      case "moderate":
+        return "from-yellow-500/20 to-orange-500/20";
+      default:
+        return "from-blue-500/20 to-purple-500/20";
     }
   };
 
   const getIntensityIcon = (intensity: string) => {
     switch (intensity) {
-      case "intense": return AlertTriangle;
-      case "moderate": return Shield;
-      default: return Heart;
+      case "intense":
+        return AlertTriangle;
+      case "moderate":
+        return Shield;
+      default:
+        return Heart;
     }
   };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   if (!slowMode.isActive) {
@@ -132,15 +167,15 @@ export const EmotionSlowMode = () => {
             <Waves className="h-6 w-6 text-blue-300 animate-pulse" />
             <h3 className="text-lg font-light text-white">Emotion Slow Mode</h3>
           </div>
-          
+
           <div className="space-y-3">
             <p className="text-blue-200 text-sm">
               Your emotional wellbeing matters. Slow down when needed.
             </p>
-            
+
             <div className="flex items-center space-x-2">
               <div className="flex-1 bg-white/10 rounded-full h-2">
-                <div 
+                <div
                   className="bg-gradient-to-r from-blue-400 to-purple-400 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${(distressLevel / 10) * 100}%` }}
                 />
@@ -157,7 +192,9 @@ export const EmotionSlowMode = () => {
                 Gentle
               </Button>
               <Button
-                onClick={() => activateSlowMode("moderate", "Manual activation")}
+                onClick={() =>
+                  activateSlowMode("moderate", "Manual activation")
+                }
                 className="flex-1 bg-yellow-600/30 hover:bg-yellow-600/50 text-white border border-yellow-400/30"
               >
                 <Shield className="h-4 w-4 mr-2" />
@@ -173,7 +210,9 @@ export const EmotionSlowMode = () => {
   const IntensityIcon = getIntensityIcon(slowMode.intensity);
 
   return (
-    <Card className={`bg-gradient-to-br ${getIntensityColor(slowMode.intensity)} backdrop-blur-lg border-white/10 p-6 animate-pulse`}>
+    <Card
+      className={`bg-gradient-to-br ${getIntensityColor(slowMode.intensity)} backdrop-blur-lg border-white/10 p-6 animate-pulse`}
+    >
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -193,17 +232,21 @@ export const EmotionSlowMode = () => {
               <span className="text-white/70">Time remaining</span>
               <div className="flex items-center space-x-2">
                 <Timer className="h-4 w-4 text-white/70" />
-                <span className="text-white font-mono">{formatTime(slowMode.timeRemaining)}</span>
+                <span className="text-white font-mono">
+                  {formatTime(slowMode.timeRemaining)}
+                </span>
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-white/70">Content limit</span>
-                <span className="text-white">{slowMode.currentContent}/{slowMode.contentLimit}</span>
+                <span className="text-white">
+                  {slowMode.currentContent}/{slowMode.contentLimit}
+                </span>
               </div>
-              <Progress 
-                value={(slowMode.currentContent / slowMode.contentLimit) * 100} 
+              <Progress
+                value={(slowMode.currentContent / slowMode.contentLimit) * 100}
                 className="h-2"
               />
             </div>
@@ -230,4 +273,4 @@ export const EmotionSlowMode = () => {
       </div>
     </Card>
   );
-}; 
+};

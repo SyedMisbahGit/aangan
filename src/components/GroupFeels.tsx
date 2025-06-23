@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,13 +31,13 @@ export const GroupFeels = () => {
         timeframe: currentTimeframe,
       },
       {
-        id: "2", 
+        id: "2",
         emotion: "lonely at night",
         count: Math.floor(Math.random() * 15) + 3,
         context: "late hours in hostel rooms",
         icon: Moon,
         color: "text-purple-300",
-        bgColor: "bg-purple-500/20", 
+        bgColor: "bg-purple-500/20",
         timeframe: currentTimeframe,
       },
       {
@@ -67,7 +66,7 @@ export const GroupFeels = () => {
         count: Math.floor(Math.random() * 10) + 2,
         context: "finding rhythm in daily campus life",
         icon: Coffee,
-        color: "text-green-300", 
+        color: "text-green-300",
         bgColor: "bg-green-500/20",
         timeframe: currentTimeframe,
       },
@@ -78,7 +77,7 @@ export const GroupFeels = () => {
 
   useEffect(() => {
     generateClusters();
-    
+
     // Refresh clusters every few minutes to show dynamic data
     const interval = setInterval(generateClusters, 120000);
     return () => clearInterval(interval);
@@ -97,13 +96,19 @@ export const GroupFeels = () => {
             <Users className="h-6 w-6 text-purple-300 animate-pulse" />
             <div>
               <h3 className="text-white font-medium">Collective Hearts</h3>
-              <p className="text-gray-400 text-sm">You're not alone in what you feel</p>
+              <p className="text-gray-400 text-sm">
+                You're not alone in what you feel
+              </p>
             </div>
           </div>
-          
+
           <div className="text-right">
-            <div className="text-2xl font-light text-white">{getTotalPeople()}</div>
-            <div className="text-xs text-gray-400">souls {currentTimeframe}</div>
+            <div className="text-2xl font-light text-white">
+              {getTotalPeople()}
+            </div>
+            <div className="text-xs text-gray-400">
+              souls {currentTimeframe}
+            </div>
           </div>
         </div>
 
@@ -119,21 +124,25 @@ export const GroupFeels = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="relative">
-                      <Icon className={`h-5 w-5 ${cluster.color} animate-pulse`} />
-                      <div className={`absolute -inset-2 ${cluster.bgColor} rounded-full blur animate-pulse opacity-50`}></div>
+                      <Icon
+                        className={`h-5 w-5 ${cluster.color} animate-pulse`}
+                      />
+                      <div
+                        className={`absolute -inset-2 ${cluster.bgColor} rounded-full blur animate-pulse opacity-50`}
+                      ></div>
                     </div>
                     <div>
                       <div className="flex items-center space-x-2">
-                        <span className={`font-medium ${cluster.color} text-sm`}>
+                        <span
+                          className={`font-medium ${cluster.color} text-sm`}
+                        >
                           {cluster.emotion}
                         </span>
                       </div>
-                      <p className="text-gray-400 text-xs">
-                        {cluster.context}
-                      </p>
+                      <p className="text-gray-400 text-xs">{cluster.context}</p>
                     </div>
                   </div>
-                  
+
                   <div className="text-right">
                     <div className={`text-lg font-light ${cluster.color}`}>
                       {cluster.count}
@@ -149,8 +158,8 @@ export const GroupFeels = () => {
         {/* Gentle Affirmation */}
         <div className="text-center p-4 bg-white/5 rounded-xl backdrop-blur-md">
           <p className="text-gray-300 text-sm leading-relaxed">
-            Your feelings are valid, shared, and understood. 
-            You're part of something bigger than your quiet moments.
+            Your feelings are valid, shared, and understood. You're part of
+            something bigger than your quiet moments.
           </p>
         </div>
 

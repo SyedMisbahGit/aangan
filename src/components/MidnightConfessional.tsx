@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Moon, Heart, Sparkles, Clock, Eye } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Moon, Heart, Sparkles, Clock, Eye } from "lucide-react";
 
 interface Confession {
   id: string;
@@ -14,8 +14,8 @@ interface Confession {
 }
 
 const MidnightConfessional: React.FC = () => {
-  const [confession, setConfession] = useState('');
-  const [mood, setMood] = useState('');
+  const [confession, setConfession] = useState("");
+  const [mood, setMood] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recentConfessions, setRecentConfessions] = useState<Confession[]>([]);
 
@@ -32,25 +32,26 @@ const MidnightConfessional: React.FC = () => {
     "What does your soul need to confess tonight?",
   ];
 
-  const currentPrompt = midnightPrompts[Math.floor(Math.random() * midnightPrompts.length)];
+  const currentPrompt =
+    midnightPrompts[Math.floor(Math.random() * midnightPrompts.length)];
 
   const moods = [
-    { name: 'melancholy', emoji: '🌙', color: 'text-blue-400' },
-    { name: 'hopeful', emoji: '✨', color: 'text-yellow-400' },
-    { name: 'grateful', emoji: '💝', color: 'text-pink-400' },
-    { name: 'confused', emoji: '🌀', color: 'text-purple-400' },
-    { name: 'peaceful', emoji: '🕊️', color: 'text-green-400' },
-    { name: 'yearning', emoji: '💫', color: 'text-indigo-400' },
+    { name: "melancholy", emoji: "🌙", color: "text-blue-400" },
+    { name: "hopeful", emoji: "✨", color: "text-yellow-400" },
+    { name: "grateful", emoji: "💝", color: "text-pink-400" },
+    { name: "confused", emoji: "🌀", color: "text-purple-400" },
+    { name: "peaceful", emoji: "🕊️", color: "text-green-400" },
+    { name: "yearning", emoji: "💫", color: "text-indigo-400" },
   ];
 
   const handleSubmit = async () => {
     if (!confession.trim() || !mood) return;
 
     setIsSubmitting(true);
-    
+
     // Simulate submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     const newConfession: Confession = {
       id: Date.now().toString(),
       content: confession,
@@ -59,9 +60,9 @@ const MidnightConfessional: React.FC = () => {
       isAnonymous: true,
     };
 
-    setRecentConfessions(prev => [newConfession, ...prev.slice(0, 4)]);
-    setConfession('');
-    setMood('');
+    setRecentConfessions((prev) => [newConfession, ...prev.slice(0, 4)]);
+    setConfession("");
+    setMood("");
     setIsSubmitting(false);
   };
 
@@ -82,10 +83,9 @@ const MidnightConfessional: React.FC = () => {
           <Moon className="h-6 w-6" />
         </div>
         <p className="text-muted-foreground text-sm">
-          {isNightTime() 
-            ? "The night is listening. Your secrets are safe here." 
-            : "Come back when the stars are out. The confessional is most honest at midnight."
-          }
+          {isNightTime()
+            ? "The night is listening. Your secrets are safe here."
+            : "Come back when the stars are out. The confessional is most honest at midnight."}
         </p>
       </div>
 
@@ -144,7 +144,9 @@ const MidnightConfessional: React.FC = () => {
           {/* Submit Button */}
           <Button
             onClick={handleSubmit}
-            disabled={!confession.trim() || !mood || !isNightTime() || isSubmitting}
+            disabled={
+              !confession.trim() || !mood || !isNightTime() || isSubmitting
+            }
             className="w-full glass"
           >
             {isSubmitting ? (
@@ -181,12 +183,13 @@ const MidnightConfessional: React.FC = () => {
                   <p className="text-sm mb-2">{conf.content}</p>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <Badge variant="outline" className="text-xs">
-                      {moods.find(m => m.name === conf.mood)?.emoji} {conf.mood}
+                      {moods.find((m) => m.name === conf.mood)?.emoji}{" "}
+                      {conf.mood}
                     </Badge>
                     <span>
-                      {conf.timestamp.toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
+                      {conf.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </span>
                   </div>
@@ -200,4 +203,4 @@ const MidnightConfessional: React.FC = () => {
   );
 };
 
-export default MidnightConfessional; 
+export default MidnightConfessional;

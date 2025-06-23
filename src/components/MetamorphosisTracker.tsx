@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-import { Star, Target, Calendar, TrendingUp, Heart, Sparkles, BookOpen } from "lucide-react";
+import {
+  Star,
+  Target,
+  Calendar,
+  TrendingUp,
+  Heart,
+  Sparkles,
+  BookOpen,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface GrowthMilestone {
@@ -29,11 +37,11 @@ interface GrowthPhase {
 }
 
 const stages = [
-  { label: 'Seed', color: 'from-green-400 to-lime-400', size: 32 },
-  { label: 'Sprout', color: 'from-lime-400 to-yellow-300', size: 48 },
-  { label: 'Bud', color: 'from-yellow-300 to-pink-400', size: 64 },
-  { label: 'Bloom', color: 'from-pink-400 to-purple-500', size: 80 },
-  { label: 'Constellation', color: 'from-purple-500 to-blue-400', size: 96 },
+  { label: "Seed", color: "from-green-400 to-lime-400", size: 32 },
+  { label: "Sprout", color: "from-lime-400 to-yellow-300", size: 48 },
+  { label: "Bud", color: "from-yellow-300 to-pink-400", size: 64 },
+  { label: "Bloom", color: "from-pink-400 to-purple-500", size: 80 },
+  { label: "Constellation", color: "from-purple-500 to-blue-400", size: 96 },
 ];
 
 export const MetamorphosisTracker: React.FC = () => {
@@ -42,7 +50,9 @@ export const MetamorphosisTracker: React.FC = () => {
   const [currentPhase, setCurrentPhase] = useState<GrowthPhase | null>(null);
   const [newMilestone, setNewMilestone] = useState("");
   const [newMilestoneDescription, setNewMilestoneDescription] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<"emotional" | "academic" | "social" | "personal">("emotional");
+  const [selectedCategory, setSelectedCategory] = useState<
+    "emotional" | "academic" | "social" | "personal"
+  >("emotional");
   const [stage, setStage] = useState(3); // Example: user is at 'Bloom'
   const { toast } = useToast();
 
@@ -54,7 +64,11 @@ export const MetamorphosisTracker: React.FC = () => {
         name: "Cocoon Phase",
         description: "Self-reflection and inner growth",
         duration: 30,
-        milestones: ["First honest diary entry", "Recognized a pattern", "Asked for help"],
+        milestones: [
+          "First honest diary entry",
+          "Recognized a pattern",
+          "Asked for help",
+        ],
         isActive: true,
         progress: 75,
       },
@@ -63,7 +77,11 @@ export const MetamorphosisTracker: React.FC = () => {
         name: "Emergence Phase",
         description: "Stepping out of comfort zones",
         duration: 45,
-        milestones: ["Shared a vulnerable thought", "Made a new friend", "Tried something new"],
+        milestones: [
+          "Shared a vulnerable thought",
+          "Made a new friend",
+          "Tried something new",
+        ],
         isActive: false,
         progress: 0,
       },
@@ -97,7 +115,8 @@ export const MetamorphosisTracker: React.FC = () => {
       {
         id: "2",
         title: "Recognized a Pattern",
-        description: "I noticed I always feel anxious before exams, not during them",
+        description:
+          "I noticed I always feel anxious before exams, not during them",
         category: "academic",
         date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
         impact: 7,
@@ -132,7 +151,7 @@ export const MetamorphosisTracker: React.FC = () => {
       tags: [],
     };
 
-    setMilestones(prev => [milestone, ...prev]);
+    setMilestones((prev) => [milestone, ...prev]);
     setNewMilestone("");
     setNewMilestoneDescription("");
 
@@ -143,11 +162,13 @@ export const MetamorphosisTracker: React.FC = () => {
   };
 
   const completeMilestone = (milestoneId: string) => {
-    setMilestones(prev => prev.map(milestone => 
-      milestone.id === milestoneId 
-        ? { ...milestone, isCompleted: true }
-        : milestone
-    ));
+    setMilestones((prev) =>
+      prev.map((milestone) =>
+        milestone.id === milestoneId
+          ? { ...milestone, isCompleted: true }
+          : milestone,
+      ),
+    );
 
     toast({
       title: "Milestone completed!",
@@ -157,21 +178,31 @@ export const MetamorphosisTracker: React.FC = () => {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case "emotional": return "from-pink-500/20 to-purple-500/20";
-      case "academic": return "from-blue-500/20 to-indigo-500/20";
-      case "social": return "from-green-500/20 to-emerald-500/20";
-      case "personal": return "from-orange-500/20 to-yellow-500/20";
-      default: return "from-gray-500/20 to-gray-600/20";
+      case "emotional":
+        return "from-pink-500/20 to-purple-500/20";
+      case "academic":
+        return "from-blue-500/20 to-indigo-500/20";
+      case "social":
+        return "from-green-500/20 to-emerald-500/20";
+      case "personal":
+        return "from-orange-500/20 to-yellow-500/20";
+      default:
+        return "from-gray-500/20 to-gray-600/20";
     }
   };
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case "emotional": return Heart;
-      case "academic": return BookOpen;
-      case "social": return Star;
-      case "personal": return Target;
-      default: return Star;
+      case "emotional":
+        return Heart;
+      case "academic":
+        return BookOpen;
+      case "social":
+        return Star;
+      case "personal":
+        return Target;
+      default:
+        return Star;
     }
   };
 
@@ -179,7 +210,7 @@ export const MetamorphosisTracker: React.FC = () => {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
+
     if (days === 0) return "Today";
     if (days === 1) return "Yesterday";
     if (days < 7) return `${days} days ago`;
@@ -188,31 +219,44 @@ export const MetamorphosisTracker: React.FC = () => {
   };
 
   const totalMilestones = milestones.length;
-  const completedMilestones = milestones.filter(m => m.isCompleted).length;
-  const averageImpact = milestones.length > 0 
-    ? milestones.reduce((sum, m) => sum + m.impact, 0) / milestones.length 
-    : 0;
+  const completedMilestones = milestones.filter((m) => m.isCompleted).length;
+  const averageImpact =
+    milestones.length > 0
+      ? milestones.reduce((sum, m) => sum + m.impact, 0) / milestones.length
+      : 0;
 
   return (
     <div className="flex flex-col items-center justify-center mt-8">
-      <h3 className="kinetic-text text-xl font-bold whisper-gradient-text mb-2 text-center">Your Growth in the WhisperVerse</h3>
+      <h3 className="kinetic-text text-xl font-bold whisper-gradient-text mb-2 text-center">
+        Your Growth in the WhisperVerse
+      </h3>
       <div className="flex items-end gap-6 mt-4">
         {stages.map((s, i) => (
           <div key={s.label} className="flex flex-col items-center">
             <div
-              className={`whisper-orb floating-orb rounded-full bg-gradient-to-br ${s.color} shadow-whisper-glow-primary transition-all duration-500 ${i <= stage ? 'opacity-100 scale-110' : 'opacity-40 scale-90'}`}
+              className={`whisper-orb floating-orb rounded-full bg-gradient-to-br ${s.color} shadow-whisper-glow-primary transition-all duration-500 ${i <= stage ? "opacity-100 scale-110" : "opacity-40 scale-90"}`}
               style={{ width: s.size, height: s.size }}
             >
               <div className="w-full h-full flex items-center justify-center">
-                <span className="text-xs font-bold text-white drop-shadow-lg">{s.label[0]}</span>
+                <span className="text-xs font-bold text-white drop-shadow-lg">
+                  {s.label[0]}
+                </span>
               </div>
             </div>
-            <span className={`mt-2 kinetic-text text-xs font-medium ${i <= stage ? 'whisper-gradient-text' : 'text-gray-400'}`}>{s.label}</span>
+            <span
+              className={`mt-2 kinetic-text text-xs font-medium ${i <= stage ? "whisper-gradient-text" : "text-gray-400"}`}
+            >
+              {s.label}
+            </span>
           </div>
         ))}
       </div>
       <div className="mt-4 text-sm text-gray-300 text-center max-w-xs">
-        As you reflect, confess, and grow, your bloom evolves. Reach <span className="whisper-gradient-text font-semibold">Constellation</span> to unlock new rituals and auras.
+        As you reflect, confess, and grow, your bloom evolves. Reach{" "}
+        <span className="whisper-gradient-text font-semibold">
+          Constellation
+        </span>{" "}
+        to unlock new rituals and auras.
       </div>
 
       {/* Growth Overview */}
@@ -234,7 +278,9 @@ export const MetamorphosisTracker: React.FC = () => {
         <Card className="bg-gradient-to-br from-yellow-900/20 to-orange-900/20 backdrop-blur-lg border-yellow-500/20 p-4">
           <div className="text-center space-y-2">
             <TrendingUp className="h-8 w-8 text-yellow-300 mx-auto" />
-            <h3 className="text-white font-medium">{averageImpact.toFixed(1)}</h3>
+            <h3 className="text-white font-medium">
+              {averageImpact.toFixed(1)}
+            </h3>
             <p className="text-gray-300 text-sm">Avg Impact</p>
           </div>
         </Card>
@@ -247,15 +293,17 @@ export const MetamorphosisTracker: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Star className="h-6 w-6 text-blue-300" />
-                <h3 className="text-lg font-light text-white">{currentPhase.name}</h3>
+                <h3 className="text-lg font-light text-white">
+                  {currentPhase.name}
+                </h3>
               </div>
               <Badge className="bg-blue-500/20 text-blue-200">
                 {currentPhase.progress}% Complete
               </Badge>
             </div>
-            
+
             <p className="text-gray-300 text-sm">{currentPhase.description}</p>
-            
+
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-400">Progress</span>
@@ -265,10 +313,15 @@ export const MetamorphosisTracker: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-white text-sm font-medium">Phase Milestones:</h4>
+              <h4 className="text-white text-sm font-medium">
+                Phase Milestones:
+              </h4>
               <div className="space-y-1">
                 {currentPhase.milestones.map((milestone, index) => (
-                  <div key={index} className="flex items-center space-x-2 text-sm">
+                  <div
+                    key={index}
+                    className="flex items-center space-x-2 text-sm"
+                  >
                     <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                     <span className="text-gray-300">{milestone}</span>
                   </div>
@@ -282,8 +335,10 @@ export const MetamorphosisTracker: React.FC = () => {
       {/* Add New Milestone */}
       <Card className="bg-white/5 backdrop-blur-lg border-white/10 p-6 mt-8">
         <div className="space-y-4">
-          <h3 className="text-lg font-light text-white">Add Growth Milestone</h3>
-          
+          <h3 className="text-lg font-light text-white">
+            Add Growth Milestone
+          </h3>
+
           <div className="space-y-3">
             <input
               type="text"
@@ -294,7 +349,7 @@ export const MetamorphosisTracker: React.FC = () => {
               onChange={(e) => setNewMilestone(e.target.value)}
               className="w-full bg-white/5 border border-white/20 text-white placeholder:text-gray-400 rounded-lg px-3 py-2"
             />
-            
+
             <Textarea
               id="milestone-description"
               name="milestone-description"
@@ -310,7 +365,15 @@ export const MetamorphosisTracker: React.FC = () => {
                 id="milestone-category"
                 name="milestone-category"
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value as any)}
+                onChange={(e) =>
+                  setSelectedCategory(
+                    e.target.value as
+                      | "emotional"
+                      | "academic"
+                      | "social"
+                      | "personal",
+                  )
+                }
                 className="bg-white/5 border border-white/20 text-white rounded-lg px-3 py-2"
               >
                 <option value="emotional">Emotional</option>
@@ -318,10 +381,12 @@ export const MetamorphosisTracker: React.FC = () => {
                 <option value="social">Social</option>
                 <option value="personal">Personal</option>
               </select>
-              
+
               <Button
                 onClick={addMilestone}
-                disabled={!newMilestone.trim() || !newMilestoneDescription.trim()}
+                disabled={
+                  !newMilestone.trim() || !newMilestoneDescription.trim()
+                }
                 className="bg-purple-600/30 hover:bg-purple-600/50 text-white border border-purple-400/30"
               >
                 <Sparkles className="h-4 w-4 mr-2" />
@@ -335,13 +400,13 @@ export const MetamorphosisTracker: React.FC = () => {
       {/* Milestones List */}
       <div className="space-y-4 mt-8">
         <h3 className="text-lg font-light text-white">Your Growth Journey</h3>
-        
+
         <div className="space-y-4">
           {milestones.map((milestone) => {
             const CategoryIcon = getCategoryIcon(milestone.category);
-            
+
             return (
-              <Card 
+              <Card
                 key={milestone.id}
                 className={`bg-gradient-to-br ${getCategoryColor(milestone.category)} backdrop-blur-lg border-white/10 p-4 hover:bg-white/10 transition-all duration-300`}
               >
@@ -349,7 +414,9 @@ export const MetamorphosisTracker: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <CategoryIcon className="h-5 w-5 text-white/70" />
-                      <h4 className="text-white font-medium">{milestone.title}</h4>
+                      <h4 className="text-white font-medium">
+                        {milestone.title}
+                      </h4>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Badge className="bg-white/20 text-white text-xs">
@@ -362,9 +429,11 @@ export const MetamorphosisTracker: React.FC = () => {
                       )}
                     </div>
                   </div>
-                  
-                  <p className="text-gray-300 text-sm">{milestone.description}</p>
-                  
+
+                  <p className="text-gray-300 text-sm">
+                    {milestone.description}
+                  </p>
+
                   <div className="flex items-center justify-between text-xs text-gray-400">
                     <span>{getTimeAgo(milestone.date)}</span>
                     {!milestone.isCompleted && (
@@ -388,4 +457,4 @@ export const MetamorphosisTracker: React.FC = () => {
   );
 };
 
-export default MetamorphosisTracker; 
+export default MetamorphosisTracker;
