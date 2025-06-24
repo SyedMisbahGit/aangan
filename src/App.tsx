@@ -215,15 +215,15 @@ const App: React.FC = () => {
             <ShhhNarratorProvider>
               <SummerPulseProvider>
                 <WhispersProvider>
-                  <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <BrowserRouter>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
                       <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the Dream." >
                         <AppContentWithErrorBoundary />
                       </ErrorBoundary>
-                    </BrowserRouter>
-                  </TooltipProvider>
+                  </BrowserRouter>
+                </TooltipProvider>
                 </WhispersProvider>
               </SummerPulseProvider>
             </ShhhNarratorProvider>
