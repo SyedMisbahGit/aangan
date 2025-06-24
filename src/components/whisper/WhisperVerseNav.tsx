@@ -114,7 +114,8 @@ const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({
                       "relative overflow-hidden",
                       isActive && "scale-110",
                       isHovered && "scale-105",
-                      "active:bg-neutral-200"
+                      "active:bg-neutral-200",
+                      "min-h-[44px] min-w-[44px]"
                     )}
                     style={{
                       transformStyle: "preserve-3d",
@@ -237,15 +238,15 @@ const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({
 
       {/* Quick Action Buttons */}
       <div className="flex justify-center gap-3 mt-4">
-        <button className="whisper-button-3d px-4 py-2 rounded-full text-sm font-medium text-white flex items-center gap-2">
+        <button className="whisper-button-3d px-4 py-3 rounded-full text-sm font-medium text-white flex items-center gap-2 min-h-[44px] min-w-[44px]">
           <Zap className="w-4 h-4" />
           Quick Whisper
         </button>
-        <button className="whisper-button-3d px-4 py-2 rounded-full text-sm font-medium text-white flex items-center gap-2">
+        <button className="whisper-button-3d px-4 py-3 rounded-full text-sm font-medium text-white flex items-center gap-2 min-h-[44px] min-w-[44px]">
           <Heart className="w-4 h-4" />
           Mood Check
         </button>
-        <button className="whisper-button-3d px-4 py-2 rounded-full text-sm font-medium text-white flex items-center gap-2">
+        <button className="whisper-button-3d px-4 py-3 rounded-full text-sm font-medium text-white flex items-center gap-2 min-h-[44px] min-w-[44px]">
           <Shield className="w-4 h-4" />
           Safety
         </button>

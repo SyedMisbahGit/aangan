@@ -285,7 +285,7 @@ const Shrines: React.FC = () => {
               <Button
                 variant="outline"
                 onClick={() => setShowMap(!showMap)}
-                className="bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5"
+                className="bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5 min-h-[44px] px-4 py-3"
               >
                 <MapPin className="w-4 h-4 mr-2" />
                 {showMap ? "Hide Map" : "Show Map"}
@@ -410,7 +410,7 @@ const Shrines: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => setSelectedHotspot(hotspot.id)}
-                            className="flex-1 bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5"
+                            className="flex-1 bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5 min-h-[44px] px-4 py-3"
                           >
                             <Sparkles className="w-3 h-3 mr-1" />
                             View Shrine
@@ -418,7 +418,7 @@ const Shrines: React.FC = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5"
+                            className="bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5 min-h-[44px] px-4 py-3"
                           >
                             <MapPin className="w-3 h-3" />
                           </Button>

@@ -298,7 +298,7 @@ const Diary: React.FC = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="text-xs"
+                    className="text-xs min-h-[44px] px-4 py-3"
                     onClick={() => setCurrentMood('joy')}
                   >
                     Joy
@@ -306,7 +306,7 @@ const Diary: React.FC = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="text-xs"
+                    className="text-xs min-h-[44px] px-4 py-3"
                     onClick={() => setCurrentMood('nostalgia')}
                   >
                     Nostalgia
@@ -314,7 +314,7 @@ const Diary: React.FC = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="text-xs"
+                    className="text-xs min-h-[44px] px-4 py-3"
                     onClick={() => setCurrentMood('calm')}
                   >
                     Calm
@@ -348,14 +348,14 @@ const Diary: React.FC = () => {
                           setIsWriting(true);
                           getRandomPrompt();
                         }}
-                        className="bg-inkwell hover:bg-inkwell/90 text-paper-light"
+                        className="bg-inkwell hover:bg-inkwell/90 text-paper-light min-h-[44px] px-4 py-3"
                       >
                         <PenTool className="w-4 h-4 mr-2" />
                         Start Writing
                       </Button>
                       <Dialog open={showPromptGenerator} onOpenChange={setShowPromptGenerator}>
                         <DialogTrigger asChild>
-                          <Button variant="outline" className="bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5">
+                          <Button variant="outline" className="bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5 min-h-[44px] px-4 py-3">
                             <Sparkles className="w-4 h-4 mr-2" />
                             Get Prompt
                           </Button>
@@ -398,7 +398,7 @@ const Diary: React.FC = () => {
                           <button
                             key={mood.value}
                             onClick={() => setCurrentMood(mood.value)}
-                            className={`p-3 rounded-lg border transition-all text-center ${
+                            className={`p-3 rounded-lg border transition-all text-center min-h-[44px] min-w-[44px] ${
                               currentMood === mood.value
                                 ? `${mood.color} border-2`
                                 : 'bg-white/50 border-inkwell/20 hover:border-inkwell/40'
@@ -433,14 +433,14 @@ const Diary: React.FC = () => {
                           setCurrentEntry("");
                           setCurrentPrompt("");
                         }}
-                        className="flex-1 bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5"
+                        className="flex-1 bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5 min-h-[44px] px-4 py-3"
                       >
                         Cancel
                       </Button>
                       <Button
                         onClick={handleSaveEntry}
                         disabled={!currentEntry.trim()}
-                        className="flex-1 bg-inkwell hover:bg-inkwell/90 text-paper-light"
+                        className="flex-1 bg-inkwell hover:bg-inkwell/90 text-paper-light min-h-[44px] px-4 py-3"
                       >
                         <Send className="w-4 h-4 mr-2" />
                         Save Entry

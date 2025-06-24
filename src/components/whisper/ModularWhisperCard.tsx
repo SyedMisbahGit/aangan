@@ -128,7 +128,7 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleHeart}
-                  className={`flex items-center gap-1 transition-colors ${
+                  className={`flex items-center gap-1 transition-colors min-h-[44px] min-w-[44px] px-3 py-2 ${
                     isHearted ? 'text-red-500' : 'hover:text-red-500'
                   }`}
                 >
@@ -137,7 +137,7 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
                 </button>
                 <button
                   onClick={() => onReply?.(whisper.id)}
-                  className="flex items-center gap-1 hover:text-inkwell/80"
+                  className="flex items-center gap-1 hover:text-inkwell/80 min-h-[44px] min-w-[44px] px-3 py-2"
                 >
                   <MessageCircle className="w-3 h-3" />
                   <span>{whisper.replies}</span>
@@ -223,7 +223,7 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
           <div className="flex items-center gap-4">
             <button
               onClick={handleHeart}
-              className={`flex items-center gap-2 transition-colors ${
+              className={`flex items-center gap-2 transition-colors min-h-[44px] min-w-[44px] px-3 py-2 ${
                 isHearted ? 'text-red-500' : 'text-inkwell/60 hover:text-red-500'
               }`}
             >

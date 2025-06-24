@@ -135,12 +135,12 @@ const Onboarding: React.FC = () => {
               />
             ))}
           </div>
-          <Button onClick={handleNext} className="w-full mt-4 animate-bounce-once">
+          <Button onClick={handleNext} className="w-full mt-4 animate-bounce-once min-h-[44px] px-4 py-3">
             {isLast ? 'Begin' : 'Next'}
           </Button>
           <button
             onClick={handleSkip}
-            className="w-full mt-2 text-sm underline text-inkwell/60 hover:text-inkwell"
+            className="w-full mt-2 text-sm underline text-inkwell/60 hover:text-inkwell min-h-[44px] px-4 py-3"
             aria-label="Skip onboarding and begin using WhisperVerse"
           >
             Skip
