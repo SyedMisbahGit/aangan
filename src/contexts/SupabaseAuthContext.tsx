@@ -12,6 +12,8 @@ interface SupabaseAuthContextType {
   loading: boolean;
   signInWithMagicLink: (email: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
+  isOnboardingComplete: boolean;
+  setOnboardingComplete: () => Promise<void>;
 }
 
 const SupabaseAuthContext = createContext<SupabaseAuthContextType | undefined>(undefined);
@@ -58,8 +60,18 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setSession(null);
   };
 
+  const isOnboardingComplete = !!user?.user_metadata?.onboarding_complete;
+
+  const setOnboardingComplete = async () => {
+    if (!user) return;
+    await supabase.auth.updateUser({ data: { onboarding_complete: true } });
+    // Refresh user
+    const { data } = await supabase.auth.getUser();
+    setUser(data.user ?? null);
+  };
+
   return (
-    <SupabaseAuthContext.Provider value={{ user, session, loading, signInWithMagicLink, signOut }}>
+    <SupabaseAuthContext.Provider value={{ user, session, loading, signInWithMagicLink, signOut, isOnboardingComplete, setOnboardingComplete }}>
       {children}
     </SupabaseAuthContext.Provider>
   );

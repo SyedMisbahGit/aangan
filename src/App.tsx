@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import "./App.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -16,7 +16,7 @@ import AdminInsights from "./pages/AdminInsights";
 import NotFound from "./pages/NotFound";
 import { CUJHotspotProvider } from "./contexts/CUJHotspotContext";
 import GlobalWhisperComposer from "./components/shared/GlobalWhisperComposer";
-import OnboardingGuide from "./components/shared/OnboardingGuide";
+import Onboarding from "./pages/Onboarding";
 import { SummerPulseProvider } from "./contexts/SummerPulseContext";
 import { SupabaseAuthProvider, useSupabaseAuth } from './contexts/SupabaseAuthContext';
 
@@ -107,7 +107,7 @@ const AppContent: React.FC = () => {
       >
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/onboarding" element={<OnboardingGuide />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/" element={<PrivateRoute><HomeFeed /></PrivateRoute>} />
           <Route path="/create" element={<PrivateRoute><CreateWhisper /></PrivateRoute>} />
           <Route path="/diary" element={<PrivateRoute><Diary /></PrivateRoute>} />
@@ -134,9 +134,14 @@ const AppContent: React.FC = () => {
 
 // PrivateRoute wrapper
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useSupabaseAuth();
+  const { user, loading, isOnboardingComplete } = useSupabaseAuth();
+  const location = useLocation();
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   if (!user) return <Navigate to="/login" replace />;
+  // If not onboarded, redirect to /onboarding (unless already there)
+  if (!isOnboardingComplete && location.pathname !== "/onboarding") {
+    return <Navigate to="/onboarding" replace />;
+  }
   return <>{children}</>;
 }
 

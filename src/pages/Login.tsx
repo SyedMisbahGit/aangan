@@ -11,15 +11,33 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
+  const poeticSuccessLines = [
+    "A whisper key has been sent to your inbox.",
+    "The campus wind carries your secret key—check your email.",
+    "A gentle invitation awaits in your inbox. Whisper forth.",
+    "Your passage to the WhisperVerse is on its way."
+  ];
+  const poeticErrorLines = [
+    "The wind could not carry your whisper. Try again.",
+    "No echo returned—check your email and try once more.",
+    "The gates remain closed. Only @cujammu.ac.in whispers may enter.",
+    "Something blocked your whisper. Please try again."
+  ];
+  const [successLine, setSuccessLine] = useState('');
+  const [errorLine, setErrorLine] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setErrorLine('');
+    setSuccessLine('');
     const { error } = await signInWithMagicLink(email.trim());
     if (error) {
       setError(error);
+      setErrorLine(poeticErrorLines[Math.floor(Math.random() * poeticErrorLines.length)]);
       setSent(false);
     } else {
+      setSuccessLine(poeticSuccessLines[Math.floor(Math.random() * poeticSuccessLines.length)]);
       setSent(true);
     }
   };
@@ -51,10 +69,10 @@ const Login: React.FC = () => {
               disabled={sent || loading}
               className="mb-2"
             />
-            {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
+            {error && <div className="text-red-600 text-sm mb-2 italic">{errorLine}</div>}
             {sent ? (
-              <div className="text-green-700 text-center font-medium animate-fade-in">
-                A whisper key has been sent to your inbox.<br />
+              <div className="text-green-700 text-center font-medium animate-fade-in italic">
+                {successLine}<br />
                 <span className="text-green-800 text-sm">Check your email to continue.</span>
               </div>
             ) : (
