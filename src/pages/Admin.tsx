@@ -327,9 +327,9 @@ const Admin: React.FC = () => {
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             {/* Stats Grid */}
-            <motion.div
+        <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="grid grid-cols-2 md:grid-cols-4 gap-4"
             >
@@ -363,15 +363,15 @@ const Admin: React.FC = () => {
                   <div className="text-2xl font-bold text-inkwell">{stats.communityScore}</div>
                   <div className="text-sm text-inkwell/70">Community Score</div>
                 </CardContent>
-              </Card>
-            </motion.div>
+          </Card>
+        </motion.div>
 
             {/* Recent Activity */}
-            <motion.div
+        <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-            >
+        >
               <Card className="bg-paper-light border-inkwell/10 shadow-soft">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-inkwell">
@@ -388,8 +388,8 @@ const Admin: React.FC = () => {
                           <div>
                             <p className="text-sm font-medium text-inkwell">{activity.action}</p>
                             <p className="text-xs text-inkwell/60">{activity.zone} • {activity.time}</p>
-                          </div>
-                        </div>
+                  </div>
+                </div>
                         <Badge className={`text-xs ${getStatusColor(activity.status)}`}>
                           {activity.status}
                         </Badge>
@@ -397,8 +397,8 @@ const Admin: React.FC = () => {
                     ))}
                   </div>
                 </CardContent>
-              </Card>
-            </motion.div>
+          </Card>
+        </motion.div>
           </TabsContent>
 
           {/* Insights Tab */}
@@ -408,11 +408,11 @@ const Admin: React.FC = () => {
 
           {/* Moderation Tab */}
           <TabsContent value="moderation" className="space-y-6">
-            <motion.div
+        <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-            >
+        >
               <Card className="bg-paper-light border-inkwell/10 shadow-soft">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-inkwell">
@@ -425,28 +425,28 @@ const Admin: React.FC = () => {
                     <div className="p-4 bg-white/50 rounded-lg border border-inkwell/10">
                       <div className="text-2xl font-bold text-inkwell">{stats.pendingReports}</div>
                       <div className="text-sm text-inkwell/70">Pending Reports</div>
-                    </div>
+            </div>
                     <div className="p-4 bg-white/50 rounded-lg border border-inkwell/10">
                       <div className="text-2xl font-bold text-inkwell">{stats.reportsHandled}</div>
                       <div className="text-sm text-inkwell/70">Reports Handled</div>
-                    </div>
+              </div>
                     <div className="p-4 bg-white/50 rounded-lg border border-inkwell/10">
                       <div className="text-2xl font-bold text-inkwell">{stats.avgResponseTime}</div>
                       <div className="text-sm text-inkwell/70">Avg Response Time</div>
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            </motion.div>
+          </Card>
+        </motion.div>
           </TabsContent>
 
           {/* Settings Tab */}
           <TabsContent value="settings" className="space-y-6">
-            <motion.div
+        <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-            >
+        >
               <Card className="bg-paper-light border-inkwell/10 shadow-soft">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-inkwell">
@@ -457,8 +457,8 @@ const Admin: React.FC = () => {
                 <CardContent>
                   <p className="text-inkwell/70">Admin settings and configuration options will be available here.</p>
                 </CardContent>
-              </Card>
-            </motion.div>
+          </Card>
+        </motion.div>
           </TabsContent>
         </Tabs>
       </div>

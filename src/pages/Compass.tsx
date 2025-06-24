@@ -256,8 +256,8 @@ const Compass: React.FC = () => {
                           <h3 className="font-medium text-inkwell mb-3">Description</h3>
                           <p className="text-inkwell/70 text-sm leading-relaxed">
                             {direction.description}
-                          </p>
-                        </div>
+    </p>
+  </div>
                         
                         <div>
                           <h3 className="font-medium text-inkwell mb-3">Activities</h3>
