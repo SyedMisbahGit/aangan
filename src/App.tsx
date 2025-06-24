@@ -19,6 +19,8 @@ import GlobalWhisperComposer from "./components/shared/GlobalWhisperComposer";
 import Onboarding from "./pages/Onboarding";
 import { SummerPulseProvider } from "./contexts/SummerPulseContext";
 import { SupabaseAuthProvider, useSupabaseAuth } from './contexts/SupabaseAuthContext';
+import { WhispersProvider, useWhispers } from "./contexts/WhispersContext";
+import { useIsMobile } from './hooks/use-mobile';
 
 const queryClient = new QueryClient();
 
@@ -47,6 +49,7 @@ const AppContent: React.FC = () => {
   const { theme, toggleTheme, isInitialized } = useDreamTheme();
   const { isReady: narratorReady } = useShhhNarrator();
   const { isReady: hotspotReady } = useCUJHotspots();
+  const { addWhisper } = useWhispers();
 
   if (!isInitialized || !narratorReady || !hotspotReady) return <LoadingScreen />;
 
@@ -97,7 +100,7 @@ const AppContent: React.FC = () => {
   }, []);
 
   const handleWhisperCreated = (whisper: any) => {
-    console.log('New whisper created:', whisper);
+    addWhisper(whisper);
     // In a real app, this would trigger updates to feeds, notifications, etc.
   };
 
@@ -155,6 +158,20 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function AppContentWithErrorBoundary() {
+  const isMobile = useIsMobile();
+  const [hasError, setHasError] = React.useState(false);
+  React.useEffect(() => {
+    const handler = (e: ErrorEvent) => setHasError(true);
+    window.addEventListener('error', handler);
+    return () => window.removeEventListener('error', handler);
+  }, []);
+  if (isMobile && hasError) {
+    return <div className="min-h-screen flex items-center justify-center text-center p-8 bg-dream-bg dark:bg-[#0e0e10] text-dream-text-primary dark:text-dream-dark-text">We're fixing something – please retry in a moment.</div>;
+  }
+  return <AppContent />;
+}
+
 const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -163,13 +180,15 @@ const App: React.FC = () => {
           <CUJHotspotProvider>
             <ShhhNarratorProvider>
               <SummerPulseProvider>
-                <TooltipProvider>
-                  <Toaster />
-                  <Sonner />
-                  <BrowserRouter>
-                    <AppContent />
-                  </BrowserRouter>
-                </TooltipProvider>
+                <WhispersProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter>
+                      <AppContentWithErrorBoundary />
+                    </BrowserRouter>
+                  </TooltipProvider>
+                </WhispersProvider>
               </SummerPulseProvider>
             </ShhhNarratorProvider>
           </CUJHotspotProvider>

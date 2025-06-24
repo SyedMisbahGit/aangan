@@ -32,6 +32,7 @@ import { format } from "date-fns";
 import { ShhhLine } from '@/components/ShhhLine';
 import WhisperPrompt from '@/components/WhisperPrompt';
 import { useSummerPulse } from '../contexts/SummerPulseContext';
+import { useWhispers } from "../contexts/WhispersContext";
 
 interface DiaryEntry {
   id: number;
@@ -45,7 +46,7 @@ interface DiaryEntry {
 }
 
 const Diary: React.FC = () => {
-  const [entries, setEntries] = useState<DiaryEntry[]>([]);
+  const { whispers: entries, setWhispers: setEntries } = useWhispers();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentEntry, setCurrentEntry] = useState("");
   const [currentMood, setCurrentMood] = useState("peaceful");

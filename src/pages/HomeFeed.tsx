@@ -22,6 +22,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCUJHotspots } from "../contexts/CUJHotspotContext";
 import { ShhhLine } from '../components/ShhhLine';
 import { useShhhNarrator } from '../contexts/ShhhNarratorContext';
+import { useWhispers } from "../contexts/WhispersContext";
 
 interface Whisper {
   id: string;
@@ -41,7 +42,7 @@ const HomeFeed: React.FC = () => {
   const [selectedEmotion, setSelectedEmotion] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedHotspot, setSelectedHotspot] = useState("all");
-  const [whispers, setWhispers] = useState<Whisper[]>([]);
+  const { whispers, setWhispers } = useWhispers();
   
   // Real-time context integration
   const isNightTime = systemTime.hour < 6 || systemTime.hour > 22;
@@ -108,7 +109,7 @@ const HomeFeed: React.FC = () => {
     // Update whispers every 5 minutes with new real-time context
     const interval = setInterval(generateWhispers, 300000);
     return () => clearInterval(interval);
-  }, [isNightTime, campusActivity, isWeekend]);
+  }, [isNightTime, campusActivity, isWeekend, setWhispers]);
 
   const getTimeAwareGreeting = () => {
     if (isNightTime) return 'Night whispers';

@@ -9,8 +9,18 @@ import ImpactInsightGraph from "../components/admin/ImpactInsightGraph";
 import PromptGeneratorPanel from "../components/admin/PromptGeneratorPanel";
 import { Brain, TrendingUp, MapPin, Users, Lightbulb, BarChart3 } from "lucide-react";
 import { useSummerPulse } from '../contexts/SummerPulseContext';
+import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
+import { Navigate } from 'react-router-dom';
+
+const ALLOWED_ADMINS = ['founder@email.com'];
 
 const AdminInsights: React.FC = () => {
+  const { user, loading } = useSupabaseAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (!user || !ALLOWED_ADMINS.includes(user.email)) {
+    return <Navigate to="/" replace />;
+  }
+
   const insightsSections = [
     {
       id: "emotion-trends",
@@ -57,7 +67,6 @@ const AdminInsights: React.FC = () => {
         <DreamHeader 
           title="AI Intelligence Dashboard"
           subtitle="WhisperVerse Emotion + Zone Intelligence"
-          showBackButton={true}
         />
         
         <div className="container mx-auto px-4 py-8 space-y-8">

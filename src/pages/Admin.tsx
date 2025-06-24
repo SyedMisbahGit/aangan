@@ -31,6 +31,8 @@ import {
 } from "lucide-react";
 import { ShhhLine } from "../components/ShhhLine";
 import AdminInsights from "./AdminInsights";
+import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
+import { Navigate } from 'react-router-dom';
 
 interface Analytics {
   totalWhispers: number;
@@ -44,7 +46,13 @@ interface Zone {
   likes?: number;
 }
 
+const ALLOWED_ADMINS = ['founder@email.com'];
 const Admin: React.FC = () => {
+  const { user, loading } = useSupabaseAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (!user || !ALLOWED_ADMINS.includes(user.email)) {
+    return <Navigate to="/" replace />;
+  }
   const [activeTab, setActiveTab] = useState("overview");
 
   const [stats] = useState({
@@ -97,7 +105,6 @@ const Admin: React.FC = () => {
   const [jwt, setJwt] = useState<string | null>(null);
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   // Broadcast Notification State
   const [broadcast, setBroadcast] = useState({ title: "", body: "", url: "" });
@@ -160,7 +167,7 @@ const Admin: React.FC = () => {
   // Handle login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setLoginLoading(true);
     setLoginError(null);
     try {
       const res = await axios.post("/api/auth/login", loginForm);
@@ -169,7 +176,7 @@ const Admin: React.FC = () => {
     } catch (err: unknown) {
       setLoginError(err instanceof Error ? err.message : "Login failed");
     } finally {
-      setLoading(false);
+      setLoginLoading(false);
     }
   };
 
@@ -276,9 +283,9 @@ const Admin: React.FC = () => {
             <button
               className="w-full py-2 rounded bg-violet-600 hover:bg-violet-700 text-white font-semibold transition"
               type="submit"
-              disabled={loading}
+              disabled={loginLoading}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loginLoading ? "Logging in..." : "Login"}
             </button>
           </form>
         </Card>
