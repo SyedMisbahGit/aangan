@@ -13,6 +13,8 @@ import { open } from "sqlite";
 import { v4 as uuidv4 } from "uuid";
 import admin from "firebase-admin";
 import { readFileSync } from "fs";
+import Redis from "ioredis";
+import QRCode from "qrcode";
 
 // Load environment variables
 dotenv.config();
@@ -25,6 +27,9 @@ const PORT = process.env.PORT || 3001;
 
 // Database setup
 let db;
+
+// Redis setup for heartbeat and other counters
+const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
 
 async function initializeDatabase() {
   db = await open({
@@ -145,11 +150,11 @@ const limiter = rateLimit({
 });
 app.use("/api/", limiter);
 
-// More strict rate limiting for whisper creation
+// Adjust whisper rate-limit: 5 per 10 min per IP
 const whisperLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 5, // limit each IP to 5 whispers per minute
-  message: "Too many whispers, please wait a moment.",
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 5, // limit each IP to 5 whispers per 10 min
+  message: "Too many whispers, please wait a while.",
 });
 
 // Authentication middleware
@@ -473,6 +478,56 @@ app.get("/api/admin/fcm-tokens", authenticateToken, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch FCM tokens" });
   }
+});
+
+// Heartbeat endpoint
+app.post("/api/health/heartbeat", async (req, res) => {
+  try {
+    const now = new Date();
+    const key = `heartbeat:${now.toISOString().slice(0, 10)}`; // daily key
+    await redis.incr(key);
+    await redis.expire(key, 86400); // expire in 1 day
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: "Heartbeat failed" });
+  }
+});
+
+// Error log endpoint
+app.post("/api/logs", async (req, res) => {
+  try {
+    const { message, stack, url, userAgent, time } = req.body;
+    await db.run(
+      "INSERT INTO analytics_events (event_type, event_data) VALUES (?, ?)",
+      [
+        "frontend_error",
+        JSON.stringify({ message, stack, url, userAgent, time }),
+      ]
+    );
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: "Log failed" });
+  }
+});
+
+// SVG QR Poster route
+app.get("/poster", async (req, res) => {
+  const prodUrl = "https://college-whisper.vercel.app/";
+  const qrSvg = await QRCode.toString(prodUrl, { type: 'svg', margin: 1, width: 180 });
+  const svg = `
+  <svg width="400" height="600" viewBox="0 0 400 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="600" rx="40" fill="#f9f7f4"/>
+    <image href="/logo.svg" x="150" y="40" height="100" width="100" />
+    <text x="200" y="180" text-anchor="middle" font-size="28" font-family="sans-serif" fill="#8b5cf6" font-weight="bold">Aangan°</text>
+    <text x="200" y="215" text-anchor="middle" font-size="16" font-family="sans-serif" fill="#444">apna quiet cosmic courtyard</text>
+    <g transform="translate(110,250)">
+      ${qrSvg}
+    </g>
+    <text x="200" y="470" text-anchor="middle" font-size="14" font-family="sans-serif" fill="#888">Scan to join: college-whisper.vercel.app</text>
+  </svg>
+  `;
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.send(svg);
 });
 
 // Utility function to format timestamps

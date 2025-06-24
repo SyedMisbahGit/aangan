@@ -23,6 +23,7 @@ import { WhispersProvider, useWhispers } from "./contexts/WhispersContext";
 import { useIsMobile } from './hooks/use-mobile';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import { SummerSoulProvider } from './contexts/SummerSoulContext';
+import axios from "axios";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const AppContent: React.FC = () => {
   const { isReady: hotspotReady } = useCUJHotspots();
   const { user, loading: authLoading, isOnboardingComplete } = useSupabaseAuth();
   const { addWhisper } = useWhispers();
+  const [showNotifOptIn, setShowNotifOptIn] = useState(false);
 
   // Aggregate all context readiness
   if (!isInitialized || !narratorReady || !hotspotReady || authLoading) {
@@ -83,41 +85,70 @@ const AppContent: React.FC = () => {
   // Request notification permission and get FCM token
   useEffect(() => {
     if ("Notification" in window && navigator.serviceWorker) {
-      Notification.requestPermission().then(async (permission) => {
-        if (permission === "granted") {
-          try {
-            const registration = await navigator.serviceWorker.ready;
-            const currentToken = await getToken(messaging, {
-              vapidKey: VAPID_KEY,
-              serviceWorkerRegistration: registration,
-            });
-            if (currentToken) {
-              console.log("FCM Token:", currentToken);
-              // Send this token to your backend
-              fetch("/api/fcm-token", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: currentToken }),
-              });
-            } else {
-              console.log(
-                "No registration token available. Request permission to generate one.",
-              );
-            }
-          } catch (err) {
-            console.log("An error occurred while retrieving token. ", err);
-          }
-        } else {
-          console.log("Notification permission not granted.");
-        }
-      });
-
-      // Listen for foreground messages
-      onMessage(messaging, (payload) => {
-        console.log("Message received. ", payload);
-        // Optionally show a notification or update UI
-      });
+      if (Notification.permission === "default") {
+        setShowNotifOptIn(true);
+      } else if (Notification.permission === "granted") {
+        // Already granted, proceed as before
+        getAndSendFcmToken();
+      }
     }
+    // eslint-disable-next-line
+  }, []);
+
+  const getAndSendFcmToken = async () => {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const currentToken = await getToken(messaging, {
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: registration,
+      });
+      if (currentToken) {
+        console.log("FCM Token:", currentToken);
+        fetch("/api/fcm-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: currentToken }),
+        });
+      } else {
+        console.log("No registration token available. Request permission to generate one.");
+      }
+    } catch (err) {
+      console.log("An error occurred while retrieving token. ", err);
+    }
+  };
+
+  const handleNotifOptIn = async (accept: boolean) => {
+    setShowNotifOptIn(false);
+    if (accept) {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        getAndSendFcmToken();
+      }
+    }
+  };
+
+  useEffect(() => {
+    // Heartbeat ping every 10 min
+    const ping = () => {
+      axios.post("/api/health/heartbeat").catch(() => {});
+    };
+    ping();
+    const interval = setInterval(ping, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // Global error logger
+    window.onerror = function (message, source, lineno, colno, error) {
+      axios.post("/api/logs", {
+        message: message?.toString(),
+        stack: error?.stack || null,
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        time: new Date().toISOString(),
+      }).catch(() => {});
+      return false;
+    };
   }, []);
 
   const handleWhisperCreated = (whisper: any) => {
@@ -131,6 +162,13 @@ const AppContent: React.FC = () => {
         ? 'bg-dream-dark-background text-dream-dark-text-primary' 
         : 'bg-dream-background text-dream-text-primary'
     }`}>
+      {showNotifOptIn && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-dream-dark-bg border border-dream-accent rounded-xl shadow-xl px-6 py-4 flex items-center gap-4 animate-fade-in">
+          <span className="font-medium text-dream-accent">Allow notifications? <span className="text-inkwell">Sirf zaroori nudges, spam nahi.</span></span>
+          <button onClick={() => handleNotifOptIn(true)} className="ml-4 bg-dream-accent text-white px-4 py-2 rounded-lg font-semibold hover:bg-dream-purple transition">Allow</button>
+          <button onClick={() => handleNotifOptIn(false)} className="ml-2 text-dream-accent/70 hover:text-dream-accent">No Thanks</button>
+        </div>
+      )}
       <Suspense
         fallback={
           <DreamLoadingScreen 

@@ -233,7 +233,7 @@ const Shrines: React.FC = () => {
                 placeholder="Search zones..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-paper-light border-inkwell/20 focus:border-inkwell/40"
+                className="pl-10 bg-paper-light border-inkwell/20 focus:border-inkwell/40 text-neutral-900"
               />
             </div>
             
