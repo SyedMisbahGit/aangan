@@ -67,7 +67,7 @@ export const DreamNavigation: React.FC<DreamNavigationProps> = ({
           variant="ghost"
           size="sm"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg hover:bg-white/90"
+          className="bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg hover:bg-white/90 active:bg-white"
         >
           {isExpanded ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </Button>
@@ -110,4 +110,19 @@ export const DreamNavigation: React.FC<DreamNavigationProps> = ({
                         isActive(item.path)
                           ? 'bg-primary text-primary-foreground shadow-md'
                           : 'text-inkwell/70 hover:bg-white/50 hover:text-inkwell'
-                      }`
+                      }`}
+                    >
+                      {React.createElement(item.icon, { className: `w-5 h-5 ${item.color}` })}
+                      <span>{item.label}</span>
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Desktop Navigation (if any) would go here */}
+    </>
+  );
+};

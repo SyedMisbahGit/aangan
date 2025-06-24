@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
@@ -37,6 +37,13 @@ interface OnboardingStep {
 const OnboardingGuide: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showGuide, setShowGuide] = useState(false);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (headingRef.current) {
+      headingRef.current.focus();
+    }
+  }, [currentStep]);
 
   const onboardingSteps: OnboardingStep[] = [
     {
@@ -173,17 +180,21 @@ const OnboardingGuide: React.FC = () => {
   return (
     <>
       <Dialog open={showGuide} onOpenChange={setShowGuide}>
-        <DialogContent className="max-w-2xl bg-paper-light border-inkwell/10 shadow-soft">
+        <DialogContent className="max-w-2xl bg-paper-light border-inkwell/10 shadow-soft" aria-label={`Onboarding step ${currentStep + 1} of ${onboardingSteps.length}`}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-inkwell">
-              {currentStepData?.icon}
-              {currentStepData?.title}
+            <DialogTitle asChild>
+              <h2 ref={headingRef} tabIndex={-1} className="flex items-center gap-2 text-inkwell">
+                {currentStepData?.icon}
+                {currentStepData?.title}
+              </h2>
             </DialogTitle>
           </DialogHeader>
-
+          <span className="sr-only" id="onboarding-progress">
+            Step {currentStep + 1} of {onboardingSteps.length}
+          </span>
           <div className="space-y-6">
             {/* Poetic AI Introduction */}
-            <div className="text-center">
+            <div className="text-center" aria-live="polite">
               <ShhhLine
                 variant="ambient"
                 context="onboarding"
@@ -294,6 +305,7 @@ const OnboardingGuide: React.FC = () => {
                 variant="outline"
                 onClick={handleSkip}
                 className="bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5"
+                aria-label="Skip onboarding and begin using WhisperVerse"
               >
                 Skip Guide
               </Button>

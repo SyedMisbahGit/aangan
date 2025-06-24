@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
 import { DreamLayout } from '../components/shared/DreamLayout';
@@ -44,6 +44,13 @@ const Onboarding: React.FC = () => {
   const { setOnboardingComplete } = useSupabaseAuth();
   const navigate = useNavigate();
   const isLast = step === steps.length - 1;
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (headingRef.current) {
+      headingRef.current.focus();
+    }
+  }, [step]);
 
   const handleNext = async () => {
     if (isLast) {
@@ -54,12 +61,30 @@ const Onboarding: React.FC = () => {
     }
   };
 
+  const handleSkip = async () => {
+    await setOnboardingComplete();
+    navigate('/');
+  };
+
   return (
     <DreamLayout>
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-cloudmist/30 via-dawnlight/20 to-cloudmist/40">
+        <h1
+          ref={headingRef}
+          tabIndex={-1}
+          className="sr-only"
+        >
+          {steps[step].title}
+        </h1>
         <DreamHeader title={steps[step].title} subtitle={`Step ${step + 1} of 6`}/>
-        <div className="w-full max-w-lg bg-paper-light rounded-xl shadow-soft p-8 mt-6 flex flex-col items-center">
-          <div className="text-lg text-inkwell/80 italic mb-4">
+        <div
+          className="w-full max-w-lg bg-paper-light rounded-xl shadow-soft p-8 mt-6 flex flex-col items-center"
+          aria-label={`Onboarding step ${step + 1} of 6`}
+        >
+          <span className="sr-only" id="onboarding-progress">
+            Step {step + 1} of 6
+          </span>
+          <div className="text-lg text-inkwell/80 italic mb-4" aria-live="polite">
             {steps[step].narrator}
           </div>
           <div className="text-inkwell/90 text-center text-base mb-8">
@@ -68,6 +93,13 @@ const Onboarding: React.FC = () => {
           <Button onClick={handleNext} className="w-full mt-4">
             {isLast ? 'Begin' : 'Next'}
           </Button>
+          <button
+            onClick={handleSkip}
+            className="w-full mt-2 text-sm underline text-inkwell/60 hover:text-inkwell"
+            aria-label="Skip onboarding and begin using WhisperVerse"
+          >
+            Skip
+          </button>
         </div>
       </div>
     </DreamLayout>
