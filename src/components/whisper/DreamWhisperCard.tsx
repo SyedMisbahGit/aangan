@@ -21,6 +21,8 @@ interface DreamWhisper {
   replies: number;
   isMidnight?: boolean;
   isEcho?: boolean;
+  tags?: string[];
+  narratorLine?: string;
 }
 
 interface DreamWhisperCardProps {
@@ -86,6 +88,7 @@ export const DreamWhisperCard: React.FC<DreamWhisperCardProps> = ({
   onReply,
 }) => {
   const emotion = emotionConfig[whisper.emotion];
+  const isSummerSoul = whisper.tags?.includes('#summerSoul25');
 
   return (
     <motion.div
@@ -109,6 +112,12 @@ export const DreamWhisperCard: React.FC<DreamWhisperCardProps> = ({
             <span className="mr-1">{emotion.icon}</span>
             {emotion.label}
           </Badge>
+
+          {isSummerSoul && (
+            <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300 text-xs flex items-center gap-1">
+              <span className="text-lg">🌞</span> SummerSoul
+            </Badge>
+          )}
 
           {whisper.isMidnight && (
             <Badge className="bg-dream-primary/10 text-dream-primary border-dream-primary/20 text-xs">
@@ -137,6 +146,13 @@ export const DreamWhisperCard: React.FC<DreamWhisperCardProps> = ({
           <span>{formatTimeAgo(whisper.timestamp)}</span>
         </div>
       </div>
+
+      {/* Narrator Line */}
+      {whisper.narratorLine && (
+        <div className="mb-2 text-sm italic text-dream-text-secondary/80 text-center">
+          {whisper.narratorLine}
+        </div>
+      )}
 
       {/* Content */}
       <div className="mb-4">

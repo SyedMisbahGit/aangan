@@ -32,6 +32,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCUJHotspots } from "../contexts/CUJHotspotContext";
 import { ShhhLine } from '@/components/ShhhLine';
 import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
+import { DreamWhisperCard } from '../components/whisper/DreamWhisperCard';
+import { useSummerSoul } from '../contexts/SummerSoulContext';
 
 const Murmurs: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
@@ -43,6 +45,7 @@ const Murmurs: React.FC = () => {
   const [trendingTopics, setTrendingTopics] = useState<any[]>([]);
   
   const { nearbyHotspots, emotionClusters, getEmotionTrends } = useCUJHotspots();
+  const { isSummerSoulActive } = useSummerSoul();
 
   const filters = [
     { value: "all", label: "All Murmurs", icon: "💫" },
@@ -262,6 +265,9 @@ const Murmurs: React.FC = () => {
 
   const stats = getSocialStats();
 
+  // SummerSoul filter
+  const summerSoulWhispers = whispers.filter(w => w.tags?.includes('#summerSoul25'));
+
   return (
     <DreamLayout>
       <div className="min-h-screen bg-gradient-to-br from-cloudmist/30 via-dawnlight/20 to-cloudmist/40">
@@ -413,6 +419,50 @@ const Murmurs: React.FC = () => {
               </div>
             </div>
           </motion.div>
+
+          {/* SummerSoul Section or Memories */}
+          {isSummerSoulActive && summerSoulWhispers.length > 0 && (
+            <Card className="mb-8 bg-yellow-50 border-yellow-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-yellow-800">
+                  <span className="text-2xl">🌞</span> Whispers From Away
+                </CardTitle>
+                <div className="text-yellow-700 text-sm mt-1">
+                  Thoughts from students scattered across the country this summer.
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {summerSoulWhispers.map((whisper, idx) => (
+                  <DreamWhisperCard key={whisper.id} whisper={whisper} index={idx} />
+                ))}
+              </CardContent>
+            </Card>
+          )}
+          {!isSummerSoulActive && summerSoulWhispers.length > 0 && (
+            <Card className="mb-8 bg-yellow-100/70 border-yellow-300 relative overflow-hidden">
+              {/* Faded overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-yellow-100/80 to-white/60 pointer-events-none" />
+              <CardHeader className="relative z-10">
+                <CardTitle className="flex items-center gap-2 text-yellow-700">
+                  <span className="text-2xl">🌅</span> SummerSoul Memories
+                </CardTitle>
+                <div className="text-yellow-700 text-sm mt-1 italic">
+                  Looking back: Whispers from the summer break, now part of our collective memory.
+                </div>
+                <div className="mt-3 p-2 bg-yellow-200/60 rounded text-yellow-900 text-center text-sm italic shadow-sm">
+                  "Even far apart, we were still writing. The campus was quiet, but the hearts weren't."
+                </div>
+                <div className="mt-4 flex justify-center">
+                  <a href="/memories" className="inline-block px-4 py-2 bg-yellow-300 text-yellow-900 rounded shadow hover:bg-yellow-400 transition font-medium">View All SummerSoul Memories</a>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 relative z-10">
+                {summerSoulWhispers.map((whisper, idx) => (
+                  <DreamWhisperCard key={whisper.id} whisper={whisper} index={idx} />
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Main Content Tabs */}
           <motion.div

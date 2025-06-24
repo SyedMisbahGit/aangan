@@ -195,9 +195,14 @@ const Diary: React.FC = () => {
         </div>
 
         {/* Ambient Header */}
-        <DreamHeader
-          title={<span className="flex items-center gap-2">Diary <span className="inline-flex items-center px-2 py-0.5 rounded bg-neutral-200 text-xs font-semibold text-neutral-700 ml-2"><Lock className="w-3 h-3 mr-1" />Private</span></span>}
-          subtitle="Your private universe. Only you can see these entries."
+        <DreamHeader 
+          title="Diary"
+          subtitle={
+            <span>
+              Your private universe. Only you can see these entries.
+              <span className="inline-flex items-center px-2 py-0.5 rounded bg-neutral-200 text-xs font-semibold text-neutral-700 ml-2"><Lock className="w-3 h-3 mr-1" />Private</span>
+            </span>
+          }
         />
 
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">

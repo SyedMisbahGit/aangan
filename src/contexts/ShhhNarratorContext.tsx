@@ -843,4 +843,44 @@ export const ShhhNarratorProvider: React.FC<ShhhNarratorProviderProps> = ({ chil
       {children}
     </ShhhNarratorContext.Provider>
   );
-}; 
+};
+
+// SummerSoul narrator line generator
+export function generateSummerSoulLine({ location, activity, emotion }: { location?: string; activity?: string; emotion?: string }): string {
+  const locationPhrases: Record<string, string> = {
+    'Home': 'A voice from home drifts softly',
+    'Internship': 'One soul whispers from the internship haze',
+    'On Campus': 'A gentle echo from a quiet campus',
+    'Travelling': 'A whisper on the wind, somewhere between places',
+    'Somewhere else': 'A soul speaks from somewhere uncharted',
+    '': 'A summer soul speaks softly',
+  };
+  const activityPhrases: Record<string, string> = {
+    'Studying 📚': 'studying through the summer',
+    'Resting 💤': 'resting and reflecting',
+    'Trying to figure it out 🌀': 'trying to figure it all out',
+    'Working 👨‍💻': 'working through the heat',
+    'Healing 🌱': 'healing, slowly',
+    '': '',
+  };
+  const emotionPhrases: Record<string, string> = {
+    'joy': 'with a hopeful heart',
+    'nostalgia': 'with a touch of nostalgia',
+    'dread': 'with a quiet dread',
+    'melancholy': 'with a gentle melancholy',
+    'gratitude': 'with gratitude',
+    'curiosity': 'with curiosity',
+    'anxiety': 'with a bit of worry',
+    'calm': 'with a sense of calm',
+    'excitement': 'with excitement',
+    '': '',
+  };
+  const loc = locationPhrases[location || ''] || locationPhrases[''];
+  const act = activityPhrases[activity || ''] || '';
+  const emo = emotionPhrases[emotion || ''] || '';
+  let line = loc;
+  if (act) line += ` — ${act}`;
+  if (emo) line += `, ${emo}`;
+  line += '.';
+  return line;
+} 

@@ -7,7 +7,8 @@ import ZoneEmotionHeatmap from "../components/admin/ZoneEmotionHeatmap";
 import AdminAISummaryCard from "../components/admin/AdminAISummaryCard";
 import ImpactInsightGraph from "../components/admin/ImpactInsightGraph";
 import PromptGeneratorPanel from "../components/admin/PromptGeneratorPanel";
-import { Brain, TrendingUp, MapPin, Users, Lightbulb, BarChart3 } from "lucide-react";
+import SummerSoulAnalytics from '../components/admin/SummerSoulAnalytics';
+import { Brain, TrendingUp, MapPin, Users, Lightbulb, BarChart3, Sun } from "lucide-react";
 import { useSummerPulse } from '../contexts/SummerPulseContext';
 import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
 import { Navigate } from 'react-router-dom';
@@ -57,7 +58,14 @@ const AdminInsights: React.FC = () => {
       description: "Context-aware, emotionally intelligent prompts",
       icon: <Lightbulb className="w-6 h-6" />,
       component: <PromptGeneratorPanel />
-    }
+    },
+    {
+      id: "summer-soul-analytics",
+      title: "SummerSoul Analytics",
+      description: "Seasonal engagement and emotional trends during summer break",
+      icon: <Sun className="w-6 h-6 text-yellow-500" />,
+      component: <SummerSoulAnalytics />
+    },
   ];
 
   const { isSummerPulseActive, label: summerLabel } = useSummerPulse();

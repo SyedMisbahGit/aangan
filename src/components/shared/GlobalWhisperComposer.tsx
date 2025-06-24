@@ -21,6 +21,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCUJHotspots } from '../../contexts/CUJHotspotContext';
 import { useWhispers } from '../../contexts/WhispersContext';
+import { useSummerSoul, LocationTag } from '../../contexts/SummerSoulContext';
+import { generateSummerSoulLine } from '../../contexts/ShhhNarratorContext';
 
 interface WhisperComposerProps {
   variant?: 'floating' | 'modal' | 'sheet';
@@ -43,9 +45,18 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
   });
   const [currentStep, setCurrentStep] = useState(1);
   const [showNudge, setShowNudge] = useState(true);
+  const [showCapsulePrompt, setShowCapsulePrompt] = useState(true);
+  const [isCapsule, setIsCapsule] = useState(false);
+  const capsulePrompt = `Write a whisper to July 14, when everyone returns.\nSay what you hope changes by then, what you've learned, or how this break made you feel.`;
+  const capsuleSuggestions = [
+    "I hope you're okay by then.",
+    "Please don't judge me too harshly for this summer.",
+    "Did anything finally bloom?"
+  ];
 
   const { nearbyHotspots, updateHotspotActivity } = useCUJHotspots();
   const { addWhisper } = useWhispers();
+  const { isSummerSoulActive, locationTag, setLocationTag, activityLabel, setActivityLabel, currentEmotion, setCurrentEmotion } = useSummerSoul();
 
   const emotions = [
     { value: 'joy', label: 'Joy', icon: '✨', color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
@@ -69,19 +80,69 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
     "Describe a connection you made today..."
   ];
 
+  const summerSoulLocations = [
+    { value: 'Home', label: 'At Home 🏠' },
+    { value: 'Internship', label: 'Internship 🧑‍💼' },
+    { value: 'On Campus', label: 'Still on Campus 🏫' },
+    { value: 'Travelling', label: 'Travelling ✈️' },
+    { value: 'Somewhere else', label: 'Somewhere else 🌌' },
+  ];
+  const summerSoulActivities = [
+    'Studying 📚',
+    'Resting 💤',
+    'Trying to figure it out 🌀',
+    'Working 👨‍💻',
+    'Healing 🌱',
+  ];
+
+  const logSummerSoulAnalytics = (data: any) => {
+    const prev = JSON.parse(localStorage.getItem('summerSoulAnalytics') || '[]');
+    prev.push(data);
+    localStorage.setItem('summerSoulAnalytics', JSON.stringify(prev));
+  };
+
+  // Helper to type-narrow a string to LocationTag
+  function toLocationTag(val: string): LocationTag {
+    const allowed: LocationTag[] = ['Home', 'Internship', 'On Campus', 'Travelling', 'Somewhere else', ''];
+    return allowed.includes(val as LocationTag) ? (val as LocationTag) : '';
+  }
+
   const handleSubmit = async () => {
     if (whisperData.content.trim()) {
+      const tags = [];
+      if (isSummerSoulActive) {
+        tags.push('#summerSoul25', '#whereIAm', '#tryingMyBest');
+        if (isCapsule) tags.push('#timeCapsule');
+      }
       const newWhisper = {
         id: Date.now().toString(),
         content: whisperData.content,
-        emotion: whisperData.emotion,
+        emotion: isSummerSoulActive ? currentEmotion || whisperData.emotion : whisperData.emotion,
         timestamp: new Date().toISOString(),
-        location: whisperData.hotspot || '',
+        location: isSummerSoulActive ? toLocationTag(locationTag) : whisperData.hotspot || '',
+        activity: isSummerSoulActive ? activityLabel : undefined,
+        tags,
+        narratorLine: isSummerSoulActive
+          ? (isCapsule
+              ? capsuleSuggestions[Math.floor(Math.random() * capsuleSuggestions.length)]
+              : generateSummerSoulLine({ location: toLocationTag(locationTag), activity: activityLabel, emotion: currentEmotion }))
+          : undefined,
         likes: 0,
         comments: 0,
         isAnonymous: true,
         author: undefined,
       };
+
+      // SummerSoul analytics logging
+      if (isSummerSoulActive) {
+        logSummerSoulAnalytics({
+          location: toLocationTag(locationTag),
+          emotion: currentEmotion,
+          activity: activityLabel,
+          isCapsule,
+          timestamp: new Date().toISOString(),
+        });
+      }
 
       // Update hotspot activity if a hotspot is selected
       if (whisperData.hotspot) {
@@ -110,8 +171,81 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
     return prompts[Math.floor(Math.random() * prompts.length)];
   };
 
+  const renderSummerSoul = () => (
+    <div className="space-y-4 p-4 rounded-lg bg-yellow-50 border border-yellow-200 mb-4">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-2xl">🌞</span>
+        <span className="font-semibold text-yellow-800">SummerSoul Space</span>
+      </div>
+      {showCapsulePrompt && (
+        <div className="bg-yellow-100 border border-yellow-300 rounded p-3 mb-2 flex flex-col gap-2">
+          <div className="text-yellow-900 text-sm font-medium mb-1">Emotional Capsule Prompt</div>
+          <div className="text-yellow-800 text-sm mb-2 whitespace-pre-line">{capsulePrompt}</div>
+          <label className="flex items-center gap-2 text-yellow-900 text-xs">
+            <input
+              type="checkbox"
+              checked={isCapsule}
+              onChange={e => setIsCapsule(e.target.checked)}
+              className="accent-yellow-500"
+            />
+            Send as Time Capsule (delivered July 14)
+          </label>
+          <button
+            className="text-yellow-700 underline text-xs mt-1 self-end"
+            onClick={() => setShowCapsulePrompt(false)}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+      <div>
+        <label className="text-sm text-yellow-900 mb-1 block">Where are you right now?</label>
+        <div className="flex flex-wrap gap-2">
+          {summerSoulLocations.map(loc => (
+            <button
+              key={loc.value}
+              onClick={() => setLocationTag(loc.value)}
+              className={`px-3 py-1 rounded-full border text-sm transition-all ${locationTag === loc.value ? 'bg-yellow-200 border-yellow-400 text-yellow-900' : 'bg-white border-yellow-200 text-yellow-700 hover:bg-yellow-100'}`}
+            >
+              {loc.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <label className="text-sm text-yellow-900 mb-1 block">What are you doing (or trying to)?</label>
+        <div className="flex flex-wrap gap-2">
+          {summerSoulActivities.map(act => (
+            <button
+              key={act}
+              onClick={() => setActivityLabel(act)}
+              className={`px-3 py-1 rounded-full border text-sm transition-all ${activityLabel === act ? 'bg-yellow-200 border-yellow-400 text-yellow-900' : 'bg-white border-yellow-200 text-yellow-700 hover:bg-yellow-100'}`}
+            >
+              {act}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <label className="text-sm text-yellow-900 mb-1 block">How are you feeling lately?</label>
+        <div className="flex flex-wrap gap-2">
+          {emotions.map((emotion) => (
+            <button
+              key={emotion.value}
+              onClick={() => setCurrentEmotion(emotion.value)}
+              className={`px-3 py-1 rounded-full border text-sm transition-all ${currentEmotion === emotion.value ? emotion.color + ' border-2' : 'bg-white border-yellow-200 text-yellow-700 hover:bg-yellow-100'}`}
+            >
+              <span className="mr-1">{emotion.icon}</span>{emotion.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   const renderContent = () => (
     <div className="space-y-6">
+      {isSummerSoulActive && renderSummerSoul()}
       {showNudge && (
         <div className="mb-4 p-3 rounded-lg bg-[#f9f7f4] border border-neutral-200 flex items-center justify-between text-neutral-700 text-sm shadow-sm">
           <span>
