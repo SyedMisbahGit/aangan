@@ -505,7 +505,7 @@ const Shrines: React.FC = () => {
                               ) : (
                                 <div className="text-center py-8 text-inkwell/60">
                                   <MessageCircle className="w-8 h-8 mx-auto mb-2" />
-                                  <p>No whispers yet from this zone.</p>
+                                  <p>No stories yet from this courtyard.</p>
                                   <p className="text-sm">Be the first to share something!</p>
                                 </div>
                               )}

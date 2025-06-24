@@ -1,8 +1,14 @@
 module.exports = {
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
+        'bg-aangan': '#F9F7F4',
+        'ink-space': '#101014',
+        'star-glow': '#FFDCA6',
+        'leaf-mint': '#9ED8BE',
+        'moon-dust': '#C8C6C3',
+        'emotion-joy': '#F7C85C',
+        'emotion-calm': '#79BECB',
         'cream-100': '#FDFDF9',
         'cream-50': '#FAF9F6',
         'paper-light': '#FDFDF9',

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
 import { DreamLayout } from '../components/shared/DreamLayout';
 import { DreamHeader } from '../components/shared/DreamHeader';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { useNavigate } from 'react-router-dom';
 
 const poeticSuccessLines = [
   "A whisper key has been sent to your inbox.",
@@ -19,11 +20,32 @@ const poeticErrorLines = [
 ];
 
 const Login: React.FC = () => {
-  const { signInWithMagicLink, loading } = useSupabaseAuth();
+  const { signInWithMagicLink, loading, user } = useSupabaseAuth();
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [successLine, setSuccessLine] = useState('');
   const [errorLine, setErrorLine] = useState('');
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Auto-focus email input
+    if (emailInputRef.current) {
+      emailInputRef.current.focus();
+    }
+    // Magic-link callback handling
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get('type');
+    if (type === 'magiclink' && user) {
+      // If already signed in, redirect
+      if (user.email === 'nocodeai007@gmail.com') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
+    }
+    // Optionally, handle oobCode/mode for other providers
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +65,7 @@ const Login: React.FC = () => {
     <DreamLayout>
       <div className="min-h-screen flex flex-col items-center justify-center bg-cream-100 dark:bg-dream-dark-bg transition-colors duration-500">
         <DreamHeader
-          title="Sign In to WhisperVerse"
+          title="Sign In to Aangan"
           subtitle="A poetic, anonymous campus sanctuary"
           className="mb-2"
         />
@@ -65,6 +87,7 @@ const Login: React.FC = () => {
               disabled={sent || loading}
               className="mb-2 bg-cream-50 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text border border-cream-200 dark:border-neutral-800 focus:ring-dream-blue"
               autoComplete="email"
+              ref={emailInputRef}
             />
             {errorLine && (
               <div className="text-red-600 text-sm mb-2 italic">{errorLine}</div>

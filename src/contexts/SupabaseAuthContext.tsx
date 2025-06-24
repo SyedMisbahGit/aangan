@@ -58,10 +58,15 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   const signInWithMagicLink = async (email: string) => {
-    if (!email.endsWith('@cujammu.ac.in')) {
+    if (!email.endsWith('@cujammu.ac.in') && email !== 'nocodeai007@gmail.com') {
       return { error: 'Only @cujammu.ac.in emails are allowed.' };
     }
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: 'https://college-whisper.vercel.app/login',
+      },
+    });
     if (error) return { error: error.message };
     return {};
   };

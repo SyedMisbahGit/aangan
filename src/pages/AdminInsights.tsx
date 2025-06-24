@@ -75,7 +75,7 @@ const AdminInsights: React.FC = () => {
       <div className="min-h-screen bg-gradient-to-br from-paper-light to-paper-dark">
         <DreamHeader 
           title="AI Intelligence Dashboard"
-          subtitle="WhisperVerse Emotion + Zone Intelligence"
+          subtitle="Aangan Emotion + Zone Intelligence"
         />
         
         <div className="container mx-auto px-4 py-8 space-y-8">
@@ -92,7 +92,7 @@ const AdminInsights: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-inkwell">
-                  WhisperVerse AI Intelligence
+                  Aangan AI Intelligence
                 </h1>
                 <p className="text-inkwell/70">
                   Emotion + Zone Intelligence (AI-Augmented Analytics Layer)
@@ -181,7 +181,7 @@ const AdminInsights: React.FC = () => {
                 </div>
               </div>
               <p className="text-xs text-inkwell/60">
-                All AI components are running and providing real-time insights for the WhisperVerse community.
+                All AI components are running and providing real-time insights for the Aangan community.
               </p>
             </div>
           </motion.div>

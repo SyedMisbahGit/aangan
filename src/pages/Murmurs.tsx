@@ -425,7 +425,7 @@ const Murmurs: React.FC = () => {
             <Card className="mb-8 bg-yellow-50 border-yellow-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-yellow-800">
-                  <span className="text-2xl">🌞</span> Whispers From Away
+                  <span className="text-2xl">☀️ SummerSoul in Aangan — गर्मी की ख़ामोशियाँ</span>
                 </CardTitle>
                 <div className="text-yellow-700 text-sm mt-1">
                   Thoughts from students scattered across the country this summer.

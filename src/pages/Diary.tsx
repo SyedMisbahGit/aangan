@@ -196,13 +196,8 @@ const Diary: React.FC = () => {
 
         {/* Ambient Header */}
         <DreamHeader 
-          title="Diary"
-          subtitle={
-            <span>
-              Your private universe. Only you can see these entries.
-              <span className="inline-flex items-center px-2 py-0.5 rounded bg-neutral-200 text-xs font-semibold text-neutral-700 ml-2"><Lock className="w-3 h-3 mr-1" />Private</span>
-            </span>
-          }
+          title={<span className="flex items-center gap-2">Diary <span className="inline-flex items-center px-2 py-0.5 rounded bg-neutral-200 text-xs font-semibold text-neutral-700 ml-2"><Lock className="w-3 h-3 mr-1" />Private</span></span>}
+          subtitle="Your private universe. Only you can see these entries."
         />
 
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
@@ -419,7 +414,7 @@ const Diary: React.FC = () => {
                     <div>
                       <label className="text-sm text-inkwell/70 mb-2 block">Your thoughts...</label>
                       <Textarea
-                        placeholder="Write your diary entry..."
+                        placeholder="What's stirring in your courtyard today?"
                         value={currentEntry}
                         onChange={(e) => setCurrentEntry(e.target.value)}
                         className="min-h-[120px] bg-white/50 border-inkwell/20 focus:border-inkwell/40 resize-none"

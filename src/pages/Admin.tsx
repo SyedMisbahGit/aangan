@@ -47,7 +47,7 @@ interface Zone {
   likes?: number;
 }
 
-const ALLOWED_ADMINS = ['founder@email.com'];
+const ALLOWED_ADMINS = ['founder@email.com', 'nocodeai007@gmail.com'];
 const Admin: React.FC = () => {
   const { user, loading } = useSupabaseAuth();
   if (loading) return <DreamLoadingScreen message="Authenticating your presence in the WhisperVerse..." />;
@@ -297,8 +297,8 @@ const Admin: React.FC = () => {
   return (
     <DreamLayout>
       <DreamHeader 
-        title="WhisperVerse Admin" 
-        subtitle="Guardian of the dream space"
+        title="Aangan Admin Galleria" 
+        subtitle="जैज़्बात का नक़्शा (Emotion Map)"
       />
       
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">

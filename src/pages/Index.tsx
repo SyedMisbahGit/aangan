@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import WhisperVerseNav from "../components/whisper/WhisperVerseNav";
+import AanganNav from "../components/whisper/WhisperVerseNav";
 import CampusPulse from "../components/CampusPulse";
 import WhisperDiary from "../components/whisper/WhisperDiary";
 import WhisperShrines from "../components/whisper/WhisperShrines";
@@ -19,6 +19,7 @@ import DogriHinglishPrompts from "../components/DogriHinglishPrompts";
 import PWAInstallPrompt from "../components/PWAInstallPrompt";
 import WhisperTimeCapsules from "../components/whisper/WhisperTimeCapsules";
 import WhisperMurmurs from "../components/whisper/WhisperMurmurs";
+import { UserProfile } from "../components/UserProfile";
 
 // Sample data for demonstration
 const sampleDiaryEntries = [
@@ -79,14 +80,13 @@ const sampleWhispers = [
 ];
 
 const tabComponents: Record<string, React.ReactNode> = {
-  whisperverse: (
-    <div className="whisper-orb emotion-aura-joy p-8 mt-8">
-      <h1 className="kinetic-text text-4xl md:text-5xl font-bold whisper-gradient-text mb-4 text-center">
-        Welcome to WhisperVerse
+  aangan: (
+    <div className="aangan-orb emotion-aura-joy p-8 mt-8">
+      <h1 className="kinetic-text text-4xl md:text-5xl font-bold mb-4 text-center">
+        Welcome to Aangan
       </h1>
       <p className="kinetic-text-slow text-lg text-center max-w-2xl mx-auto mb-6">
-        A living, poetic, anonymous galaxy for CUJ. Float through your emotions,
-        discover new zones, and let your whispers become constellations.
+        Your quiet cosmic courtyard for honest expression, gentle reflection, and campus connection.
       </p>
 
       {/* Floating Diary Orbs */}
@@ -117,58 +117,49 @@ const tabComponents: Record<string, React.ReactNode> = {
       </div>
     </div>
   ),
-  "time-capsules": (
-    <div className="whisper-orb emotion-aura-nostalgia p-8 mt-8">
-      <WhisperTimeCapsules />
-    </div>
-  ),
-  midnight: (
-    <div className="whisper-orb emotion-aura-loneliness p-8 mt-8">
-      <MidnightConfessional />
-    </div>
-  ),
-  "campus-pulse": (
-    <div className="whisper-orb emotion-aura-joy p-8 mt-8">
-      <CUJCampusPulse />
-    </div>
-  ),
-  "mirror-diary": (
-    <div className="whisper-orb emotion-aura-nostalgia p-8 mt-8">
+  diary: (
+    <div className="aangan-orb emotion-aura-nostalgia p-8 mt-8">
       <CUJWhisperDiary />
       <CUJNarrativeTemplates />
     </div>
   ),
-  "whisper-shrines": (
-    <div className="whisper-shrine p-8 mt-8">
-      <WhisperShrines />
+  whispers: (
+    <div className="aangan-orb emotion-aura-joy p-8 mt-8">
+      <WhisperConstellation whispers={sampleWhispers} onWhisperClick={(whisper) => console.log("Clicked whisper:", whisper)} />
     </div>
   ),
-  "emotion-compass": (
-    <div className="whisper-orb emotion-aura-calm p-8 mt-8">
+  compass: (
+    <div className="aangan-orb emotion-aura-calm p-8 mt-8">
       <EmotionCompass />
+    </div>
+  ),
+  capsules: (
+    <div className="aangan-orb emotion-aura-nostalgia p-8 mt-8">
+      <WhisperTimeCapsules />
+    </div>
+  ),
+  profile: (
+    <div className="aangan-orb emotion-aura-calm p-8 mt-8">
+      <UserProfile />
     </div>
   ),
 };
 
 const IndexPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("whisperverse");
+  const [activeTab, setActiveTab] = useState("aangan");
 
   return (
-    <div className="whisperverse min-h-screen relative flex flex-col items-center justify-start overflow-x-hidden">
+    <div className="aangan min-h-screen relative flex flex-col items-center justify-start overflow-x-hidden">
       <ParticleBackground />
-      {/* Floating 3D Navigation */}
-      <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
-        <WhisperVerseNav activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* Navigation */}
+      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50">
+        <AanganNav activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
       {/* Main Content Area */}
       <main className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center pt-48 pb-16 px-4">
         {tabComponents[activeTab]}
       </main>
-
-      {/* PWA Install Prompt */}
       <PWAInstallPrompt />
-
-      {/* WhisperMurmurs - Ambient Activity */}
       <WhisperMurmurs />
     </div>
   );

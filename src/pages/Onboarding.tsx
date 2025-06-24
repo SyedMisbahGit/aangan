@@ -9,8 +9,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const steps = [
   {
-    title: 'Welcome to the WhisperVerse',
-    narrator: 'Every journey begins with a single whisper. Here, you are safe, anonymous, and free to feel.',
+    title: 'Welcome to Aangan',
+    narrator: 'अपना दिल हल्का कीजिये. Every journey begins with a single whisper. Here, you are safe, anonymous, and free to feel.',
     body: 'This is your poetic sanctuary—a place for honest expression, gentle reflection, and campus connection.'
   },
   {

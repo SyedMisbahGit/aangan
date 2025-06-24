@@ -204,7 +204,7 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
           {summerSoulLocations.map(loc => (
             <button
               key={loc.value}
-              onClick={() => setLocationTag(loc.value)}
+              onClick={() => setLocationTag(loc.value as LocationTag)}
               className={`px-3 py-1 rounded-full border text-sm transition-all ${locationTag === loc.value ? 'bg-yellow-200 border-yellow-400 text-yellow-900' : 'bg-white border-yellow-200 text-yellow-700 hover:bg-yellow-100'}`}
             >
               {loc.label}
@@ -267,7 +267,7 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
               {getRandomPrompt()}
             </label>
             <Textarea
-              placeholder="Write your whisper..."
+              placeholder="What's stirring in your courtyard today?"
               value={whisperData.content}
               onChange={(e) => setWhisperData({ ...whisperData, content: e.target.value })}
               className="min-h-[120px] bg-white/50 border-inkwell/20 focus:border-inkwell/40 resize-none"
@@ -393,10 +393,10 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
             </Button>
             <Button 
               onClick={handleSubmit}
-              className="flex-1 bg-inkwell hover:bg-inkwell/90 text-paper-light"
+              className="flex-1 bg-leaf-mint hover:bg-leaf-mint/90 text-ink-space"
             >
               <Send className="w-4 h-4 mr-2" />
-              Send Whisper
+              Whisper to Aangan
             </Button>
           </div>
         </motion.div>
@@ -471,7 +471,7 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
         </DialogTrigger>
         <DialogContent className="bg-paper-light border-inkwell/10 shadow-soft max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-inkwell">Create Whisper</DialogTitle>
+            <DialogTitle className="text-inkwell">Whisper to Aangan</DialogTitle>
           </DialogHeader>
           {renderContent()}
         </DialogContent>
@@ -492,7 +492,7 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
         </SheetTrigger>
         <SheetContent side="bottom" className="bg-paper-light border-inkwell/10 h-[80vh]">
           <SheetHeader>
-            <SheetTitle className="text-inkwell">Create Whisper</SheetTitle>
+            <SheetTitle className="text-inkwell">Whisper to Aangan</SheetTitle>
           </SheetHeader>
           <div className="mt-6">
             {renderContent()}

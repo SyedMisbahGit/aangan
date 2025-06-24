@@ -85,7 +85,7 @@ export const DreamNavigation: React.FC<DreamNavigationProps> = ({
             <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsExpanded(false)} />
             <div className="relative w-80 max-w-full h-full bg-white dark:bg-dream-dark-bg shadow-2xl flex flex-col">
               <div className="flex items-center justify-between px-6 py-4 border-b border-white/20 dark:border-dream-dark-border">
-                <span className="font-bold text-lg tracking-wide text-inkwell dark:text-dream-dark-text">WhisperVerse</span>
+                <span className="font-bold text-lg tracking-wide text-inkwell">Aangan</span>
                 <Button
                   variant="ghost"
                   size="icon"

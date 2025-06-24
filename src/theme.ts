@@ -1,77 +1,22 @@
 // WhisperVerse v4 "Dream Pages" Theme System
 // Cozy, dreamlike diary experience with poetic color palettes
 
-export const dreamTheme = {
-  // Light Mode (Morning) - Warm, paper-like tones
-  light: {
-    background: "#fefefe", // Pure white paper
-    surface: "#fafafa", // Slightly warm surface
-    card: "#ffffff", // Clean white cards
-    paper: "#f8f6f3", // Warm paper texture
-    border: "#e8e4e0", // Soft paper border
-    shadow: "#f0ede8", // Warm shadow tone
-    
-    // Text colors
-    textPrimary: "#2c2c2c", // Soft black
-    textSecondary: "#6b6b6b", // Warm gray
-    textMuted: "#9ca3af", // Muted gray
-    textAccent: "#8b5cf6", // Dreamy purple
-    
-    // Accent colors
-    primary: "#8b5cf6", // Dreamy purple
-    secondary: "#f59e0b", // Warm amber
-    accent: "#ec4899", // Soft pink
-    highlight: "#fbbf24", // Gentle gold
-    
-    // Emotional tones
-    joy: "#fbbf24", // Warm yellow
-    calm: "#60a5fa", // Soft blue
-    nostalgia: "#ec4899", // Gentle pink
-    hope: "#34d399", // Soft green
-    anxiety: "#f87171", // Soft red
-    loneliness: "#a78bfa", // Lavender
-  },
-  
-  // Dark Mode (Midnight) - Deep, dreamy tones
-  dark: {
-    background: "#0a0a0a", // Deep night
-    surface: "#111111", // Slightly lighter surface
-    card: "#1a1a1a", // Dark card
-    paper: "#1f1f1f", // Dark paper texture
-    border: "#2a2a2a", // Soft dark border
-    shadow: "#000000", // Deep shadow
-    
-    // Text colors
-    textPrimary: "#f3f4f6", // Soft white
-    textSecondary: "#d1d5db", // Light gray
-    textMuted: "#9ca3af", // Muted gray
-    textAccent: "#a78bfa", // Dreamy purple
-    
-    // Accent colors
-    primary: "#a78bfa", // Dreamy purple
-    secondary: "#fbbf24", // Warm amber
-    accent: "#f472b6", // Soft pink
-    highlight: "#fbbf24", // Gentle gold
-    
-    // Emotional tones
-    joy: "#fbbf24", // Warm yellow
-    calm: "#60a5fa", // Soft blue
-    nostalgia: "#f472b6", // Gentle pink
-    hope: "#34d399", // Soft green
-    anxiety: "#f87171", // Soft red
-    loneliness: "#c084fc", // Lavender
-  }
+export const aanganTheme = {
+  background: '#F9F7F4', // bg-aangan
+  surface: '#FFFFFF',
+  card: '#FFFFFF',
+  border: '#C8C6C3', // moon-dust
+  shadow: '#FFDCA6', // star-glow (for soft accent shadows)
+  textPrimary: '#101014', // ink-space
+  textSecondary: '#9ED8BE', // leaf-mint (for highlights)
+  accent: '#FFDCA6', // star-glow
+  joy: '#F7C85C', // emotion-joy
+  calm: '#79BECB', // emotion-calm
 };
 
 // Typography
 export const typography = {
-  // Primary fonts - warm, readable, emotional
-  primary: "'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-  serif: "'DM Serif Text', 'Georgia', serif",
-  display: "'Eczar', 'Playfair Display', serif",
-  mono: "'JetBrains Mono', 'Fira Code', monospace",
-  
-  // Font weights
+  primary: "'General Sans', 'Inter', 'Noto Nastaliq Urdu', sans-serif",
   weights: {
     light: 300,
     normal: 400,
@@ -79,8 +24,6 @@ export const typography = {
     semibold: 600,
     bold: 700,
   },
-  
-  // Line heights
   lineHeights: {
     tight: 1.2,
     normal: 1.5,
@@ -148,12 +91,12 @@ export const zIndex = {
 
 // Legacy theme for backward compatibility
 export const theme = {
-  background: dreamTheme.light.background,
-  card: dreamTheme.light.card,
-  accent: dreamTheme.light.primary,
-  highlight: dreamTheme.light.highlight,
-  textPrimary: dreamTheme.light.textPrimary,
-  textSecondary: dreamTheme.light.textSecondary,
-  border: dreamTheme.light.border,
+  background: aanganTheme.background,
+  card: aanganTheme.card,
+  accent: aanganTheme.accent,
+  highlight: aanganTheme.shadow,
+  textPrimary: aanganTheme.textPrimary,
+  textSecondary: aanganTheme.textSecondary,
+  border: aanganTheme.border,
   font: typography.primary,
 }; 

@@ -1,6 +1,6 @@
 {
-  "name": "Shhh - WhisperVerse",
-  "short_name": "WhisperVerse",
+  "name": "Aangan",
+  "short_name": "Aangan",
   "description": "Anonymous campus social platform for sharing whispers and connecting with your community.",
   "start_url": "/",
   "display": "standalone",
@@ -8,6 +8,11 @@
   "theme_color": "#0ea5e9",
   "orientation": "portrait",
   "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    },
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",

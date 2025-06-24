@@ -14,12 +14,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface WhisperVerseNavProps {
+interface AanganNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
-const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({
+const AanganNav: React.FC<AanganNavProps> = ({
   activeTab,
   onTabChange,
 }) => {
@@ -27,69 +27,61 @@ const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({
 
   const navItems = [
     {
-      id: "whisperverse",
-      label: "WhisperVerse",
+      id: "aangan",
+      label: "Aangan",
       icon: Home,
-      description: "Your emotional galaxy",
-      color: "from-purple-500 to-pink-500",
-      glow: "shadow-whisper-glow-primary",
+      description: "Your quiet cosmic courtyard",
+      color: "from-leaf-mint to-star-glow",
+      glow: "shadow-aangan-glow-primary",
     },
     {
-      id: "time-capsules",
-      label: "Time Capsules",
-      icon: Clock,
-      description: "Send whispers to the future",
-      color: "from-yellow-500 to-orange-500",
-      glow: "shadow-whisper-glow-accent",
-    },
-    {
-      id: "midnight",
-      label: "Midnight Confessional",
-      icon: Moon,
-      description: "Night whispers & secrets",
-      color: "from-blue-600 to-indigo-600",
-      glow: "shadow-whisper-glow-secondary",
-    },
-    {
-      id: "campus-pulse",
-      label: "Campus Pulse",
-      icon: MapPin,
-      description: "Live emotional zones",
-      color: "from-green-500 to-emerald-500",
-      glow: "shadow-whisper-glow-accent",
-    },
-    {
-      id: "mirror-diary",
-      label: "Mirror Diary",
+      id: "diary",
+      label: "Diary / ख़ुद से",
       icon: BookOpen,
-      description: "Reflect & grow",
-      color: "from-orange-500 to-red-500",
-      glow: "shadow-whisper-glow-muted",
+      description: "Your private space",
+      color: "from-moon-dust to-leaf-mint",
+      glow: "shadow-aangan-glow-secondary",
     },
     {
-      id: "whisper-shrines",
-      label: "Whisper Shrines",
+      id: "whispers",
+      label: "Whispers / सब",
       icon: Sparkles,
-      description: "Sacred spaces",
-      color: "from-pink-500 to-purple-500",
-      glow: "shadow-whisper-glow-primary",
+      description: "Campus whispers",
+      color: "from-star-glow to-leaf-mint",
+      glow: "shadow-aangan-glow-accent",
     },
     {
-      id: "emotion-compass",
-      label: "Emotion Compass",
+      id: "compass",
+      label: "Compass / नक़्शा",
       icon: Compass,
-      description: "Navigate feelings",
-      color: "from-cyan-500 to-blue-500",
-      glow: "shadow-whisper-glow-secondary",
+      description: "Navigate moods",
+      color: "from-leaf-mint to-moon-dust",
+      glow: "shadow-aangan-glow-muted",
+    },
+    {
+      id: "capsules",
+      label: "Capsules / यादें",
+      icon: Clock,
+      description: "Time capsules",
+      color: "from-moon-dust to-star-glow",
+      glow: "shadow-aangan-glow-primary",
+    },
+    {
+      id: "profile",
+      label: "Profile / प्रोफ़ाइल",
+      icon: Heart,
+      description: "Your journey",
+      color: "from-leaf-mint to-moon-dust",
+      glow: "shadow-aangan-glow-secondary",
     },
   ];
 
   return (
     <div className="relative w-full">
       {/* 3D Navigation Container */}
-      <div className="whisper-orb-container perspective-whisper">
-        <div className="whisper-orb-inner">
-          <nav className="flex flex-wrap justify-center gap-4 p-6" role="tablist" aria-label="WhisperVerse navigation">
+      <div className="aangan-orb-container perspective-aangan">
+        <div className="aangan-orb-inner">
+          <nav className="flex flex-wrap justify-center gap-4 p-6" role="tablist" aria-label="Aangan navigation">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -108,7 +100,7 @@ const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({
                     aria-label={item.label}
                     onClick={() => onTabChange(item.id)}
                     className={cn(
-                      "whisper-orb floating-orb-fast emotion-aura",
+                      "aangan-orb floating-orb-fast emotion-aura",
                       "w-20 h-20 rounded-full flex flex-col items-center justify-center",
                       "transition-all duration-500 ease-out",
                       "relative overflow-hidden",
@@ -142,18 +134,19 @@ const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({
                       <Icon
                         className={cn(
                           "w-6 h-6 mb-1 transition-all duration-300",
-                          isActive ? "text-white" : "text-gray-300",
-                          isHovered && "text-white scale-110",
+                          isActive ? "text-leaf-mint" : "text-moon-dust",
+                          isHovered && "text-leaf-mint scale-110",
                         )}
                       />
                       <span
                         className={cn(
-                          "text-xs font-medium transition-all duration-300",
-                          isActive ? "text-white" : "text-gray-400",
-                          isHovered && "text-white",
+                          "text-xs font-medium transition-all duration-300 tracking-widest",
+                          isActive ? "text-leaf-mint" : "text-moon-dust",
+                          isHovered && "text-leaf-mint",
                         )}
+                        style={{ letterSpacing: '0.1em' }}
                       >
-                        {item.label.split(" ")[0]}
+                        {item.label}
                       </span>
                     </div>
 
@@ -172,20 +165,20 @@ const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({
                     <div
                       className={cn(
                         "absolute top-full left-1/2 transform -translate-x-1/2 mt-3",
-                        "whisper-glass px-3 py-2 rounded-lg",
-                        "text-xs text-white whitespace-nowrap",
+                        "aangan-glass px-3 py-2 rounded-lg",
+                        "text-xs text-ink-space whitespace-nowrap",
                         "opacity-0 animate-in fade-in duration-300",
                         "z-50",
                       )}
                     >
                       <div className="text-center">
                         <div className="font-medium">{item.label}</div>
-                        <div className="text-gray-300">{item.description}</div>
+                        <div className="text-moon-dust">{item.description}</div>
                       </div>
 
                       {/* Tooltip Arrow */}
                       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full">
-                        <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-700" />
+                        <div className="w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-moon-dust" />
                       </div>
                     </div>
                   )}
@@ -255,4 +248,4 @@ const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({
   );
 };
 
-export default WhisperVerseNav;
+export default AanganNav;

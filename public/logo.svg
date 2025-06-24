@@ -1,0 +1,14 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="70" viewBox="0 0 260 70" fill="none">
+  <!-- Background transparent -->
+  <!-- Wordmark -->
+  <text x="10" y="49" font-family="Inter, sans-serif" font-size="46" letter-spacing="1" fill="#101014">Aangan</text>
+
+  <!-- Degree-like circle accent -->
+  <circle cx="212" cy="26" r="6" fill="#FFDCA6"/>
+
+  <!-- Leaf-star fusion inside the circle -->
+  <path d="M212 22 L212 30 M208 26 L216 26" stroke="#101014" stroke-width="1"/>
+  <!-- Tiny mint highlight -->
+  <circle cx="212" cy="26" r="2" fill="#9ED8BE"/>
+</svg>
