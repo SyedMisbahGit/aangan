@@ -22,9 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-s e r v i c e A c c o u n t K e y * . j s o n 
- 
- s e r v i c e A c c o u n t K e y * . j s o n 
- serviceAccountKey*.json
+serviceAccountKey*.json
 bfg-*.jar
  
