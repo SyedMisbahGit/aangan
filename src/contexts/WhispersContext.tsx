@@ -10,6 +10,9 @@ export interface Whisper {
   comments: number;
   isAnonymous: boolean;
   author?: string;
+  prompt?: string;
+  tags?: string[];
+  isPublic?: boolean;
 }
 
 interface WhispersContextType {

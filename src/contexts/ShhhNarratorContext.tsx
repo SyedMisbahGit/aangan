@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useCUJHotspots } from './CUJHotspotContext';
+import { DreamLoadingScreen } from '../App';
 
 export interface NarratorState {
   currentZone: string;
@@ -438,9 +439,11 @@ const fallbackLines = {
 };
 
 export const ShhhNarratorLoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center bg-cream-100 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text font-poetic text-lg">
-    Loading narrator...
-  </div>
+  <DreamLoadingScreen 
+    message="Summoning the campus narrator..."
+    narratorLine="A poetic line is forming in the quiet."
+    variant="shimmer"
+  />
 );
 
 export const ShhhNarratorProvider: React.FC<ShhhNarratorProviderProps> = ({ children }) => {

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { DreamLoadingScreen } from '../App';
 
 type Theme = 'light' | 'dark';
 
@@ -95,11 +96,11 @@ export const DreamThemeProvider: React.FC<DreamThemeProviderProps> = ({ children
   // Prevent hydration mismatch by not rendering until initialized
   if (!isInitialized) {
     return (
-      <div className="min-h-screen bg-background text-foreground">
-        <div className="flex items-center justify-center h-screen">
-          <div className="animate-pulse">Loading theme...</div>
-        </div>
-      </div>
+      <DreamLoadingScreen 
+        message="Warming the Dream Theme..."
+        narratorLine="The colors of the campus are still waking up."
+        variant="orbs"
+      />
     );
   }
 

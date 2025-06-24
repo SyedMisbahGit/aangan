@@ -35,6 +35,7 @@ const CUJWhisperDiary: React.FC = () => {
   const [promptPack, setPromptPack] = useState<
     "north-soul" | "dogri-echoes" | "cuj-life"
   >("north-soul");
+  const [showNudge, setShowNudge] = useState(true);
 
   // CUJ Cultural Prompt Packs
   const promptPacks = {
@@ -167,6 +168,14 @@ const CUJWhisperDiary: React.FC = () => {
 
   return (
     <div className="space-y-6 p-6">
+      {showNudge && (
+        <div className="mb-4 p-3 rounded-lg bg-[#f9f7f4] border border-neutral-200 flex items-center justify-between text-neutral-700 text-sm shadow-sm">
+          <span>
+            🪞 <b>Mirror Diary</b> is your space for self-reflection. Write freely—these words are for your eyes only.
+          </span>
+          <button onClick={() => setShowNudge(false)} className="ml-4 px-2 py-1 rounded text-xs bg-neutral-200 hover:bg-neutral-300">Dismiss</button>
+        </div>
+      )}
       {/* CUJ Whisper Diary Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 text-primary">

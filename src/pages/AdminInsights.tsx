@@ -11,12 +11,13 @@ import { Brain, TrendingUp, MapPin, Users, Lightbulb, BarChart3 } from "lucide-r
 import { useSummerPulse } from '../contexts/SummerPulseContext';
 import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
 import { Navigate } from 'react-router-dom';
+import { DreamLoadingScreen } from '../App';
 
 const ALLOWED_ADMINS = ['founder@email.com'];
 
 const AdminInsights: React.FC = () => {
   const { user, loading } = useSupabaseAuth();
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading) return <DreamLoadingScreen message="Authenticating your presence in the WhisperVerse..." />;
   if (!user || !ALLOWED_ADMINS.includes(user.email)) {
     return <Navigate to="/" replace />;
   }

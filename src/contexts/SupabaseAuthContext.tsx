@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient, Session, User } from '@supabase/supabase-js';
+import { DreamLoadingScreen } from '../App';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
@@ -26,9 +27,11 @@ export const useSupabaseAuth = () => {
 
 // Loading fallback for UI components
 export const SupabaseAuthLoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center bg-cream-100 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text font-poetic text-lg">
-    Loading authentication...
-  </div>
+  <DreamLoadingScreen 
+    message="Authenticating your presence in the WhisperVerse..."
+    narratorLine="A magic link is being conjured for your journey."
+    variant="shimmer"
+  />
 );
 
 export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

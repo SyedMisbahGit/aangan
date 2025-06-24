@@ -36,6 +36,7 @@ const Capsules: React.FC = () => {
     isPublic: false,
     emotion: "peaceful"
   });
+  const [showNudge, setShowNudge] = useState(true);
 
   const [capsules] = useState([
     {
@@ -136,6 +137,14 @@ const Capsules: React.FC = () => {
 
   return (
     <DreamLayout>
+      {showNudge && (
+        <div className="mb-4 p-3 rounded-lg bg-[#f9f7f4] border border-neutral-200 flex items-center justify-between text-neutral-700 text-sm shadow-sm">
+          <span>
+            ⏳ <b>Time Capsules</b> are whispers to your future self or others. Set a date, seal your message, and let time deliver your words.
+          </span>
+          <button onClick={() => setShowNudge(false)} className="ml-4 px-2 py-1 rounded text-xs bg-neutral-200 hover:bg-neutral-300">Dismiss</button>
+        </div>
+      )}
       <div className="min-h-screen bg-gradient-to-br from-cloudmist/30 via-dawnlight/20 to-cloudmist/40">
         {/* Poetic AI Narrator */}
         <div className="pt-6 pb-4 px-4">
@@ -269,6 +278,10 @@ const Capsules: React.FC = () => {
               <Clock className="w-5 h-5" />
               Active Capsules
             </h2>
+            
+            {capsules.length === 0 && (
+              <div className="text-center text-neutral-500 py-12 italic">No capsules found. The future is unwritten.</div>
+            )}
             
             {capsules.map((capsule, index) => (
               <motion.div

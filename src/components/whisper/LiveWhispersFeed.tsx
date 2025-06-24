@@ -210,6 +210,9 @@ export const LiveWhispersFeed = () => {
 
       {/* Whispers Feed */}
       <div className="space-y-6">
+        {whispers.length === 0 && (
+          <div className="text-center text-neutral-500 py-12 italic">No whispers yet. The silence is waiting for you.</div>
+        )}
         {filteredWhispers.map((whisper, index) => {
           const totalReactions = Object.values(whisper.reactions).reduce(
             (sum, val) => sum + val,

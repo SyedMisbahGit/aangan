@@ -33,17 +33,7 @@ import { ShhhLine } from '@/components/ShhhLine';
 import WhisperPrompt from '@/components/WhisperPrompt';
 import { useSummerPulse } from '../contexts/SummerPulseContext';
 import { useWhispers } from "../contexts/WhispersContext";
-
-interface DiaryEntry {
-  id: number;
-  content: string;
-  mood: string;
-  timestamp: string;
-  isPublic: boolean;
-  prompt?: string;
-  hearts: number;
-  tags: string[];
-}
+import { Whisper } from '../contexts/WhispersContext';
 
 const Diary: React.FC = () => {
   const { whispers: entries, setWhispers: setEntries } = useWhispers();
@@ -86,35 +76,44 @@ const Diary: React.FC = () => {
 
   // Sample diary entries
   useEffect(() => {
-    const sampleEntries: DiaryEntry[] = [
+    const sampleEntries: Whisper[] = [
       {
-        id: 1,
+        id: '1',
         content: "Today I found myself sitting by the library window, watching the rain fall gently on the campus. There's something about the way the light filters through the clouds that makes everything feel softer, more contemplative. I realized how much I've grown this semester, not just academically, but in understanding myself better.",
-        mood: "peaceful",
+        emotion: "peaceful",
         timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        isPublic: false,
+        location: "library",
+        likes: 0,
+        comments: 0,
+        isAnonymous: true,
+        author: undefined,
         prompt: "What's a moment today that made you pause and reflect?",
-        hearts: 0,
         tags: ["reflection", "growth", "rain"]
       },
       {
-        id: 2,
+        id: '2',
         content: "Had the most unexpected conversation with a stranger at Tapri today. We talked about everything from poetry to the meaning of life. It's amazing how connections can form in the most ordinary moments. Sometimes the best friendships start with a simple 'hello' over chai.",
-        mood: "joy",
+        emotion: "joy",
         timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-        isPublic: true,
+        location: "tapri",
+        likes: 3,
+        comments: 0,
+        isAnonymous: true,
+        author: undefined,
         prompt: "Describe a connection you made today...",
-        hearts: 3,
         tags: ["friendship", "conversation", "tapri"]
       },
       {
-        id: 3,
+        id: '3',
         content: "Feeling a bit overwhelmed with all the deadlines approaching. But then I remembered that every challenge is an opportunity to grow stronger. Taking deep breaths and reminding myself that I'm capable of handling whatever comes my way.",
-        mood: "anxious",
+        emotion: "anxious",
         timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-        isPublic: false,
+        location: "dorm",
+        likes: 0,
+        comments: 0,
+        isAnonymous: true,
+        author: undefined,
         prompt: "What's something that challenged you today?",
-        hearts: 0,
         tags: ["stress", "growth", "resilience"]
       }
     ];
@@ -129,17 +128,19 @@ const Diary: React.FC = () => {
 
   const handleSaveEntry = () => {
     if (currentEntry.trim()) {
-      const newEntry: DiaryEntry = {
-        id: Date.now(),
+      const newEntry: Whisper = {
+        id: Date.now().toString(),
         content: currentEntry,
-        mood: currentMood,
+        emotion: currentMood,
         timestamp: new Date().toISOString(),
-        isPublic: false,
+        location: "diary",
+        likes: 0,
+        comments: 0,
+        isAnonymous: true,
+        author: undefined,
         prompt: currentPrompt,
-        hearts: 0,
         tags: isSummerPulseActive ? [...summerTags] : []
       };
-      
       setEntries(prev => [newEntry, ...prev]);
       setCurrentEntry("");
       setCurrentMood("peaceful");
@@ -148,7 +149,7 @@ const Diary: React.FC = () => {
     }
   };
 
-  const handleReleaseEntry = (entry: DiaryEntry) => {
+  const handleReleaseEntry = (entry: Whisper) => {
     setEntries(prev => prev.map(e => 
       e.id === entry.id ? { ...e, isPublic: true } : e
     ));
@@ -169,7 +170,7 @@ const Diary: React.FC = () => {
 
   const getMoodStats = () => {
     const moodCounts = entries.reduce((acc, entry) => {
-      acc[entry.mood] = (acc[entry.mood] || 0) + 1;
+      acc[entry.emotion] = (acc[entry.emotion] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
     
@@ -194,9 +195,9 @@ const Diary: React.FC = () => {
         </div>
 
         {/* Ambient Header */}
-        <DreamHeader 
-          title="Dream Diary"
-          subtitle="Your private sanctuary of thoughts"
+        <DreamHeader
+          title={<span className="flex items-center gap-2">Diary <span className="inline-flex items-center px-2 py-0.5 rounded bg-neutral-200 text-xs font-semibold text-neutral-700 ml-2"><Lock className="w-3 h-3 mr-1" />Private</span></span>}
+          subtitle="Your private universe. Only you can see these entries."
         />
 
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
@@ -226,7 +227,7 @@ const Diary: React.FC = () => {
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-inkwell">
-                    {entries.reduce((sum, e) => sum + e.hearts, 0)}
+                    {entries.reduce((sum, e) => sum + e.likes, 0)}
                   </div>
                   <div className="text-sm text-inkwell/70">Hearts Received</div>
                 </div>
@@ -485,12 +486,12 @@ const Diary: React.FC = () => {
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-lg ${getMoodStyle(entry.mood)}`}>
-                            <span className="text-lg">{getMoodIcon(entry.mood)}</span>
+                          <div className={`p-2 rounded-lg ${getMoodStyle(entry.emotion)}`}>
+                            <span className="text-lg">{getMoodIcon(entry.emotion)}</span>
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="font-medium text-inkwell capitalize">{entry.mood}</span>
+                              <span className="font-medium text-inkwell capitalize">{entry.emotion}</span>
                               {entry.isPublic ? (
                                 <Badge variant="outline" className="text-xs bg-white/50 border-inkwell/20">
                                   <Users className="w-3 h-3 mr-1" />
@@ -512,7 +513,7 @@ const Diary: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1 text-inkwell/60">
                             <Heart className="w-4 h-4" />
-                            <span className="text-sm">{entry.hearts}</span>
+                            <span className="text-sm">{entry.likes}</span>
                           </div>
                         </div>
                       </div>
@@ -555,17 +556,7 @@ const Diary: React.FC = () => {
             </AnimatePresence>
             
             {entries.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-12"
-              >
-                <div className="text-inkwell/60 mb-4">
-                  <BookOpen className="w-12 h-12 mx-auto mb-4" />
-                  <p>No diary entries yet.</p>
-                  <p className="text-sm">Start writing to capture your thoughts and feelings.</p>
-                </div>
-              </motion.div>
+              <div className="text-center text-neutral-500 py-12 italic">No diary entries yet. Begin your story with a single whisper.</div>
             )}
           </motion.div>
         </div>

@@ -38,9 +38,24 @@ const Login = lazy(() => import('./pages/Login'));
 const VAPID_KEY =
   "BI3DBu7k1VWLVM9S8UkeQl9gEhlLuHwa4dLOOr77R8kTbCza8TlpKJlc3URwGG-g2-u3Tcs16unk57rXiXPVSyA";
 
-const LoadingScreen = () => (
-  <div className="min-h-screen flex items-center justify-center bg-cream-100 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text font-poetic text-lg">
-    Shhh is sensing the campus...
+export const DreamLoadingScreen = ({ message, narratorLine, variant }: { message?: string, narratorLine?: string, variant?: 'default' | 'orbs' | 'shimmer' }) => (
+  <div className="min-h-screen flex flex-col items-center justify-center bg-cream-100 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text font-poetic text-lg animate-fade-in relative overflow-hidden">
+    {/* Floating Orbs Animation */}
+    {(variant === 'orbs' || !variant) && (
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="absolute top-1/4 left-1/3 w-24 h-24 bg-dream-accent/30 rounded-full blur-2xl animate-float-slow" />
+        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-dream-secondary/20 rounded-full blur-2xl animate-float-medium" />
+        <div className="absolute top-2/3 right-1/3 w-16 h-16 bg-dream-primary/20 rounded-full blur-2xl animate-float-fast" />
+      </div>
+    )}
+    {/* Shimmer Animation */}
+    {(variant === 'shimmer') && (
+      <div className="w-64 h-6 bg-gradient-to-r from-dream-accent/10 via-dream-accent/30 to-dream-accent/10 rounded-full animate-shimmer mb-6" />
+    )}
+    <div className="z-10 text-center">
+      <div className="mb-2 animate-pulse">{message || 'Shhh is sensing the campus...'}</div>
+      {narratorLine && <div className="italic text-dream-accent mt-2 animate-fade-in-slow">{narratorLine}</div>}
+    </div>
   </div>
 );
 
@@ -49,9 +64,13 @@ const AppContent: React.FC = () => {
   const { theme, toggleTheme, isInitialized } = useDreamTheme();
   const { isReady: narratorReady } = useShhhNarrator();
   const { isReady: hotspotReady } = useCUJHotspots();
+  const { user, loading: authLoading, isOnboardingComplete } = useSupabaseAuth();
   const { addWhisper } = useWhispers();
 
-  if (!isInitialized || !narratorReady || !hotspotReady) return <LoadingScreen />;
+  // Aggregate all context readiness
+  if (!isInitialized || !narratorReady || !hotspotReady || authLoading) {
+    return <DreamLoadingScreen message="Sensing the campus, warming the chai, and listening for whispers..." />;
+  }
 
   // Trigger confetti on app load for celebration
   useEffect(() => {
@@ -112,10 +131,11 @@ const AppContent: React.FC = () => {
     }`}>
       <Suspense
         fallback={
-          <div className="dream-loading">
-            <div className="dream-loading-spinner"></div>
-            <span className="ml-3 text-dream-text-secondary">Loading whispers...</span>
-          </div>
+          <DreamLoadingScreen 
+            message="Loading whispers..."
+            narratorLine="The campus is quietly gathering stories."
+            variant="orbs"
+          />
         }
       >
         <Routes>
@@ -149,9 +169,8 @@ const AppContent: React.FC = () => {
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading, isOnboardingComplete } = useSupabaseAuth();
   const location = useLocation();
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading) return <DreamLoadingScreen message="Authenticating your presence in the WhisperVerse..." />;
   if (!user) return <Navigate to="/login" replace />;
-  // If not onboarded, redirect to /onboarding (unless already there)
   if (!isOnboardingComplete && location.pathname !== "/onboarding") {
     return <Navigate to="/onboarding" replace />;
   }
@@ -161,13 +180,27 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 function AppContentWithErrorBoundary() {
   const isMobile = useIsMobile();
   const [hasError, setHasError] = React.useState(false);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
   React.useEffect(() => {
     const handler = (e: ErrorEvent) => setHasError(true);
     window.addEventListener('error', handler);
     return () => window.removeEventListener('error', handler);
   }, []);
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
   if (isMobile && hasError) {
     return <div className="min-h-screen flex items-center justify-center text-center p-8 bg-dream-bg dark:bg-[#0e0e10] text-dream-text-primary dark:text-dream-dark-text">We're fixing something – please retry in a moment.</div>;
+  }
+  if (isOffline) {
+    return <div className="min-h-screen flex items-center justify-center text-center p-8 bg-[#f9f7f4] text-neutral-700 text-lg">We're floating in a quiet zone. Please reconnect.</div>;
   }
   return <AppContent />;
 }

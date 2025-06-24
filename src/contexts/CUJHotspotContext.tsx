@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
+import { DreamLoadingScreen } from '../App';
 
 export interface CUJHotspot {
   id: string;
@@ -65,9 +66,11 @@ interface CUJHotspotProviderProps {
 }
 
 export const CUJHotspotLoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center bg-cream-100 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text font-poetic text-lg">
-    Loading campus hotspots...
-  </div>
+  <DreamLoadingScreen 
+    message="Mapping campus hotspots..."
+    narratorLine="The pulse of the campus is being felt."
+    variant="orbs"
+  />
 );
 
 export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children }) => {

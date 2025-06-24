@@ -99,73 +99,15 @@ export const DreamNavigation: React.FC<DreamNavigationProps> = ({
                   </Button> */}
                 </div>
                 
-                <nav className="flex-1 space-y-2">
+                <nav role="navigation" aria-label="Main navigation" className="flex-1 space-y-2">
                   {navigationItems.map((item) => (
                     <Link
                       key={item.path}
                       to={item.path}
                       onClick={() => setIsExpanded(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      aria-label={item.label}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 active:bg-neutral-200 ${
                         isActive(item.path)
                           ? 'bg-primary text-primary-foreground shadow-md'
                           : 'text-inkwell/70 hover:bg-white/50 hover:text-inkwell'
-                      }`}
-                    >
-                      <item.icon className="w-5 h-5" />
-                      {item.label}
-                      <span className="text-xs mt-1">Label</span>
-                    </Link>
-                  ))}
-                </nav>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Desktop Navigation */}
-      <div className="fixed bottom-0 left-0 w-full z-50 hidden md:block">
-        <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-2">
-          <nav className="flex items-center gap-1">
-            {navigationItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`relative p-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  isActive(item.path)
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'text-inkwell/70 hover:bg-white/50 hover:text-inkwell'
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                {isActive(item.path) && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-primary rounded-xl -z-10"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
-                <span className="text-xs mt-1">Label</span>
-              </Link>
-            ))}
-            
-            <div className="w-px h-6 bg-white/20 mx-1" />
-            
-            {/* Remove or comment out the Button for theme toggle */}
-            {/* <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleTheme}
-              className="p-3 text-inkwell/70 hover:bg-white/50 hover:text-inkwell"
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </Button> */}
-          </nav>
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default DreamNavigation; 
+                      }`

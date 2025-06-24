@@ -16,7 +16,8 @@ import {
   Heart,
   MessageCircle,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Globe
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCUJHotspots } from "../contexts/CUJHotspotContext";
@@ -178,8 +179,8 @@ const HomeFeed: React.FC = () => {
 
         {/* Ambient Header */}
         <DreamHeader 
-          title={getTimeAwareGreeting()}
-          subtitle={getActivityContext()}
+          title={<span className="flex items-center gap-2">Whisper Feed <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-xs font-semibold text-blue-700 ml-2"><Globe className="w-3 h-3 mr-1" />Public</span></span>}
+          subtitle="A living constellation of anonymous voices. Your whispers join the campus chorus."
         />
 
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
@@ -305,6 +306,9 @@ const HomeFeed: React.FC = () => {
                     </div>
                   ))}
                 </div>
+                {emotionClusters.length === 0 && (
+                  <div className="text-center text-neutral-500 py-8 italic">No trending emotions right now. The campus is quietly listening.</div>
+                )}
               </CardContent>
             </Card>
       </motion.div>
@@ -340,18 +344,8 @@ const HomeFeed: React.FC = () => {
               ))}
             </AnimatePresence>
             
-            {filteredWhispers.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-12"
-              >
-                <div className="text-inkwell/60 mb-4">
-                  <MessageCircle className="w-12 h-12 mx-auto mb-4" />
-                  <p>No whispers found matching your filters.</p>
-                  <p className="text-sm">Try adjusting your search or emotion filter.</p>
-                </div>
-              </motion.div>
+            {whispers.length === 0 && (
+              <div className="text-center text-neutral-500 py-12 italic">No whispers yet. The silence is waiting for you.</div>
             )}
       </motion.div>
     </div>

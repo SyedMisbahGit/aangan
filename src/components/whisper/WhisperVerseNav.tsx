@@ -89,7 +89,7 @@ const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({
       {/* 3D Navigation Container */}
       <div className="whisper-orb-container perspective-whisper">
         <div className="whisper-orb-inner">
-          <nav className="flex flex-wrap justify-center gap-4 p-6">
+          <nav className="flex flex-wrap justify-center gap-4 p-6" role="tablist" aria-label="WhisperVerse navigation">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -104,6 +104,8 @@ const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({
                 >
                   {/* 3D Navigation Orb */}
                   <button
+                    role="tab"
+                    aria-label={item.label}
                     onClick={() => onTabChange(item.id)}
                     className={cn(
                       "whisper-orb floating-orb-fast emotion-aura",
@@ -112,6 +114,7 @@ const WhisperVerseNav: React.FC<WhisperVerseNavProps> = ({
                       "relative overflow-hidden",
                       isActive && "scale-110",
                       isHovered && "scale-105",
+                      "active:bg-neutral-200"
                     )}
                     style={{
                       transformStyle: "preserve-3d",

@@ -42,6 +42,7 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
     isDiaryEntry: false
   });
   const [currentStep, setCurrentStep] = useState(1);
+  const [showNudge, setShowNudge] = useState(true);
 
   const { nearbyHotspots, updateHotspotActivity } = useCUJHotspots();
   const { addWhisper } = useWhispers();
@@ -76,8 +77,8 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
         emotion: whisperData.emotion,
         timestamp: new Date().toISOString(),
         location: whisperData.hotspot || '',
-        likes: whisperData.hearts || 0,
-        comments: whisperData.replies || 0,
+        likes: 0,
+        comments: 0,
         isAnonymous: true,
         author: undefined,
       };
@@ -111,6 +112,14 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
 
   const renderContent = () => (
     <div className="space-y-6">
+      {showNudge && (
+        <div className="mb-4 p-3 rounded-lg bg-[#f9f7f4] border border-neutral-200 flex items-center justify-between text-neutral-700 text-sm shadow-sm">
+          <span>
+            🌱 <b>Welcome!</b> Your whispers are anonymous and safe. Share a feeling, a thought, or a secret—your voice matters here.
+          </span>
+          <button onClick={() => setShowNudge(false)} className="ml-4 px-2 py-1 rounded text-xs bg-neutral-200 hover:bg-neutral-300">Dismiss</button>
+        </div>
+      )}
       {/* Step 1: Content */}
       {currentStep === 1 && (
         <motion.div
