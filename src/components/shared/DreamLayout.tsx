@@ -17,7 +17,7 @@ export const DreamLayout: React.FC<DreamLayoutProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className={`min-h-screen bg-dream-bg dark:bg-[#0e0e10] transition-colors duration-500 ${
+      className={`min-h-screen bg-[#f9f7f4] text-neutral-900 transition-colors duration-500 ${
         showPadding ? "pb-24" : ""
       } ${className}`}
     >

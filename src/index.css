@@ -15,6 +15,8 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #f9f7f4;
+  color: #111;
 }
 
 /* Dream Pages Theme Variables */
@@ -45,39 +47,15 @@ body {
   --dream-loneliness: #a78bfa;
 }
 
-/* Dark Mode (Midnight) */
-.dark {
-  --dream-bg: #0a0a0a;
-  --dream-surface: #111111;
-  --dream-card: #1a1a1a;
-  --dream-paper: #1f1f1f;
-  --dream-border: #2a2a2a;
-  --dream-shadow: #000000;
-  
-  --dream-text-primary: #f3f4f6;
-  --dream-text-secondary: #d1d5db;
-  --dream-text-muted: #9ca3af;
-  --dream-text-accent: #a78bfa;
-  
-  --dream-primary: #a78bfa;
-  --dream-secondary: #fbbf24;
-  --dream-accent: #f472b6;
-  --dream-highlight: #fbbf24;
-  
-  --dream-joy: #fbbf24;
-  --dream-calm: #60a5fa;
-  --dream-nostalgia: #f472b6;
-  --dream-hope: #34d399;
-  --dream-anxiety: #f87171;
-  --dream-loneliness: #c084fc;
-}
-
 /* Dream Card Styles */
 .dream-card {
-  background: var(--dream-card);
-  border: 1px solid var(--dream-border);
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  background: #f9f7f4;
+  color: #111;
+  border: 1px solid #e8e4e0;
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -99,27 +77,11 @@ body {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Dark mode card adjustments */
-.dark .dream-card {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-}
-
-.dark .dream-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-}
-
 /* Dream Paper Texture */
 .dream-paper {
   background: var(--dream-paper);
   background-image: 
     radial-gradient(circle at 1px 1px, rgba(0,0,0,0.02) 1px, transparent 0);
-  background-size: 20px 20px;
-}
-
-.dark .dream-paper {
-  background: var(--dream-paper);
-  background-image: 
-    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.02) 1px, transparent 0);
   background-size: 20px 20px;
 }
 
@@ -179,11 +141,11 @@ body {
 
 /* Dream Input Styles */
 .dream-input {
-  background: var(--dream-card);
-  border: 1px solid var(--dream-border);
+  background: #fff;
+  border: 1px solid #e8e4e0;
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
-  color: var(--dream-text-primary);
+  color: #111;
   transition: all 0.3s ease;
 }
 
@@ -191,10 +153,6 @@ body {
   outline: none;
   border-color: var(--dream-primary);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-}
-
-.dark .dream-input:focus {
-  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
 }
 
 /* Dream Badge Styles */
@@ -307,15 +265,14 @@ body {
 
 /* Dream Modal Styles */
 .dream-modal {
-  background: var(--dream-card);
+  background: #f9f7f4;
+  color: #111;
+  border: 1px solid #e8e4e0;
   border-radius: 1.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--dream-border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
   overflow: hidden;
-}
-
-.dark .dream-modal {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
 }
 
 /* Dream Navigation */
@@ -324,16 +281,13 @@ body {
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--dream-card);
-  border: 1px solid var(--dream-border);
+  background: #f9f7f4;
+  color: #111;
+  border: 1px solid #e8e4e0;
   border-radius: 2rem;
   padding: 0.75rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   z-index: 50;
-}
-
-.dark .dream-nav {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
 }
 
 .dream-nav-item {
@@ -420,18 +374,10 @@ body {
   color: var(--dream-text-primary);
 }
 
-.dark ::selection {
-  background: rgba(167, 139, 250, 0.2);
-}
-
 /* Dream Focus Styles */
 .dream-focus:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-}
-
-.dark .dream-focus:focus {
-  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
 }
 
 /* Dream Responsive Design */
@@ -493,4 +439,18 @@ body {
   .dream-button {
     border: 2px solid var(--dream-text-primary);
   }
+}
+
+input, textarea, .search-bar {
+  color: #111;
+  background: #fff;
+  border: 1px solid #e8e4e0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+input::placeholder, textarea::placeholder, .search-bar::placeholder {
+  color: #a3a3a3;
+  opacity: 1;
 }

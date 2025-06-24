@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCUJHotspots } from '../../contexts/CUJHotspotContext';
+import { useWhispers } from '../../contexts/WhispersContext';
 
 interface WhisperComposerProps {
   variant?: 'floating' | 'modal' | 'sheet';
@@ -43,6 +44,7 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
   const [currentStep, setCurrentStep] = useState(1);
 
   const { nearbyHotspots, updateHotspotActivity } = useCUJHotspots();
+  const { addWhisper } = useWhispers();
 
   const emotions = [
     { value: 'joy', label: 'Joy', icon: '✨', color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
@@ -66,18 +68,18 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
     "Describe a connection you made today..."
   ];
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (whisperData.content.trim()) {
       const newWhisper = {
-        id: Date.now(),
+        id: Date.now().toString(),
         content: whisperData.content,
         emotion: whisperData.emotion,
-        visibility: whisperData.visibility,
-        hotspot: whisperData.hotspot,
-        isDiaryEntry: whisperData.isDiaryEntry,
         timestamp: new Date().toISOString(),
-        hearts: 0,
-        replies: 0
+        location: whisperData.hotspot || '',
+        likes: whisperData.hearts || 0,
+        comments: whisperData.replies || 0,
+        isAnonymous: true,
+        author: undefined,
       };
 
       // Update hotspot activity if a hotspot is selected
@@ -97,6 +99,9 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
       });
       setCurrentStep(1);
       setIsOpen(false);
+
+      // After successful post creation:
+      addWhisper(newWhisper);
     }
   };
 

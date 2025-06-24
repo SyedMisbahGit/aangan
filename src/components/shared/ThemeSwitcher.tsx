@@ -67,52 +67,6 @@ export const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
 
   const currentThemeData = themes.find((t) => t.id === currentTheme);
 
-  return (
-    <div className={`relative ${className}`}>
-      <Button
-        variant="glass"
-        size="sm"
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-4 py-2 rounded-2xl backdrop-blur-md transition-all duration-300 hover:scale-105"
-      >
-        <Palette className="h-4 w-4" />
-        <span className="text-sm font-medium">{currentThemeData?.name}</span>
-      </Button>
-
-      {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-64 glass rounded-2xl p-4 z-50 animate-scale-in">
-          <div className="space-y-2">
-            {themes.map((theme) => (
-              <button
-                key={theme.id}
-                onClick={() => applyTheme(theme.id)}
-                className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-300 hover:scale-105 ${
-                  currentTheme === theme.id
-                    ? "bg-primary/20 text-primary border border-primary/30"
-                    : "hover:bg-muted/50 text-muted-foreground"
-                }`}
-              >
-                <div
-                  className={`p-2 rounded-lg ${
-                    currentTheme === theme.id ? "bg-primary/20" : "bg-muted/20"
-                  }`}
-                >
-                  {theme.icon}
-                </div>
-                <div className="text-left">
-                  <div className="font-medium text-sm">{theme.name}</div>
-                  <div className="text-xs opacity-70">{theme.description}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Backdrop */}
-      {isOpen && (
-        <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-      )}
-    </div>
-  );
+  // Return null to hide the ThemeSwitcher UI
+  return null;
 };

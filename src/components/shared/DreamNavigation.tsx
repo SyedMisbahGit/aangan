@@ -88,14 +88,15 @@ export const DreamNavigation: React.FC<DreamNavigationProps> = ({
               <div className="flex flex-col h-full p-6">
                 <div className="flex items-center justify-between mb-8">
                   <h2 className="text-xl font-semibold text-inkwell">Navigation</h2>
-                  <Button
+                  {/* Remove or comment out the Button for theme toggle */}
+                  {/* <Button
                     variant="ghost"
                     size="sm"
                     onClick={toggleTheme}
                     className="bg-white/50 border border-white/20 hover:bg-white/70"
                   >
                     {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                  </Button>
+                  </Button> */}
                 </div>
                 
                 <nav className="flex-1 space-y-2">
@@ -112,6 +113,7 @@ export const DreamNavigation: React.FC<DreamNavigationProps> = ({
                     >
                       <item.icon className="w-5 h-5" />
                       {item.label}
+                      <span className="text-xs mt-1">Label</span>
                     </Link>
                   ))}
                 </nav>
@@ -122,7 +124,7 @@ export const DreamNavigation: React.FC<DreamNavigationProps> = ({
       </AnimatePresence>
 
       {/* Desktop Navigation */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 hidden md:block">
+      <div className="fixed bottom-0 left-0 w-full z-50 hidden md:block">
         <div className="bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-2">
           <nav className="flex items-center gap-1">
             {navigationItems.map((item) => (
@@ -144,19 +146,21 @@ export const DreamNavigation: React.FC<DreamNavigationProps> = ({
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
                 )}
+                <span className="text-xs mt-1">Label</span>
               </Link>
             ))}
             
             <div className="w-px h-6 bg-white/20 mx-1" />
             
-            <Button
+            {/* Remove or comment out the Button for theme toggle */}
+            {/* <Button
               variant="ghost"
               size="sm"
               onClick={toggleTheme}
               className="p-3 text-inkwell/70 hover:bg-white/50 hover:text-inkwell"
             >
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </Button>
+            </Button> */}
           </nav>
         </div>
       </div>
