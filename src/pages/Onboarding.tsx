@@ -5,6 +5,7 @@ import { DreamLayout } from '../components/shared/DreamLayout';
 import { DreamHeader } from '../components/shared/DreamHeader';
 import { Button } from '../components/ui/button';
 import { ShhhLine } from '../components/ShhhLine';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const steps = [
   {
@@ -45,11 +46,15 @@ const Onboarding: React.FC = () => {
   const navigate = useNavigate();
   const isLast = step === steps.length - 1;
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const [narratorVisible, setNarratorVisible] = useState(true);
 
   useEffect(() => {
     if (headingRef.current) {
       headingRef.current.focus();
     }
+    setNarratorVisible(false);
+    const timeout = setTimeout(() => setNarratorVisible(true), 100);
+    return () => clearTimeout(timeout);
   }, [step]);
 
   const handleNext = async () => {
@@ -69,6 +74,20 @@ const Onboarding: React.FC = () => {
   return (
     <DreamLayout>
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-cloudmist/30 via-dawnlight/20 to-cloudmist/40">
+        <div className="w-full max-w-lg mt-8 mb-2">
+          <div className="h-2 bg-inkwell/10 rounded-full overflow-hidden">
+            <motion.div
+              className="h-2 bg-dream-accent rounded-full"
+              initial={false}
+              animate={{ width: `${((step + 1) / steps.length) * 100}%` }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              aria-valuenow={step + 1}
+              aria-valuemax={steps.length}
+              aria-label="Onboarding progress"
+              role="progressbar"
+            />
+          </div>
+        </div>
         <h1
           ref={headingRef}
           tabIndex={-1}
@@ -84,13 +103,39 @@ const Onboarding: React.FC = () => {
           <span className="sr-only" id="onboarding-progress">
             Step {step + 1} of 6
           </span>
-          <div className="text-lg text-inkwell/80 italic mb-4" aria-live="polite">
-            {steps[step].narrator}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -24 }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
+              className="w-full flex flex-col items-center"
+            >
+              <motion.div
+                className="text-lg text-inkwell/80 italic mb-4"
+                aria-live="polite"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: narratorVisible ? 1 : 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                {steps[step].narrator}
+              </motion.div>
+              <div className="text-inkwell/90 text-center text-base mb-8">
+                {steps[step].body}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+          <div className="flex justify-center gap-2 mb-4 mt-2" aria-label="Step indicators">
+            {steps.map((_, i) => (
+              <span
+                key={i}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${i === step ? 'bg-dream-accent' : 'bg-inkwell/20'}`}
+                aria-current={i === step ? 'step' : undefined}
+              />
+            ))}
           </div>
-          <div className="text-inkwell/90 text-center text-base mb-8">
-            {steps[step].body}
-          </div>
-          <Button onClick={handleNext} className="w-full mt-4">
+          <Button onClick={handleNext} className="w-full mt-4 animate-bounce-once">
             {isLast ? 'Begin' : 'Next'}
           </Button>
           <button

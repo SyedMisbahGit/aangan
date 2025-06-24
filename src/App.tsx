@@ -21,6 +21,7 @@ import { SummerPulseProvider } from "./contexts/SummerPulseContext";
 import { SupabaseAuthProvider, useSupabaseAuth } from './contexts/SupabaseAuthContext';
 import { WhispersProvider, useWhispers } from "./contexts/WhispersContext";
 import { useIsMobile } from './hooks/use-mobile';
+import ErrorBoundary from './components/shared/ErrorBoundary';
 
 const queryClient = new QueryClient();
 
@@ -218,7 +219,9 @@ const App: React.FC = () => {
                     <Toaster />
                     <Sonner />
                     <BrowserRouter>
-                      <AppContentWithErrorBoundary />
+                      <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the Dream." >
+                        <AppContentWithErrorBoundary />
+                      </ErrorBoundary>
                     </BrowserRouter>
                   </TooltipProvider>
                 </WhispersProvider>

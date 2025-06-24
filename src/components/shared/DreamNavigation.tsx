@@ -72,52 +72,48 @@ export const DreamNavigation: React.FC<DreamNavigationProps> = ({
           {isExpanded ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </Button>
       </div>
-
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation Drawer */}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="fixed inset-0 z-40 md:hidden"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="fixed inset-0 z-40 flex md:hidden"
           >
-            <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setIsExpanded(false)} />
-            <div className="absolute right-0 top-0 h-full w-80 bg-white/95 backdrop-blur-xl border-l border-white/20 shadow-2xl">
-              <div className="flex flex-col h-full p-6">
-                <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-xl font-semibold text-inkwell">Navigation</h2>
-                  {/* Remove or comment out the Button for theme toggle */}
-                  {/* <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={toggleTheme}
-                    className="bg-white/50 border border-white/20 hover:bg-white/70"
-                  >
-                    {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                  </Button> */}
-                </div>
-                
-                <nav role="navigation" aria-label="Main navigation" className="flex-1 space-y-2">
-                  {navigationItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setIsExpanded(false)}
-                      aria-label={item.label}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 active:bg-neutral-200 ${
-                        isActive(item.path)
-                          ? 'bg-primary text-primary-foreground shadow-md'
-                          : 'text-inkwell/70 hover:bg-white/50 hover:text-inkwell'
-                      }`}
-                    >
-                      {React.createElement(item.icon, { className: `w-5 h-5 ${item.color}` })}
-                      <span>{item.label}</span>
-                    </Link>
-                  ))}
-                </nav>
+            <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsExpanded(false)} />
+            <div className="relative w-80 max-w-full h-full bg-white dark:bg-dream-dark-bg shadow-2xl flex flex-col">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/20 dark:border-dream-dark-border">
+                <span className="font-bold text-lg tracking-wide text-inkwell dark:text-dream-dark-text">WhisperVerse</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsExpanded(false)}
+                  aria-label="Close menu"
+                  className="rounded-full hover:bg-neutral-200 active:bg-neutral-300"
+                >
+                  <X className="w-6 h-6" />
+                </Button>
               </div>
+              <nav className="flex-1 flex flex-col gap-1 px-2 py-4">
+                {navigationItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsExpanded(false)}
+                    aria-label={item.label}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 active:bg-neutral-200 ${
+                      isActive(item.path)
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : 'text-inkwell/70 hover:bg-white/50 hover:text-inkwell'
+                    }`}
+                  >
+                    {React.createElement(item.icon, { className: `w-5 h-5 ${item.color}` })}
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+              </nav>
             </div>
           </motion.div>
         )}
