@@ -1,551 +1,496 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&family=DM+Serif+Text:ital@0;1&family=Eczar:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* WhisperVerse 3D Theme Variables */
+/* WhisperVerse v4 "Dream Pages" - Cozy Diary Theme */
+
+/* Base Styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dream Pages Theme Variables */
 :root {
-  /* 3D Depth Colors */
-  --whisper-orb-primary: 147 51 234;
-  --whisper-orb-secondary: 59 130 246;
-  --whisper-orb-accent: 236 72 153;
-  --whisper-orb-muted: 100 116 139;
-  --whisper-orb-background: 15 23 42;
-  --whisper-orb-foreground: 248 250 252;
-
-  /* 3D Glow Effects */
-  --whisper-glow-primary: 0 0 20px rgba(147, 51, 234, 0.3);
-  --whisper-glow-secondary: 0 0 20px rgba(59, 130, 246, 0.3);
-  --whisper-glow-accent: 0 0 20px rgba(236, 72, 153, 0.3);
-  --whisper-glow-muted: 0 0 15px rgba(100, 116, 139, 0.2);
-
-  /* 3D Shadows */
-  --whisper-shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.1);
-  --whisper-shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
-  --whisper-shadow-deep: 0 12px 40px rgba(0, 0, 0, 0.2);
-
-  /* Kinetic Animation Speeds */
-  --whisper-float-slow: 6s;
-  --whisper-float-medium: 4s;
-  --whisper-float-fast: 2s;
-  --whisper-pulse-slow: 3s;
-  --whisper-pulse-medium: 2s;
-  --whisper-pulse-fast: 1s;
+  /* Light Mode (Morning) */
+  --dream-bg: #fefefe;
+  --dream-surface: #fafafa;
+  --dream-card: #ffffff;
+  --dream-paper: #f8f6f3;
+  --dream-border: #e8e4e0;
+  --dream-shadow: #f0ede8;
+  
+  --dream-text-primary: #2c2c2c;
+  --dream-text-secondary: #6b6b6b;
+  --dream-text-muted: #9ca3af;
+  --dream-text-accent: #8b5cf6;
+  
+  --dream-primary: #8b5cf6;
+  --dream-secondary: #f59e0b;
+  --dream-accent: #ec4899;
+  --dream-highlight: #fbbf24;
+  
+  --dream-joy: #fbbf24;
+  --dream-calm: #60a5fa;
+  --dream-nostalgia: #ec4899;
+  --dream-hope: #34d399;
+  --dream-anxiety: #f87171;
+  --dream-loneliness: #a78bfa;
 }
 
-/* WhisperVerse Theme Classes */
-.whisperverse {
-  --background: 15 23 42;
-  --foreground: 248 250 252;
-  --card: 30 41 59;
-  --card-foreground: 248 250 252;
-  --popover: 30 41 59;
-  --popover-foreground: 248 250 252;
-  --primary: 147 51 234;
-  --primary-foreground: 248 250 252;
-  --secondary: 59 130 246;
-  --secondary-foreground: 248 250 252;
-  --muted: 51 65 85;
-  --muted-foreground: 148 163 184;
-  --accent: 236 72 153;
-  --accent-foreground: 248 250 252;
-  --destructive: 239 68 68;
-  --destructive-foreground: 248 250 252;
-  --border: 51 65 85;
-  --input: 51 65 85;
-  --ring: 147 51 234;
-  --radius: 0.75rem;
+/* Dark Mode (Midnight) */
+.dark {
+  --dream-bg: #0a0a0a;
+  --dream-surface: #111111;
+  --dream-card: #1a1a1a;
+  --dream-paper: #1f1f1f;
+  --dream-border: #2a2a2a;
+  --dream-shadow: #000000;
+  
+  --dream-text-primary: #f3f4f6;
+  --dream-text-secondary: #d1d5db;
+  --dream-text-muted: #9ca3af;
+  --dream-text-accent: #a78bfa;
+  
+  --dream-primary: #a78bfa;
+  --dream-secondary: #fbbf24;
+  --dream-accent: #f472b6;
+  --dream-highlight: #fbbf24;
+  
+  --dream-joy: #fbbf24;
+  --dream-calm: #60a5fa;
+  --dream-nostalgia: #f472b6;
+  --dream-hope: #34d399;
+  --dream-anxiety: #f87171;
+  --dream-loneliness: #c084fc;
 }
 
-/* 3D Whisper Orb Base Styles */
-.whisper-orb {
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(147, 51, 234, 0.1) 0%,
-    rgba(59, 130, 246, 0.05) 50%,
-    rgba(15, 23, 42, 0.8) 100%
-  );
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(147, 51, 234, 0.2);
-  box-shadow:
-    var(--whisper-shadow-soft),
-    var(--whisper-glow-primary),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transform-style: preserve-3d;
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.whisper-orb:hover {
-  transform: translateY(-8px) rotateX(5deg) rotateY(5deg);
-  box-shadow:
-    var(--whisper-shadow-medium),
-    var(--whisper-glow-primary),
-    0 0 30px rgba(147, 51, 234, 0.4);
-}
-
-/* Kinetic Typography */
-.kinetic-text {
-  animation: kineticFloat var(--whisper-float-medium) ease-in-out infinite;
-  text-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
-}
-
-.kinetic-text-slow {
-  animation: kineticFloat var(--whisper-float-slow) ease-in-out infinite;
-}
-
-.kinetic-text-fast {
-  animation: kineticFloat var(--whisper-float-fast) ease-in-out infinite;
-}
-
-@keyframes kineticFloat {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-3px) rotate(0.5deg);
-  }
-  50% {
-    transform: translateY(-5px) rotate(0deg);
-  }
-  75% {
-    transform: translateY(-2px) rotate(-0.5deg);
-  }
-}
-
-/* 3D Floating Animation */
-.floating-orb {
-  animation: floatingOrb var(--whisper-float-medium) ease-in-out infinite;
-}
-
-.floating-orb-slow {
-  animation: floatingOrb var(--whisper-float-slow) ease-in-out infinite;
-}
-
-.floating-orb-fast {
-  animation: floatingOrb var(--whisper-float-fast) ease-in-out infinite;
-}
-
-@keyframes floatingOrb {
-  0%,
-  100% {
-    transform: translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg);
-  }
-  25% {
-    transform: translateY(-8px) translateZ(10px) rotateX(2deg) rotateY(1deg);
-  }
-  50% {
-    transform: translateY(-12px) translateZ(20px) rotateX(0deg) rotateY(0deg);
-  }
-  75% {
-    transform: translateY(-6px) translateZ(5px) rotateX(-1deg) rotateY(-1deg);
-  }
-}
-
-/* Emotion Aura Effects */
-.emotion-aura {
+/* Dream Card Styles */
+.dream-card {
+  background: var(--dream-card);
+  border: 1px solid var(--dream-border);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
 
-.emotion-aura::before {
-  content: "";
+.dream-card::before {
+  content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    circle,
-    rgba(147, 51, 234, 0.1) 0%,
-    rgba(59, 130, 246, 0.05) 30%,
-    transparent 70%
-  );
-  animation: auraPulse var(--whisper-pulse-medium) ease-in-out infinite;
-  pointer-events: none;
-}
-
-.emotion-aura-nostalgia::before {
-  background: radial-gradient(
-    circle,
-    rgba(236, 72, 153, 0.15) 0%,
-    rgba(147, 51, 234, 0.08) 30%,
-    transparent 70%
-  );
-}
-
-.emotion-aura-loneliness::before {
-  background: radial-gradient(
-    circle,
-    rgba(59, 130, 246, 0.2) 0%,
-    rgba(15, 23, 42, 0.1) 30%,
-    transparent 70%
-  );
-}
-
-.emotion-aura-joy::before {
-  background: radial-gradient(
-    circle,
-    rgba(34, 197, 94, 0.15) 0%,
-    rgba(236, 72, 153, 0.08) 30%,
-    transparent 70%
-  );
-}
-
-@keyframes auraPulse {
-  0%,
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.1) rotate(180deg);
-    opacity: 0.8;
-  }
-}
-
-/* 3D Neumorphism Effects */
-.whisper-neumorphism {
-  background: linear-gradient(
-    145deg,
-    rgba(30, 41, 59, 0.8) 0%,
-    rgba(15, 23, 42, 0.9) 100%
-  );
-  box-shadow:
-    8px 8px 16px rgba(0, 0, 0, 0.3),
-    -8px -8px 16px rgba(255, 255, 255, 0.05),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.1),
-    inset -2px -2px 4px rgba(0, 0, 0, 0.2);
-  border-radius: 20px;
-}
-
-/* Whisper Portal Effects */
-.whisper-portal {
-  background: conic-gradient(
-    from 0deg at 50% 50%,
-    rgba(147, 51, 234, 0.3) 0deg,
-    rgba(59, 130, 246, 0.2) 120deg,
-    rgba(236, 72, 153, 0.3) 240deg,
-    rgba(147, 51, 234, 0.3) 360deg
-  );
-  animation: portalRotate 10s linear infinite;
-  border-radius: 50%;
-  position: relative;
-}
-
-.whisper-portal::before {
-  content: "";
-  position: absolute;
-  inset: 2px;
-  background: radial-gradient(
-    circle,
-    rgba(15, 23, 42, 0.9) 0%,
-    rgba(15, 23, 42, 0.7) 70%,
-    transparent 100%
-  );
-  border-radius: 50%;
-}
-
-@keyframes portalRotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* 3D Button Effects */
-.whisper-button-3d {
-  background: linear-gradient(
-    145deg,
-    rgba(147, 51, 234, 0.8) 0%,
-    rgba(59, 130, 246, 0.6) 100%
-  );
-  border: none;
-  box-shadow:
-    0 4px 15px rgba(147, 51, 234, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transform-style: preserve-3d;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.whisper-button-3d:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow:
-    0 8px 25px rgba(147, 51, 234, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.whisper-button-3d:active {
-  transform: translateY(0px) scale(0.98);
-  box-shadow:
-    0 2px 10px rgba(147, 51, 234, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* Whisper Constellation Effects */
-.constellation-point {
-  position: relative;
-  width: 4px;
-  height: 4px;
-  background: radial-gradient(
-    circle,
-    rgba(147, 51, 234, 0.8) 0%,
-    rgba(147, 51, 234, 0.4) 50%,
-    transparent 100%
-  );
-  border-radius: 50%;
-  animation: constellationPulse var(--whisper-pulse-medium) ease-in-out infinite;
-}
-
-.constellation-line {
-  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(147, 51, 234, 0.3) 50%,
-    transparent 100%
-  );
-  animation: constellationFlow 3s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, var(--dream-border), transparent);
+  opacity: 0.5;
 }
 
-@keyframes constellationPulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.5);
-    opacity: 1;
-  }
+.dream-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-@keyframes constellationFlow {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scaleX(0.8);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scaleX(1.2);
-  }
+/* Dark mode card adjustments */
+.dark .dream-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
 }
 
-/* Whisper Shrine Effects */
-.whisper-shrine {
-  background: radial-gradient(
-    ellipse at center,
-    rgba(147, 51, 234, 0.1) 0%,
-    rgba(59, 130, 246, 0.05) 40%,
-    rgba(15, 23, 42, 0.9) 100%
-  );
-  border: 1px solid rgba(147, 51, 234, 0.3);
-  box-shadow:
-    var(--whisper-shadow-medium),
-    var(--whisper-glow-primary),
-    inset 0 0 20px rgba(147, 51, 234, 0.1);
+.dark .dream-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* Dream Paper Texture */
+.dream-paper {
+  background: var(--dream-paper);
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.02) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+.dark .dream-paper {
+  background: var(--dream-paper);
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.02) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+/* Dream Button Styles */
+.dream-button {
+  background: var(--dream-primary);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
 
-.whisper-shrine::before {
-  content: "";
+.dream-button::before {
+  content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(147, 51, 234, 0.1) 50%,
-    transparent 100%
-  );
-  animation: shrineGlow 4s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
 }
 
-@keyframes shrineGlow {
-  0% {
-    left: -100%;
-  }
-  50% {
+.dream-button:hover::before {
     left: 100%;
   }
-  100% {
-    left: 100%;
-  }
+
+.dream-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
-/* Emotion Slow Mode Effects */
-.emotion-slow-mode {
-  filter: blur(1px) brightness(0.8);
-  animation: slowModeBreath var(--whisper-pulse-slow) ease-in-out infinite;
+.dream-button:active {
+  transform: translateY(0);
 }
 
-@keyframes slowModeBreath {
-  0%,
-  100% {
-    filter: blur(1px) brightness(0.8);
-    transform: scale(1);
-  }
-  50% {
-    filter: blur(2px) brightness(0.9);
-    transform: scale(1.02);
-  }
+/* Dream Text Styles */
+.dream-text-primary {
+  color: var(--dream-text-primary);
 }
 
-/* Whisper Orb Container */
-.whisper-orb-container {
-  perspective: 1000px;
-  transform-style: preserve-3d;
+.dream-text-secondary {
+  color: var(--dream-text-secondary);
 }
 
-.whisper-orb-inner {
-  transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+.dream-text-muted {
+  color: var(--dream-text-muted);
 }
 
-.whisper-orb-container:hover .whisper-orb-inner {
-  transform: rotateY(10deg) rotateX(5deg);
+.dream-text-accent {
+  color: var(--dream-text-accent);
 }
 
-/* Kinetic Microanimations */
-.kinetic-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Dream Input Styles */
+.dream-input {
+  background: var(--dream-card);
+  border: 1px solid var(--dream-border);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--dream-text-primary);
+  transition: all 0.3s ease;
 }
 
-.kinetic-hover:hover {
-  transform: translateY(-4px) scale(1.02);
-  filter: brightness(1.1);
+.dream-input:focus {
+  outline: none;
+  border-color: var(--dream-primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
-/* WhisperVerse Global Styles */
-body {
-  background: radial-gradient(
-    ellipse at center,
-    rgba(147, 51, 234, 0.05) 0%,
-    rgba(59, 130, 246, 0.03) 30%,
-    rgba(15, 23, 42, 1) 100%
-  );
-  font-family: "Space Grotesk", sans-serif;
-  color: hsl(var(--foreground));
-  overflow-x: hidden;
+.dark .dream-input:focus {
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
 }
 
-/* WhisperVerse Scrollbar */
+/* Dream Badge Styles */
+.dream-badge {
+  background: var(--dream-surface);
+  color: var(--dream-text-secondary);
+  border: 1px solid var(--dream-border);
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.dream-badge:hover {
+  background: var(--dream-card);
+  transform: translateY(-1px);
+}
+
+/* Emotional Badge Variants */
+.dream-badge-joy {
+  background: rgba(251, 191, 36, 0.1);
+  color: var(--dream-joy);
+  border-color: rgba(251, 191, 36, 0.2);
+}
+
+.dream-badge-calm {
+  background: rgba(96, 165, 250, 0.1);
+  color: var(--dream-calm);
+  border-color: rgba(96, 165, 250, 0.2);
+}
+
+.dream-badge-nostalgia {
+  background: rgba(236, 72, 153, 0.1);
+  color: var(--dream-nostalgia);
+  border-color: rgba(236, 72, 153, 0.2);
+}
+
+.dream-badge-hope {
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--dream-hope);
+  border-color: rgba(52, 211, 153, 0.2);
+}
+
+.dream-badge-anxiety {
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--dream-anxiety);
+  border-color: rgba(248, 113, 113, 0.2);
+}
+
+.dream-badge-loneliness {
+  background: rgba(167, 139, 250, 0.1);
+  color: var(--dream-loneliness);
+  border-color: rgba(167, 139, 250, 0.2);
+}
+
+/* Dream Animation Classes */
+.dream-fade-in {
+  animation: dream-fade-in 0.5s ease-out;
+}
+
+.dream-fade-out {
+  animation: dream-fade-out 0.5s ease-in;
+}
+
+.dream-float {
+  animation: dream-float 3s ease-in-out infinite;
+}
+
+.dream-pulse-soft {
+  animation: dream-pulse-soft 2s ease-in-out infinite;
+}
+
+/* Dream Layout Components */
+.dream-container {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.dream-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.dream-title {
+  font-family: 'Eczar', serif;
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: var(--dream-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.dream-subtitle {
+  color: var(--dream-text-secondary);
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+/* Dream Feed Styles */
+.dream-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dream-feed-item {
+  animation: dream-fade-in 0.5s ease-out;
+}
+
+/* Dream Modal Styles */
+.dream-modal {
+  background: var(--dream-card);
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--dream-border);
+  overflow: hidden;
+}
+
+.dark .dream-modal {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* Dream Navigation */
+.dream-nav {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dream-card);
+  border: 1px solid var(--dream-border);
+  border-radius: 2rem;
+  padding: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 50;
+}
+
+.dark .dream-nav {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+.dream-nav-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1.5rem;
+  color: var(--dream-text-secondary);
+  transition: all 0.3s ease;
+  margin: 0 0.25rem;
+}
+
+.dream-nav-item:hover {
+  background: var(--dream-surface);
+  color: var(--dream-text-primary);
+  transform: translateY(-2px);
+}
+
+.dream-nav-item.active {
+  background: var(--dream-primary);
+  color: white;
+}
+
+/* Dream Loading States */
+.dream-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--dream-text-secondary);
+}
+
+.dream-loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--dream-border);
+  border-top: 2px solid var(--dream-primary);
+  border-radius: 50%;
+  animation: dream-spin 1s linear infinite;
+}
+
+@keyframes dream-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dream Empty States */
+.dream-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--dream-text-secondary);
+}
+
+.dream-empty-icon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1rem;
+  opacity: 0.5;
+}
+
+/* Dream Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.5);
+  background: var(--dream-surface);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    rgba(147, 51, 234, 0.6) 0%,
-    rgba(59, 130, 246, 0.6) 100%
-  );
+  background: var(--dream-border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    180deg,
-    rgba(147, 51, 234, 0.8) 0%,
-    rgba(59, 130, 246, 0.8) 100%
-  );
+  background: var(--dream-text-muted);
 }
 
-/* WhisperVerse Selection */
+/* Dream Selection */
 ::selection {
-  background: rgba(147, 51, 234, 0.3);
-  color: hsl(var(--foreground));
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--dream-text-primary);
 }
 
-/* WhisperVerse Focus */
-.whisper-focus:focus {
-  outline: 2px solid rgba(147, 51, 234, 0.5);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+.dark ::selection {
+  background: rgba(167, 139, 250, 0.2);
 }
 
-/* WhisperVerse Glass Effect */
-.whisper-glass {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(147, 51, 234, 0.2);
-  box-shadow:
-    var(--whisper-shadow-soft),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+/* Dream Focus Styles */
+.dream-focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
-/* WhisperVerse Text Gradients */
-.whisper-gradient-text {
-  background: linear-gradient(135deg, #9333ea 0%, #3b82f6 50%, #ec4899 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.dark .dream-focus:focus {
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
 }
 
-/* WhisperVerse Loading Animation */
-.whisper-loading {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(147, 51, 234, 0.3);
-  border-top: 3px solid #9333ea;
-  border-radius: 50%;
-  animation: whisperSpin 1s linear infinite;
-}
-
-@keyframes whisperSpin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* WhisperVerse Responsive Design */
+/* Dream Responsive Design */
 @media (max-width: 768px) {
-  .whisper-orb {
-    transform: none !important;
+  .dream-container {
+    padding: 1rem 0.75rem;
   }
-
-  .floating-orb {
-    animation: none;
+  
+  .dream-title {
+    font-size: 1.875rem;
   }
-
-  .kinetic-text {
-    animation: none;
+  
+  .dream-nav {
+    bottom: 1rem;
+    padding: 0.5rem;
   }
-}
-
-/* WhisperVerse Dark Mode Enhancements */
-@media (prefers-color-scheme: dark) {
-  .whisper-orb {
-    background: radial-gradient(
-      circle at 30% 30%,
-      rgba(147, 51, 234, 0.15) 0%,
-      rgba(59, 130, 246, 0.08) 50%,
-      rgba(15, 23, 42, 0.9) 100%
-    );
+  
+  .dream-nav-item {
+    width: 2.5rem;
+    height: 2.5rem;
   }
 }
 
-/* WhisperVerse Print Styles */
+/* Dream Print Styles */
 @media print {
-  .whisper-orb,
-  .floating-orb,
-  .kinetic-text,
-  .emotion-aura::before {
+  .dream-nav,
+  .dream-modal {
+    display: none;
+  }
+  
+  .dream-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}
+
+/* Dream Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .dream-fade-in,
+  .dream-fade-out,
+  .dream-float,
+  .dream-pulse-soft {
     animation: none;
+  }
+  
+  .dream-card:hover,
+  .dream-button:hover,
+  .dream-nav-item:hover {
     transform: none;
+  }
+}
+
+/* Dream High Contrast Mode */
+@media (prefers-contrast: high) {
+  .dream-card {
+    border: 2px solid var(--dream-text-primary);
+  }
+  
+  .dream-button {
+    border: 2px solid var(--dream-text-primary);
   }
 }

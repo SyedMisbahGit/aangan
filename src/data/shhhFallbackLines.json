@@ -1,0 +1,270 @@
+{
+  "zones": {
+    "tapri": {
+      "joy": [
+        "The chai steams with stories untold, and laughter echoes in the golden hour.",
+        "At Tapri, every cup holds a universe of conversations.",
+        "The warmth here isn't just from the tea—it's from shared moments.",
+        "Laughter bubbles up like steam from fresh chai.",
+        "Friendship brews stronger than any tea at Tapri."
+      ],
+      "nostalgia": [
+        "The Tapri remembers you… and so does the silence you left there.",
+        "Old conversations linger in the steam, like ghosts of yesterday's laughter.",
+        "This place holds the weight of a thousand goodbyes and hellos.",
+        "Memories steep in every corner, like tea leaves in hot water.",
+        "The walls here whisper stories of generations past."
+      ],
+      "calm": [
+        "Peace settles like afternoon light through the windows.",
+        "The quiet here is a gentle companion, not an absence.",
+        "Time moves differently at Tapri—slower, kinder.",
+        "Serenity flows like honey in your chai.",
+        "The rhythm of cups and spoons creates its own meditation."
+      ],
+      "anxiety": [
+        "Worries dissolve like sugar in hot tea, one sip at a time.",
+        "The familiar rhythm of cups and spoons soothes restless thoughts.",
+        "Even anxiety feels softer here, wrapped in warmth.",
+        "The steam carries away your troubles, one breath at a time.",
+        "This place understands the weight of student worries."
+      ]
+    },
+    "library": {
+      "focus": [
+        "Knowledge whispers from every shelf, waiting to be discovered.",
+        "In this sacred silence, thoughts find their voice.",
+        "The library holds the weight of countless dreams and aspirations.",
+        "Every page turn echoes with the sound of learning.",
+        "Concentration flows like electricity through these halls."
+      ],
+      "calm": [
+        "The quiet here is almost sacred, like a prayer without words.",
+        "Peace settles like dust motes in afternoon light.",
+        "The library offers refuge from the world's noise.",
+        "Silence here is not empty—it's full of possibility.",
+        "The air hums with the energy of focused minds."
+      ],
+      "anxiety": [
+        "Deadlines loom like shadows, but knowledge is your light.",
+        "The library understands—it has seen generations of worry.",
+        "Even stress feels more manageable among these ancient texts.",
+        "The books here have witnessed every kind of struggle.",
+        "Knowledge is the antidote to uncertainty."
+      ]
+    },
+    "quad": {
+      "joy": [
+        "The quad pulses with life, a heartbeat of campus energy.",
+        "Laughter dances on the breeze, carried by youthful spirits.",
+        "This is where memories are made, one moment at a time.",
+        "The grass remembers every footstep, every dream.",
+        "Life flows through the quad like a river of possibilities."
+      ],
+      "excitement": [
+        "Electric energy crackles in the air, contagious and alive.",
+        "The quad thrums with possibility, with dreams taking flight.",
+        "Every step here feels like moving toward something wonderful.",
+        "The air itself seems to sparkle with anticipation.",
+        "This is where tomorrow takes its first breath."
+      ],
+      "nostalgia": [
+        "The quad remembers every footstep, every dream, every goodbye.",
+        "Generations have walked these paths, leaving traces of themselves.",
+        "Time moves in circles here, like seasons returning.",
+        "The trees have witnessed countless stories unfold.",
+        "Every corner holds echoes of laughter and tears."
+      ]
+    },
+    "baba-surgal": {
+      "peace": [
+        "The mandir holds centuries of prayers, each one a whisper of hope.",
+        "Peace settles like morning mist, gentle and all-encompassing.",
+        "This sacred space offers refuge from the world's noise.",
+        "The ancient stones radiate tranquility.",
+        "Here, the soul finds its natural rhythm."
+      ],
+      "gratitude": [
+        "Gratitude flows like water, pure and endless.",
+        "The mandir teaches us to find blessings in every moment.",
+        "Thankfulness echoes in the quiet, like a gentle song.",
+        "Every prayer here is a note in a symphony of gratitude.",
+        "The sacred space reminds us of life's simple gifts."
+      ],
+      "reflection": [
+        "Ancient wisdom speaks in the silence, if you listen closely.",
+        "The mandir invites introspection, like a mirror for the soul.",
+        "Reflection comes naturally here, like breathing.",
+        "The quiet here holds space for deep contemplation.",
+        "Time slows down, allowing thoughts to settle."
+      ]
+    },
+    "dde": {
+      "determination": [
+        "Ambition hangs in the air, thick with possibility.",
+        "The DDE building hums with the energy of dreams taking shape.",
+        "Every corridor leads to a future being built, one project at a time.",
+        "The walls here have absorbed countless hours of focused work.",
+        "This is where academic dreams find their wings."
+      ],
+      "focus": [
+        "Concentration flows like electricity through these halls.",
+        "The building understands the weight of academic dreams.",
+        "Focus comes easily here, like a gift from the walls themselves.",
+        "Every room holds the energy of minds at work.",
+        "The air crackles with intellectual curiosity."
+      ],
+      "anxiety": [
+        "Deadlines whisper from every corner, but so does hope.",
+        "The building has seen generations of worry—and success.",
+        "Even stress feels purposeful here, like fuel for achievement.",
+        "The pressure here is the pressure of growth.",
+        "Every challenge overcome adds to the building's wisdom."
+      ]
+    },
+    "isro": {
+      "curiosity": [
+        "Innovation whispers from every corner, like secrets waiting to be discovered.",
+        "The ISRO area crackles with the energy of discovery.",
+        "Every question here leads to another, in an endless dance of wonder.",
+        "The air here is charged with intellectual electricity.",
+        "This is where the impossible becomes possible."
+      ],
+      "excitement": [
+        "The future is being written here, one breakthrough at a time.",
+        "Excitement pulses through the air, contagious and inspiring.",
+        "This is where tomorrow takes shape, in the hands of dreamers.",
+        "The energy here is like a rocket ready for launch.",
+        "Every experiment holds the promise of discovery."
+      ],
+      "inspiration": [
+        "Genius hangs in the air, like stardust settling on shoulders.",
+        "The ISRO area reminds us that the impossible is just undiscovered.",
+        "Inspiration flows freely here, like water from a spring.",
+        "The walls here have absorbed centuries of brilliant ideas.",
+        "This is where imagination meets reality."
+      ]
+    }
+  },
+  "times": {
+    "morning": [
+      "Morning light filters through dreams, gentle and hopeful.",
+      "The day stretches before you, full of possibility.",
+      "Dawn brings fresh beginnings, like pages in a new book.",
+      "The world wakes up slowly, like a flower opening.",
+      "Morning thoughts are often the purest."
+    ],
+    "afternoon": [
+      "Afternoon sun warms the soul, like a gentle embrace.",
+      "The day finds its rhythm, steady and sure.",
+      "Time moves differently in the afternoon—slower, kinder.",
+      "The light is golden now, like honey poured over everything.",
+      "Afternoon is for reflection and gentle progress."
+    ],
+    "evening": [
+      "Evening thoughts echo loudest in corridors of memory.",
+      "The day softens around the edges, like a photograph fading.",
+      "Twilight brings reflection, like a mirror for the soul.",
+      "Evening is when the heart speaks its truth.",
+      "The day winds down, but thoughts wind up."
+    ],
+    "night": [
+      "Night whispers secrets that daylight cannot hear.",
+      "The stars seem closer at night, like old friends.",
+      "Darkness holds its own kind of wisdom, gentle and deep.",
+      "Night is when the soul finds its voice.",
+      "The quiet of night amplifies every thought."
+    ]
+  },
+  "moods": {
+    "joy": [
+      "Joy bubbles up like spring water, pure and refreshing.",
+      "Happiness flows through you like light through a prism.",
+      "Every moment feels like a gift, wrapped in wonder.",
+      "Joy is contagious, spreading like ripples in a pond.",
+      "The heart sings its own song of happiness."
+    ],
+    "nostalgia": [
+      "Memories float like autumn leaves, beautiful and bittersweet.",
+      "The past whispers through the present, like echoes in a canyon.",
+      "Nostalgia paints everything in golden light, soft and warm.",
+      "Time moves in circles, bringing back what was lost.",
+      "The heart remembers what the mind forgets."
+    ],
+    "anxiety": [
+      "Worries flutter like moths around a flame, drawn and afraid.",
+      "Anxiety wraps around thoughts like morning fog.",
+      "Even worry has its own rhythm, like waves on a shore.",
+      "The mind races ahead while the heart stays behind.",
+      "Anxiety is the body's way of preparing for the unknown."
+    ],
+    "calm": [
+      "Peace settles like snow, quiet and complete.",
+      "Calm flows through you like a gentle river.",
+      "Tranquility wraps around you like a soft blanket.",
+      "The mind finds its natural stillness.",
+      "Peace is not the absence of noise, but the presence of harmony."
+    ],
+    "melancholy": [
+      "Melancholy has its own beauty, like rain on windowpanes.",
+      "Sadness speaks in whispers, gentle and true.",
+      "Even sorrow has its own poetry, like shadows in moonlight.",
+      "The heart needs time to process what the mind cannot.",
+      "Melancholy is the soul's way of healing."
+    ],
+    "gratitude": [
+      "Gratitude fills the heart like honey, sweet and golden.",
+      "Thankfulness flows like a river, endless and pure.",
+      "Every blessing feels like a miracle, small and perfect.",
+      "Gratitude transforms ordinary moments into extraordinary ones.",
+      "The heart expands when filled with thankfulness."
+    ]
+  },
+  "activities": {
+    "writing": [
+      "Words flow like water, finding their own path.",
+      "Thoughts take shape on the page, like clouds forming.",
+      "Writing is like breathing—natural and necessary.",
+      "Every word written is a step toward understanding.",
+      "The pen dances across the page, telling stories."
+    ],
+    "reading": [
+      "Stories unfold like flowers, petal by petal.",
+      "Words dance on the page, alive with meaning.",
+      "Reading is like traveling without moving.",
+      "Every book opens a door to another world.",
+      "The mind expands with every page turned."
+    ],
+    "walking": [
+      "Each step is a journey, each breath an adventure.",
+      "Walking clears the mind like wind clears the sky.",
+      "The path unfolds before you, one step at a time.",
+      "Movement brings clarity to confused thoughts.",
+      "Every walk is a meditation in motion."
+    ],
+    "thinking": [
+      "Thoughts swirl like autumn leaves, beautiful and chaotic.",
+      "The mind is a garden, growing ideas like flowers.",
+      "Thinking is like dreaming while awake.",
+      "Every thought is a seed waiting to grow.",
+      "The mind works its magic in the quiet spaces."
+    ]
+  },
+  "universal": [
+    "The moment holds its breath, waiting for your story to unfold.",
+    "Every breath is a new beginning, every heartbeat a reminder of life.",
+    "The universe whispers secrets to those who listen.",
+    "Time flows like water, carrying us forward and back.",
+    "The soul speaks in the language of silence.",
+    "Every ending is a beginning in disguise.",
+    "The heart knows what the mind cannot understand.",
+    "Life unfolds like a story, one chapter at a time.",
+    "The present moment is all we truly have.",
+    "Every experience shapes the person we become.",
+    "The world is full of wonder, waiting to be discovered.",
+    "Connection is the essence of human experience.",
+    "Every emotion has its own wisdom to share.",
+    "The journey is as important as the destination.",
+    "Love and understanding are the greatest gifts we can give."
+  ]
+} 

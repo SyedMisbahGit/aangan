@@ -12,6 +12,7 @@ import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 import { v4 as uuidv4 } from "uuid";
 import admin from "firebase-admin";
+import { readFileSync } from "fs";
 
 // Load environment variables
 dotenv.config();
@@ -182,13 +183,20 @@ const authenticateToken = async (req, res, next) => {
 
 // Initialize Firebase Admin SDK if not already
 if (!admin.apps.length) {
-  const serviceAccount = JSON.parse(
-    process.env.FIREBASE_SERVICE_ACCOUNT_JSON || "{}",
-  );
+  let serviceAccount;
+  try {
+    serviceAccount = JSON.parse(readFileSync(join(__dirname, "..", "serviceAccountKey.json.json"), "utf8"));
+  } catch (e) {
+    console.error("Failed to load serviceAccountKey.json.json", e);
+    serviceAccount = null;
+  }
   if (serviceAccount && serviceAccount.project_id) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
     });
+    console.log("Firebase Admin initialized with serviceAccountKey.json.json");
+  } else {
+    console.warn("Firebase Admin not initialized: service account missing or invalid");
   }
 }
 
@@ -425,9 +433,7 @@ app.post("/api/fcm-token", async (req, res) => {
   const { token } = req.body;
   if (!token) return res.status(400).json({ error: "Token required" });
   try {
-    await db.run("INSERT OR IGNORE INTO fcm_tokens (token) VALUES (?)", [
-      token,
-    ]);
+    await db.run("INSERT OR IGNORE INTO fcm_tokens (token) VALUES (?)", [token]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: "Failed to save token" });

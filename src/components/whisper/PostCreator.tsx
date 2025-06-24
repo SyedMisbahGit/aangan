@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { ModerationFeedback } from "@/components/ModerationFeedback";
 import { cn } from "@/lib/utils";
+import { theme } from "../../theme";
 
 interface PostCreatorProps {
   onPost: (content: string, zone: string) => void;
@@ -330,179 +332,131 @@ const PostCreator: React.FC<PostCreatorProps> = ({ onPost, loading }) => {
 
   const selectedCategory = categories.find((cat) => cat.id === zone);
 
+  // Modal open state (for demo, always open)
+  const [open, setOpen] = useState(true);
+
   return (
-    <div className="space-y-6">
-      <Card
-        className={`backdrop-blur-lg border-white/10 p-8 shadow-2xl transition-all duration-500 ${
-          isMidnightWindow && zone === "midnight"
-            ? "bg-gradient-to-br from-indigo-900/30 to-purple-900/30 border-indigo-500/30 shadow-indigo-500/20 midnight-glow"
-            : "bg-white/5 hover:shadow-purple-500/20"
-        }`}
-      >
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                {isMidnightWindow ? (
-                  <Moon className="h-6 w-6 text-indigo-300 animate-pulse" />
-                ) : (
-                  <Feather className="h-6 w-6 text-purple-300 animate-pulse" />
-                )}
-                <div
-                  className={`absolute -inset-2 rounded-full blur animate-pulse ${
-                    isMidnightWindow ? "bg-indigo-400/20" : "bg-purple-400/20"
-                  }`}
-                ></div>
-              </div>
-              <div>
-                <h2 className="text-xl font-light text-white">
-                  {isMidnightWindow
-                    ? "Midnight Confession Window"
-                    : "Share Your Whisper"}
-                </h2>
-                <p className="text-sm text-gray-300">
-                  {isMidnightWindow
-                    ? "The veil is thinnest now..."
-                    : "No pressure. Just whisper."}
-                </p>
-              </div>
-              {draftLoaded && (
-                <Badge className="bg-blue-500/20 text-blue-200 animate-pulse flex items-center space-x-1">
-                  <FileText className="h-3 w-3" />
-                  <span>From diary</span>
-                </Badge>
-              )}
-            </div>
-            {isMidnightWindow && (
-              <Sparkles className="h-5 w-5 text-indigo-400 animate-pulse" />
-            )}
-          </div>
-
-          {/* Content Input */}
-          <div className="relative">
-            <Textarea
-              id="whisper-content"
-              name="whisper-content"
-              placeholder={
-                isMidnightWindow
-                  ? "Whisper what daylight couldn't hear..."
-                  : "Express in any language using English letters... your thoughts are safe here."
-              }
-              value={content}
-              onChange={(e) => {
-                setContent(e.target.value);
-                const { tone, language } = detectLanguageAndContext(
-                  e.target.value,
-                );
-                setToneHint(tone);
-                setLanguageHint(language);
-              }}
-              className={`border-white/20 text-white placeholder:text-gray-400 resize-none h-32 transition-all duration-300 rounded-xl backdrop-blur-md pr-12 ${
-                isMidnightWindow
-                  ? "bg-indigo-900/20 focus:border-indigo-400/50 placeholder:text-indigo-300/70"
-                  : "bg-white/5 focus:border-purple-400/50"
-              }`}
-              maxLength={500}
-            />
-
-            {/* Voice Input Button */}
-            <Button
-              onClick={startVoiceInput}
-              variant="ghost"
-              size="sm"
-              className="absolute bottom-3 right-3 text-gray-400 hover:text-purple-300 hover:bg-purple-500/10 p-2"
-              disabled={isListening}
-            >
-              <Mic
-                className={`h-4 w-4 ${isListening ? "animate-pulse text-red-400" : ""}`}
-              />
-            </Button>
-          </div>
-
-          {/* Character Count & Context Detection */}
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-400">{content.length}/500</span>
-              {languageHint && (
-                <span className="text-blue-300 animate-fade-in flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                  <span>{languageHint}</span>
-                </span>
-              )}
-              {toneHint && (
-                <span className="text-purple-300 animate-fade-in flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                  <span>{toneHint}</span>
-                </span>
-              )}
-            </div>
-            {content && (
-              <span className="flex items-center space-x-2 text-emerald-400">
-                <Shield className="h-4 w-4 animate-pulse" />
-                <span>Protecting your identity...</span>
-              </span>
-            )}
-          </div>
-
-          {/* Zone Selection */}
-          <Select value={zone} onValueChange={setZone}>
-            <SelectTrigger className="bg-white/5 border-white/20 text-white rounded-xl backdrop-blur-md hover:bg-white/10 transition-all duration-300">
-              <SelectValue placeholder="Choose your zone..." />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-800/90 border-white/20 backdrop-blur-lg">
-              {categories.map((cat) => (
-                <SelectItem
-                  key={cat.id}
-                  value={cat.id}
-                  className="text-white focus:bg-white/10 hover:bg-white/5 transition-all duration-200"
-                >
-                  {cat.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Selected Zone Display */}
-          {selectedCategory && (
-            <div className="flex items-center space-x-3 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20 backdrop-blur-md animate-scale-in">
-              <selectedCategory.icon className="h-5 w-5 text-purple-400" />
-              <span className="text-purple-200 font-medium">
-                Whispering from {selectedCategory.label.toLowerCase()}
-              </span>
-            </div>
-          )}
-
-          {/* Zone Hint */}
-          <div className="text-xs text-gray-400 text-center bg-white/5 p-4 rounded-xl backdrop-blur-md">
-            {zoneHint}
-          </div>
-
-          {/* Submit Button */}
-          <Button
-            onClick={handleSubmit}
-            disabled={!content.trim() || !zone || isSubmitting}
-            className={cn(
-              "w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl shadow-lg hover:shadow-purple-500/25 transition-all duration-300 hover:scale-[1.02] backdrop-blur-md py-4",
-              loading && "opacity-60 pointer-events-none",
-            )}
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: "rgba(40, 38, 55, 0.18)", backdropFilter: "blur(8px)" }}
+        >
+          <motion.div
+            initial={{ scale: 0.96, opacity: 0.7 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.96, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 180, damping: 18 }}
+            className="w-full max-w-lg mx-auto"
           >
-            <Send className="h-5 w-5 mr-2" />
-            {isSubmitting ? "Whispering..." : "Share Anonymously"}
-          </Button>
+            <div className="card p-8" style={{ fontFamily: theme.font }}>
+              {/* Header */}
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold mb-1" style={{ color: theme.accent }}>
+                  Share Your Whisper
+                </h2>
+                <p className="text-sm" style={{ color: theme.textSecondary }}>
+                  What's on your mind tonight?
+                </p>
+                {draftLoaded && (
+                  <Badge style={{ background: theme.highlight, color: '#fff', marginLeft: 8 }}>
+                    <FileText className="h-3 w-3 mr-1" />From diary
+                  </Badge>
+                )}
+              </div>
 
-          {/* Safety Notice */}
-          <div className="text-xs text-gray-400 text-center bg-white/5 p-4 rounded-xl backdrop-blur-md">
-            Your thoughts are safe here • Complete anonymity guaranteed •
-            Express in any language
-          </div>
-        </div>
-      </Card>
+              {/* Content Input */}
+              <Textarea
+                id="whisper-content"
+                name="whisper-content"
+                placeholder="Let your thoughts drift onto the page..."
+                value={content}
+                onChange={(e) => {
+                  setContent(e.target.value);
+                  const { tone, language } = detectLanguageAndContext(e.target.value);
+                  setToneHint(tone);
+                  setLanguageHint(language);
+                }}
+                className="border border-[#ececec] text-base rounded-xl bg-white text-[#2d2d2d] placeholder:text-[#6b6b6b] resize-none h-32 mb-2"
+                maxLength={500}
+                style={{ fontFamily: theme.font, background: theme.card, color: theme.textPrimary }}
+              />
 
-      {moderationResult && (
-        <ModerationFeedback moderationResult={moderationResult} />
+              {/* Character Count & Context Detection */}
+              <div className="flex items-center justify-between text-sm mb-2">
+                <span style={{ color: theme.textSecondary }}>{content.length}/500</span>
+                {languageHint && (
+                  <span style={{ color: theme.accent }}>{languageHint}</span>
+                )}
+                {toneHint && (
+                  <span style={{ color: theme.highlight }}>{toneHint}</span>
+                )}
+              </div>
+
+              {/* Zone Selection */}
+              <Select value={zone} onValueChange={setZone}>
+                <SelectTrigger className="bg-white border border-[#ececec] text-[#2d2d2d] rounded-xl mb-2">
+                  <SelectValue placeholder="Choose your zone..." />
+                </SelectTrigger>
+                <SelectContent className="bg-white border border-[#ececec] rounded-xl">
+                  {categories.map((cat) => (
+                    <SelectItem
+                      key={cat.id}
+                      value={cat.id}
+                      className="text-[#2d2d2d] hover:bg-[#f8f5f1]"
+                    >
+                      {cat.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Selected Zone Display */}
+              {selectedCategory && (
+                <div className="flex items-center space-x-3 p-3 bg-[#f8f5f1] rounded-xl border border-[#ececec] mb-2">
+                  <selectedCategory.icon className="h-5 w-5" style={{ color: theme.accent }} />
+                  <span style={{ color: theme.accent, fontWeight: 500 }}>
+                    Whispering from {selectedCategory.label.toLowerCase()}
+                  </span>
+                </div>
+              )}
+
+              {/* Zone Hint */}
+              <div className="text-xs text-center bg-[#f8f5f1] p-3 rounded-xl mb-2" style={{ color: theme.textSecondary }}>
+                {zoneHint}
+              </div>
+
+              {/* Submit Button */}
+              <Button
+                onClick={handleSubmit}
+                disabled={!content.trim() || !zone || isSubmitting}
+                className={cn(
+                  "w-full rounded-xl py-4 text-white font-semibold",
+                  loading && "opacity-60 pointer-events-none"
+                )}
+                style={{ background: theme.accent, fontFamily: theme.font }}
+              >
+                <Send className="h-5 w-5 mr-2" />
+                {isSubmitting ? "Whispering..." : "Share Anonymously"}
+              </Button>
+
+              {/* Safety Notice */}
+              <div className="text-xs text-center bg-[#f8f5f1] p-3 rounded-xl mt-3" style={{ color: theme.textSecondary }}>
+                Your thoughts are safe here • Complete anonymity guaranteed • Express in any language
+              </div>
+
+              {/* Moderation Feedback */}
+              {moderationResult && (
+                <ModerationFeedback moderationResult={moderationResult} />
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
       )}
-    </div>
+    </AnimatePresence>
   );
 };
 

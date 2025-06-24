@@ -1,7 +1,8 @@
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
+import { dreamTheme, typography, spacing, borderRadius, shadows, animations, zIndex } from "./src/theme";
 
-export default {
+const config: Config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -9,262 +10,162 @@ export default {
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
-  prefix: "",
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
-      fontFamily: {
-        sans: ["Urbanist", "ui-sans-serif", "system-ui", "sans-serif"],
-        "space-grotesk": ["Space Grotesk", "sans-serif"],
-        inter: ["Inter", "sans-serif"],
-      },
+      // Dream Pages Color System
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+        // Light mode colors
+        dream: {
+          // Background colors
+          background: dreamTheme.light.background,
+          surface: dreamTheme.light.surface,
+          card: dreamTheme.light.card,
+          paper: dreamTheme.light.paper,
+          
+          // Border and shadow
+          border: dreamTheme.light.border,
+          shadow: dreamTheme.light.shadow,
+          
+          // Text colors
+          "text-primary": dreamTheme.light.textPrimary,
+          "text-secondary": dreamTheme.light.textSecondary,
+          "text-muted": dreamTheme.light.textMuted,
+          "text-accent": dreamTheme.light.textAccent,
+          
+          // Accent colors
+          primary: dreamTheme.light.primary,
+          secondary: dreamTheme.light.secondary,
+          accent: dreamTheme.light.accent,
+          highlight: dreamTheme.light.highlight,
+          
+          // Emotional tones
+          joy: dreamTheme.light.joy,
+          calm: dreamTheme.light.calm,
+          nostalgia: dreamTheme.light.nostalgia,
+          hope: dreamTheme.light.hope,
+          anxiety: dreamTheme.light.anxiety,
+          loneliness: dreamTheme.light.loneliness,
         },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+        
+        // Dark mode colors
+        "dream-dark": {
+          // Background colors
+          background: dreamTheme.dark.background,
+          surface: dreamTheme.dark.surface,
+          card: dreamTheme.dark.card,
+          paper: dreamTheme.dark.paper,
+          
+          // Border and shadow
+          border: dreamTheme.dark.border,
+          shadow: dreamTheme.dark.shadow,
+          
+          // Text colors
+          "text-primary": dreamTheme.dark.textPrimary,
+          "text-secondary": dreamTheme.dark.textSecondary,
+          "text-muted": dreamTheme.dark.textMuted,
+          "text-accent": dreamTheme.dark.textAccent,
+          
+          // Accent colors
+          primary: dreamTheme.dark.primary,
+          secondary: dreamTheme.dark.secondary,
+          accent: dreamTheme.dark.accent,
+          highlight: dreamTheme.dark.highlight,
+          
+          // Emotional tones
+          joy: dreamTheme.dark.joy,
+          calm: dreamTheme.dark.calm,
+          nostalgia: dreamTheme.dark.nostalgia,
+          hope: dreamTheme.dark.hope,
+          anxiety: dreamTheme.dark.anxiety,
+          loneliness: dreamTheme.dark.loneliness,
         },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+        
+        // Legacy colors for backward compatibility
+        background: dreamTheme.light.background,
+        card: dreamTheme.light.card,
+        accent: dreamTheme.light.primary,
+        highlight: dreamTheme.light.highlight,
+        text: {
+          primary: dreamTheme.light.textPrimary,
+          secondary: dreamTheme.light.textSecondary,
         },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
-        // WhisperVerse 3D Color Palette
-        whisper: {
-          primary: "rgb(147, 51, 234)",
-          secondary: "rgb(59, 130, 246)",
-          accent: "rgb(236, 72, 153)",
-          muted: "rgb(100, 116, 139)",
-          background: "rgb(15, 23, 42)",
-          foreground: "rgb(248, 250, 252)",
-          glow: {
-            primary: "rgba(147, 51, 234, 0.3)",
-            secondary: "rgba(59, 130, 246, 0.3)",
-            accent: "rgba(236, 72, 153, 0.3)",
-            muted: "rgba(100, 116, 139, 0.2)",
-          },
-          shadow: {
-            soft: "0 4px 20px rgba(0, 0, 0, 0.1)",
-            medium: "0 8px 30px rgba(0, 0, 0, 0.15)",
-            deep: "0 12px 40px rgba(0, 0, 0, 0.2)",
-          },
-        },
-        // Emotion-based colors for auras
-        emotion: {
-          joy: "rgb(34, 197, 94)",
-          nostalgia: "rgb(236, 72, 153)",
-          loneliness: "rgb(59, 130, 246)",
-          anxiety: "rgb(239, 68, 68)",
-          calm: "rgb(34, 197, 94)",
-          excitement: "rgb(245, 158, 11)",
-        },
+        border: dreamTheme.light.border,
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+      
+      // Typography
+      fontFamily: {
+        sans: [typography.primary],
+        serif: [typography.serif],
+        display: [typography.display],
+        mono: [typography.mono],
       },
-      keyframes: {
-        "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
-        },
-        "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
-        },
-        // WhisperVerse 3D Animations
-        "kinetic-float": {
-          "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
-          "25%": { transform: "translateY(-3px) rotate(0.5deg)" },
-          "50%": { transform: "translateY(-5px) rotate(0deg)" },
-          "75%": { transform: "translateY(-2px) rotate(-0.5deg)" },
-        },
-        "floating-orb": {
-          "0%, 100%": {
-            transform:
-              "translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg)",
-          },
-          "25%": {
-            transform:
-              "translateY(-8px) translateZ(10px) rotateX(2deg) rotateY(1deg)",
-          },
-          "50%": {
-            transform:
-              "translateY(-12px) translateZ(20px) rotateX(0deg) rotateY(0deg)",
-          },
-          "75%": {
-            transform:
-              "translateY(-6px) translateZ(5px) rotateX(-1deg) rotateY(-1deg)",
-          },
-        },
-        "aura-pulse": {
-          "0%, 100%": {
-            transform: "scale(1) rotate(0deg)",
-            opacity: "0.6",
-          },
-          "50%": {
-            transform: "scale(1.1) rotate(180deg)",
-            opacity: "0.8",
-          },
-        },
-        "portal-rotate": {
-          from: { transform: "rotate(0deg)" },
-          to: { transform: "rotate(360deg)" },
-        },
-        "constellation-pulse": {
-          "0%, 100%": {
-            transform: "scale(1)",
-            opacity: "0.6",
-          },
-          "50%": {
-            transform: "scale(1.5)",
-            opacity: "1",
-          },
-        },
-        "constellation-flow": {
-          "0%, 100%": {
-            opacity: "0.3",
-            transform: "scaleX(0.8)",
-          },
-          "50%": {
-            opacity: "0.8",
-            transform: "scaleX(1.2)",
-          },
-        },
-        "shrine-glow": {
-          "0%": { left: "-100%" },
-          "50%": { left: "100%" },
-          "100%": { left: "100%" },
-        },
-        "slow-mode-breath": {
-          "0%, 100%": {
-            filter: "blur(1px) brightness(0.8)",
-            transform: "scale(1)",
-          },
-          "50%": {
-            filter: "blur(2px) brightness(0.9)",
-            transform: "scale(1.02)",
-          },
-        },
-        "whisper-spin": {
-          from: { transform: "rotate(0deg)" },
-          to: { transform: "rotate(360deg)" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        // WhisperVerse 3D Animation Classes
-        "kinetic-float": "kinetic-float 4s ease-in-out infinite",
-        "kinetic-float-slow": "kinetic-float 6s ease-in-out infinite",
-        "kinetic-float-fast": "kinetic-float 2s ease-in-out infinite",
-        "floating-orb": "floating-orb 4s ease-in-out infinite",
-        "floating-orb-slow": "floating-orb 6s ease-in-out infinite",
-        "floating-orb-fast": "floating-orb 2s ease-in-out infinite",
-        "aura-pulse": "aura-pulse 2s ease-in-out infinite",
-        "aura-pulse-slow": "aura-pulse 3s ease-in-out infinite",
-        "aura-pulse-fast": "aura-pulse 1s ease-in-out infinite",
-        "portal-rotate": "portal-rotate 10s linear infinite",
-        "constellation-pulse": "constellation-pulse 2s ease-in-out infinite",
-        "constellation-flow": "constellation-flow 3s ease-in-out infinite",
-        "shrine-glow": "shrine-glow 4s ease-in-out infinite",
-        "slow-mode-breath": "slow-mode-breath 3s ease-in-out infinite",
-        "whisper-spin": "whisper-spin 1s linear infinite",
-      },
-      // WhisperVerse 3D Effects
-      backdropBlur: {
-        whisper: "20px",
-        "whisper-strong": "30px",
-      },
+      
+      // Spacing
+      spacing: spacing,
+      
+      // Border radius
+      borderRadius: borderRadius,
+      
+      // Shadows
       boxShadow: {
-        "whisper-soft": "0 4px 20px rgba(0, 0, 0, 0.1)",
-        "whisper-medium": "0 8px 30px rgba(0, 0, 0, 0.15)",
-        "whisper-deep": "0 12px 40px rgba(0, 0, 0, 0.2)",
-        "whisper-glow-primary": "0 0 20px rgba(147, 51, 234, 0.3)",
-        "whisper-glow-secondary": "0 0 20px rgba(59, 130, 246, 0.3)",
-        "whisper-glow-accent": "0 0 20px rgba(236, 72, 153, 0.3)",
-        "whisper-glow-muted": "0 0 15px rgba(100, 116, 139, 0.2)",
-        "whisper-neumorphism": `
-					8px 8px 16px rgba(0, 0, 0, 0.3),
-					-8px -8px 16px rgba(255, 255, 255, 0.05),
-					inset 2px 2px 4px rgba(255, 255, 255, 0.1),
-					inset -2px -2px 4px rgba(0, 0, 0, 0.2)
-				`,
+        ...shadows,
+        // Dream-specific shadows
+        "dream-sm": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+        "dream-md": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        "dream-lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+        "dream-xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+        "dream-2xl": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        "dream-inner": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)",
+        
+        // Dark mode shadows
+        "dream-dark-sm": "0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2)",
+        "dream-dark-md": "0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3)",
+        "dream-dark-lg": "0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3)",
+        "dream-dark-xl": "0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3)",
+        "dream-dark-2xl": "0 25px 50px -12px rgba(0, 0, 0, 0.6)",
+        "dream-dark-inner": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)",
       },
-      transformStyle: {
-        "preserve-3d": "preserve-3d",
+      
+      // Animation durations
+      transitionDuration: animations,
+      
+      // Z-index
+      zIndex: zIndex,
+      
+      // Custom animations for dreamlike effects
+      keyframes: {
+        "dream-fade-in": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "dream-fade-out": {
+          "0%": { opacity: "1", transform: "translateY(0)" },
+          "100%": { opacity: "0", transform: "translateY(-10px)" },
+        },
+        "dream-float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-5px)" },
+        },
+        "dream-pulse-soft": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.8" },
+        },
+        "dream-shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
-      perspective: {
-        whisper: "1000px",
-        "whisper-close": "500px",
-        "whisper-far": "2000px",
-      },
-      // WhisperVerse Gradients
-      backgroundImage: {
-        "whisper-orb":
-          "radial-gradient(circle at 30% 30%, rgba(147, 51, 234, 0.1) 0%, rgba(59, 130, 246, 0.05) 50%, rgba(15, 23, 42, 0.8) 100%)",
-        "whisper-portal":
-          "conic-gradient(from 0deg at 50% 50%, rgba(147, 51, 234, 0.3) 0deg, rgba(59, 130, 246, 0.2) 120deg, rgba(236, 72, 153, 0.3) 240deg, rgba(147, 51, 234, 0.3) 360deg)",
-        "whisper-shrine":
-          "radial-gradient(ellipse at center, rgba(147, 51, 234, 0.1) 0%, rgba(59, 130, 246, 0.05) 40%, rgba(15, 23, 42, 0.9) 100%)",
-        "whisper-neumorphism":
-          "linear-gradient(145deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%)",
-        "whisper-button":
-          "linear-gradient(145deg, rgba(147, 51, 234, 0.8) 0%, rgba(59, 130, 246, 0.6) 100%)",
-        "whisper-text":
-          "linear-gradient(135deg, #9333ea 0%, #3b82f6 50%, #ec4899 100%)",
-        "whisper-body":
-          "radial-gradient(ellipse at center, rgba(147, 51, 234, 0.05) 0%, rgba(59, 130, 246, 0.03) 30%, rgba(15, 23, 42, 1) 100%)",
+      
+      animation: {
+        "dream-fade-in": "dream-fade-in 0.5s ease-out",
+        "dream-fade-out": "dream-fade-out 0.5s ease-in",
+        "dream-float": "dream-float 3s ease-in-out infinite",
+        "dream-pulse-soft": "dream-pulse-soft 2s ease-in-out infinite",
+        "dream-shimmer": "dream-shimmer 2s linear infinite",
       },
     },
   },
   plugins: [tailwindcssAnimate],
-} satisfies Config;
+};
+
+export default config;

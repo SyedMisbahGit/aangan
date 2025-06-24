@@ -1,10 +1,643 @@
-import React from "react";
-const Murmurs: React.FC = () => (
-  <div className="max-w-lg mx-auto pt-8 pb-24 px-2 text-center">
-    <h1 className="kinetic-text text-3xl font-bold mb-6">Whisper Murmurs</h1>
-    <p className="text-muted-foreground">
-      Ambient campus activity will appear here soon.
+import React, { useState, useEffect } from "react";
+import { DreamLayout } from "../components/shared/DreamLayout";
+import { DreamHeader } from "../components/shared/DreamHeader";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectLabel, SelectGroup } from "../components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import ModularWhisperCard from "../components/whisper/ModularWhisperCard";
+import { 
+  TrendingUp, 
+  Users, 
+  MessageCircle, 
+  Sparkles, 
+  Search,
+  Filter,
+  Clock,
+  Heart,
+  Zap,
+  Flame,
+  TrendingDown,
+  MapPin,
+  Activity,
+  BarChart3,
+  ArrowUp,
+  ArrowDown,
+  Share2,
+  MoreHorizontal
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useCUJHotspots } from "../contexts/CUJHotspotContext";
+import { ShhhLine } from '@/components/ShhhLine';
+import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
+
+const Murmurs: React.FC = () => {
+  const [selectedFilter, setSelectedFilter] = useState("all");
+  const [selectedTimeframe, setSelectedTimeframe] = useState("1h");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedZone, setSelectedZone] = useState("all");
+  const [selectedEmotion, setSelectedEmotion] = useState("all");
+  const [whispers, setWhispers] = useState<any[]>([]);
+  const [trendingTopics, setTrendingTopics] = useState<any[]>([]);
+  
+  const { nearbyHotspots, emotionClusters, getEmotionTrends } = useCUJHotspots();
+
+  const filters = [
+    { value: "all", label: "All Murmurs", icon: "💫" },
+    { value: "proximity", label: "Near You", icon: "📍" },
+    { value: "vibe", label: "Vibe Match", icon: "✨" },
+    { value: "emotion", label: "Emotion", icon: "💭" }
+  ];
+
+  const timeframes = [
+    { value: "1h", label: "Last Hour", icon: "⚡" },
+    { value: "24h", label: "24 Hours", icon: "🌅" },
+    { value: "7d", label: "7 Days", icon: "📅" },
+    { value: "30d", label: "30 Days", icon: "📊" }
+  ];
+
+  const emotions = [
+    { value: "joy", label: "Joy", icon: "✨", color: "bg-yellow-50 text-yellow-700 border-yellow-200" },
+    { value: "nostalgia", label: "Nostalgia", icon: "🌸", color: "bg-pink-50 text-pink-700 border-pink-200" },
+    { value: "anxiety", label: "Anxiety", icon: "💭", color: "bg-purple-50 text-purple-700 border-purple-200" },
+    { value: "calm", label: "Calm", icon: "🌊", color: "bg-blue-50 text-blue-700 border-blue-200" },
+    { value: "excitement", label: "Excitement", icon: "⚡", color: "bg-orange-50 text-orange-700 border-orange-200" },
+    { value: "melancholy", label: "Melancholy", icon: "🌙", color: "bg-indigo-50 text-indigo-700 border-indigo-200" },
+    { value: "gratitude", label: "Gratitude", icon: "🙏", color: "bg-green-50 text-green-700 border-green-200" },
+    { value: "curiosity", label: "Curiosity", icon: "🔍", color: "bg-teal-50 text-teal-700 border-teal-200" }
+  ];
+
+  const inCampus = CUJ_HOTSPOTS.slice(0, 29);
+  const outsideCampus = CUJ_HOTSPOTS.slice(29);
+
+  // Sample whispers with proximity and vibe data
+  useEffect(() => {
+    const sampleWhispers = [
+      {
+        id: 1,
+        content: "You + 8 others near ISRO shared similar thoughts about the upcoming hackathon. The energy is electric!",
+        emotion: "excitement",
+        visibility: "public" as const,
+        hotspot: "isro",
+        timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+        hearts: 23,
+        replies: 7,
+        author: "Anonymous",
+        proximity: 180,
+        vibeMatch: 0.9,
+        groupSize: 8
+      },
+      {
+        id: 2,
+        content: "The way the library transforms during exam season is fascinating. Everyone's in their own world yet connected by the same purpose.",
+        emotion: "calm",
+        visibility: "anonymous" as const,
+        hotspot: "library",
+        timestamp: new Date(Date.now() - 12 * 60 * 1000).toISOString(),
+        hearts: 15,
+        replies: 3,
+        author: "Anonymous",
+        proximity: 90,
+        vibeMatch: 0.7,
+        groupSize: 12
+      },
+      {
+        id: 3,
+        content: "Found someone who shares my love for midnight walks around campus. The stars seem closer here, and conversations flow like the gentle breeze.",
+        emotion: "nostalgia",
+        visibility: "public" as const,
+        hotspot: "quad",
+        timestamp: new Date(Date.now() - 18 * 60 * 1000).toISOString(),
+        hearts: 31,
+        replies: 5,
+        author: "Anonymous",
+        proximity: 30,
+        vibeMatch: 0.8,
+        groupSize: 5
+      },
+      {
+        id: 4,
+        content: "The chai at Tapri has a way of making everything feel better. Watching the sunset with friends, sharing stories, and feeling grateful for these moments.",
+        emotion: "gratitude",
+        visibility: "public" as const,
+        hotspot: "tapri",
+        timestamp: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
+        hearts: 28,
+        replies: 4,
+        author: "Anonymous",
+        proximity: 50,
+        vibeMatch: 0.6,
+        groupSize: 15
+      },
+      {
+        id: 5,
+        content: "Sometimes I wonder about the stories these ancient walls could tell. The Baba Surgal Dev Mandir has witnessed generations of students finding their path.",
+        emotion: "melancholy",
+        visibility: "anonymous" as const,
+        hotspot: "baba-surgal",
+        timestamp: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
+        hearts: 19,
+        replies: 2,
+        author: "Anonymous",
+        proximity: 200,
+        vibeMatch: 0.5,
+        groupSize: 3
+      },
+      {
+        id: 6,
+        content: "The energy in the DDE building today is electric. Everyone's working on their final projects, and you can feel the collective determination in the air.",
+        emotion: "excitement",
+        visibility: "public" as const,
+        hotspot: "dde",
+        timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
+        hearts: 42,
+        replies: 8,
+        author: "Anonymous",
+        proximity: 120,
+        vibeMatch: 0.9,
+        groupSize: 20
+      }
+    ];
+    setWhispers(sampleWhispers);
+
+    // Sample trending topics
+    const sampleTrendingTopics = [
+      {
+        id: 1,
+        topic: "Exam Season Vibes",
+        emotion: "determined",
+        count: 156,
+        trend: "up",
+        change: 23,
+        hotspots: ["library", "dde"]
+      },
+      {
+        id: 2,
+        topic: "Sunset at Tapri",
+        emotion: "nostalgia",
+        count: 89,
+        trend: "up",
+        change: 15,
+        hotspots: ["tapri"]
+      },
+      {
+        id: 3,
+        topic: "Midnight Walks",
+        emotion: "peaceful",
+        count: 67,
+        trend: "stable",
+        change: 0,
+        hotspots: ["quad", "baba-surgal"]
+      },
+      {
+        id: 4,
+        topic: "Hackathon Prep",
+        emotion: "excitement",
+        count: 234,
+        trend: "up",
+        change: 45,
+        hotspots: ["isro", "dde"]
+      },
+      {
+        id: 5,
+        topic: "Rainy Campus",
+        emotion: "melancholy",
+        count: 43,
+        trend: "down",
+        change: -8,
+        hotspots: ["library", "quad"]
+      }
+    ];
+    setTrendingTopics(sampleTrendingTopics);
+  }, []);
+
+  const filteredWhispers = whispers.filter(whisper => {
+    if (selectedFilter === "proximity" && whisper.proximity > 100) return false;
+    if (selectedFilter === "vibe" && whisper.vibeMatch < 0.7) return false;
+    if (searchTerm && !whisper.content.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    return true;
+  });
+
+  const getEmotionIcon = (emotion: string) => {
+    return emotions.find(e => e.value === emotion)?.icon || "💫";
+  };
+
+  const getEmotionStyle = (emotion: string) => {
+    return emotions.find(e => e.value === emotion)?.color || "bg-pink-50 text-pink-700 border-pink-200";
+  };
+
+  const getTrendIcon = (trend: string) => {
+    switch (trend) {
+      case "up": return <ArrowUp className="w-3 h-3 text-green-600" />;
+      case "down": return <ArrowDown className="w-3 h-3 text-red-600" />;
+      default: return <TrendingUp className="w-3 h-3 text-blue-600" />;
+    }
+  };
+
+  const getProximityText = (proximity: number) => {
+    if (proximity <= 50) return "Very Close";
+    if (proximity <= 100) return "Nearby";
+    if (proximity <= 200) return "Close";
+    return "Far";
+  };
+
+  const getVibeMatchText = (vibe: number) => {
+    if (vibe >= 0.9) return "Perfect Match";
+    if (vibe >= 0.8) return "Great Match";
+    if (vibe >= 0.7) return "Good Match";
+    if (vibe >= 0.6) return "Decent Match";
+    return "Low Match";
+  };
+
+  const getSocialStats = () => {
+    const totalWhispers = whispers.length;
+    const totalHearts = whispers.reduce((sum, w) => sum + w.hearts, 0);
+    const totalReplies = whispers.reduce((sum, w) => sum + w.replies, 0);
+    const avgProximity = whispers.reduce((sum, w) => sum + w.proximity, 0) / whispers.length;
+    
+    return { totalWhispers, totalHearts, totalReplies, avgProximity };
+  };
+
+  const stats = getSocialStats();
+
+  return (
+    <DreamLayout>
+      <div className="min-h-screen bg-gradient-to-br from-cloudmist/30 via-dawnlight/20 to-cloudmist/40">
+        {/* Poetic AI Narrator */}
+        <div className="pt-6 pb-4 px-4">
+          <ShhhLine
+            variant="header"
+            context="murmurs"
+            emotion="social"
+            className="mb-6"
+          />
+        </div>
+
+        {/* Ambient Header */}
+        <DreamHeader 
+          title="Social Pulse"
+          subtitle="Feel the heartbeat of campus"
+        />
+
+        <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+          {/* Social Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="bg-gradient-to-br from-dawnlight/30 to-cloudmist/30 border-inkwell/10 shadow-soft">
+              <CardContent className="p-6">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-semibold text-inkwell mb-2">
+                    Campus Social Pulse
+                  </h2>
+                  <p className="text-inkwell/70">
+                    Feel the collective heartbeat of your campus community
     </p>
   </div>
-);
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                  <div>
+                    <div className="text-2xl font-bold text-inkwell">{stats.totalWhispers}</div>
+                    <div className="text-sm text-inkwell/70">Whispers Today</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-inkwell">{stats.totalHearts}</div>
+                    <div className="text-sm text-inkwell/70">Hearts Shared</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-inkwell">{stats.totalReplies}</div>
+                    <div className="text-sm text-inkwell/70">Conversations</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-inkwell">
+                      {Math.round(stats.avgProximity)}m
+                    </div>
+                    <div className="text-sm text-inkwell/70">Avg Distance</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Filters and Search */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="space-y-4"
+          >
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-inkwell/40 w-4 h-4" />
+              <Input
+                placeholder="Search murmurs..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-paper-light border-inkwell/20 focus:border-inkwell/40"
+              />
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="text-sm text-inkwell/70 mb-2 block">Zone Filter</label>
+                <Select value={selectedZone} onValueChange={setSelectedZone}>
+                  <SelectTrigger className="bg-paper-light border-inkwell/20 focus:border-inkwell/40 dark:bg-background dark:border-border dark:focus:border-ring">
+                    <SelectValue placeholder="Select a zone" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[60] bg-popover dark:bg-popover border-border dark:border-border shadow-lg dark:shadow-black/20">
+                    <SelectItem value="all" className="font-medium">
+                      🌍 All Zones
+                    </SelectItem>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel className="text-xs font-semibold text-muted-foreground bg-muted/30 dark:bg-muted/30">
+                        🏫 In-Campus
+                      </SelectLabel>
+                      {inCampus.map(zone => (
+                        <SelectItem 
+                          key={zone} 
+                          value={zone}
+                          className="text-sm hover:bg-accent dark:hover:bg-accent"
+                        >
+                          {zone}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel className="text-xs font-semibold text-muted-foreground bg-muted/30 dark:bg-muted/30">
+                        🏠 Outside-Campus
+                      </SelectLabel>
+                      {outsideCampus.map(zone => (
+                        <SelectItem 
+                          key={zone} 
+                          value={zone}
+                          className="text-sm hover:bg-accent dark:hover:bg-accent"
+                        >
+                          {zone}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex-1">
+                <label className="text-sm text-inkwell/70 mb-2 block">Emotion Filter</label>
+                <Select value={selectedEmotion} onValueChange={setSelectedEmotion}>
+                  <SelectTrigger className="bg-paper-light border-inkwell/20 focus:border-inkwell/40 dark:bg-background dark:border-border dark:focus:border-ring">
+                    <SelectValue placeholder="Select emotion" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[60] bg-popover dark:bg-popover border-border dark:border-border shadow-lg dark:shadow-black/20">
+                    <SelectItem value="all" className="font-medium">
+                      💫 All Emotions
+                    </SelectItem>
+                    <SelectSeparator />
+                    {emotions.map((emotion) => (
+                      <SelectItem 
+                        key={emotion.value} 
+                        value={emotion.value}
+                        className="text-sm hover:bg-accent dark:hover:bg-accent"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span>{emotion.icon}</span>
+                          {emotion.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Main Content Tabs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Tabs defaultValue="whispers" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3 bg-paper-light border-inkwell/10">
+                <TabsTrigger value="whispers" className="text-inkwell data-[state=active]:bg-inkwell data-[state=active]:text-paper-light">
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Whispers
+                </TabsTrigger>
+                <TabsTrigger value="trends" className="text-inkwell data-[state=active]:bg-inkwell data-[state=active]:text-paper-light">
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Trends
+                </TabsTrigger>
+                <TabsTrigger value="pulse" className="text-inkwell data-[state=active]:bg-inkwell data-[state=active]:text-paper-light">
+                  <Activity className="w-4 h-4 mr-2" />
+                  Pulse
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Whispers Tab */}
+              <TabsContent value="whispers" className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-inkwell flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" />
+                    Recent Murmurs
+                  </h3>
+                  <Badge variant="outline" className="bg-white/50 border-inkwell/20">
+                    {filteredWhispers.length} whispers
+                  </Badge>
+                </div>
+                
+                <AnimatePresence>
+                  {filteredWhispers.map((whisper, index) => (
+                    <motion.div
+                      key={whisper.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                    >
+                      <Card className="bg-paper-light border-inkwell/10 shadow-soft">
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2">
+                                <Badge className={`${getEmotionStyle(whisper.emotion)} border`}>
+                                  {getEmotionIcon(whisper.emotion)} {whisper.emotion}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs bg-white/50 border-inkwell/20">
+                                  <MapPin className="w-3 h-3 mr-1" />
+                                  {getProximityText(whisper.proximity)}
+                                </Badge>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="text-xs bg-white/50 border-inkwell/20">
+                                <Users className="w-3 h-3 mr-1" />
+                                You + {whisper.groupSize} others
+                              </Badge>
+                              <Badge variant="outline" className="text-xs bg-white/50 border-inkwell/20">
+                                <Zap className="w-3 h-3 mr-1" />
+                                {getVibeMatchText(whisper.vibeMatch)}
+                              </Badge>
+                            </div>
+                          </div>
+                          
+                          <ModularWhisperCard
+                            whisper={whisper}
+                            variant="compact"
+                          />
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                
+                {filteredWhispers.length === 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-12"
+                  >
+                    <div className="text-inkwell/60 mb-4">
+                      <MessageCircle className="w-12 h-12 mx-auto mb-4" />
+                      <p>No murmurs found matching your filters.</p>
+                      <p className="text-sm">Try adjusting your search or filters.</p>
+                    </div>
+                  </motion.div>
+                )}
+              </TabsContent>
+
+              {/* Trends Tab */}
+              <TabsContent value="trends" className="space-y-4">
+                <h3 className="text-lg font-semibold text-inkwell flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  Trending Topics
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {trendingTopics.map((topic, index) => (
+                    <motion.div
+                      key={topic.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                    >
+                      <Card className="bg-paper-light border-inkwell/10 shadow-soft hover:shadow-medium transition-all">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <div>
+                              <h4 className="font-semibold text-inkwell">{topic.topic}</h4>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge className={`${getEmotionStyle(topic.emotion)} border text-xs`}>
+                                  {getEmotionIcon(topic.emotion)} {topic.emotion}
+                                </Badge>
+                                <span className="text-xs text-inkwell/60">
+                                  {topic.count} mentions
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-1">
+                              {getTrendIcon(topic.trend)}
+                              <span className={`text-xs font-medium ${
+                                topic.trend === 'up' ? 'text-green-600' : 
+                                topic.trend === 'down' ? 'text-red-600' : 'text-blue-600'
+                              }`}>
+                                {topic.change > 0 ? '+' : ''}{topic.change}%
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 text-xs text-inkwell/60">
+                            <MapPin className="w-3 h-3" />
+                            <span>{topic.hotspots.join(', ')}</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              </TabsContent>
+
+              {/* Pulse Tab */}
+              <TabsContent value="pulse" className="space-y-4">
+                <h3 className="text-lg font-semibold text-inkwell flex items-center gap-2">
+                  <Activity className="w-5 h-5" />
+                  Campus Pulse
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Emotion Pulse */}
+                  <Card className="bg-paper-light border-inkwell/10 shadow-soft">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-inkwell">
+                        <Activity className="w-5 h-5" />
+                        Emotion Pulse
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {getEmotionTrends().slice(0, 5).map((cluster, index) => (
+                          <div key={cluster.emotion} className="flex items-center justify-between p-3 bg-white/50 rounded-lg border border-inkwell/10">
+                            <div className="flex items-center gap-3">
+                              <div className="text-lg">{getEmotionIcon(cluster.emotion)}</div>
+                              <div>
+                                <div className="font-medium text-inkwell capitalize">{cluster.emotion}</div>
+                                <div className="text-xs text-inkwell/60">{cluster.count} people</div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm font-medium text-inkwell">
+                                {Math.round(cluster.intensity * 100)}%
+                              </div>
+                              <div className="text-xs text-inkwell/60">intensity</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Social Density */}
+                  <Card className="bg-paper-light border-inkwell/10 shadow-soft">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-inkwell">
+                        <Users className="w-5 h-5" />
+                        Social Density
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {nearbyHotspots.slice(0, 5).map((hotspot, index) => (
+                          <div key={hotspot.id} className="flex items-center justify-between p-3 bg-white/50 rounded-lg border border-inkwell/10">
+                            <div className="flex items-center gap-3">
+                              <div className="text-lg">📍</div>
+                              <div>
+                                <div className="font-medium text-inkwell">{hotspot.name}</div>
+                                <div className="text-xs text-inkwell/60">{hotspot.activeUsers} active</div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm font-medium text-inkwell">
+                                {hotspot.energyLevel}%
+                              </div>
+                              <div className="text-xs text-inkwell/60">energy</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </motion.div>
+        </div>
+      </div>
+    </DreamLayout>
+  );
+};
+
 export default Murmurs;

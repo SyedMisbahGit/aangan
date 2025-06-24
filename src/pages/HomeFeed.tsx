@@ -1,293 +1,361 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
-import { Badge } from "@/components/ui/badge";
+import React, { useState, useEffect } from "react";
+import { DreamLayout } from "../components/shared/DreamLayout";
+import { DreamHeader } from "../components/shared/DreamHeader";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { ModularWhisperCard } from "../components/ModularWhisperCard";
 import {
+  Filter, 
+  Search, 
+  MapPin, 
+  Users, 
   Sparkles,
-  MapPin,
-  Clock,
   Heart,
   MessageCircle,
-  RefreshCw,
+  Clock,
+  TrendingUp
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useCUJHotspots } from "../contexts/CUJHotspotContext";
+import { ShhhLine } from '../components/ShhhLine';
+import { useShhhNarrator } from '../contexts/ShhhNarratorContext';
 
-// Mock API function - replace with real API call
-const fetchWhispers = async () => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  return [
-    {
-      id: "1",
-      content:
-        "Feeling nostalgic about Udaan fest... 🌌 The way everyone came together under the stars.",
-      emotion: "nostalgia",
-      zone: "Udaan Lawn",
-      timestamp: "2m ago",
-      likes: 12,
-      replies: 3,
-    },
-    {
-      id: "2",
-      content:
-        "Library silence is oddly comforting today. Found a perfect study spot by the window.",
-      emotion: "calm",
-      zone: "Library",
-      timestamp: "5m ago",
-      likes: 8,
-      replies: 1,
-    },
-    {
-      id: "3",
-      content:
-        "Stargazing from Hostel G rooftop hits different ✨ Campus looks magical from up here.",
-      emotion: "joy",
-      zone: "Hostel G",
-      timestamp: "10m ago",
-      likes: 15,
-      replies: 5,
-    },
-    {
-      id: "4",
-      content:
-        "Midnight cravings hit hard. Cafeteria closed but the memories of late-night chai remain.",
-      emotion: "nostalgia",
-      zone: "Cafeteria",
-      timestamp: "15m ago",
-      likes: 6,
-      replies: 2,
-    },
-  ];
-};
-
-const emotionConfig = {
-  nostalgia: {
-    gradient: "from-purple-400/20 to-pink-400/20",
-    border: "border-purple-500/30",
-    text: "text-purple-300",
-    icon: "🌌",
-  },
-  calm: {
-    gradient: "from-blue-400/20 to-cyan-400/20",
-    border: "border-blue-500/30",
-    text: "text-blue-300",
-    icon: "🌊",
-  },
-  joy: {
-    gradient: "from-yellow-400/20 to-orange-400/20",
-    border: "border-yellow-500/30",
-    text: "text-yellow-300",
-    icon: "✨",
-  },
-  anxiety: {
-    gradient: "from-red-400/20 to-pink-400/20",
-    border: "border-red-500/30",
-    text: "text-red-300",
-    icon: "😰",
-  },
-  hope: {
-    gradient: "from-green-400/20 to-emerald-400/20",
-    border: "border-green-500/30",
-    text: "text-green-300",
-    icon: "🌱",
-  },
-};
+interface Whisper {
+  id: string;
+  content: string;
+  emotion: string;
+  timestamp: string;
+  location: string;
+  likes: number;
+  comments: number;
+  isAnonymous: boolean;
+  author?: string;
+}
 
 const HomeFeed: React.FC = () => {
-  const {
-    data: whispers,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ["whispers"],
-    queryFn: fetchWhispers,
-    staleTime: 30000, // 30 seconds
-    refetchOnWindowFocus: false,
+  const { nearbyHotspots, emotionClusters, systemTime, campusActivity } = useCUJHotspots();
+  const { narratorState } = useShhhNarrator();
+  const [selectedEmotion, setSelectedEmotion] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedHotspot, setSelectedHotspot] = useState("all");
+  const [whispers, setWhispers] = useState<Whisper[]>([]);
+  
+  // Real-time context integration
+  const isNightTime = systemTime.hour < 6 || systemTime.hour > 22;
+  const isWeekend = systemTime.isWeekend;
+  const currentActivity = narratorState.userActivity;
+
+  const emotions = [
+    { value: "all", label: "All Emotions", icon: "💫" },
+    { value: "joy", label: "Joy", icon: "✨" },
+    { value: "nostalgia", label: "Nostalgia", icon: "🌸" },
+    { value: "peace", label: "Peace", icon: "🌿" },
+    { value: "anxiety", label: "Anxiety", icon: "🌧️" },
+    { value: "focus", label: "Focus", icon: "🎯" },
+    { value: "excitement", label: "Excitement", icon: "🚀" },
+    { value: "reflection", label: "Reflection", icon: "🪞" }
+  ];
+
+  // Generate sample whispers with real-time context
+  useEffect(() => {
+    const generateWhispers = () => {
+      const sampleWhispers: Whisper[] = [
+        {
+          id: '1',
+          content: isNightTime 
+            ? "The campus feels different at night. Quieter, more introspective. Like everyone's thoughts are floating in the air."
+            : "Just had the most amazing conversation at Tapri. Sometimes the best ideas come over chai.",
+          emotion: isNightTime ? 'reflection' : 'joy',
+          timestamp: new Date(Date.now() - Math.random() * 3600000).toISOString(),
+          location: 'tapri',
+          likes: Math.floor(Math.random() * 20) + 5,
+          comments: Math.floor(Math.random() * 10) + 2,
+          isAnonymous: true
+        },
+        {
+          id: '2',
+          content: campusActivity === 'peak' 
+            ? "The energy in the quad right now is electric! So many people, so many stories."
+            : "Found a quiet corner in the library. Perfect for getting lost in thoughts.",
+          emotion: campusActivity === 'peak' ? 'excitement' : 'focus',
+          timestamp: new Date(Date.now() - Math.random() * 1800000).toISOString(),
+          location: campusActivity === 'peak' ? 'quad' : 'library',
+          likes: Math.floor(Math.random() * 15) + 3,
+          comments: Math.floor(Math.random() * 8) + 1,
+          isAnonymous: true
+        },
+        {
+          id: '3',
+          content: isWeekend 
+            ? "Weekend vibes hit different. The campus feels more relaxed, more human."
+            : "Mid-semester stress is real, but we're all in this together.",
+          emotion: isWeekend ? 'peace' : 'anxiety',
+          timestamp: new Date(Date.now() - Math.random() * 900000).toISOString(),
+          location: 'dde',
+          likes: Math.floor(Math.random() * 25) + 8,
+          comments: Math.floor(Math.random() * 12) + 3,
+          isAnonymous: true
+        }
+      ];
+      setWhispers(sampleWhispers);
+    };
+
+    generateWhispers();
+    
+    // Update whispers every 5 minutes with new real-time context
+    const interval = setInterval(generateWhispers, 300000);
+    return () => clearInterval(interval);
+  }, [isNightTime, campusActivity, isWeekend]);
+
+  const getTimeAwareGreeting = () => {
+    if (isNightTime) return 'Night whispers';
+    if (systemTime.hour < 12) return 'Morning thoughts';
+    if (systemTime.hour < 18) return 'Afternoon musings';
+    return 'Evening reflections';
+  };
+
+  const getActivityContext = () => {
+    if (currentActivity === 'waking') return 'Early morning energy';
+    if (currentActivity === 'night-reflection') return 'Late night thoughts';
+    if (isWeekend) return 'Weekend vibes';
+    return 'Campus pulse';
+  };
+
+  const filteredWhispers = whispers.filter(whisper => {
+    if (selectedEmotion !== "all" && whisper.emotion !== selectedEmotion) return false;
+    if (selectedHotspot !== "all" && whisper.location !== selectedHotspot) return false;
+    if (searchTerm && !whisper.content.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    return true;
   });
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
+  const getAmbientHeader = () => {
+    const activeHotspots = nearbyHotspots.filter(h => h.activeUsers > 0);
+    const totalActive = activeHotspots.reduce((sum, h) => sum + h.activeUsers, 0);
+    
+    if (activeHotspots.length === 0) {
+      return "The campus is quiet today. Perfect for reflection.";
+    }
+    
+    const topHotspot = activeHotspots[0];
+    const emotion = emotionClusters[0];
+    
+    if (emotion && emotion.count > 10) {
+      return `You & ${emotion.count} others are feeling ${emotion.emotion} today`;
+    }
+    
+    return `You & ${totalActive} others are active near ${topHotspot.name} this afternoon`;
   };
 
-  const whisperVariants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
-      scale: 0.95,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15,
-      },
-    },
-    hover: {
-      y: -5,
-      scale: 1.02,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20,
-      },
-    },
+  const getHotspotStats = () => {
+    const totalWhispers = whispers.length;
+    const totalLikes = whispers.reduce((sum, w) => sum + w.likes, 0);
+    const activeHotspots = nearbyHotspots.filter(h => h.activeUsers > 0).length;
+    
+    return { totalWhispers, totalLikes, activeHotspots };
   };
 
-  if (isLoading) {
+  const stats = getHotspotStats();
+
     return (
-      <div className="max-w-lg mx-auto pt-8 pb-24 px-4">
+    <DreamLayout>
+      <div className="min-h-screen bg-gradient-to-br from-cloudmist/30 via-dawnlight/20 to-cloudmist/40">
+        {/* Poetic AI Narrator */}
+        <div className="pt-6 pb-4 px-4">
+          <ShhhLine 
+            variant="ambient" 
+            context="home-feed"
+            emotion={narratorState.dominantEmotion}
+            zone={campusActivity}
+            timeOfDay={narratorState.currentTime}
+            userActivity={narratorState.userActivity}
+            className="text-center"
+          />
+        </div>
+
+        {/* Ambient Header */}
+        <DreamHeader 
+          title={getTimeAwareGreeting()}
+          subtitle={getActivityContext()}
+        />
+
+        <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+          {/* Ambient Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-4"
-        >
-          <div className="kinetic-text text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center justify-center gap-2">
-            <Sparkles className="h-6 w-6" />
-            Whisper Feed
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="bg-gradient-to-br from-dawnlight/30 to-cloudmist/30 border-inkwell/10 shadow-soft">
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <h2 className="text-xl font-semibold text-inkwell mb-2">
+                    {getAmbientHeader()}
+                  </h2>
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <div className="text-2xl font-bold text-inkwell">{stats.totalWhispers}</div>
+                      <div className="text-sm text-inkwell/70">Whispers Today</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-inkwell">{stats.totalLikes}</div>
+                      <div className="text-sm text-inkwell/70">Hearts Shared</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-inkwell">{stats.activeHotspots}</div>
+                      <div className="text-sm text-inkwell/70">Active Zones</div>
+                    </div>
           </div>
-          <div className="flex items-center justify-center gap-2 text-muted-foreground">
-            <RefreshCw className="h-4 w-4 animate-spin" />
-            Loading whispers...
           </div>
+              </CardContent>
+            </Card>
         </motion.div>
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div className="max-w-lg mx-auto pt-8 pb-24 px-4">
-        <div className="text-center space-y-4">
-          <h1 className="kinetic-text text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Whisper Feed
-          </h1>
-          <div className="glass p-6 rounded-2xl border border-red-500/20">
-            <p className="text-red-400 mb-4">Failed to load whispers</p>
-            <button
-              onClick={() => refetch()}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              Try Again
-            </button>
+          {/* Filters */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="space-y-4"
+          >
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-inkwell/40 w-4 h-4" />
+              <Input
+                placeholder="Search whispers..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-paper-light border-inkwell/20 focus:border-inkwell/40"
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-inkwell/70 mb-2 block">Emotion Filter</label>
+                <Select value={selectedEmotion} onValueChange={setSelectedEmotion}>
+                  <SelectTrigger className="bg-paper-light border-inkwell/20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {emotions.map((emotion) => (
+                      <SelectItem key={emotion.value} value={emotion.value}>
+                        <div className="flex items-center gap-2">
+                          <span>{emotion.icon}</span>
+                          {emotion.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+      </div>
+              
+              <div>
+                <label className="text-sm text-inkwell/70 mb-2 block">Location Filter</label>
+                <Select value={selectedHotspot} onValueChange={setSelectedHotspot}>
+                  <SelectTrigger className="bg-paper-light border-inkwell/20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Locations</SelectItem>
+                    {nearbyHotspots.map((hotspot) => (
+                      <SelectItem key={hotspot.id} value={hotspot.id}>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-3 h-3" />
+                          {hotspot.name}
           </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
         </div>
       </div>
-    );
-  }
+          </motion.div>
 
-  return (
-    <div className="max-w-lg mx-auto pt-8 pb-24 px-4">
+          {/* Emotion Trends */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
-      >
-        <h1 className="kinetic-text text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center justify-center gap-2 mb-2">
-          <Sparkles className="h-6 w-6" />
-          Whisper Feed
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Anonymous whispers from across campus
-        </p>
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card className="bg-paper-light border-inkwell/10 shadow-soft">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-inkwell">
+                  <TrendingUp className="w-5 h-5" />
+                  Campus Mood
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {emotionClusters.slice(0, 4).map((cluster) => (
+                    <div
+                      key={cluster.emotion}
+                      className="p-3 bg-white/50 rounded-lg border border-inkwell/10 text-center"
+                    >
+                      <div className="text-lg mb-1">
+                        {emotions.find(e => e.value === cluster.emotion)?.icon || "💫"}
+                      </div>
+                      <div className="text-sm font-medium text-inkwell capitalize">
+                        {cluster.emotion}
+                      </div>
+                      <div className="text-xs text-inkwell/60">
+                        {cluster.count} people
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
       </motion.div>
 
+          {/* Whisper Feed */}
       <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="space-y-6"
-      >
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="space-y-4"
+          >
+            <h2 className="text-xl font-semibold text-inkwell flex items-center gap-2">
+              <Sparkles className="w-5 h-5" />
+              Recent Whispers
+            </h2>
+            
         <AnimatePresence>
-          {whispers?.map((whisper, index) => {
-            const emotion =
-              emotionConfig[whisper.emotion as keyof typeof emotionConfig] ||
-              emotionConfig.joy;
-
-            return (
+              {filteredWhispers.map((whisper, index) => (
+            <motion.div
+              key={whisper.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <ModularWhisperCard
+                    whisper={whisper}
+                    variant={index === 0 ? "featured" : "default"}
+                    showHotspot={true}
+                    showEmotionTag={true}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            
+            {filteredWhispers.length === 0 && (
               <motion.div
-                key={whisper.id}
-                variants={whisperVariants}
-                whileHover="hover"
-                className={`glass p-6 rounded-2xl shadow-lg backdrop-blur-md border ${emotion.border} bg-gradient-to-br ${emotion.gradient} relative overflow-hidden`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12"
               >
-                {/* Animated background glow */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${emotion.gradient} opacity-0 hover:opacity-100 transition-opacity duration-500`}
-                />
-
-                <div className="relative z-10">
-                  {/* Header */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <Badge
-                      variant="secondary"
-                      className={`capitalize text-xs ${emotion.text} bg-background/50 backdrop-blur-sm`}
-                    >
-                      {emotion.icon} {whisper.emotion}
-                    </Badge>
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <MapPin className="h-3 w-3" />
-                      {whisper.zone}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground ml-auto">
-                      <Clock className="h-3 w-3" />
-                      {whisper.timestamp}
-                    </span>
-                  </div>
-
-                  {/* Content */}
-                  <motion.div
-                    className="kinetic-text-slow text-lg font-medium leading-relaxed mb-4"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    {whisper.content}
-                  </motion.div>
-
-                  {/* Interaction stats */}
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Heart className="h-3 w-3" />
-                      {whisper.likes}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MessageCircle className="h-3 w-3" />
-                      {whisper.replies}
-                    </span>
-                  </div>
+                <div className="text-inkwell/60 mb-4">
+                  <MessageCircle className="w-12 h-12 mx-auto mb-4" />
+                  <p>No whispers found matching your filters.</p>
+                  <p className="text-sm">Try adjusting your search or emotion filter.</p>
                 </div>
               </motion.div>
-            );
-          })}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* Pull to refresh indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-        className="text-center mt-8"
-      >
-        <button
-          onClick={() => refetch()}
-          className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 mx-auto"
-        >
-          <RefreshCw className="h-3 w-3" />
-          Refresh whispers
-        </button>
+            )}
       </motion.div>
     </div>
+      </div>
+    </DreamLayout>
   );
 };
 

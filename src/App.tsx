@@ -6,8 +6,19 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfettiEffect } from "./components/shared/ConfettiEffect";
+import { DreamNavigation } from "./components/shared/DreamNavigation";
+import { DreamThemeProvider, useDreamTheme } from "./contexts/DreamThemeContext";
+import { ShhhNarratorProvider } from "./contexts/ShhhNarratorContext";
 import { useState, useEffect } from "react";
 import { messaging, getToken, onMessage } from "./firebase-messaging";
+import Admin from "./pages/Admin";
+import AdminInsights from "./pages/AdminInsights";
+import NotFound from "./pages/NotFound";
+import { CUJHotspotProvider } from "./contexts/CUJHotspotContext";
+import GlobalWhisperComposer from "./components/shared/GlobalWhisperComposer";
+import OnboardingGuide from "./components/shared/OnboardingGuide";
+import { SummerPulseProvider } from "./contexts/SummerPulseContext";
+import { SupabaseAuthProvider, useSupabaseAuth } from './contexts/SupabaseAuthContext';
 
 const queryClient = new QueryClient();
 
@@ -20,13 +31,14 @@ const Compass = lazy(() => import("./pages/Compass"));
 const Constellation = lazy(() => import("./pages/Constellation"));
 const Murmurs = lazy(() => import("./pages/Murmurs"));
 const Profile = lazy(() => import("./pages/Profile"));
-const FloatingNavOrbs = lazy(() => import("./components/FloatingNavOrbs"));
+const Login = lazy(() => import('./pages/Login'));
 
 const VAPID_KEY =
   "BI3DBu7k1VWLVM9S8UkeQl9gEhlLuHwa4dLOOr77R8kTbCza8TlpKJlc3URwGG-g2-u3Tcs16unk57rXiXPVSyA";
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [showConfetti, setShowConfetti] = useState(false);
+  const { theme, toggleTheme } = useDreamTheme();
 
   // Trigger confetti on app load for celebration
   useEffect(() => {
@@ -74,34 +86,80 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const handleWhisperCreated = (whisper: any) => {
+    console.log('New whisper created:', whisper);
+    // In a real app, this would trigger updates to feeds, notifications, etc.
+  };
+
+  return (
+    <div className={`min-h-screen transition-colors duration-500 ${
+      theme === 'dark'
+        ? 'bg-dream-dark-background text-dream-dark-text-primary' 
+        : 'bg-dream-background text-dream-text-primary'
+    }`}>
+      <Suspense
+        fallback={
+          <div className="dream-loading">
+            <div className="dream-loading-spinner"></div>
+            <span className="ml-3 text-dream-text-secondary">Loading whispers...</span>
+          </div>
+        }
+      >
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/onboarding" element={<OnboardingGuide />} />
+          <Route path="/" element={<PrivateRoute><HomeFeed /></PrivateRoute>} />
+          <Route path="/create" element={<PrivateRoute><CreateWhisper /></PrivateRoute>} />
+          <Route path="/diary" element={<PrivateRoute><Diary /></PrivateRoute>} />
+          <Route path="/capsules" element={<PrivateRoute><Capsules /></PrivateRoute>} />
+          <Route path="/shrines" element={<PrivateRoute><Shrines /></PrivateRoute>} />
+          <Route path="/compass" element={<PrivateRoute><Compass /></PrivateRoute>} />
+          <Route path="/constellation" element={<PrivateRoute><Constellation /></PrivateRoute>} />
+          <Route path="/murmurs" element={<PrivateRoute><Murmurs /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
+          <Route path="/admin/insights" element={<PrivateRoute><AdminInsights /></PrivateRoute>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <DreamNavigation onThemeToggle={toggleTheme} isDarkMode={theme === 'dark'} />
+      </Suspense>
+      <ConfettiEffect isActive={showConfetti} />
+      <GlobalWhisperComposer 
+        variant="floating"
+        onWhisperCreated={handleWhisperCreated}
+      />
+    </div>
+  );
+};
+
+// PrivateRoute wrapper
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useSupabaseAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
+const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <ConfettiEffect isActive={showConfetti} />
-        <BrowserRouter>
-          <div className="min-h-screen bg-gradient-to-br from-slate-900 to-indigo-950 relative">
-            <Suspense
-              fallback={<div className="text-center p-8">Loading...</div>}
-            >
-              <Routes>
-                <Route path="/" element={<HomeFeed />} />
-                <Route path="/create" element={<CreateWhisper />} />
-                <Route path="/diary" element={<Diary />} />
-                <Route path="/capsules" element={<Capsules />} />
-                <Route path="/shrines" element={<Shrines />} />
-                <Route path="/compass" element={<Compass />} />
-                <Route path="/constellation" element={<Constellation />} />
-                <Route path="/murmurs" element={<Murmurs />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-              <FloatingNavOrbs />
-            </Suspense>
-          </div>
-        </BrowserRouter>
-      </TooltipProvider>
+      <SupabaseAuthProvider>
+        <DreamThemeProvider>
+          <CUJHotspotProvider>
+            <ShhhNarratorProvider>
+              <SummerPulseProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <AppContent />
+                  </BrowserRouter>
+                </TooltipProvider>
+              </SummerPulseProvider>
+            </ShhhNarratorProvider>
+          </CUJHotspotProvider>
+        </DreamThemeProvider>
+      </SupabaseAuthProvider>
     </QueryClientProvider>
   );
 };
