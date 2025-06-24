@@ -69,6 +69,7 @@ interface ShhhNarratorContextType {
   getContextualLine: (zone?: string, mood?: string, time?: string, context?: 'memory' | 'arc' | 'general') => string;
   addEmotionalMemory: (zone: string, mood: string) => void;
   getPersonalizedLine: (zone?: string, mood?: string) => string;
+  isReady: boolean;
 }
 
 const ShhhNarratorContext = createContext<ShhhNarratorContextType | undefined>(undefined);
@@ -436,7 +437,14 @@ const fallbackLines = {
   ]
 };
 
+export const ShhhNarratorLoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-cream-100 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text font-poetic text-lg">
+    Loading narrator...
+  </div>
+);
+
 export const ShhhNarratorProvider: React.FC<ShhhNarratorProviderProps> = ({ children }) => {
+  const [loading, setLoading] = useState(true);
   const [narratorState, setNarratorState] = useState<NarratorState>({
     currentZone: '',
     currentMood: 'calm',
@@ -813,8 +821,19 @@ export const ShhhNarratorProvider: React.FC<ShhhNarratorProviderProps> = ({ chil
     updateNarratorState,
     getContextualLine,
     addEmotionalMemory,
-    getPersonalizedLine
+    getPersonalizedLine,
+    isReady: !loading,
   };
+
+  useEffect(() => {
+    // Simulate async initialization (replace with real async if needed)
+    setTimeout(() => {
+      setLoading(false);
+      console.log('ShhhNarratorContext ready');
+    }, 300); // Simulate a short delay
+  }, []);
+
+  if (loading) return <ShhhNarratorLoadingFallback />;
 
   return (
     <ShhhNarratorContext.Provider value={value}>

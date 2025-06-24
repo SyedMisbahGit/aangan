@@ -73,6 +73,9 @@ export const SummerPulseProvider: React.FC<{ children: React.ReactNode }> = ({ c
     label: SUMMER_LABEL,
   };
 
+  // Debug log for context readiness
+  console.log('SummerPulseContext ready:', value);
+
   return (
     <SummerPulseContext.Provider value={value}>
       {children}

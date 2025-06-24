@@ -47,6 +47,7 @@ interface CUJHotspotContextType {
   getHotspotsByEmotion: (emotion: string) => CUJHotspot[];
   getEmotionTrends: () => EmotionCluster[];
   updateHotspotActivity: (hotspotId: string, activity: Partial<CUJHotspot>) => void;
+  isReady: boolean;
 }
 
 const CUJHotspotContext = createContext<CUJHotspotContextType | undefined>(undefined);
@@ -63,7 +64,14 @@ interface CUJHotspotProviderProps {
   children: ReactNode;
 }
 
+export const CUJHotspotLoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-cream-100 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text font-poetic text-lg">
+    Loading campus hotspots...
+  </div>
+);
+
 export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children }) => {
+  const [loading, setLoading] = useState(true);
   const [hotspots, setHotspots] = useState<CUJHotspot[]>([
     {
       id: 'tapri',
@@ -281,8 +289,19 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
     getHotspotById,
     getHotspotsByEmotion,
     getEmotionTrends,
-    updateHotspotActivity
+    updateHotspotActivity,
+    isReady: !loading,
   };
+
+  useEffect(() => {
+    // Simulate async initialization (replace with real async if needed)
+    setTimeout(() => {
+      setLoading(false);
+      console.log('CUJHotspotContext ready');
+    }, 300); // Simulate a short delay
+  }, []);
+
+  if (loading) return <CUJHotspotLoadingFallback />;
 
   return (
     <CUJHotspotContext.Provider value={value}>

@@ -24,6 +24,13 @@ export const useSupabaseAuth = () => {
   return ctx;
 };
 
+// Loading fallback for UI components
+export const SupabaseAuthLoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-cream-100 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text font-poetic text-lg">
+    Loading authentication...
+  </div>
+);
+
 export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -34,11 +41,13 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       setSession(data.session);
       setUser(data.session?.user ?? null);
       setLoading(false);
+      console.log('SupabaseAuthContext ready:', { user: data.session?.user, session: data.session });
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      console.log('SupabaseAuthContext updated:', { user: session?.user, session });
     });
     return () => {
       listener.subscription.unsubscribe();

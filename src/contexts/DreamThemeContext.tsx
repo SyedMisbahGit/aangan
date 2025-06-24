@@ -35,6 +35,7 @@ export const DreamThemeProvider: React.FC<DreamThemeProviderProps> = ({ children
     const initialTheme = savedTheme || systemTheme;
     setThemeState(initialTheme);
     setIsInitialized(true);
+    console.log('DreamThemeContext ready:', { theme: initialTheme });
   }, []);
 
   // Apply theme to document and ensure proper z-index stacking

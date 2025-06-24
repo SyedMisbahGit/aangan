@@ -8,13 +8,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfettiEffect } from "./components/shared/ConfettiEffect";
 import { DreamNavigation } from "./components/shared/DreamNavigation";
 import { DreamThemeProvider, useDreamTheme } from "./contexts/DreamThemeContext";
-import { ShhhNarratorProvider } from "./contexts/ShhhNarratorContext";
+import { ShhhNarratorProvider, useShhhNarrator } from "./contexts/ShhhNarratorContext";
+import { CUJHotspotProvider, useCUJHotspots } from "./contexts/CUJHotspotContext";
 import { useState, useEffect } from "react";
 import { messaging, getToken, onMessage } from "./firebase-messaging";
 import Admin from "./pages/Admin";
 import AdminInsights from "./pages/AdminInsights";
 import NotFound from "./pages/NotFound";
-import { CUJHotspotProvider } from "./contexts/CUJHotspotContext";
 import GlobalWhisperComposer from "./components/shared/GlobalWhisperComposer";
 import Onboarding from "./pages/Onboarding";
 import { SummerPulseProvider } from "./contexts/SummerPulseContext";
@@ -36,9 +36,19 @@ const Login = lazy(() => import('./pages/Login'));
 const VAPID_KEY =
   "BI3DBu7k1VWLVM9S8UkeQl9gEhlLuHwa4dLOOr77R8kTbCza8TlpKJlc3URwGG-g2-u3Tcs16unk57rXiXPVSyA";
 
+const LoadingScreen = () => (
+  <div className="min-h-screen flex items-center justify-center bg-cream-100 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text font-poetic text-lg">
+    Shhh is sensing the campus...
+  </div>
+);
+
 const AppContent: React.FC = () => {
   const [showConfetti, setShowConfetti] = useState(false);
-  const { theme, toggleTheme } = useDreamTheme();
+  const { theme, toggleTheme, isInitialized } = useDreamTheme();
+  const { isReady: narratorReady } = useShhhNarrator();
+  const { isReady: hotspotReady } = useCUJHotspots();
+
+  if (!isInitialized || !narratorReady || !hotspotReady) return <LoadingScreen />;
 
   // Trigger confetti on app load for celebration
   useEffect(() => {
