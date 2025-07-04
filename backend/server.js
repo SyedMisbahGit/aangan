@@ -451,10 +451,7 @@ app.get("/api/admin/fcm-tokens", authenticateAdminJWT, async (req, res) => {
 // Heartbeat endpoint
 app.post("/api/health/heartbeat", async (req, res) => {
   try {
-    const now = new Date();
-    const key = `heartbeat:${now.toISOString().slice(0, 10)}`; // daily key
-    await redis.incr(key);
-    await redis.expire(key, 86400); // expire in 1 day
+    // Redis functionality temporarily disabled
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: "Heartbeat failed" });
