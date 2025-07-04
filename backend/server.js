@@ -11,11 +11,7 @@ import jwt from "jsonwebtoken";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 import { v4 as uuidv4 } from "uuid";
-import admin from "firebase-admin";
 import { readFileSync } from "fs";
-import Redis from "ioredis";
-import QRCode from "qrcode";
-
 // Load environment variables
 dotenv.config();
 
@@ -28,14 +24,28 @@ const PORT = process.env.PORT || 3001;
 // Database setup
 let db;
 
-// Redis setup for heartbeat and other counters
-const redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+// Redis setup for heartbeat and other counters (optional)
+let redis = null;
+
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY || "changeme";
 
 async function initializeDatabase() {
+  const DB_PATH = process.env.DB_PATH || join(__dirname, "whispers.db");
   db = await open({
-    filename: join(__dirname, "whispers.db"),
+    filename: DB_PATH,
     driver: sqlite3.Database,
   });
+
+  // Initialize Redis if available
+  if (!redis && process.env.REDIS_URL) {
+    try {
+      const Redis = (await import("ioredis")).default;
+      redis = new Redis(process.env.REDIS_URL);
+      console.log("Redis connected successfully");
+    } catch (error) {
+      console.log("Redis not available, continuing without Redis:", error.message);
+    }
+  }
 
   // Create tables
   await db.exec(`
@@ -157,53 +167,20 @@ const whisperLimiter = rateLimit({
   message: "Too many whispers, please wait a while.",
 });
 
-// Authentication middleware
-const authenticateToken = async (req, res, next) => {
+// Authentication middleware (admin only)
+const authenticateAdminJWT = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
-
   if (!token) {
     return res.status(401).json({ error: "Access token required" });
   }
-
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "your-secret-key",
-    );
-    const user = await db.get("SELECT * FROM admin_users WHERE username = ?", [
-      decoded.username,
-    ]);
-
-    if (!user) {
-      return res.status(403).json({ error: "Invalid token" });
-    }
-
-    req.user = user;
+    jwt.verify(token, process.env.JWT_SECRET || "your-secret-key");
     next();
   } catch (error) {
     return res.status(403).json({ error: "Invalid token" });
   }
 };
-
-// Initialize Firebase Admin SDK if not already
-if (!admin.apps.length) {
-  let serviceAccount;
-  try {
-    serviceAccount = JSON.parse(readFileSync(join(__dirname, "..", "serviceAccountKey.json.json"), "utf8"));
-  } catch (e) {
-    console.error("Failed to load serviceAccountKey.json.json", e);
-    serviceAccount = null;
-  }
-  if (serviceAccount && serviceAccount.project_id) {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-    console.log("Firebase Admin initialized with serviceAccountKey.json.json");
-  } else {
-    console.warn("Firebase Admin not initialized: service account missing or invalid");
-  }
-}
 
 // Routes
 
@@ -300,7 +277,7 @@ app.post("/api/whispers", whisperLimiter, async (req, res) => {
 });
 
 // Analytics routes (admin only)
-app.get("/api/analytics/whispers", authenticateToken, async (req, res) => {
+app.get("/api/analytics/whispers", authenticateAdminJWT, async (req, res) => {
   try {
     const today = new Date().toISOString().split("T")[0];
 
@@ -329,7 +306,7 @@ app.get("/api/analytics/whispers", authenticateToken, async (req, res) => {
   }
 });
 
-app.get("/api/analytics/zones", authenticateToken, async (req, res) => {
+app.get("/api/analytics/zones", authenticateAdminJWT, async (req, res) => {
   try {
     const zones = await db.all(`
       SELECT 
@@ -365,7 +342,7 @@ app.get("/api/features/toggles", async (req, res) => {
   }
 });
 
-app.post("/api/features/toggles", authenticateToken, async (req, res) => {
+app.post("/api/features/toggles", authenticateAdminJWT, async (req, res) => {
   try {
     const { feature, enabled } = req.body;
 
@@ -423,7 +400,7 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
-app.get("/api/auth/verify", authenticateToken, (req, res) => {
+app.get("/api/auth/verify", authenticateAdminJWT, (req, res) => {
   res.json({
     valid: true,
     user: {
@@ -446,7 +423,7 @@ app.post("/api/fcm-token", async (req, res) => {
 });
 
 // Admin-only broadcast notification endpoint
-app.post("/api/admin/broadcast", authenticateToken, async (req, res) => {
+app.post("/api/admin/broadcast", authenticateAdminJWT, async (req, res) => {
   const { title, body, url } = req.body;
   if (!title || !body)
     return res.status(400).json({ error: "Title and body required" });
@@ -469,7 +446,7 @@ app.post("/api/admin/broadcast", authenticateToken, async (req, res) => {
 });
 
 // Admin-only endpoint to list all FCM tokens
-app.get("/api/admin/fcm-tokens", authenticateToken, async (req, res) => {
+app.get("/api/admin/fcm-tokens", authenticateAdminJWT, async (req, res) => {
   try {
     const tokens = await db.all(
       "SELECT id, token, created_at FROM fcm_tokens ORDER BY created_at DESC",
@@ -574,5 +551,32 @@ async function startServer() {
     process.exit(1);
   }
 }
+
+app.post("/api/notify-admin", async (req, res) => {
+  const key = req.query.key || req.body.key;
+  if (key !== ADMIN_API_KEY) return res.status(401).json({ error: "Unauthorized" });
+  const { service = "Aangan", message = "Night Watch Alert" } = req.body;
+  try {
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+      connectionTimeout: 10000,
+    });
+    await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: 'nocodeai007@gmail.com',
+      subject: 'Aangan° 🚨 Night Watch Alert',
+      text: `Service: ${service}\nMessage: ${message}\nTime: ${new Date().toLocaleString()}`,
+    });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to send alert", details: e.message });
+  }
+});
 
 startServer();

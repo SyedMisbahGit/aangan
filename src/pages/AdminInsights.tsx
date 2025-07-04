@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { DreamHeader } from "../components/shared/DreamHeader";
 import { DreamLayout } from "../components/shared/DreamLayout";
@@ -10,18 +10,17 @@ import PromptGeneratorPanel from "../components/admin/PromptGeneratorPanel";
 import SummerSoulAnalytics from '../components/admin/SummerSoulAnalytics';
 import { Brain, TrendingUp, MapPin, Users, Lightbulb, BarChart3, Sun } from "lucide-react";
 import { useSummerPulse } from '../contexts/SummerPulseContext';
-import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
 import { Navigate } from 'react-router-dom';
 import { DreamLoadingScreen } from '../App';
 
-const ALLOWED_ADMINS = ['founder@email.com'];
-
 const AdminInsights: React.FC = () => {
-  const { user, loading } = useSupabaseAuth();
-  if (loading) return <DreamLoadingScreen message="Authenticating your presence in the WhisperVerse..." />;
-  if (!user || !ALLOWED_ADMINS.includes(user.email)) {
-    return <Navigate to="/" replace />;
-  }
+  const [jwt, setJwt] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("admin_jwt");
+    if (!token) window.location.replace("/admin-login");
+    setJwt(token);
+  }, []);
 
   const insightsSections = [
     {

@@ -5,7 +5,6 @@ type Theme = 'light' | 'dark';
 
 interface DreamThemeContextType {
   theme: Theme;
-  toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
   isInitialized: boolean;
 }
@@ -85,10 +84,6 @@ export const DreamThemeProvider: React.FC<DreamThemeProviderProps> = ({ children
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [isInitialized]);
 
-  const toggleTheme = () => {
-    setThemeState(prev => prev === 'light' ? 'dark' : 'light');
-  };
-
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
   };
@@ -105,7 +100,7 @@ export const DreamThemeProvider: React.FC<DreamThemeProviderProps> = ({ children
   }
 
   return (
-    <DreamThemeContext.Provider value={{ theme, toggleTheme, setTheme, isInitialized }}>
+    <DreamThemeContext.Provider value={{ theme, setTheme, isInitialized }}>
       {children}
     </DreamThemeContext.Provider>
   );

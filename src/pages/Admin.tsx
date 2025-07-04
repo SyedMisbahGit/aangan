@@ -31,7 +31,6 @@ import {
 } from "lucide-react";
 import { ShhhLine } from "../components/ShhhLine";
 import AdminInsights from "./AdminInsights";
-import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
 import { Navigate } from 'react-router-dom';
 import { DreamLoadingScreen } from '../App';
 
@@ -47,13 +46,7 @@ interface Zone {
   likes?: number;
 }
 
-const ALLOWED_ADMINS = ['founder@email.com', 'nocodeai007@gmail.com'];
 const Admin: React.FC = () => {
-  const { user, loading } = useSupabaseAuth();
-  if (loading) return <DreamLoadingScreen message="Authenticating your presence in the WhisperVerse..." />;
-  if (!user || !ALLOWED_ADMINS.includes(user.email)) {
-    return <Navigate to="/" replace />;
-  }
   const [activeTab, setActiveTab] = useState("overview");
 
   const [stats] = useState({
@@ -135,10 +128,11 @@ const Admin: React.FC = () => {
     .slice(0, 5);
   const maxWhispers = Math.max(...zones.map((z) => z.whisper_count || 0), 1);
 
-  // Check for JWT in localStorage on mount
+  // On mount, check for admin_jwt in localStorage. If not present, redirect to /admin-login.
   useEffect(() => {
     const token = localStorage.getItem("admin_jwt");
-    if (token) setJwt(token);
+    if (!token) window.location.replace("/admin-login");
+    setJwt(token);
   }, []);
 
   // Fetch analytics on mount (after login)

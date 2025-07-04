@@ -20,12 +20,6 @@ import {
   Package,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useDreamTheme } from "../../contexts/DreamThemeContext";
-
-interface DreamNavigationProps {
-  onThemeToggle?: () => void;
-  isDarkMode?: boolean;
-}
 
 const navigationItems = [
   { path: "/", icon: Home, label: "Home", color: "text-dream-primary" },
@@ -39,14 +33,10 @@ const navigationItems = [
   { path: "/profile", icon: User, label: "Profile", color: "text-dream-text-secondary" },
 ];
 
-export const DreamNavigation: React.FC<DreamNavigationProps> = ({
-  onThemeToggle,
-  isDarkMode = false,
-}) => {
+export const DreamNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
-  const { theme, toggleTheme } = useDreamTheme();
 
   const handleNavigation = (path: string) => {
     navigate(path);

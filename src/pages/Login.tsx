@@ -42,11 +42,7 @@ const Login: React.FC = () => {
       setMagicLinkError('Naya link mang lo, dost.');
     } else if (type === 'magiclink' && user) {
       // If already signed in, redirect
-      if (user.email === 'nocodeai007@gmail.com') {
-        navigate('/admin', { replace: true });
-      } else {
-        navigate('/', { replace: true });
-      }
+      navigate('/', { replace: true });
     }
     // Optionally, handle oobCode/mode for other providers
   }, [user, navigate]);
@@ -65,11 +61,20 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleGuestLogin = () => {
+    let guestId = localStorage.getItem("guestId");
+    if (!guestId) {
+      guestId = crypto.randomUUID();
+      localStorage.setItem("guestId", guestId);
+    }
+    navigate("/", { replace: true });
+  };
+
   return (
     <DreamLayout>
       <div className="min-h-screen flex flex-col items-center justify-center bg-cream-100 dark:bg-dream-dark-bg transition-colors duration-500">
         <DreamHeader
-          title="Sign In to Aangan"
+          title="Welcome to Aangan"
           subtitle="A poetic, anonymous campus sanctuary"
           className="mb-2"
         />
@@ -122,6 +127,12 @@ const Login: React.FC = () => {
               )}
             </form>
           )}
+          <button
+            onClick={handleGuestLogin}
+            className="w-full bg-dream-blue hover:bg-dream-purple text-white font-semibold py-2 px-4 rounded-xl shadow-soft transition focus:outline-none focus:ring-2 focus:ring-dream-purple focus:ring-offset-2 mt-4"
+          >
+            Continue as Guest
+          </button>
         </div>
       </div>
     </DreamLayout>

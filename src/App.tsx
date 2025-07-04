@@ -18,12 +18,12 @@ import NotFound from "./pages/NotFound";
 import GlobalWhisperComposer from "./components/shared/GlobalWhisperComposer";
 import Onboarding from "./pages/Onboarding";
 import { SummerPulseProvider } from "./contexts/SummerPulseContext";
-import { SupabaseAuthProvider, useSupabaseAuth } from './contexts/SupabaseAuthContext';
 import { WhispersProvider, useWhispers } from "./contexts/WhispersContext";
 import { useIsMobile } from './hooks/use-mobile';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import { SummerSoulProvider } from './contexts/SummerSoulContext';
 import axios from "axios";
+import AdminLogin from './pages/AdminLogin';
 
 const queryClient = new QueryClient();
 
@@ -64,15 +64,14 @@ export const DreamLoadingScreen = ({ message, narratorLine, variant }: { message
 
 const AppContent: React.FC = () => {
   const [showConfetti, setShowConfetti] = useState(false);
-  const { theme, toggleTheme, isInitialized } = useDreamTheme();
+  const { theme, isInitialized } = useDreamTheme();
   const { isReady: narratorReady } = useShhhNarrator();
   const { isReady: hotspotReady } = useCUJHotspots();
-  const { user, loading: authLoading, isOnboardingComplete } = useSupabaseAuth();
   const { addWhisper } = useWhispers();
   const [showNotifOptIn, setShowNotifOptIn] = useState(false);
 
   // Aggregate all context readiness
-  if (!isInitialized || !narratorReady || !hotspotReady || authLoading) {
+  if (!isInitialized || !narratorReady || !hotspotReady) {
     return <DreamLoadingScreen message="Sensing the campus, warming the chai, and listening for whispers..." />;
   }
 
@@ -190,11 +189,12 @@ const AppContent: React.FC = () => {
           <Route path="/constellation" element={<PrivateRoute><Constellation /></PrivateRoute>} />
           <Route path="/murmurs" element={<PrivateRoute><Murmurs /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-          <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
-          <Route path="/admin/insights" element={<PrivateRoute><AdminInsights /></PrivateRoute>} />
+          <Route path="/admin" element={<PrivateRoute adminOnly><Admin /></PrivateRoute>} />
+          <Route path="/admin/insights" element={<PrivateRoute adminOnly><AdminInsights /></PrivateRoute>} />
+          <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <DreamNavigation onThemeToggle={toggleTheme} isDarkMode={theme === 'dark'} />
+        <DreamNavigation />
       </Suspense>
       <ConfettiEffect isActive={showConfetti} />
       <GlobalWhisperComposer 
@@ -206,15 +206,20 @@ const AppContent: React.FC = () => {
 };
 
 // PrivateRoute wrapper
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading, isOnboardingComplete } = useSupabaseAuth();
-  const location = useLocation();
-  if (loading) return <DreamLoadingScreen message="Authenticating your presence in the WhisperVerse..." />;
-  if (!user) return <Navigate to="/login" replace />;
-  if (!isOnboardingComplete && location.pathname !== "/onboarding") {
-    return <Navigate to="/onboarding" replace />;
+function PrivateRoute({ children, adminOnly }: { children: React.ReactNode, adminOnly?: boolean }) {
+  if (adminOnly) {
+    const jwt = localStorage.getItem("admin_jwt");
+    if (!jwt) return <Navigate to="/admin-login" replace />;
+    // Optionally, verify token expiry client-side
+    return <>{children}</>;
+  } else {
+    let guestId = localStorage.getItem("guestId");
+    if (!guestId) {
+      guestId = crypto.randomUUID();
+      localStorage.setItem("guestId", guestId);
+    }
+    return <>{children}</>;
   }
-  return <>{children}</>;
 }
 
 function AppContentWithErrorBoundary() {
@@ -248,29 +253,27 @@ function AppContentWithErrorBoundary() {
 const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <SupabaseAuthProvider>
-        <DreamThemeProvider>
-          <CUJHotspotProvider>
-            <ShhhNarratorProvider>
-              <SummerPulseProvider>
-                <WhispersProvider>
-                <TooltipProvider>
-                  <Toaster />
-                  <Sonner />
-                  <SummerSoulProvider>
-                    <BrowserRouter>
-                      <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the Dream." >
-                        <AppContentWithErrorBoundary />
-                      </ErrorBoundary>
-                    </BrowserRouter>
-                  </SummerSoulProvider>
-                </TooltipProvider>
-                </WhispersProvider>
-              </SummerPulseProvider>
-            </ShhhNarratorProvider>
-          </CUJHotspotProvider>
-        </DreamThemeProvider>
-      </SupabaseAuthProvider>
+      <DreamThemeProvider>
+        <CUJHotspotProvider>
+          <ShhhNarratorProvider>
+            <SummerPulseProvider>
+              <WhispersProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <SummerSoulProvider>
+                  <BrowserRouter>
+                    <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the Dream." >
+                      <AppContentWithErrorBoundary />
+                    </ErrorBoundary>
+                  </BrowserRouter>
+                </SummerSoulProvider>
+              </TooltipProvider>
+              </WhispersProvider>
+            </SummerPulseProvider>
+          </ShhhNarratorProvider>
+        </CUJHotspotProvider>
+      </DreamThemeProvider>
     </QueryClientProvider>
   );
 };
