@@ -26,9 +26,6 @@ const PORT = process.env.PORT || 3001;
 // Database setup
 let db;
 
-// Redis setup for heartbeat and other counters (optional)
-let redis = null;
-
 const ADMIN_API_KEY = process.env.ADMIN_API_KEY || "changeme";
 
 async function initializeDatabase() {
@@ -38,16 +35,8 @@ async function initializeDatabase() {
     driver: sqlite3.Database,
   });
 
-  // Initialize Redis if available
-  if (!redis && process.env.REDIS_URL) {
-    try {
-      const Redis = (await import("ioredis")).default;
-      redis = new Redis(process.env.REDIS_URL);
-      console.log("Redis connected successfully");
-    } catch (error) {
-      console.log("Redis not available, continuing without Redis:", error.message);
-    }
-  }
+  // Redis functionality temporarily disabled for Railway deployment
+  // TODO: Re-enable Redis when needed
 
   // Create tables
   await db.exec(`
