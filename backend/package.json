@@ -2,10 +2,10 @@
   "name": "shhh-backend",
   "version": "1.0.0",
   "description": "Shhh - WhisperVerse Backend API and Admin Dashboard",
-  "main": "server.js",
+  "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
+    "start": "node app.js",
     "dev": "nodemon server.js",
     "build": "echo \"No build step required\"",
     "test": "echo \"No tests specified\""
