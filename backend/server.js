@@ -15,7 +15,7 @@ import { readFileSync } from "fs";
 // Load environment variables
 dotenv.config();
 
-// Railway deployment - force rebuild
+// Railway deployment - force rebuild - timestamp: 2025-01-05T12:45:00Z
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
