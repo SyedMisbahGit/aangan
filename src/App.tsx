@@ -22,6 +22,7 @@ import { WhispersProvider, useWhispers } from "./contexts/WhispersContext";
 import { useIsMobile } from './hooks/use-mobile';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import { SummerSoulProvider } from './contexts/SummerSoulContext';
+import { AuthProvider } from './contexts/AuthContext';
 import axios from "axios";
 import AdminLogin from './pages/AdminLogin';
 
@@ -258,17 +259,19 @@ const App: React.FC = () => {
           <ShhhNarratorProvider>
             <SummerPulseProvider>
               <WhispersProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <SummerSoulProvider>
-                  <BrowserRouter>
-                    <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the Dream." >
-                      <AppContentWithErrorBoundary />
-                    </ErrorBoundary>
-                  </BrowserRouter>
-                </SummerSoulProvider>
-              </TooltipProvider>
+                <AuthProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    <SummerSoulProvider>
+                      <BrowserRouter>
+                        <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the Dream." >
+                          <AppContentWithErrorBoundary />
+                        </ErrorBoundary>
+                      </BrowserRouter>
+                    </SummerSoulProvider>
+                  </TooltipProvider>
+                </AuthProvider>
               </WhispersProvider>
             </SummerPulseProvider>
           </ShhhNarratorProvider>

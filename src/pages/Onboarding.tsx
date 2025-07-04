@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { DreamLayout } from '../components/shared/DreamLayout';
 import { DreamHeader } from '../components/shared/DreamHeader';
 import { Button } from '../components/ui/button';
@@ -24,7 +24,7 @@ const steps = [
 
 const Onboarding: React.FC = () => {
   const [step, setStep] = useState(0);
-  const { setOnboardingComplete } = useSupabaseAuth();
+  const { setOnboardingComplete } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {

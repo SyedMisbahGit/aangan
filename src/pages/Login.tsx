@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { DreamLayout } from '../components/shared/DreamLayout';
 import { DreamHeader } from '../components/shared/DreamHeader';
 import { Button } from '../components/ui/button';
@@ -20,7 +20,7 @@ const poeticErrorLines = [
 ];
 
 const Login: React.FC = () => {
-  const { signInWithMagicLink, loading, user } = useSupabaseAuth();
+  const { signInWithMagicLink, loading, user } = useAuth();
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [successLine, setSuccessLine] = useState('');
