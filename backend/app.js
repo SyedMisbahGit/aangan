@@ -175,7 +175,12 @@ const authenticateAdminJWT = (req, res, next) => {
 
 // Health check
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+  res.json({ 
+    status: "ok", 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || "development"
+  });
 });
 
 // Heartbeat endpoint
@@ -271,11 +276,18 @@ function formatTimestamp(timestamp) {
 // Start server
 async function startServer() {
   try {
+    console.log("🚀 Starting Shhh WhisperVerse Backend...");
+    console.log("📊 Initializing database...");
+    
     await initializeDatabase();
+
+    // Add a small delay to ensure everything is ready
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     app.listen(PORT, () => {
       console.log(`🚀 Shhh WhisperVerse Backend running on port ${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
