@@ -180,7 +180,7 @@ const Shrines: React.FC = () => {
 
         {/* Ambient Header */}
         <DreamHeader 
-          title="Campus Shrines"
+          title="Zones of Aangan"
           subtitle="Sacred spaces where emotions find their home"
         />
 

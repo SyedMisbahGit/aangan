@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "https://aangan-production.up.railway.app/api";
+  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "/api" : "https://aangan-production.up.railway.app/api");
 
 // Types
 export interface Whisper {

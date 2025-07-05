@@ -39,6 +39,7 @@ const Compass = lazy(() => import("./pages/Compass"));
 const Constellation = lazy(() => import("./pages/Constellation"));
 const Murmurs = lazy(() => import("./pages/Murmurs"));
 const Profile = lazy(() => import("./pages/Profile"));
+const About = lazy(() => import("./pages/About"));
 const Login = lazy(() => import('./pages/Login'));
 
 const VAPID_KEY =
@@ -194,6 +195,7 @@ const AppContent: React.FC = () => {
           <Route path="/constellation" element={<PrivateRoute><Constellation /></PrivateRoute>} />
           <Route path="/murmurs" element={<PrivateRoute><Murmurs /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/about" element={<About />} />
           <Route path="/admin" element={<PrivateRoute adminOnly><Admin /></PrivateRoute>} />
           <Route path="/admin/insights" element={<PrivateRoute adminOnly><AdminInsights /></PrivateRoute>} />
           <Route path="/admin-login" element={<AdminLogin />} />

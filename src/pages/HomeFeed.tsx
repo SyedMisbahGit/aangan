@@ -183,7 +183,7 @@ const HomeFeed: React.FC = () => {
 
         {/* Ambient Header */}
         <DreamHeader 
-          title={<span className="flex items-center gap-2">Whisper Feed <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-xs font-semibold text-blue-700 ml-2"><Globe className="w-3 h-3 mr-1" />Public</span></span>}
+          title={<span className="flex items-center gap-2">Aangan Feed <span className="inline-flex items-center px-2 py-0.5 rounded bg-green-100 text-xs font-semibold text-green-700 ml-2"><Globe className="w-3 h-3 mr-1" />Public</span></span>}
           subtitle="A living constellation of anonymous voices. Your whispers join the campus chorus."
         />
 
@@ -366,9 +366,7 @@ const HomeFeed: React.FC = () => {
               Live Zone Activity
             </h3>
             
-            <LiveZoneActivity 
-              isActive={true}
-            />
+            <LiveZoneActivity />
           </motion.div>
     </div>
       </div>

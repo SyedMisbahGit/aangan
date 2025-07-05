@@ -17,16 +17,17 @@ const overflowMenuItems = [
   { path: "/compass", icon: Compass, label: "Compass" },
   { path: "/constellation", icon: Star, label: "Constellation" },
   { path: "/murmurs", icon: MessageCircle, label: "Murmurs" },
+  { path: "/about", icon: Package, label: "About Aangan" },
   { path: "/admin", icon: Package, label: "Admin" },
 ];
 
 // Poetic subtitles for each route
 const routeSubtitles: Record<string, string> = {
-  "/": "A living constellation of anonymous voices",
-  "/diary": "Mann ki baatien, chupke se...",
-  "/create": "Apne khayalat ko awaaz dein",
-  "/zones": "Sacred spaces where emotions find their home",
-  "/profile": "Your journey through whispers",
+  "/": "Aangan Feed - A living constellation of anonymous voices",
+  "/diary": "My Aangan - Mann ki baatien, chupke se...",
+  "/create": "Whisper into Aangan - Apne khayalat ko awaaz dein",
+  "/zones": "Zones of Aangan - Sacred spaces where emotions find their home",
+  "/profile": "My Footprints in Aangan - Your journey through whispers",
   "/capsules": "Messages from the past, waiting to be discovered",
   "/compass": "Navigate your feelings, discover your path",
   "/constellation": "Connect with kindred spirits across campus",
@@ -113,8 +114,8 @@ export const DreamHeader: React.FC<DreamHeaderProps> = ({
                   to={item.path}
                   onClick={() => setIsMenuOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-2 text-sm hover:bg-neutral-100 transition-colors",
-                    isActive(item.path) ? "bg-neutral-100 text-green-600" : "text-neutral-700"
+                    "flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 transition-colors",
+                    isActive(item.path) ? "bg-green-50 text-green-600" : "text-neutral-700"
                   )}
                 >
                   <item.icon className="w-4 h-4" />

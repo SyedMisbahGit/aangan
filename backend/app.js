@@ -24,6 +24,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+
+// Trust proxy for rate limiting with X-Forwarded-For headers
+app.set('trust proxy', 1);
+
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
@@ -95,11 +99,20 @@ const cleanupOldData = () => {
 setInterval(cleanupOldData, 15 * 60 * 1000);
 
 async function initializeDatabase() {
-  const DB_PATH = process.env.DB_PATH || join(__dirname, "whispers.db");
-  db = await open({
-    filename: DB_PATH,
-    driver: sqlite3.Database,
-  });
+  try {
+    const DB_PATH = process.env.DB_PATH || join(__dirname, "whispers.db");
+    console.log(`📁 Database path: ${DB_PATH}`);
+    
+    db = await open({
+      filename: DB_PATH,
+      driver: sqlite3.Database,
+    });
+    
+    console.log("✅ Database connection established");
+  } catch (error) {
+    console.error("❌ Database initialization failed:", error);
+    throw error;
+  }
 
   // Create tables
   await db.exec(`
@@ -167,7 +180,7 @@ async function initializeDatabase() {
     );
   }
 
-  console.log("Database initialized successfully");
+  console.log("✅ Database initialized successfully");
 }
 
 // Middleware
@@ -206,11 +219,18 @@ app.use(compression());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting
+// Rate limiting with proper IP detection
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
   message: "Too many requests from this IP, please try again later.",
+  keyGenerator: (req) => {
+    return req.ip || req.connection.remoteAddress || 'unknown';
+  },
+  skip: (req) => {
+    // Skip rate limiting for health checks
+    return req.path === '/api/health' || req.path === '/api/health/heartbeat';
+  }
 });
 app.use("/api/", limiter);
 
@@ -219,6 +239,9 @@ const whisperLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 5, // limit each IP to 5 whispers per 10 min
   message: "Too many whispers, please wait a while.",
+  keyGenerator: (req) => {
+    return req.ip || req.connection.remoteAddress || 'unknown';
+  }
 });
 
 // Authentication middleware (admin only)
@@ -370,22 +393,40 @@ function formatTimestamp(timestamp) {
 // Start server
 async function startServer() {
   try {
-    console.log("🚀 Starting Shhh WhisperVerse Backend...");
-    console.log("📊 Initializing database...");
+    console.log("🚀 Starting Aangan Backend...");
+    console.log(`🔧 PORT: ${PORT}`);
+    console.log(`🔧 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔧 DB_PATH: ${process.env.DB_PATH || 'default'}`);
     
+    console.log("📊 Initializing database...");
     await initializeDatabase();
+    console.log("✅ Database initialized successfully");
 
     // Add a small delay to ensure everything is ready
+    console.log("⏳ Waiting for system to stabilize...");
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    server.listen(PORT, () => {
-      console.log(`🚀 Shhh WhisperVerse Backend running on port ${PORT}`);
-      console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+    server.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Aangan Backend running on port ${PORT}`);
+      console.log(`📊 Health check: http://0.0.0.0:${PORT}/api/health`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🔌 WebSocket server ready for real-time connections`);
+      console.log(`🏡 Aangan courtyard is open for whispers...`);
     });
+
+    // Handle server errors
+    server.on('error', (error) => {
+      console.error('❌ Server error:', error);
+      if (error.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${PORT} is already in use`);
+      }
+      process.exit(1);
+    });
+
   } catch (error) {
-    console.error("Failed to start server:", error);
+    console.error("❌ Failed to start server:", error);
+    console.error("❌ Error details:", error.message);
+    console.error("❌ Error stack:", error.stack);
     process.exit(1);
   }
 }

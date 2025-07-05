@@ -47,7 +47,7 @@ const CreateWhisper: React.FC = () => {
           
           <h1 className="dream-title flex items-center justify-center gap-2">
             <BookOpen className="h-8 w-8 text-dream-primary" />
-            Share a Whisper
+            Whisper into Aangan
           </h1>
           <p className="dream-subtitle">
             Your thoughts are safe here
@@ -59,6 +59,16 @@ const CreateWhisper: React.FC = () => {
           onSubmit={handleSubmit}
           onClose={handleClose}
         />
+
+        {/* Poetic Footer */}
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+          className="text-xs text-neutral-400 text-center italic mt-4"
+        >
+          This courtyard remembers all who whisper here.
+        </motion.p>
 
         {/* Fallback content when composer is closed */}
         {!isComposerOpen && (

@@ -109,7 +109,7 @@ const Profile: React.FC = () => {
 
   return (
     <DreamLayout>
-      <DreamHeader title="Your Dream Profile" />
+      <DreamHeader title="My Footprints in Aangan" />
       
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Profile Header */}
@@ -323,7 +323,27 @@ const Profile: React.FC = () => {
             </CardContent>
           </Card>
         </motion.div>
-  </div>
+
+        {/* Poetic Quote */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="mt-6 px-4 text-center space-y-3"
+        >
+          <div className="text-sm text-neutral-500 italic">
+            "Har Aangan apne nishaan sambhaal ke rakhta hai."
+          </div>
+          <div>
+            <a 
+              href="/about" 
+              className="text-xs text-green-600 hover:text-green-700 underline transition-colors"
+            >
+              About Aangan
+            </a>
+          </div>
+        </motion.div>
+      </div>
     </DreamLayout>
 );
 };
