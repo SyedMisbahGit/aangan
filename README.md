@@ -15,6 +15,50 @@
 
 ---
 
+## 🌐 Production URLs
+
+- **Frontend (Vercel):** [https://college-whisper.vercel.app/](https://college-whisper.vercel.app/)
+- **Backend (Railway):** [https://aangan-production.up.railway.app/api](https://aangan-production.up.railway.app/api)
+
+---
+
+## 🚚 Migration: Render → Railway + Vercel (v2.0.0)
+
+- Migrated backend from Render to Railway (free tier)
+- Removed Redis dependency, replaced with in-memory alternatives
+- Switched SQLite to persistent volume on Railway
+- Created new server entry point (`app.js`)
+- Improved health checks and error handling
+- Migrated frontend authentication from Supabase to custom AuthContext
+- Updated all API endpoints to use new Railway backend
+- Deployed frontend to Vercel for global CDN and PWA support
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js v18+
+- npm or yarn
+- Modern browser (ES6+)
+
+### Installation (Development)
+
+```bash
+git clone https://github.com/SyedMisbahGit/college-whisper.git
+cd college-whisper
+npm install
+npm run dev
+```
+
+### Environment Variables
+- For local development, create a `.env` file:
+  ```
+  VITE_API_URL=https://aangan-production.up.railway.app/api
+  ```
+
+---
+
 ## 🌌 WhisperVerse – The 3D Diary World
 
 Experience the future of anonymous social media with:
@@ -71,20 +115,3 @@ Experience the future of anonymous social media with:
 - 🌐 **Dogri Integration**  
 - 🏛️ **CUJ Context & Community Focus**  
 - 🤝 **Cultural Sensitivity in UX**
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js v18+
-- npm or yarn
-- Modern browser (ES6+)
-
-### Installation
-
-```bash
-git clone https://github.com/yourusername/shhh-whisperverse.git
-cd shhh-whisperverse
-npm install
-npm run dev
