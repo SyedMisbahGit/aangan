@@ -350,23 +350,23 @@ const Murmurs: React.FC = () => {
               <div className="flex-1">
                 <label className="text-sm text-inkwell/70 mb-2 block">Zone Filter</label>
                 <Select value={selectedZone} onValueChange={setSelectedZone}>
-                  <SelectTrigger className="bg-paper-light border-inkwell/20 focus:border-inkwell/40 dark:bg-background dark:border-border dark:focus:border-ring">
+                  <SelectTrigger className="bg-paper-light border-inkwell/20 focus:border-inkwell/40">
                     <SelectValue placeholder="Select a zone" />
                   </SelectTrigger>
-                  <SelectContent className="z-[60] bg-popover dark:bg-popover border-border dark:border-border shadow-lg dark:shadow-black/20">
+                  <SelectContent className="z-[60] bg-popover border-border shadow-lg">
                     <SelectItem value="all" className="font-medium">
                       🌍 All Zones
                     </SelectItem>
                     <SelectSeparator />
                     <SelectGroup>
-                      <SelectLabel className="text-xs font-semibold text-muted-foreground bg-muted/30 dark:bg-muted/30">
+                      <SelectLabel className="text-xs font-semibold text-muted-foreground bg-muted/30">
                         🏫 In-Campus
                       </SelectLabel>
                       {inCampus.map(zone => (
                         <SelectItem 
                           key={zone} 
                           value={zone}
-                          className="text-sm hover:bg-accent dark:hover:bg-accent"
+                          className="text-sm hover:bg-accent"
                         >
                           {zone}
                         </SelectItem>
@@ -374,14 +374,14 @@ const Murmurs: React.FC = () => {
                     </SelectGroup>
                     <SelectSeparator />
                     <SelectGroup>
-                      <SelectLabel className="text-xs font-semibold text-muted-foreground bg-muted/30 dark:bg-muted/30">
+                      <SelectLabel className="text-xs font-semibold text-muted-foreground bg-muted/30">
                         🏠 Outside-Campus
                       </SelectLabel>
                       {outsideCampus.map(zone => (
                         <SelectItem 
                           key={zone} 
                           value={zone}
-                          className="text-sm hover:bg-accent dark:hover:bg-accent"
+                          className="text-sm hover:bg-accent"
                         >
                           {zone}
                         </SelectItem>
@@ -394,10 +394,10 @@ const Murmurs: React.FC = () => {
               <div className="flex-1">
                 <label className="text-sm text-inkwell/70 mb-2 block">Emotion Filter</label>
                 <Select value={selectedEmotion} onValueChange={setSelectedEmotion}>
-                  <SelectTrigger className="bg-paper-light border-inkwell/20 focus:border-inkwell/40 dark:bg-background dark:border-border dark:focus:border-ring">
+                  <SelectTrigger className="bg-paper-light border-inkwell/20 focus:border-inkwell/40">
                     <SelectValue placeholder="Select emotion" />
                   </SelectTrigger>
-                  <SelectContent className="z-[60] bg-popover dark:bg-popover border-border dark:border-border shadow-lg dark:shadow-black/20">
+                  <SelectContent className="z-[60] bg-popover border-border shadow-lg">
                     <SelectItem value="all" className="font-medium">
                       💫 All Emotions
                     </SelectItem>
@@ -406,7 +406,7 @@ const Murmurs: React.FC = () => {
                       <SelectItem 
                         key={emotion.value} 
                         value={emotion.value}
-                        className="text-sm hover:bg-accent dark:hover:bg-accent"
+                        className="text-sm hover:bg-accent"
                       >
                         <div className="flex items-center gap-2">
                           <span>{emotion.icon}</span>

@@ -19,9 +19,7 @@ const SelectTrigger = React.forwardRef<
     className={cn(
       "flex h-11 min-h-[44px] w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       "data-[state=open]:border-ring data-[state=open]:ring-2 data-[state=open]:ring-ring",
-      "dark:border-border dark:bg-background dark:text-foreground dark:placeholder:text-muted-foreground",
-      "dark:focus:ring-ring dark:focus:ring-offset-background",
-      "dark:data-[state=open]:border-ring dark:data-[state=open]:ring-ring",
+
       className
     )}
     {...props}
@@ -42,7 +40,6 @@ const SelectScrollUpButton = React.forwardRef<
     ref={ref}
     className={cn(
       "flex cursor-default items-center justify-center py-1",
-      "dark:bg-background dark:text-foreground",
       className
     )}
     {...props}
@@ -60,7 +57,6 @@ const SelectScrollDownButton = React.forwardRef<
     ref={ref}
     className={cn(
       "flex cursor-default items-center justify-center py-1",
-      "dark:bg-background dark:text-foreground",
       className
     )}
     {...props}

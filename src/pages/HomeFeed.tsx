@@ -17,13 +17,17 @@ import {
   MessageCircle,
   Clock,
   TrendingUp,
-  Globe
+  Globe,
+  Bot
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCUJHotspots } from "../contexts/CUJHotspotContext";
 import { ShhhLine } from '../components/ShhhLine';
 import { useShhhNarrator } from '../contexts/ShhhNarratorContext';
 import { useWhispers } from "../contexts/WhispersContext";
+import RealtimeWhisperFeed from "../components/whisper/RealtimeWhisperFeed";
+import AIEchoBot from "../components/ai/AIEchoBot";
+import LiveZoneActivity from "../components/realtime/LiveZoneActivity";
 
 interface Whisper {
   id: string;
@@ -313,41 +317,59 @@ const HomeFeed: React.FC = () => {
             </Card>
       </motion.div>
 
-          {/* Whisper Feed */}
-      <motion.div
+          {/* Real-time Whisper Feed */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="space-y-4"
+            className="space-y-6"
           >
             <h2 className="text-xl font-semibold text-inkwell flex items-center gap-2">
               <Sparkles className="w-5 h-5" />
-              Recent Whispers
+              Live Whispers
             </h2>
             
-        <AnimatePresence>
-              {filteredWhispers.map((whisper, index) => (
-            <motion.div
-              key={whisper.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <ModularWhisperCard
-                    whisper={whisper}
-                    variant={index === 0 ? "featured" : "default"}
-                    showHotspot={true}
-                    showEmotionTag={true}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
+            <RealtimeWhisperFeed 
+              showRealtimeIndicator={true}
+              maxWhispers={20}
+            />
+          </motion.div>
+
+          {/* AI Echo Bot */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="space-y-4"
+          >
+            <h3 className="text-lg font-semibold text-inkwell flex items-center gap-2">
+              <Bot className="w-5 h-5" />
+              The Listener
+            </h3>
             
-            {whispers.length === 0 && (
-              <div className="text-center text-neutral-500 py-12 italic">No whispers yet. The silence is waiting for you.</div>
-            )}
-      </motion.div>
+            <AIEchoBot 
+              isActive={true}
+              whisperCount={whispers.length}
+              dominantEmotion={emotionClusters[0]?.emotion || 'calm'}
+            />
+          </motion.div>
+
+          {/* Live Zone Activity */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="space-y-4"
+          >
+            <h3 className="text-lg font-semibold text-inkwell flex items-center gap-2">
+              <MessageCircle className="w-5 h-5" />
+              Live Zone Activity
+            </h3>
+            
+            <LiveZoneActivity 
+              isActive={true}
+            />
+          </motion.div>
     </div>
       </div>
     </DreamLayout>

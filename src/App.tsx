@@ -24,6 +24,7 @@ import { useIsMobile } from './hooks/use-mobile';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import { SummerSoulProvider } from './contexts/SummerSoulContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { RealtimeProvider } from './contexts/RealtimeContext';
 import axios from "axios";
 import AdminLogin from './pages/AdminLogin';
 
@@ -44,7 +45,7 @@ const VAPID_KEY =
   "BI3DBu7k1VWLVM9S8UkeQl9gEhlLuHwa4dLOOr77R8kTbCza8TlpKJlc3URwGG-g2-u3Tcs16unk57rXiXPVSyA";
 
 export const DreamLoadingScreen = ({ message, narratorLine, variant }: { message?: string, narratorLine?: string, variant?: 'default' | 'orbs' | 'shimmer' }) => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-cream-100 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text font-poetic text-lg animate-fade-in relative overflow-hidden">
+  <div className="min-h-screen flex flex-col items-center justify-center bg-cream-100 text-inkwell font-poetic text-lg animate-fade-in relative overflow-hidden">
     {/* Floating Orbs Animation */}
     {(variant === 'orbs' || !variant) && (
       <div className="absolute inset-0 pointer-events-none z-0">
@@ -163,13 +164,9 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${
-      theme === 'dark'
-        ? 'bg-dream-dark-background text-dream-dark-text-primary' 
-        : 'bg-dream-background text-dream-text-primary'
-    }`}>
+    <div className="min-h-screen transition-colors duration-500 bg-dream-background text-dream-text-primary">
       {showNotifOptIn && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-dream-dark-bg border border-dream-accent rounded-xl shadow-xl px-6 py-4 flex items-center gap-4 animate-fade-in">
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-dream-accent rounded-xl shadow-xl px-6 py-4 flex items-center gap-4 animate-fade-in">
           <span className="font-medium text-dream-accent">Allow notifications? <span className="text-inkwell">Sirf zaroori nudges, spam nahi.</span></span>
           <button onClick={() => handleNotifOptIn(true)} className="ml-4 bg-dream-accent text-white px-4 py-2 rounded-lg font-semibold hover:bg-dream-purple transition">Allow</button>
           <button onClick={() => handleNotifOptIn(false)} className="ml-2 text-dream-accent/70 hover:text-dream-accent">No Thanks</button>
@@ -258,7 +255,7 @@ function AppContentWithErrorBoundary() {
     };
   }, []);
   if (isMobile && hasError) {
-    return <div className="min-h-screen flex items-center justify-center text-center p-8 bg-dream-bg dark:bg-[#0e0e10] text-dream-text-primary dark:text-dream-dark-text">We're fixing something – please retry in a moment.</div>;
+    return <div className="min-h-screen flex items-center justify-center text-center p-8 bg-dream-bg text-dream-text-primary">We're fixing something – please retry in a moment.</div>;
   }
   if (isOffline) {
     return <div className="min-h-screen flex items-center justify-center text-center p-8 bg-[#f9f7f4] text-neutral-700 text-lg">We're floating in a quiet zone. Please reconnect.</div>;
@@ -275,17 +272,19 @@ const App: React.FC = () => {
             <SummerPulseProvider>
               <WhispersProvider>
                 <AuthProvider>
-                  <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <SummerSoulProvider>
-                      <BrowserRouter>
-                        <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the Dream." >
-                          <AppContentWithErrorBoundary />
-                        </ErrorBoundary>
-                      </BrowserRouter>
-                    </SummerSoulProvider>
-                  </TooltipProvider>
+                  <RealtimeProvider>
+                    <TooltipProvider>
+                      <Toaster />
+                      <Sonner />
+                      <SummerSoulProvider>
+                        <BrowserRouter>
+                          <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the Dream." >
+                            <AppContentWithErrorBoundary />
+                          </ErrorBoundary>
+                        </BrowserRouter>
+                      </SummerSoulProvider>
+                    </TooltipProvider>
+                  </RealtimeProvider>
                 </AuthProvider>
               </WhispersProvider>
             </SummerPulseProvider>

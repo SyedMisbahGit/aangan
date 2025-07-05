@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CustomSkeletonCard } from "@/components/ui/skeleton";
 import {
   Heart,
   MessageCircle,
@@ -31,6 +32,7 @@ interface PostFeedProps {
 
 export const PostFeed = ({ refreshTrigger }: PostFeedProps) => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const samplePosts: Post[] = [
     {
@@ -66,7 +68,12 @@ export const PostFeed = ({ refreshTrigger }: PostFeedProps) => {
   ];
 
   useEffect(() => {
-    setPosts(samplePosts);
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setPosts(samplePosts);
+      setLoading(false);
+    }, 300); // 300ms delay for skeleton
+    return () => clearTimeout(timer);
   }, [refreshTrigger]);
 
   const getCategoryColor = (category: string) => {
@@ -110,75 +117,83 @@ export const PostFeed = ({ refreshTrigger }: PostFeedProps) => {
         </div>
       </div>
 
-      {posts.map((post) => (
-        <Card
-          key={post.id}
-          className="bg-white/5 backdrop-blur-md border-white/10 p-6 hover:bg-white/10 transition-all duration-300"
-        >
-          <div className="space-y-4">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Badge className={getCategoryColor(post.category)}>
-                  {post.category}
-                </Badge>
-                {post.trending && (
-                  <Badge className="bg-yellow-500/20 text-yellow-200 flex items-center space-x-1">
-                    <TrendingUp className="h-3 w-3" />
-                    <span>Trending</span>
+      {loading ? (
+        <>
+          <CustomSkeletonCard />
+          <CustomSkeletonCard />
+          <CustomSkeletonCard />
+        </>
+      ) : (
+        posts.map((post) => (
+          <Card
+            key={post.id}
+            className="bg-white/5 backdrop-blur-md border-white/10 p-6 hover:bg-white/10 transition-all duration-300"
+          >
+            <div className="space-y-4">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Badge className={getCategoryColor(post.category)}>
+                    {post.category}
                   </Badge>
-                )}
+                  {post.trending && (
+                    <Badge className="bg-yellow-500/20 text-yellow-200 flex items-center space-x-1">
+                      <TrendingUp className="h-3 w-3" />
+                      <span>Trending</span>
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-gray-400">
+                  <div
+                    className={`w-2 h-2 rounded-full ${getSentimentColor(post.sentiment)}`}
+                  />
+                  <span>{formatTimeAgo(post.timestamp)}</span>
+                </div>
               </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-400">
-                <div
-                  className={`w-2 h-2 rounded-full ${getSentimentColor(post.sentiment)}`}
-                />
-                <span>{formatTimeAgo(post.timestamp)}</span>
+
+              {/* Content */}
+              <p className="text-white leading-relaxed">{post.content}</p>
+
+              {/* Actions */}
+              <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                <div className="flex items-center space-x-6">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-400 hover:text-pink-400 hover:bg-pink-400/10"
+                  >
+                    <Heart className="h-4 w-4 mr-1" />
+                    {post.reactions.hearts}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-400 hover:text-blue-400 hover:bg-blue-400/10"
+                  >
+                    <MessageCircle className="h-4 w-4 mr-1" />
+                    {post.reactions.comments}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-400 hover:text-green-400 hover:bg-green-400/10"
+                  >
+                    <Share2 className="h-4 w-4 mr-1" />
+                    {post.reactions.shares}
+                  </Button>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-500 hover:text-red-400"
+                >
+                  <Flag className="h-4 w-4" />
+                </Button>
               </div>
             </div>
-
-            {/* Content */}
-            <p className="text-white leading-relaxed">{post.content}</p>
-
-            {/* Actions */}
-            <div className="flex items-center justify-between pt-2 border-t border-white/10">
-              <div className="flex items-center space-x-6">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-pink-400 hover:bg-pink-400/10"
-                >
-                  <Heart className="h-4 w-4 mr-1" />
-                  {post.reactions.hearts}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-blue-400 hover:bg-blue-400/10"
-                >
-                  <MessageCircle className="h-4 w-4 mr-1" />
-                  {post.reactions.comments}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-green-400 hover:bg-green-400/10"
-                >
-                  <Share2 className="h-4 w-4 mr-1" />
-                  {post.reactions.shares}
-                </Button>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-gray-500 hover:text-red-400"
-              >
-                <Flag className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </Card>
-      ))}
+          </Card>
+        ))
+      )}
     </div>
   );
 };

@@ -72,13 +72,13 @@ const Login: React.FC = () => {
 
   return (
     <DreamLayout>
-      <div className="min-h-screen flex flex-col items-center justify-center bg-cream-100 dark:bg-dream-dark-bg transition-colors duration-500">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-cream-100 transition-colors duration-500">
         <DreamHeader
           title="Welcome to Aangan"
           subtitle="A poetic, anonymous campus sanctuary"
           className="mb-2"
         />
-        <div className="w-full max-w-md bg-paper-light dark:bg-dream-dark-card rounded-2xl shadow-soft p-8 mt-6 border border-cream-200 dark:border-neutral-800 transition-colors duration-500">
+        <div className="w-full max-w-md bg-paper-light rounded-2xl shadow-soft p-8 mt-6 border border-cream-200 transition-colors duration-500">
           {magicLinkError ? (
             <div className="text-center text-2xl text-dream-accent font-poetic py-12">
               {magicLinkError}
@@ -89,10 +89,10 @@ const Login: React.FC = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="text-center mb-4 font-poetic text-lg text-inkwell-80 dark:text-dream-dark-text italic">
+              <div className="text-center mb-4 font-poetic text-lg text-inkwell-80 italic">
                 Every journey begins with a single whisper.
               </div>
-              <label className="block text-inkwell font-medium mb-2 dark:text-dream-dark-text" htmlFor="email">
+                              <label className="block text-inkwell font-medium mb-2" htmlFor="email">
                 CUJ Email Address
               </label>
               <Input
@@ -103,7 +103,7 @@ const Login: React.FC = () => {
                 onChange={e => setEmail(e.target.value)}
                 required
                 disabled={sent || loading}
-                className="mb-2 bg-cream-50 dark:bg-dream-dark-bg text-inkwell dark:text-dream-dark-text border border-cream-200 dark:border-neutral-800 focus:ring-dream-blue"
+                                  className="mb-2 bg-cream-50 text-inkwell border border-cream-200 focus:ring-dream-blue"
                 autoComplete="email"
                 ref={emailInputRef}
               />

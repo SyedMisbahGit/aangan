@@ -12,6 +12,8 @@ import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 import { v4 as uuidv4 } from "uuid";
 import { readFileSync } from "fs";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 // Load environment variables
 dotenv.config();
@@ -22,6 +24,25 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: [
+      process.env.FRONTEND_URL || "http://localhost:5173",
+      "http://localhost:8080",
+      "http://localhost:8081",
+      "http://localhost:8082",
+      "http://localhost:8083",
+      "http://localhost:8084",
+      "http://localhost:8085",
+      "http://localhost:8086",
+      "http://localhost:8087",
+      "http://localhost:8088",
+    ],
+    credentials: true,
+  },
+});
+
 const PORT = process.env.PORT || 3001;
 
 // Debug: Log the actual PORT value
@@ -32,6 +53,46 @@ console.log(`🔧 Using port: ${PORT}`);
 let db;
 
 const ADMIN_API_KEY = process.env.ADMIN_API_KEY || "changeme";
+
+// Real-time connection tracking with improved stability
+const activeConnections = new Map();
+const zoneActivity = new Map();
+const emotionPulse = new Map();
+const connectionStats = {
+  totalConnections: 0,
+  activeConnections: 0,
+  totalDisconnections: 0,
+  lastCleanup: new Date(),
+  memoryUsage: 0
+};
+
+// Memory leak prevention - cleanup old data
+const cleanupOldData = () => {
+  const now = new Date();
+  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+  
+  // Clean up old emotion pulses (older than 1 hour)
+  for (const [emotion, pulse] of emotionPulse.entries()) {
+    if (new Date(pulse.lastPulse) < oneHourAgo) {
+      emotionPulse.delete(emotion);
+    }
+  }
+  
+  // Clean up old zone activity (older than 30 minutes)
+  for (const [zone, activity] of zoneActivity.entries()) {
+    if (new Date(activity.lastActivity) < new Date(now.getTime() - 30 * 60 * 1000)) {
+      zoneActivity.delete(zone);
+    }
+  }
+  
+  connectionStats.lastCleanup = now;
+  connectionStats.memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024; // MB
+  
+  console.log(`🧹 Cleanup completed. Memory usage: ${connectionStats.memoryUsage.toFixed(2)} MB`);
+};
+
+// Run cleanup every 15 minutes
+setInterval(cleanupOldData, 15 * 60 * 1000);
 
 async function initializeDatabase() {
   const DB_PATH = process.env.DB_PATH || join(__dirname, "whispers.db");
@@ -254,6 +315,35 @@ app.post("/api/whispers", whisperLimiter, async (req, res) => {
     const whisper = await db.get("SELECT * FROM whispers WHERE id = ?", [id]);
     whisper.timestamp = formatTimestamp(whisper.created_at);
 
+    // Emit real-time whisper event
+    io.emit('new-whisper', {
+      ...whisper,
+      timestamp: formatTimestamp(whisper.created_at),
+      realTime: true
+    });
+
+    // Emit zone-specific whisper event
+    io.to(`zone-${zone}`).emit('zone-whisper', {
+      ...whisper,
+      timestamp: formatTimestamp(whisper.created_at),
+      realTime: true
+    });
+
+    // Update emotion pulse
+    const currentPulse = emotionPulse.get(emotion) || { count: 0, lastPulse: new Date() };
+    currentPulse.count += 1;
+    currentPulse.lastPulse = new Date();
+    emotionPulse.set(emotion, currentPulse);
+
+    // Broadcast emotion pulse update
+    io.emit('emotion-pulse-update', {
+      emotion,
+      pulse: currentPulse,
+      totalPulses: Array.from(emotionPulse.values()).reduce((sum, pulse) => sum + pulse.count, 0)
+    });
+
+    console.log(`📝 New whisper created and broadcast: ${id} in zone ${zone} with emotion ${emotion}`);
+
     res.status(201).json(whisper);
   } catch (error) {
     console.error("Error creating whisper:", error);
@@ -288,10 +378,11 @@ async function startServer() {
     // Add a small delay to ensure everything is ready
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`🚀 Shhh WhisperVerse Backend running on port ${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🔌 WebSocket server ready for real-time connections`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
@@ -299,4 +390,295 @@ async function startServer() {
   }
 }
 
-startServer(); 
+// WebSocket event handlers with improved stability
+io.on('connection', (socket) => {
+  console.log(`🔌 New client connected: ${socket.id}`);
+  
+  // Update connection stats
+  connectionStats.totalConnections++;
+  connectionStats.activeConnections++;
+  
+  // Track active connection with timeout
+  const connectionTimeout = setTimeout(() => {
+    if (activeConnections.has(socket.id)) {
+      console.log(`⏰ Connection timeout for ${socket.id}`);
+      socket.disconnect();
+    }
+  }, 5 * 60 * 1000); // 5 minute timeout
+  
+  // Track active connection
+  activeConnections.set(socket.id, {
+    id: socket.id,
+    connectedAt: new Date(),
+    currentZone: null,
+    currentEmotion: null,
+    lastActivity: new Date(),
+    messageCount: 0
+  });
+
+  // Handle zone join with validation
+  socket.on('join-zone', (zone) => {
+    try {
+      const connection = activeConnections.get(socket.id);
+      if (!connection) {
+        console.warn(`⚠️  Connection not found for ${socket.id}`);
+        return;
+      }
+      
+      // Validate zone
+      const validZones = ['tapri', 'library', 'hostel', 'canteen', 'auditorium', 'quad'];
+      if (!validZones.includes(zone)) {
+        console.warn(`⚠️  Invalid zone: ${zone} from ${socket.id}`);
+        return;
+      }
+      
+      // Leave previous zone if any
+      if (connection.currentZone) {
+        const previousActivity = zoneActivity.get(connection.currentZone);
+        if (previousActivity && previousActivity.users > 0) {
+          previousActivity.users -= 1;
+          zoneActivity.set(connection.currentZone, previousActivity);
+        }
+        socket.leave(`zone-${connection.currentZone}`);
+      }
+      
+      connection.currentZone = zone;
+      connection.lastActivity = new Date();
+      socket.join(`zone-${zone}`);
+      
+      // Update zone activity
+      const currentActivity = zoneActivity.get(zone) || { users: 0, lastActivity: new Date() };
+      currentActivity.users += 1;
+      currentActivity.lastActivity = new Date();
+      zoneActivity.set(zone, currentActivity);
+      
+      // Broadcast zone activity update
+      io.emit('zone-activity-update', {
+        zone,
+        activity: currentActivity,
+        totalActive: Array.from(zoneActivity.values()).reduce((sum, act) => sum + act.users, 0)
+      });
+      
+      console.log(`📍 User ${socket.id} joined zone: ${zone}`);
+    } catch (error) {
+      console.error(`❌ Error in join-zone: ${error.message}`);
+    }
+  });
+
+  // Handle emotion pulse with rate limiting
+  socket.on('emotion-pulse', (emotion) => {
+    try {
+      const connection = activeConnections.get(socket.id);
+      if (!connection) return;
+      
+      // Rate limiting: max 1 emotion pulse per 10 seconds per user
+      const now = new Date();
+      const timeSinceLastPulse = now.getTime() - connection.lastActivity.getTime();
+      if (timeSinceLastPulse < 10000) {
+        console.warn(`⚠️  Rate limit exceeded for ${socket.id}`);
+        return;
+      }
+      
+      connection.currentEmotion = emotion;
+      connection.lastActivity = now;
+      connection.messageCount++;
+      
+      // Update emotion pulse
+      const currentPulse = emotionPulse.get(emotion) || { count: 0, lastPulse: new Date() };
+      currentPulse.count += 1;
+      currentPulse.lastPulse = new Date();
+      emotionPulse.set(emotion, currentPulse);
+      
+      // Broadcast emotion pulse
+      io.emit('emotion-pulse-update', {
+        emotion,
+        pulse: currentPulse,
+        totalPulses: Array.from(emotionPulse.values()).reduce((sum, pulse) => sum + pulse.count, 0)
+      });
+      
+      console.log(`💓 Emotion pulse: ${emotion} from ${socket.id}`);
+    } catch (error) {
+      console.error(`❌ Error in emotion-pulse: ${error.message}`);
+    }
+  });
+
+  // Handle whisper creation (real-time) with validation
+  socket.on('whisper-created', (whisper) => {
+    try {
+      // Validate whisper data
+      if (!whisper || !whisper.content || !whisper.emotion || !whisper.zone) {
+        console.warn(`⚠️  Invalid whisper data from ${socket.id}`);
+        return;
+      }
+      
+      // Rate limiting: max 5 whispers per minute per user
+      const connection = activeConnections.get(socket.id);
+      if (connection) {
+        const now = new Date();
+        const timeSinceLastWhisper = now.getTime() - connection.lastActivity.getTime();
+        if (timeSinceLastWhisper < 12000) { // 12 seconds between whispers
+          console.warn(`⚠️  Whisper rate limit exceeded for ${socket.id}`);
+          return;
+        }
+        connection.lastActivity = now;
+        connection.messageCount++;
+      }
+      
+      // Broadcast new whisper to all connected clients
+      io.emit('new-whisper', {
+        ...whisper,
+        timestamp: formatTimestamp(whisper.created_at),
+        realTime: true
+      });
+      
+      // Also broadcast to specific zone if applicable
+      if (whisper.zone) {
+        socket.to(`zone-${whisper.zone}`).emit('zone-whisper', {
+          ...whisper,
+          timestamp: formatTimestamp(whisper.created_at),
+          realTime: true
+        });
+      }
+      
+      console.log(`📝 Real-time whisper broadcast: ${whisper.id}`);
+    } catch (error) {
+      console.error(`❌ Error in whisper-created: ${error.message}`);
+    }
+  });
+
+  // Handle disconnect with cleanup
+  socket.on('disconnect', (reason) => {
+    try {
+      const connection = activeConnections.get(socket.id);
+      if (connection) {
+        // Update zone activity
+        if (connection.currentZone) {
+          const currentActivity = zoneActivity.get(connection.currentZone);
+          if (currentActivity && currentActivity.users > 0) {
+            currentActivity.users -= 1;
+            zoneActivity.set(connection.currentZone, currentActivity);
+            
+            io.emit('zone-activity-update', {
+              zone: connection.currentZone,
+              activity: currentActivity,
+              totalActive: Array.from(zoneActivity.values()).reduce((sum, act) => sum + act.users, 0)
+            });
+          }
+        }
+        
+        activeConnections.delete(socket.id);
+        connectionStats.activeConnections--;
+        connectionStats.totalDisconnections++;
+        
+        clearTimeout(connectionTimeout);
+      }
+      
+      console.log(`🔌 Client disconnected: ${socket.id} (${reason})`);
+    } catch (error) {
+      console.error(`❌ Error in disconnect: ${error.message}`);
+    }
+  });
+
+  // Handle errors
+  socket.on('error', (error) => {
+    console.error(`❌ Socket error for ${socket.id}:`, error);
+  });
+});
+
+// Real-time analytics endpoints
+app.get('/api/realtime/activity', (req, res) => {
+  try {
+    res.json({
+      activeConnections: activeConnections.size,
+      zoneActivity: Object.fromEntries(zoneActivity),
+      emotionPulse: Object.fromEntries(emotionPulse),
+      totalActive: Array.from(zoneActivity.values()).reduce((sum, act) => sum + act.users, 0),
+      stats: connectionStats,
+      uptime: process.uptime(),
+      memoryUsage: process.memoryUsage(),
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error in /api/realtime/activity:', error);
+    res.status(500).json({ error: 'Failed to get activity data' });
+  }
+});
+
+app.get('/api/realtime/zones', (req, res) => {
+  try {
+    res.json({
+      zones: Array.from(zoneActivity.entries()).map(([zone, activity]) => ({
+        zone,
+        activeUsers: activity.users,
+        lastActivity: activity.lastActivity,
+        activityLevel: getActivityLevel(activity.users)
+      })),
+      totalActive: Array.from(zoneActivity.values()).reduce((sum, act) => sum + act.users, 0),
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error in /api/realtime/zones:', error);
+    res.status(500).json({ error: 'Failed to get zone data' });
+  }
+});
+
+app.get('/api/realtime/health', (req, res) => {
+  try {
+    const memoryUsage = process.memoryUsage();
+    const uptime = process.uptime();
+    
+    const healthStatus = {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: uptime,
+      memory: {
+        used: Math.round(memoryUsage.heapUsed / 1024 / 1024), // MB
+        total: Math.round(memoryUsage.heapTotal / 1024 / 1024), // MB
+        external: Math.round(memoryUsage.external / 1024 / 1024), // MB
+        rss: Math.round(memoryUsage.rss / 1024 / 1024) // MB
+      },
+      connections: {
+        active: activeConnections.size,
+        total: connectionStats.totalConnections,
+        disconnections: connectionStats.totalDisconnections,
+        zones: zoneActivity.size,
+        emotions: emotionPulse.size
+      },
+      performance: {
+        memoryUsagePercent: Math.round((memoryUsage.heapUsed / memoryUsage.heapTotal) * 100),
+        lastCleanup: connectionStats.lastCleanup,
+        isStable: uptime > 300 && memoryUsage.heapUsed < 100 * 1024 * 1024 // 100MB threshold
+      }
+    };
+    
+    // Check for potential issues
+    if (memoryUsage.heapUsed > 150 * 1024 * 1024) { // 150MB
+      healthStatus.status = 'warning';
+      healthStatus.warnings = ['High memory usage detected'];
+    }
+    
+    if (uptime < 60) { // Less than 1 minute
+      healthStatus.status = 'starting';
+    }
+    
+    res.json(healthStatus);
+  } catch (error) {
+    console.error('Error in /api/realtime/health:', error);
+    res.status(500).json({ 
+      status: 'error',
+      error: 'Failed to get health data',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Helper function for activity levels
+function getActivityLevel(users) {
+  if (users === 0) return 'quiet';
+  if (users <= 2) return 'whispering';
+  if (users <= 5) return 'buzzing';
+  if (users <= 10) return 'lively';
+  return 'vibrant';
+}
+
+startServer();

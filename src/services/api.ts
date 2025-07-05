@@ -75,11 +75,12 @@ export const fetchWhispers = async (params?: {
 
 export const createWhisper = async (
   data: CreateWhisperData,
-): Promise<{ success: boolean; id: string }> => {
-  return apiRequest("/whispers", {
+): Promise<Whisper> => {
+  const response = await apiRequest("/whispers", {
     method: "POST",
     body: JSON.stringify(data),
   });
+  return response;
 };
 
 // Analytics API functions (admin only)
@@ -167,9 +168,14 @@ export const useCreateWhisper = () => {
 
   return useMutation({
     mutationFn: createWhisper,
-    onSuccess: () => {
+    onSuccess: (newWhisper) => {
       // Invalidate and refetch whispers
       queryClient.invalidateQueries({ queryKey: ["whispers"] });
+      
+      // Add to real-time context if available
+      if (typeof window !== 'undefined' && (window as any).realtimeService) {
+        (window as any).realtimeService.broadcastWhisper(newWhisper);
+      }
     },
   });
 };
