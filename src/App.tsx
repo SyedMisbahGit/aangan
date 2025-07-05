@@ -11,7 +11,8 @@ import { DreamThemeProvider, useDreamTheme } from "./contexts/DreamThemeContext"
 import { ShhhNarratorProvider, useShhhNarrator } from "./contexts/ShhhNarratorContext";
 import { CUJHotspotProvider, useCUJHotspots } from "./contexts/CUJHotspotContext";
 import { useState, useEffect } from "react";
-import { messaging, getToken, onMessage } from "./firebase-messaging";
+import messagingPromise from "./firebase-messaging";
+import { getToken, onMessage } from "firebase/messaging";
 import Admin from "./pages/Admin";
 import AdminInsights from "./pages/AdminInsights";
 import NotFound from "./pages/NotFound";
@@ -97,6 +98,11 @@ const AppContent: React.FC = () => {
 
   const getAndSendFcmToken = async () => {
     try {
+      const messaging = await messagingPromise;
+      if (!messaging) {
+        console.log("Firebase Messaging is not supported in this browser/environment.");
+        return;
+      }
       const registration = await navigator.serviceWorker.ready;
       const currentToken = await getToken(messaging, {
         vapidKey: VAPID_KEY,
@@ -184,6 +190,7 @@ const AppContent: React.FC = () => {
           <Route path="/" element={<PrivateRoute><HomeFeed /></PrivateRoute>} />
           <Route path="/create" element={<PrivateRoute><CreateWhisper /></PrivateRoute>} />
           <Route path="/diary" element={<PrivateRoute><Diary /></PrivateRoute>} />
+          <Route path="/zones" element={<PrivateRoute><Shrines /></PrivateRoute>} />
           <Route path="/capsules" element={<PrivateRoute><Capsules /></PrivateRoute>} />
           <Route path="/shrines" element={<PrivateRoute><Shrines /></PrivateRoute>} />
           <Route path="/compass" element={<PrivateRoute><Compass /></PrivateRoute>} />
@@ -206,6 +213,14 @@ const AppContent: React.FC = () => {
   );
 };
 
+// Utility for safe random ID
+function getRandomId() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return 'guest-' + Math.random().toString(36).slice(2) + Date.now();
+}
+
 // PrivateRoute wrapper
 function PrivateRoute({ children, adminOnly }: { children: React.ReactNode, adminOnly?: boolean }) {
   if (adminOnly) {
@@ -216,7 +231,7 @@ function PrivateRoute({ children, adminOnly }: { children: React.ReactNode, admi
   } else {
     let guestId = localStorage.getItem("guestId");
     if (!guestId) {
-      guestId = crypto.randomUUID();
+      guestId = getRandomId();
       localStorage.setItem("guestId", guestId);
     }
     return <>{children}</>;
