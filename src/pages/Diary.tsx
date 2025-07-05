@@ -35,6 +35,7 @@ import { useSummerPulse } from '../contexts/SummerPulseContext';
 import { useWhispers } from "../contexts/WhispersContext";
 import { Whisper } from '../contexts/WhispersContext';
 import { CustomSkeletonCard } from "@/components/ui/skeleton";
+import { DiaryStreakCounter } from "../components/shared/DiaryStreakCounter";
 
 const Diary: React.FC = () => {
   const { whispers: entries, setWhispers: setEntries } = useWhispers();
@@ -166,6 +167,14 @@ const Diary: React.FC = () => {
       setCurrentMood("peaceful");
       setCurrentPrompt("");
       setIsWriting(false);
+      
+      // Update streak
+      localStorage.setItem('lastDiaryEntry', new Date().toDateString());
+      
+      // Haptic feedback for streak unlock
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
     }
   };
 
@@ -203,7 +212,7 @@ const Diary: React.FC = () => {
 
   return (
     <DreamLayout>
-      <div className="min-h-screen bg-gradient-to-br from-cloudmist/30 via-dawnlight/20 to-cloudmist/40">
+      <div className="min-h-screen bg-[#fafaf9]">
         {/* Poetic AI Narrator */}
         <div className="pt-6 pb-4 px-4">
           <ShhhLine
@@ -216,7 +225,12 @@ const Diary: React.FC = () => {
 
         {/* Ambient Header */}
         <DreamHeader 
-          title={<span className="flex items-center gap-2">My Aangan <span className="inline-flex items-center px-2 py-0.5 rounded bg-green-100 text-xs font-semibold text-green-700 ml-2"><Lock className="w-3 h-3 mr-1" />Private</span></span>}
+          title={
+            <div className="flex items-center justify-between w-full">
+              <span className="flex items-center gap-2">My Aangan <span className="inline-flex items-center px-2 py-0.5 rounded bg-green-100 text-xs font-semibold text-green-700 ml-2"><Lock className="w-3 h-3 mr-1" />Private</span></span>
+              <DiaryStreakCounter />
+            </div>
+          }
           subtitle="Your private universe. Only you can see these entries."
         />
 
@@ -230,42 +244,42 @@ const Diary: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+          <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
             {/* Mood Tracking Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+              <Card className="bg-white border-neutral-200 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-inkwell">
-                    <Heart className="w-5 h-5 text-dawnlight" />
+                  <CardTitle className="flex items-center gap-2 text-neutral-800">
+                    <Heart className="w-5 h-5 text-red-500" />
                     Today's Mood
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-inkwell">{entries.length}</div>
-                    <div className="text-sm text-inkwell/70">Total Entries</div>
+                    <div className="text-2xl font-bold text-neutral-800">{entries.length}</div>
+                    <div className="text-sm text-neutral-600">Total Entries</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-inkwell">
+                    <div className="text-2xl font-bold text-neutral-800">
                       {entries.filter(e => e.isPublic).length}
                     </div>
-                    <div className="text-sm text-inkwell/70">Shared</div>
+                    <div className="text-sm text-neutral-600">Shared</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-inkwell">
+                    <div className="text-2xl font-bold text-neutral-800">
                       {entries.reduce((sum, e) => sum + e.likes, 0)}
                     </div>
-                    <div className="text-sm text-inkwell/70">Hearts Received</div>
+                    <div className="text-sm text-neutral-600">Hearts Received</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-inkwell">
+                    <div className="text-2xl font-bold text-neutral-800">
                       {moodStats[0]?.mood || "peaceful"}
                     </div>
-                    <div className="text-sm text-inkwell/70">Dominant Mood</div>
+                    <div className="text-sm text-neutral-600">Dominant Mood</div>
                   </div>
                 </CardContent>
               </Card>
@@ -277,9 +291,9 @@ const Diary: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <Card className="bg-paper-light border-inkwell/10 shadow-soft">
+              <Card className="bg-white border-neutral-200 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-inkwell">
+                  <CardTitle className="flex items-center gap-2 text-neutral-800">
                     <CalendarIcon className="w-5 h-5" />
                     Mood Journey
                   </CardTitle>
@@ -289,14 +303,14 @@ const Diary: React.FC = () => {
                     mode="single"
                     selected={selectedDate}
                     onSelect={(date) => date && setSelectedDate(date)}
-                    className="rounded-md border-inkwell/10"
+                    className="rounded-md border-neutral-200"
                   />
                   <div className="mt-4 grid grid-cols-4 gap-2">
                     {moodStats.slice(0, 4).map(({ mood, count }) => (
-                      <div key={mood} className="text-center p-2 bg-white/50 rounded border border-inkwell/10">
+                      <div key={mood} className="text-center p-2 bg-neutral-50 rounded border border-neutral-200">
                         <div className="text-lg mb-1">{getMoodIcon(mood)}</div>
-                        <div className="text-xs font-medium text-inkwell capitalize">{mood}</div>
-                        <div className="text-xs text-inkwell/60">{count}</div>
+                        <div className="text-xs font-medium text-neutral-800 capitalize">{mood}</div>
+                        <div className="text-xs text-neutral-600">{count}</div>
                       </div>
                     ))}
                   </div>
@@ -304,51 +318,21 @@ const Diary: React.FC = () => {
               </Card>
             </motion.div>
 
-            {/* Writing Prompts Section */}
+            {/* AI Prompt */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-inkwell">
-                    <PenTool className="w-5 h-5 text-dawnlight" />
-                    Writing Prompts
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <WhisperPrompt 
-                    zone="diary"
-                    mood={currentMood}
-                    variant="expanded"
-                    className="mb-4"
-                  />
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="text-xs min-h-[44px] px-4 py-3"
-                      onClick={() => setCurrentMood('joy')}
-                    >
-                      Joy
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="text-xs min-h-[44px] px-4 py-3"
-                      onClick={() => setCurrentMood('nostalgia')}
-                    >
-                      Nostalgia
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="text-xs min-h-[44px] px-4 py-3"
-                      onClick={() => setCurrentMood('calm')}
-                    >
-                      Calm
-                    </Button>
+              <Card className="bg-white border-neutral-200 shadow-sm">
+                <CardContent className="p-4">
+                  <div className="text-center">
+                    <p className="text-sm text-neutral-600 italic mb-2">
+                      "Tonight, write about something you almost said aloud."
+                    </p>
+                    <div className="text-xs text-neutral-500">
+                      AI-generated prompt to inspire your writing
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -360,9 +344,9 @@ const Diary: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Card className="bg-paper-light border-inkwell/10 shadow-soft">
+              <Card className="bg-white border-neutral-200 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-inkwell">
+                  <CardTitle className="flex items-center gap-2 text-neutral-800">
                     <PenTool className="w-5 h-5" />
                     New Entry
                   </CardTitle>
@@ -370,22 +354,22 @@ const Diary: React.FC = () => {
                 <CardContent className="space-y-4">
                   {!isWriting ? (
                     <div className="text-center py-8">
-                      <BookOpen className="w-12 h-12 mx-auto mb-4 text-inkwell/40" />
-                      <p className="text-inkwell/70 mb-4">Ready to write your thoughts?</p>
+                      <BookOpen className="w-12 h-12 mx-auto mb-4 text-neutral-400" />
+                      <p className="text-neutral-600 mb-4">Ready to write your thoughts?</p>
                       <div className="flex gap-2 justify-center">
                         <Button
                           onClick={() => {
                             setIsWriting(true);
                             getRandomPrompt();
                           }}
-                          className="bg-inkwell hover:bg-inkwell/90 text-paper-light min-h-[44px] px-4 py-3"
+                          className="bg-neutral-800 hover:bg-neutral-700 text-white min-h-[44px] px-4 py-3"
                         >
                           <PenTool className="w-4 h-4 mr-2" />
                           Start Writing
                         </Button>
                         <Dialog open={showPromptGenerator} onOpenChange={setShowPromptGenerator}>
                           <DialogTrigger asChild>
-                            <Button variant="outline" className="bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5 min-h-[44px] px-4 py-3">
+                            <Button variant="outline" className="bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50 min-h-[44px] px-4 py-3">
                               <Sparkles className="w-4 h-4 mr-2" />
                               Get Prompt
                             </Button>
@@ -416,13 +400,13 @@ const Diary: React.FC = () => {
                   ) : (
                     <div className="space-y-4">
                       {currentPrompt && (
-                        <div className="p-3 bg-gradient-to-r from-dawnlight/10 to-cloudmist/10 rounded-lg border border-inkwell/10">
-                          <p className="text-sm text-inkwell/70 italic">"{currentPrompt}"</p>
+                        <div className="p-3 bg-neutral-50 rounded-lg border border-neutral-200">
+                          <p className="text-sm text-neutral-600 italic">"{currentPrompt}"</p>
                         </div>
                       )}
                       
                       <div>
-                        <label className="text-sm text-inkwell/70 mb-2 block">How are you feeling?</label>
+                        <label className="text-sm text-neutral-600 mb-2 block">How are you feeling?</label>
                         <div className="grid grid-cols-4 gap-2">
                           {moods.map((mood) => (
                             <button
@@ -431,7 +415,7 @@ const Diary: React.FC = () => {
                               className={`p-3 rounded-lg border transition-all text-center min-h-[44px] min-w-[44px] ${
                                 currentMood === mood.value
                                   ? `${mood.color} border-2`
-                                  : 'bg-white/50 border-inkwell/20 hover:border-inkwell/40'
+                                  : 'bg-white border-neutral-200 hover:border-neutral-300'
                               }`}
                             >
                               <div className="text-lg mb-1">{mood.icon}</div>
@@ -442,15 +426,15 @@ const Diary: React.FC = () => {
                       </div>
                       
                       <div>
-                        <label className="text-sm text-inkwell/70 mb-2 block">Your thoughts...</label>
+                        <label className="text-sm text-neutral-600 mb-2 block">Your thoughts...</label>
                         <Textarea
                           placeholder="What's stirring in your courtyard today?"
                           value={currentEntry}
                           onChange={(e) => setCurrentEntry(e.target.value)}
-                          className="min-h-[120px] bg-white/50 border-inkwell/20 focus:border-inkwell/40 resize-none"
+                          className="min-h-[120px] bg-white border-neutral-200 focus:border-neutral-400 resize-none"
                           maxLength={1000}
                         />
-                        <div className="text-xs text-inkwell/50 mt-1 text-right">
+                        <div className="text-xs text-neutral-500 mt-1 text-right">
                           {currentEntry.length}/1000
                         </div>
                       </div>
@@ -463,14 +447,14 @@ const Diary: React.FC = () => {
                             setCurrentEntry("");
                             setCurrentPrompt("");
                           }}
-                          className="flex-1 bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5 min-h-[44px] px-4 py-3"
+                          className="flex-1 bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50 min-h-[44px] px-4 py-3"
                         >
                           Cancel
                         </Button>
                         <Button
                           onClick={handleSaveEntry}
                           disabled={!currentEntry.trim()}
-                          className="flex-1 bg-inkwell hover:bg-inkwell/90 text-paper-light min-h-[44px] px-4 py-3"
+                          className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white min-h-[44px] px-4 py-3"
                         >
                           <Send className="w-4 h-4 mr-2" />
                           Save Entry
@@ -489,7 +473,7 @@ const Diary: React.FC = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="space-y-4"
             >
-              <h2 className="text-xl font-semibold text-inkwell flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-neutral-800 flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
                 Your Entries
               </h2>
@@ -510,8 +494,8 @@ const Diary: React.FC = () => {
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
-                    <Card className={`bg-paper-light border-inkwell/10 shadow-soft ${
-                      entry.isPublic ? 'bg-gradient-to-br from-dawnlight/20 to-cloudmist/20' : ''
+                    <Card className={`bg-white border-neutral-200 shadow-sm ${
+                      entry.isPublic ? 'bg-gradient-to-br from-green-50 to-blue-50' : ''
                     }`}>
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between mb-4">
@@ -521,27 +505,27 @@ const Diary: React.FC = () => {
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-inkwell capitalize">{entry.emotion}</span>
+                                <span className="font-medium text-neutral-800 capitalize">{entry.emotion}</span>
                                 {entry.isPublic ? (
-                                  <Badge variant="outline" className="text-xs bg-white/50 border-inkwell/20">
+                                  <Badge variant="outline" className="text-xs bg-white border-neutral-200">
                                     <Users className="w-3 h-3 mr-1" />
                                     Shared
                                   </Badge>
                                 ) : (
-                                  <Badge variant="outline" className="text-xs bg-white/50 border-inkwell/20">
+                                  <Badge variant="outline" className="text-xs bg-white border-neutral-200">
                                     <Lock className="w-3 h-3 mr-1" />
                                     Private
                                   </Badge>
                                 )}
                               </div>
-                              <div className="text-xs text-inkwell/60">
+                              <div className="text-xs text-neutral-600">
                                 {formatTime(entry.timestamp)}
                               </div>
                             </div>
                           </div>
                           
                           <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1 text-inkwell/60">
+                            <div className="flex items-center gap-1 text-neutral-600">
                               <Heart className="w-4 h-4" />
                               <span className="text-sm">{entry.likes}</span>
                             </div>
@@ -549,19 +533,19 @@ const Diary: React.FC = () => {
                         </div>
                         
                         {entry.prompt && (
-                          <div className="mb-3 p-2 bg-inkwell/5 rounded border border-inkwell/10">
-                            <p className="text-xs text-inkwell/70 italic">"{entry.prompt}"</p>
+                          <div className="mb-3 p-2 bg-neutral-50 rounded border border-neutral-200">
+                            <p className="text-xs text-neutral-600 italic">"{entry.prompt}"</p>
                           </div>
                         )}
                         
-                        <p className="text-inkwell leading-relaxed mb-4">
+                        <p className="text-neutral-800 leading-relaxed mb-4">
                           {entry.content}
                         </p>
                         
-                        <div className="flex items-center justify-between pt-4 border-t border-inkwell/10">
+                        <div className="flex items-center justify-between pt-4 border-t border-neutral-200">
                           <div className="flex gap-2">
                             {entry.tags.map((tag, tagIndex) => (
-                              <Badge key={tagIndex} variant="outline" className="text-xs bg-white/50 border-inkwell/20">
+                              <Badge key={tagIndex} variant="outline" className="text-xs bg-white border-neutral-200">
                                 {tag}
                               </Badge>
                             ))}
@@ -572,7 +556,7 @@ const Diary: React.FC = () => {
                               variant="outline"
                               size="sm"
                               onClick={() => handleReleaseEntry(entry)}
-                              className="bg-paper-light border-inkwell/20 text-inkwell hover:bg-inkwell/5"
+                              className="bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50"
                             >
                               <Unlock className="w-4 h-4 mr-2" />
                               Rewrite & Release

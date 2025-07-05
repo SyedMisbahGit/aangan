@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Notebook, Feather, Map, User } from "lucide-react";
+import { Home, BookOpenText, Search, MoonStar, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const DreamNavigation = () => {
@@ -10,10 +10,10 @@ export const DreamNavigation = () => {
 
   const navigationItems = [
     { path: "/", icon: Home, label: "Feed" },
-    { path: "/diary", icon: Notebook, label: "Diary" },
-    { path: "/create", icon: Feather, label: "Whisper" },
-    { path: "/zones", icon: Map, label: "Zones" },
-    { path: "/profile", icon: User, label: "Profile" },
+    { path: "/diary", icon: BookOpenText, label: "Diary" },
+    { path: "/explore", icon: Search, label: "Explore" },
+    { path: "/lounge", icon: MoonStar, label: "Lounge" },
+    { path: "/menu", icon: Menu, label: "Menu" },
   ];
 
   // Enhanced keyboard detection with better handling
@@ -96,16 +96,19 @@ export const DreamNavigation = () => {
     }
   }, [location.pathname]);
 
-  const handleNavClick = () => {
+  const handleNavClick = (path: string) => {
     // Haptic feedback for supported devices
     if (navigator.vibrate) {
       navigator.vibrate(10);
     }
+    
+    // Log nav tab switch events for QA
+    console.log(`🧭 Nav switch: ${path}`);
   };
 
   return (
     <nav className={cn(
-      "fixed inset-x-0 bottom-0 z-40 bg-[#f9f7f4] border-t border-neutral-200 h-[72px] flex justify-around items-center pb-safe shadow-[0_-2px_6px_rgba(0,0,0,0.04)] transition-transform duration-300 ease-out",
+      "fixed inset-x-0 bottom-0 z-40 bg-[#fafaf9] border-t border-neutral-200 h-[72px] flex justify-around items-center pb-safe shadow-[0_-2px_6px_rgba(0,0,0,0.04)] transition-transform duration-300 ease-out",
       isKeyboardOpen && "translate-y-full",
       isTransitioning && "transition-transform duration-300 ease-out"
     )}>
@@ -113,21 +116,17 @@ export const DreamNavigation = () => {
         <NavLink
           key={item.path}
           to={item.path}
-          onClick={handleNavClick}
+          onClick={() => handleNavClick(item.path)}
           className={({ isActive }) =>
             cn(
               "flex flex-col items-center gap-0.5 text-xs transition-all duration-200",
-              isActive ? "text-green-600" : "text-neutral-500"
+              isActive ? "text-green-600 font-medium" : "text-neutral-500"
             )
           }
         >
           {({ isActive }) => (
             <>
-              {item.path === "/create" ? (
-                <item.icon className="w-12 h-12 text-green-600 shadow-sm" strokeWidth={2} />
-              ) : (
-                <item.icon className="w-12 h-12" strokeWidth={1.7} />
-              )}
+              <item.icon className="w-12 h-12" strokeWidth={1.7} />
               <span className={cn(
                 "text-[12px] tracking-wide transition-all duration-200",
                 isActive ? "font-medium" : "font-normal"

@@ -34,6 +34,9 @@ const queryClient = new QueryClient();
 const HomeFeed = lazy(() => import("./pages/HomeFeed"));
 const CreateWhisper = lazy(() => import("./pages/CreateWhisper"));
 const Diary = lazy(() => import("./pages/Diary"));
+const Explore = lazy(() => import("./pages/Explore"));
+const Lounge = lazy(() => import("./pages/Lounge"));
+const Menu = lazy(() => import("./pages/Menu"));
 const Capsules = lazy(() => import("./pages/Capsules"));
 const Shrines = lazy(() => import("./pages/Shrines"));
 const Compass = lazy(() => import("./pages/Compass"));
@@ -160,6 +163,24 @@ const AppContent: React.FC = () => {
     };
   }, []);
 
+  // Analytics tracking for page views
+  useEffect(() => {
+    const trackPageView = () => {
+      const path = window.location.pathname;
+      if (['/', '/explore', '/lounge'].includes(path)) {
+        console.log(`📊 Page view: ${path}`);
+        // In a real app, this would send to analytics service
+        axios.post("/api/analytics/page-view", {
+          path,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+        }).catch(() => {});
+      }
+    };
+
+    trackPageView();
+  }, [location.pathname]);
+
   const handleWhisperCreated = (whisper: any) => {
     addWhisper(whisper);
     // In a real app, this would trigger updates to feeds, notifications, etc.
@@ -189,6 +210,9 @@ const AppContent: React.FC = () => {
           <Route path="/" element={<PrivateRoute><HomeFeed /></PrivateRoute>} />
           <Route path="/create" element={<PrivateRoute><CreateWhisper /></PrivateRoute>} />
           <Route path="/diary" element={<PrivateRoute><Diary /></PrivateRoute>} />
+          <Route path="/explore" element={<PrivateRoute><Explore /></PrivateRoute>} />
+          <Route path="/lounge" element={<PrivateRoute><Lounge /></PrivateRoute>} />
+          <Route path="/menu" element={<PrivateRoute><Menu /></PrivateRoute>} />
           <Route path="/zones" element={<PrivateRoute><Shrines /></PrivateRoute>} />
           <Route path="/capsules" element={<PrivateRoute><Capsules /></PrivateRoute>} />
           <Route path="/shrines" element={<PrivateRoute><Shrines /></PrivateRoute>} />

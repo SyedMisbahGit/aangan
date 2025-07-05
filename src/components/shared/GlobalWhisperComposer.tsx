@@ -408,7 +408,7 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
     return (
       <>
         <motion.div
-          className="fixed bottom-20 right-4 z-50"
+          className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           whileHover={{ scale: 1.1 }}
@@ -416,7 +416,7 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
         >
           <Button
             onClick={() => setIsOpen(true)}
-            className="w-14 h-14 rounded-full bg-white text-green-600 shadow-sm border border-neutral-200 hover:bg-green-50 hover:text-green-700 active:bg-green-100 transition-colors"
+            className="w-14 h-14 rounded-full bg-white text-green-600 shadow-lg border border-neutral-200 hover:bg-green-50 hover:text-green-700 active:bg-green-100 transition-colors"
           >
             <Plus className="w-6 h-6" />
           </Button>

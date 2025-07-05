@@ -28,6 +28,9 @@ import { useWhispers } from "../contexts/WhispersContext";
 import RealtimeWhisperFeed from "../components/whisper/RealtimeWhisperFeed";
 import AIEchoBot from "../components/ai/AIEchoBot";
 import LiveZoneActivity from "../components/realtime/LiveZoneActivity";
+import { EmotionPulseBanner } from "../components/shared/EmotionPulseBanner";
+import { PresenceRibbon } from "../components/shared/PresenceRibbon";
+import { AmbientWhisperManager } from "../components/ambient/AmbientWhisperManager";
 
 interface Whisper {
   id: string;
@@ -165,59 +168,118 @@ const HomeFeed: React.FC = () => {
 
   const stats = getHotspotStats();
 
-    return (
+  // Get dominant emotion from recent whispers
+  const getDominantEmotion = () => {
+    const emotionCounts: Record<string, number> = {};
+    whispers.slice(0, 50).forEach(whisper => {
+      emotionCounts[whisper.emotion] = (emotionCounts[whisper.emotion] || 0) + 1;
+    });
+    
+    let maxCount = 0;
+    let dominant = 'joy';
+    Object.entries(emotionCounts).forEach(([emotion, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        dominant = emotion;
+      }
+    });
+    
+    return dominant;
+  };
+
+  const dominantEmotion = getDominantEmotion();
+  const emotionEmojis: Record<string, string> = {
+    joy: '💛',
+    nostalgia: '🌸',
+    anxiety: '💭',
+    calm: '🌊',
+    excitement: '⚡',
+    melancholy: '🌙',
+    gratitude: '🙏',
+    curiosity: '🔍',
+    peace: '🌿',
+    focus: '🎯',
+    reflection: '🪞'
+  };
+
+  const emotionTexts: Record<string, string> = {
+    joy: 'Joy is whispering the loudest today',
+    nostalgia: 'Nostalgia fills the air today',
+    anxiety: 'Anxiety is being shared today',
+    calm: 'Calmness is spreading today',
+    excitement: 'Excitement is buzzing today',
+    melancholy: 'Melancholy is being felt today',
+    gratitude: 'Gratitude is being expressed today',
+    curiosity: 'Curiosity is growing today',
+    peace: 'Peace is being found today',
+    focus: 'Focus is being shared today',
+    reflection: 'Reflection is happening today'
+  };
+
+  // Get presence count (unique users in last 12 hours)
+  const getPresenceCount = () => {
+    const uniqueUsers = new Set();
+    whispers.forEach(whisper => {
+      if (whisper.author) uniqueUsers.add(whisper.author);
+    });
+    return uniqueUsers.size;
+  };
+
+  const presenceCount = getPresenceCount();
+
+  return (
     <DreamLayout>
-      <div className="min-h-screen bg-gradient-to-br from-cloudmist/30 via-dawnlight/20 to-cloudmist/40">
-        {/* Poetic AI Narrator */}
-        <div className="pt-6 pb-4 px-4">
-          <ShhhLine 
-            variant="ambient" 
-            context="home-feed"
-            emotion={narratorState.dominantEmotion}
-            zone={campusActivity}
-            timeOfDay={narratorState.currentTime}
-            userActivity={narratorState.userActivity}
-            className="text-center"
+      <div className="min-h-screen bg-[#fafaf9]">
+        {/* Emotion Pulse Banner */}
+        <div className="pt-6 pb-3 px-4">
+          <EmotionPulseBanner
+            text={emotionTexts[dominantEmotion] || 'Joy is whispering the loudest today'}
+            emoji={emotionEmojis[dominantEmotion] || '💛'}
           />
         </div>
 
-        {/* Ambient Header */}
+        {/* Presence Ribbon */}
+        <div className="pb-3 px-4">
+          <PresenceRibbon text={`You + ${presenceCount} hearts whispered today`} />
+        </div>
+
+        {/* Header */}
         <DreamHeader 
           title={<span className="flex items-center gap-2">Aangan Feed <span className="inline-flex items-center px-2 py-0.5 rounded bg-green-100 text-xs font-semibold text-green-700 ml-2"><Globe className="w-3 h-3 mr-1" />Public</span></span>}
           subtitle="A living constellation of anonymous voices. Your whispers join the campus chorus."
         />
 
-        <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
           {/* Ambient Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card className="bg-gradient-to-br from-dawnlight/30 to-cloudmist/30 border-inkwell/10 shadow-soft">
+            <Card className="bg-white border-neutral-200 shadow-sm">
               <CardContent className="p-6">
                 <div className="text-center">
-                  <h2 className="text-xl font-semibold text-inkwell mb-2">
+                  <h2 className="text-xl font-semibold text-neutral-800 mb-2">
                     {getAmbientHeader()}
                   </h2>
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                      <div className="text-2xl font-bold text-inkwell">{stats.totalWhispers}</div>
-                      <div className="text-sm text-inkwell/70">Whispers Today</div>
+                      <div className="text-2xl font-bold text-neutral-800">{stats.totalWhispers}</div>
+                      <div className="text-sm text-neutral-600">Whispers Today</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-inkwell">{stats.totalLikes}</div>
-                      <div className="text-sm text-inkwell/70">Hearts Shared</div>
+                      <div className="text-2xl font-bold text-neutral-800">{stats.totalLikes}</div>
+                      <div className="text-sm text-neutral-600">Hearts Shared</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-inkwell">{stats.activeHotspots}</div>
-                      <div className="text-sm text-inkwell/70">Active Zones</div>
+                      <div className="text-2xl font-bold text-neutral-800">{stats.activeHotspots}</div>
+                      <div className="text-sm text-neutral-600">Active Zones</div>
                     </div>
-          </div>
-          </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-        </motion.div>
+          </motion.div>
 
           {/* Filters */}
           <motion.div
@@ -227,20 +289,20 @@ const HomeFeed: React.FC = () => {
             className="space-y-4"
           >
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-inkwell/40 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
               <Input
                 placeholder="Search whispers..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-paper-light border-inkwell/20 focus:border-inkwell/40 text-neutral-900"
+                className="pl-10 bg-white border-neutral-200 focus:border-neutral-400 text-neutral-900"
               />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-inkwell/70 mb-2 block">Emotion Filter</label>
+                <label className="text-sm text-neutral-600 mb-2 block">Emotion Filter</label>
                 <Select value={selectedEmotion} onValueChange={setSelectedEmotion}>
-                  <SelectTrigger className="bg-paper-light border-inkwell/20">
+                  <SelectTrigger className="bg-white border-neutral-200">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -254,12 +316,12 @@ const HomeFeed: React.FC = () => {
                     ))}
                   </SelectContent>
                 </Select>
-      </div>
+              </div>
               
               <div>
-                <label className="text-sm text-inkwell/70 mb-2 block">Location Filter</label>
+                <label className="text-sm text-neutral-600 mb-2 block">Location Filter</label>
                 <Select value={selectedHotspot} onValueChange={setSelectedHotspot}>
-                  <SelectTrigger className="bg-paper-light border-inkwell/20">
+                  <SelectTrigger className="bg-white border-neutral-200">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -269,24 +331,24 @@ const HomeFeed: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <MapPin className="w-3 h-3" />
                           {hotspot.name}
-          </div>
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-        </div>
-      </div>
+              </div>
+            </div>
           </motion.div>
 
           {/* Emotion Trends */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Card className="bg-paper-light border-inkwell/10 shadow-soft">
+            <Card className="bg-white border-neutral-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-inkwell">
+                <CardTitle className="flex items-center gap-2 text-neutral-800">
                   <TrendingUp className="w-5 h-5" />
                   Campus Mood
                 </CardTitle>
@@ -296,15 +358,15 @@ const HomeFeed: React.FC = () => {
                   {emotionClusters.slice(0, 4).map((cluster) => (
                     <div
                       key={cluster.emotion}
-                      className="p-3 bg-white/50 rounded-lg border border-inkwell/10 text-center"
+                      className="p-3 bg-neutral-50 rounded-lg border border-neutral-200 text-center"
                     >
                       <div className="text-lg mb-1">
                         {emotions.find(e => e.value === cluster.emotion)?.icon || "💫"}
                       </div>
-                      <div className="text-sm font-medium text-inkwell capitalize">
+                      <div className="text-sm font-medium text-neutral-800 capitalize">
                         {cluster.emotion}
                       </div>
-                      <div className="text-xs text-inkwell/60">
+                      <div className="text-xs text-neutral-600">
                         {cluster.count} people
                       </div>
                     </div>
@@ -315,7 +377,7 @@ const HomeFeed: React.FC = () => {
                 )}
               </CardContent>
             </Card>
-      </motion.div>
+          </motion.div>
 
           {/* Real-time Whisper Feed */}
           <motion.div
@@ -324,7 +386,7 @@ const HomeFeed: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="space-y-6"
           >
-            <h2 className="text-xl font-semibold text-inkwell flex items-center gap-2">
+            <h2 className="text-xl font-semibold text-neutral-800 flex items-center gap-2">
               <Sparkles className="w-5 h-5" />
               Live Whispers
             </h2>
@@ -335,14 +397,39 @@ const HomeFeed: React.FC = () => {
             />
           </motion.div>
 
+          {/* Ambient Whisper Fallback */}
+          {whispers.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="space-y-4"
+            >
+              <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
+                <Bot className="w-5 h-5" />
+                Ambient Whispers
+              </h3>
+              
+              <AmbientWhisperManager
+                whisperCount={whispers.length}
+                dominantEmotion={dominantEmotion}
+                isActive={true}
+                onWhisperGenerated={(whisper) => {
+                  // Handle ambient whisper generation
+                  console.log('Ambient whisper generated:', whisper);
+                }}
+              />
+            </motion.div>
+          )}
+
           {/* AI Echo Bot */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
             className="space-y-4"
           >
-            <h3 className="text-lg font-semibold text-inkwell flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
               <Bot className="w-5 h-5" />
               The Listener
             </h3>
@@ -358,17 +445,17 @@ const HomeFeed: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
             className="space-y-4"
           >
-            <h3 className="text-lg font-semibold text-inkwell flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
               <MessageCircle className="w-5 h-5" />
               Live Zone Activity
             </h3>
             
             <LiveZoneActivity />
           </motion.div>
-    </div>
+        </div>
       </div>
     </DreamLayout>
   );
