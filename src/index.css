@@ -460,3 +460,213 @@ input::placeholder, textarea::placeholder, .search-bar::placeholder {
   color: #6b7280;
   opacity: 1;
 }
+
+/* Enhanced Page Transitions */
+.page-transition {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Whisper Card Animations */
+.whisper-card-appear {
+  animation: whisperAppear 0.5s ease-out;
+}
+
+@keyframes whisperAppear {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Poetic Separators */
+.poetic-separator {
+  text-align: center;
+  margin: 2rem 0;
+  color: #9ca3af;
+  font-size: 1.2rem;
+  letter-spacing: 0.5rem;
+}
+
+.poetic-separator::before {
+  content: "⋆ ❖ ⋆";
+  opacity: 0.6;
+}
+
+/* Heartbeat Micro-interaction */
+.heartbeat-pulse {
+  animation: heartbeat 1s ease-in-out;
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.1);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+/* Enhanced Whisper Submission */
+.whisper-submit-success {
+  animation: submitSuccess 0.8s ease-out;
+}
+
+@keyframes submitSuccess {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+/* Soft Glow Effects */
+.soft-glow {
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.1);
+}
+
+.soft-glow:hover {
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.2);
+}
+
+/* Enhanced Focus States */
+.dream-input:focus {
+  outline: none;
+  border-color: var(--dream-primary);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  transform: translateY(-1px);
+  transition: all 0.2s ease-out;
+}
+
+/* Gentle Hover Effects */
+.dream-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Emotional Color Transitions */
+.emotion-joy { transition: all 0.3s ease; }
+.emotion-joy:hover { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+
+.emotion-calm { transition: all 0.3s ease; }
+.emotion-calm:hover { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+
+.emotion-nostalgia { transition: all 0.3s ease; }
+.emotion-nostalgia:hover { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
+
+.emotion-hope { transition: all 0.3s ease; }
+.emotion-hope:hover { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+
+.emotion-anxiety { transition: all 0.3s ease; }
+.emotion-anxiety:hover { background: linear-gradient(135deg, #fee2e2, #fecaca); }
+
+.emotion-loneliness { transition: all 0.3s ease; }
+.emotion-loneliness:hover { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); }
+
+/* Smooth Loading States */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Enhanced Mobile Experience */
+@media (max-width: 768px) {
+  .dream-card {
+    margin: 0.75rem 0;
+    padding: 1rem;
+  }
+  
+  .poetic-separator {
+    margin: 1.5rem 0;
+    font-size: 1rem;
+  }
+  
+  .whisper-card-appear {
+    animation: whisperAppearMobile 0.4s ease-out;
+  }
+  
+  @keyframes whisperAppearMobile {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .whisper-card-appear,
+  .heartbeat-pulse,
+  .whisper-submit-success,
+  .loading-shimmer {
+    animation: none;
+  }
+  
+  .dream-card:hover {
+    transform: none;
+  }
+  
+  .dream-input:focus {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .dream-card {
+    border: 2px solid #000;
+  }
+  
+  .dream-input {
+    border: 2px solid #000;
+  }
+  
+  .poetic-separator::before {
+    color: #000;
+  }
+}

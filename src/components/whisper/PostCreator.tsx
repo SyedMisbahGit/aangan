@@ -384,7 +384,7 @@ const PostCreator: React.FC<PostCreatorProps> = ({ onPost, loading }) => {
                   setToneHint(tone);
                   setLanguageHint(language);
                 }}
-                className="border border-neutral-200 text-base rounded-xl bg-[#fdfdfd] text-neutral-800 placeholder:text-neutral-500 resize-none h-32 mb-2 transition-colors focus:border-green-500 focus:bg-white"
+                className="border border-neutral-300 text-base rounded-xl bg-[#fdfdfd] text-neutral-800 placeholder:text-neutral-500 resize-none h-32 mb-2 transition-all duration-200 ease-in-out focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-300 focus:shadow-sm"
                 maxLength={500}
                 style={{ fontFamily: theme.font, background: theme.card, color: theme.textPrimary }}
                 onFocus={() => {

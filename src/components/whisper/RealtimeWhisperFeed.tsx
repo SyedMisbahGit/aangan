@@ -132,6 +132,20 @@ const RealtimeWhisperFeed: React.FC<RealtimeWhisperFeedProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Ambient Presence Line */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center py-4"
+      >
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-50/50 to-blue-50/50 rounded-full border border-green-200/30">
+          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          <span className="text-sm text-green-700/80 font-medium">
+            Aangan is listening. {totalActiveUsers} hearts are here right now.
+          </span>
+        </div>
+      </motion.div>
+
       {/* Real-time Status Bar */}
       {showRealtimeIndicator && (
         <motion.div
@@ -276,7 +290,6 @@ const RealtimeWhisperFeed: React.FC<RealtimeWhisperFeedProps> = ({
                   variant={index === 0 ? "featured" : "default"}
                   showHotspot={true}
                   showEmotionTag={true}
-                  showRealtimeIndicator={whisper.realTime}
                 />
               </motion.div>
             ))}

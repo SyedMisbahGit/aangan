@@ -147,16 +147,38 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
               onChange={(e) => setContent(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Write your whisper here..."
-              className="dream-input min-h-[120px] resize-none text-neutral-800 placeholder:text-neutral-500 border border-neutral-200 bg-[#fdfdfd] transition-colors focus:border-green-500 focus:bg-white"
+              className="dream-input min-h-[120px] resize-none text-neutral-800 placeholder:text-neutral-500 border border-neutral-300 bg-[#fdfdfd] transition-all duration-200 ease-in-out focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-300 focus:shadow-sm focus:animate-pulse"
               maxLength={maxCharacters}
               onFocus={() => {
-                if (window.visualViewport) {
+                // Add heartbeat pulse effect
+                const textarea = document.querySelector('.dream-input') as HTMLElement;
+                if (textarea) {
+                  textarea.style.boxShadow = '0 0 0 3px rgba(34, 197, 94, 0.1)';
                   setTimeout(() => {
-                    window.scrollTo({
-                      top: document.body.scrollHeight,
-                      behavior: 'smooth',
-                    });
-                  }, 200);
+                    textarea.style.boxShadow = '';
+                  }, 1000);
+                }
+                
+                // Handle mobile keyboard
+                if (window.visualViewport) {
+                  const currentHeight = window.visualViewport.height;
+                  const windowHeight = window.innerHeight;
+                  const keyboardHeight = windowHeight - currentHeight;
+                  
+                  if (keyboardHeight > 150) {
+                    setTimeout(() => {
+                      textarea?.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                      });
+                    }, 300);
+                  }
+                }
+              }}
+              onBlur={() => {
+                const textarea = document.querySelector('.dream-input') as HTMLElement;
+                if (textarea) {
+                  textarea.style.boxShadow = '';
                 }
               }}
             />
