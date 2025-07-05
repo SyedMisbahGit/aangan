@@ -296,6 +296,10 @@ class RealtimeService {
       maxReconnectAttempts: this.maxReconnectAttempts
     };
   }
+
+  getSocket() {
+    return this.socket;
+  }
 }
 
 // Create singleton instance

@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { DreamLayout } from "../components/shared/DreamLayout";
 import { DreamHeader } from "../components/shared/DreamHeader";
+import { Button } from "../components/ui/button";
+import { Shield } from "lucide-react";
+import { PrivacyPromise } from "../components/shared/PrivacyPromise";
 
 const About: React.FC = () => {
+  const [showPrivacyPromise, setShowPrivacyPromise] = useState(false);
+  
   return (
     <DreamLayout>
       <DreamHeader title="About Aangan" subtitle="Yeh aangan tum sab ka hai..." />
@@ -44,8 +49,23 @@ const About: React.FC = () => {
             your emotions are private, and your identity remains yours alone. 
             We believe in the power of honest expression without the burden of recognition.
           </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowPrivacyPromise(true)}
+            className="flex items-center gap-2 mt-3"
+          >
+            <Shield className="w-3 h-3" />
+            Read Full Privacy Promise
+          </Button>
         </motion.div>
       </motion.div>
+
+      {/* Privacy Promise Modal */}
+      <PrivacyPromise 
+        isOpen={showPrivacyPromise} 
+        onClose={() => setShowPrivacyPromise(false)} 
+      />
     </DreamLayout>
   );
 };

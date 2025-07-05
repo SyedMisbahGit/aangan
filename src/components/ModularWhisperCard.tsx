@@ -3,8 +3,10 @@ import { motion } from 'framer-motion';
 import { Heart, MessageCircle, Clock, MapPin, Users } from 'lucide-react';
 import { useCUJHotspots } from '../contexts/CUJHotspotContext';
 import { useShhhNarrator } from '../contexts/ShhhNarratorContext';
+import { useRealtime } from '../contexts/RealtimeContext';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardHeader } from './ui/card';
+import { WhisperReactions } from './whisper/WhisperReactions';
 
 interface Whisper {
   id: string;
@@ -16,6 +18,8 @@ interface Whisper {
   comments: number;
   isAnonymous: boolean;
   author?: string;
+  isAIGenerated?: boolean;
+  echoLabel?: string;
 }
 
 interface ModularWhisperCardProps {
@@ -23,6 +27,8 @@ interface ModularWhisperCardProps {
   variant?: 'default' | 'compact' | 'featured';
   showHotspot?: boolean;
   showEmotionTag?: boolean;
+  showReactions?: boolean;
+  showPresence?: boolean;
   className?: string;
 }
 
@@ -31,10 +37,40 @@ export const ModularWhisperCard: React.FC<ModularWhisperCardProps> = ({
   variant = 'default',
   showHotspot = true,
   showEmotionTag = true,
+  showReactions = true,
+  showPresence = true,
   className = ''
 }) => {
   const { getHotspotById, systemTime, campusActivity } = useCUJHotspots();
   const { narratorState } = useShhhNarrator();
+  const { zoneActivity } = useRealtime();
+  
+  // Generate or get guest ID from localStorage
+  const getGuestId = () => {
+    let guestId = localStorage.getItem('aangan_guest_id');
+    if (!guestId) {
+      guestId = 'guest_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('aangan_guest_id', guestId);
+    }
+    return guestId;
+  };
+
+  // Get presence information for the whisper's zone
+  const getPresenceInfo = () => {
+    const zoneData = zoneActivity.get(whisper.location);
+    if (!zoneData) return null;
+    
+    const activeUsers = zoneData.users;
+    if (activeUsers === 0) return null;
+    
+    if (activeUsers === 1) {
+      return "You whispered in this zone today";
+    } else if (activeUsers <= 5) {
+      return `You + ${activeUsers - 1} others whispered in this zone today`;
+    } else {
+      return `${activeUsers} users are currently active in this zone`;
+    }
+  };
   
   // Real-time context integration
   const hotspot = getHotspotById(whisper.location);
@@ -136,11 +172,35 @@ export const ModularWhisperCard: React.FC<ModularWhisperCardProps> = ({
         </CardHeader>
 
         <CardContent className="pt-0">
-          <p className="text-sm text-inkwell leading-relaxed mb-3">
+          {/* AI Generated Whisper Indicator */}
+          {whisper.isAIGenerated && (
+            <div className="mb-2">
+              <Badge variant="outline" className="text-xs text-gray-500 italic border-gray-300">
+                {whisper.echoLabel || "echo from the courtyard"}
+              </Badge>
+            </div>
+          )}
+          
+          <p className={`text-sm leading-relaxed mb-3 ${whisper.isAIGenerated ? 'text-gray-600 italic' : 'text-inkwell'}`}>
             {whisper.content}
           </p>
 
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          {/* Reactions */}
+          {showReactions && (
+            <WhisperReactions 
+              whisperId={whisper.id} 
+              guestId={getGuestId()} 
+            />
+          )}
+
+          {/* Presence Information */}
+          {showPresence && getPresenceInfo() && (
+            <div className="mt-2 text-xs text-gray-500 italic">
+              {getPresenceInfo()}
+            </div>
+          )}
+
+          <div className="flex items-center justify-between text-xs text-muted-foreground mt-3">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <Heart className="w-3 h-3" />

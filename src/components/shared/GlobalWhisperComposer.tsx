@@ -416,7 +416,7 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
         >
           <Button
             onClick={() => setIsOpen(true)}
-            className="w-14 h-14 rounded-full bg-inkwell hover:bg-inkwell/90 text-paper-light shadow-soft"
+            className="w-14 h-14 rounded-full bg-white text-green-600 shadow-sm border border-neutral-200 hover:bg-green-50 hover:text-green-700 active:bg-green-100 transition-colors"
           >
             <Plus className="w-6 h-6" />
           </Button>

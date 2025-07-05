@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -24,21 +26,23 @@ import {
   Sparkles,
   Mic,
   FileText,
+  Clock,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { ModerationFeedback } from "@/components/ModerationFeedback";
+// import ModerationFeedback from '@/components/ModerationFeedback';
 import { cn } from "@/lib/utils";
 import { theme } from "../../theme";
 
 interface PostCreatorProps {
-  onPost: (content: string, zone: string) => void;
+  onPost: (content: string, zone: string, expiresAt?: boolean) => void;
   loading?: boolean;
 }
 
 interface ModerationResult {
-  flags: string[];
+  action: string;
   confidence: number;
-  suggestions: string[];
+  reason: string;
+  suggestions?: string[];
 }
 
 const zonePlaceholder = [
@@ -66,6 +70,7 @@ const PostCreator: React.FC<PostCreatorProps> = ({ onPost, loading }) => {
   const [isMidnightWindow, setIsMidnightWindow] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [draftLoaded, setDraftLoaded] = useState(false);
+  const [enableExpiry, setEnableExpiry] = useState(false);
   const { toast } = useToast();
 
   // Check midnight window (12 AM - 1 AM)
@@ -305,8 +310,7 @@ const PostCreator: React.FC<PostCreatorProps> = ({ onPost, loading }) => {
       action: "approved",
       confidence: moderation.confidence,
       reason: "Your whisper meets community guidelines",
-      suggestions:
-        moderation.suggestions.length > 0 ? moderation.suggestions : undefined,
+      suggestions: moderation.suggestions.length > 0 ? moderation.suggestions : undefined,
     });
 
     setTimeout(() => {
@@ -326,7 +330,7 @@ const PostCreator: React.FC<PostCreatorProps> = ({ onPost, loading }) => {
       setLanguageHint("");
       setIsSubmitting(false);
       setDraftLoaded(false);
-      onPost(content, zone);
+      onPost(content, zone, enableExpiry);
     }, 1500);
   };
 
@@ -380,9 +384,19 @@ const PostCreator: React.FC<PostCreatorProps> = ({ onPost, loading }) => {
                   setToneHint(tone);
                   setLanguageHint(language);
                 }}
-                className="border border-[#ececec] text-base rounded-xl bg-white text-[#2d2d2d] placeholder:text-[#6b6b6b] resize-none h-32 mb-2"
+                className="border border-neutral-200 text-base rounded-xl bg-[#fdfdfd] text-neutral-800 placeholder:text-neutral-500 resize-none h-32 mb-2 transition-colors focus:border-green-500 focus:bg-white"
                 maxLength={500}
                 style={{ fontFamily: theme.font, background: theme.card, color: theme.textPrimary }}
+                onFocus={() => {
+                  if (window.visualViewport) {
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: document.body.scrollHeight,
+                        behavior: 'smooth',
+                      });
+                    }, 200);
+                  }
+                }}
               />
 
               {/* Character Count & Context Detection */}
@@ -429,6 +443,21 @@ const PostCreator: React.FC<PostCreatorProps> = ({ onPost, loading }) => {
                 {zoneHint}
               </div>
 
+              {/* Expiry Toggle */}
+              <div className="flex items-center justify-between p-3 bg-[#f8f5f1] rounded-xl mb-2">
+                <div className="flex items-center space-x-2">
+                  <Clock className="h-4 w-4" style={{ color: theme.accent }} />
+                  <Label htmlFor="expiry-toggle" className="text-sm" style={{ color: theme.textPrimary }}>
+                    Auto-expire after 24 hours
+                  </Label>
+                </div>
+                <Switch
+                  id="expiry-toggle"
+                  checked={enableExpiry}
+                  onCheckedChange={setEnableExpiry}
+                />
+              </div>
+
               {/* Submit Button */}
               <Button
                 onClick={handleSubmit}
@@ -449,9 +478,9 @@ const PostCreator: React.FC<PostCreatorProps> = ({ onPost, loading }) => {
               </div>
 
               {/* Moderation Feedback */}
-              {moderationResult && (
+              {/* {moderationResult && (
                 <ModerationFeedback moderationResult={moderationResult} />
-              )}
+              )} */}
             </div>
           </motion.div>
         </motion.div>

@@ -21,6 +21,9 @@ interface RealtimeContextType {
   emotionPulse: Map<string, { count: number; lastPulse: string }>;
   totalActiveUsers: number;
   
+  // Socket instance
+  socket: any;
+  
   // Actions
   joinZone: (zone: string) => void;
   leaveZone: (zone: string) => void;
@@ -151,6 +154,7 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({ children }) 
     zoneActivity,
     emotionPulse,
     totalActiveUsers,
+    socket: realtimeService.getSocket(),
     joinZone: realtimeService.joinZone.bind(realtimeService),
     leaveZone: realtimeService.leaveZone.bind(realtimeService),
     sendEmotionPulse: realtimeService.sendEmotionPulse.bind(realtimeService),

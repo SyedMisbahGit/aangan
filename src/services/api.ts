@@ -13,12 +13,17 @@ export interface Whisper {
   replies: number;
   timestamp: string;
   created_at: string;
+  is_ai_generated?: boolean;
+  isAIGenerated?: boolean;
+  echoLabel?: string;
+  expires_at?: string;
 }
 
 export interface CreateWhisperData {
   content: string;
   emotion: "joy" | "nostalgia" | "calm" | "anxiety" | "hope" | "love";
   zone: string;
+  expiresAt?: string;
 }
 
 export interface AnalyticsData {
@@ -81,6 +86,22 @@ export const createWhisper = async (
     body: JSON.stringify(data),
   });
   return response;
+};
+
+export const createWhisperWithExpiry = async (
+  content: string,
+  emotion: string,
+  zone: string,
+  expiresAt?: boolean,
+): Promise<Whisper> => {
+  const data: CreateWhisperData = {
+    content,
+    emotion: emotion as any,
+    zone,
+    ...(expiresAt && { expiresAt: new Date().toISOString() })
+  };
+  
+  return createWhisper(data);
 };
 
 // Analytics API functions (admin only)
@@ -176,6 +197,11 @@ export const useCreateWhisper = () => {
       if (typeof window !== 'undefined' && (window as any).realtimeService) {
         (window as any).realtimeService.broadcastWhisper(newWhisper);
       }
+      
+      // Dispatch whisper created event for milestones
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('whisper-created'));
+      }
     },
   });
 };
@@ -252,5 +278,55 @@ export const useHealthCheck = () => {
     queryFn: checkHealth,
     staleTime: 60000, // 1 minute
     refetchInterval: 300000, // 5 minutes
+  });
+};
+
+// Reaction API functions
+export const reactToWhisper = async (
+  whisperId: string,
+  reactionType: string,
+  guestId: string
+): Promise<{
+  whisperId: string;
+  reactions: Record<string, number>;
+  guestId: string;
+  reactionType: string;
+  action: 'added' | 'removed';
+}> => {
+  const response = await apiRequest(`/whispers/${whisperId}/react`, {
+    method: "POST",
+    body: JSON.stringify({ reactionType, guestId }),
+  });
+  return response;
+};
+
+export const getWhisperReactions = async (whisperId: string): Promise<{
+  whisperId: string;
+  reactions: Record<string, number>;
+}> => {
+  return apiRequest(`/whispers/${whisperId}/reactions`);
+};
+
+export const useWhisperReactions = (whisperId: string) => {
+  return useQuery({
+    queryKey: ["whisper-reactions", whisperId],
+    queryFn: () => getWhisperReactions(whisperId),
+    enabled: !!whisperId,
+  });
+};
+
+export const useReactToWhisper = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ whisperId, reactionType, guestId }: {
+      whisperId: string;
+      reactionType: string;
+      guestId: string;
+    }) => reactToWhisper(whisperId, reactionType, guestId),
+    onSuccess: (data) => {
+      // Invalidate reactions for this whisper
+      queryClient.invalidateQueries({ queryKey: ["whisper-reactions", data.whisperId] });
+    },
   });
 };

@@ -55,7 +55,11 @@ export const DreamNavigation = () => {
         >
           {({ isActive }) => (
             <>
-              <item.icon className="w-12 h-12" strokeWidth={1.7} />
+              {item.path === "/create" ? (
+                <item.icon className="w-12 h-12 text-green-600 shadow-sm" strokeWidth={2} />
+              ) : (
+                <item.icon className="w-12 h-12" strokeWidth={1.7} />
+              )}
               <span className={cn(
                 "text-[12px] tracking-wide transition-all duration-200",
                 isActive ? "font-medium" : "font-normal"

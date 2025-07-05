@@ -442,15 +442,21 @@ body {
 }
 
 input, textarea, .search-bar {
-  color: #111;
-  background: #fff;
-  border: 1px solid #e8e4e0;
+  border: 1px solid #e5e7eb;
+  background: #fdfdfd;
+  color: #262626;
+  transition: border-color 0.2s, background 0.2s;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
   font-size: 1rem;
   line-height: 1.5;
 }
+input:focus, textarea:focus, .search-bar:focus {
+  border-color: #22c55e;
+  background: #fff;
+  outline: none;
+}
 input::placeholder, textarea::placeholder, .search-bar::placeholder {
-  color: #a3a3a3;
+  color: #6b7280;
   opacity: 1;
 }

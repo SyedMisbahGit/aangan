@@ -147,8 +147,18 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
               onChange={(e) => setContent(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Write your whisper here..."
-              className="dream-input min-h-[120px] resize-none text-dream-text-primary placeholder-dream-text-muted"
+              className="dream-input min-h-[120px] resize-none text-neutral-800 placeholder:text-neutral-500 border border-neutral-200 bg-[#fdfdfd] transition-colors focus:border-green-500 focus:bg-white"
               maxLength={maxCharacters}
+              onFocus={() => {
+                if (window.visualViewport) {
+                  setTimeout(() => {
+                    window.scrollTo({
+                      top: document.body.scrollHeight,
+                      behavior: 'smooth',
+                    });
+                  }, 200);
+                }
+              }}
             />
             
             {/* Character Count */}

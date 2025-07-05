@@ -111,6 +111,18 @@ const cleanupOldData = () => {
 // Run cleanup every 15 minutes
 setInterval(cleanupOldData, 15 * 60 * 1000);
 
+// Cleanup expired whispers every 12 hours
+setInterval(async () => {
+  try {
+    const result = await db.run("DELETE FROM whispers WHERE expires_at IS NOT NULL AND expires_at <= datetime('now')");
+    if (result.changes > 0) {
+      console.log(`🧹 Cleaned up ${result.changes} expired whispers`);
+    }
+  } catch (error) {
+    console.error('Error cleaning up expired whispers:', error);
+  }
+}, 12 * 60 * 60 * 1000); // 12 hours
+
 async function initializeDatabase() {
   try {
     const DB_PATH = process.env.DB_PATH || join(__dirname, "whispers.db");
@@ -136,8 +148,20 @@ async function initializeDatabase() {
       zone TEXT NOT NULL,
       likes INTEGER DEFAULT 0,
       replies INTEGER DEFAULT 0,
+      is_ai_generated BOOLEAN DEFAULT 0,
+      expires_at DATETIME,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS whisper_reactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      whisper_id TEXT NOT NULL,
+      guest_id TEXT NOT NULL,
+      reaction_type TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(whisper_id, guest_id, reaction_type),
+      FOREIGN KEY (whisper_id) REFERENCES whispers(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS admin_users (
@@ -195,6 +219,87 @@ async function initializeDatabase() {
 
   console.log("✅ Database initialized successfully");
 }
+
+// Ambient Whisper System
+let lastWhisperTime = new Date();
+let ambientWhisperInterval = null;
+let isAmbientSystemActive = false;
+
+const startAmbientWhisperSystem = () => {
+  if (isAmbientSystemActive) return;
+  
+  isAmbientSystemActive = true;
+  console.log("🤖 Ambient whisper system activated");
+  
+  ambientWhisperInterval = setInterval(async () => {
+    try {
+      const now = new Date();
+      const timeSinceLastWhisper = now.getTime() - lastWhisperTime.getTime();
+      const fiveMinutes = 5 * 60 * 1000; // 5 minutes
+      
+      // Check if feed has been silent for 5+ minutes
+      if (timeSinceLastWhisper >= fiveMinutes) {
+        console.log("🔇 Feed silent for 5+ minutes, generating ambient whisper...");
+        
+        // Get current zone activity to determine which zones are active
+        const activeZones = Array.from(zoneActivity.entries())
+          .filter(([zone, activity]) => activity.users > 0)
+          .map(([zone]) => zone);
+        
+        if (activeZones.length === 0) {
+          // If no specific zones are active, use a default zone
+          activeZones.push('tapri');
+        }
+        
+        // Generate 1-2 ambient whispers
+        const whisperCount = Math.random() < 0.5 ? 1 : 2;
+        
+        for (let i = 0; i < whisperCount; i++) {
+          const zone = activeZones[Math.floor(Math.random() * activeZones.length)];
+          const emotions = ['calm', 'nostalgia', 'hope', 'joy'];
+          const emotion = emotions[Math.floor(Math.random() * emotions.length)];
+          
+          // Call the AI generation endpoint
+          const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:3001'}/api/ai/generate-whisper`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              zone,
+              emotion,
+              context: 'ambient'
+            })
+          });
+          
+          if (response.ok) {
+            const whisper = await response.json();
+            console.log(`🤖 Ambient whisper generated: ${whisper.id} in ${zone}`);
+            
+            // Add a small delay between whispers
+            if (i < whisperCount - 1) {
+              await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+          }
+        }
+        
+        // Update last whisper time to prevent immediate regeneration
+        lastWhisperTime = new Date();
+      }
+    } catch (error) {
+      console.error("❌ Error in ambient whisper system:", error);
+    }
+  }, 3 * 60 * 1000); // Check every 3 minutes
+};
+
+const stopAmbientWhisperSystem = () => {
+  if (ambientWhisperInterval) {
+    clearInterval(ambientWhisperInterval);
+    ambientWhisperInterval = null;
+  }
+  isAmbientSystemActive = false;
+  console.log("🤖 Ambient whisper system deactivated");
+};
 
 // Middleware
 app.use(
@@ -342,20 +447,18 @@ app.get("/api/whispers", async (req, res) => {
   try {
     const { zone, emotion, limit = 50, offset = 0 } = req.query;
 
-    let query = "SELECT * FROM whispers";
+    let query = "SELECT * FROM whispers WHERE (expires_at IS NULL OR expires_at > datetime('now'))";
     let params = [];
 
     if (zone || emotion) {
-      const conditions = [];
       if (zone) {
-        conditions.push("zone = ?");
+        query += " AND zone = ?";
         params.push(zone);
       }
       if (emotion) {
-        conditions.push("emotion = ?");
+        query += " AND emotion = ?";
         params.push(emotion);
       }
-      query += " WHERE " + conditions.join(" AND ");
     }
 
     query += " ORDER BY created_at DESC LIMIT ? OFFSET ?";
@@ -378,7 +481,7 @@ app.get("/api/whispers", async (req, res) => {
 
 app.post("/api/whispers", whisperLimiter, async (req, res) => {
   try {
-    const { content, emotion, zone } = req.body;
+    const { content, emotion, zone, expiresAt } = req.body;
 
     if (!content || !emotion || !zone) {
       return res
@@ -397,9 +500,18 @@ app.post("/api/whispers", whisperLimiter, async (req, res) => {
     }
 
     const id = uuidv4();
+    
+    // Handle expiry
+    let expiryValue = null;
+    if (expiresAt) {
+      const expiryDate = new Date();
+      expiryDate.setHours(expiryDate.getHours() + 24); // 24 hours from now
+      expiryValue = expiryDate.toISOString();
+    }
+    
     await db.run(
-      "INSERT INTO whispers (id, content, emotion, zone) VALUES (?, ?, ?, ?)",
-      [id, content, emotion, zone],
+      "INSERT INTO whispers (id, content, emotion, zone, expires_at) VALUES (?, ?, ?, ?, ?)",
+      [id, content, emotion, zone, expiryValue],
     );
 
     const whisper = await db.get("SELECT * FROM whispers WHERE id = ?", [id]);
@@ -434,10 +546,244 @@ app.post("/api/whispers", whisperLimiter, async (req, res) => {
 
     console.log(`📝 New whisper created and broadcast: ${id} in zone ${zone} with emotion ${emotion}`);
 
+    // Update last whisper time for ambient system
+    lastWhisperTime = new Date();
+    
+    // Start ambient system if not already active
+    if (!isAmbientSystemActive) {
+      startAmbientWhisperSystem();
+    }
+
     res.status(201).json(whisper);
   } catch (error) {
     console.error("Error creating whisper:", error);
     res.status(500).json({ error: "Failed to create whisper" });
+  }
+});
+
+// AI Whisper Generation Endpoint
+app.post("/api/ai/generate-whisper", async (req, res) => {
+  try {
+    const { zone, emotion, context } = req.body;
+    
+    // Validate inputs
+    if (!zone || !emotion) {
+      return res.status(400).json({ error: "Zone and emotion are required" });
+    }
+
+    // AI-generated whisper content based on emotion and zone
+    const whisperTemplates = {
+      joy: [
+        "The courtyard feels alive today. Every step brings a new discovery.",
+        "Laughter echoes through the campus, and it's contagious.",
+        "There's something magical about finding joy in the smallest moments.",
+        "The energy here is electric - can you feel it too?",
+        "Today feels like everything is falling into place."
+      ],
+      nostalgia: [
+        "Walking these paths brings back memories I didn't know I had.",
+        "The old buildings hold stories of generations past.",
+        "Sometimes I miss the way things used to be, simpler times.",
+        "The courtyard has seen so many dreams come and go.",
+        "There's comfort in the familiar corners of this place."
+      ],
+      calm: [
+        "The quiet moments here are my favorite. Everything slows down.",
+        "There's peace in the rhythm of campus life.",
+        "The gentle breeze carries away all the noise.",
+        "In this space, I find my center again.",
+        "The world feels softer here, more manageable."
+      ],
+      anxiety: [
+        "The weight of expectations feels heavy today.",
+        "Sometimes I wonder if I'm doing enough, being enough.",
+        "The future feels uncertain, but maybe that's okay.",
+        "There's comfort in knowing others feel this way too.",
+        "One breath at a time, one step at a time."
+      ],
+      hope: [
+        "Tomorrow holds possibilities I can't even imagine yet.",
+        "Every challenge is just a stepping stone to something better.",
+        "The light at the end of the tunnel is getting brighter.",
+        "I believe in the person I'm becoming.",
+        "Small victories add up to big changes."
+      ],
+      love: [
+        "The connections we make here last a lifetime.",
+        "Love comes in many forms - friendship, passion, self-discovery.",
+        "This place has taught me what it means to care deeply.",
+        "The heart finds its way, even in the most unexpected places.",
+        "Love grows in the spaces between words and glances."
+      ]
+    };
+
+    // Zone-specific modifiers
+    const zoneModifiers = {
+      tapri: "Over chai and conversation, ",
+      library: "Between the pages and silence, ",
+      hostel: "In the comfort of shared spaces, ",
+      canteen: "Amidst the clatter of plates and laughter, ",
+      auditorium: "Under the weight of dreams and aspirations, ",
+      quad: "In the open air of possibility, "
+    };
+
+    const templates = whisperTemplates[emotion] || whisperTemplates.calm;
+    const baseContent = templates[Math.floor(Math.random() * templates.length)];
+    const modifier = zoneModifiers[zone] || "";
+    
+    const content = modifier + baseContent.toLowerCase();
+
+    const id = uuidv4();
+    await db.run(
+      "INSERT INTO whispers (id, content, emotion, zone, is_ai_generated) VALUES (?, ?, ?, ?, ?)",
+      [id, content, emotion, zone, 1],
+    );
+
+    const whisper = await db.get("SELECT * FROM whispers WHERE id = ?", [id]);
+    whisper.timestamp = formatTimestamp(whisper.created_at);
+
+    // Emit real-time whisper event with AI indicator
+    io.emit('new-whisper', {
+      ...whisper,
+      timestamp: formatTimestamp(whisper.created_at),
+      realTime: true,
+      isAIGenerated: true,
+      echoLabel: "echo from the courtyard"
+    });
+
+    // Emit zone-specific whisper event
+    io.to(`zone-${zone}`).emit('zone-whisper', {
+      ...whisper,
+      timestamp: formatTimestamp(whisper.created_at),
+      realTime: true,
+      isAIGenerated: true,
+      echoLabel: "echo from the courtyard"
+    });
+
+    console.log(`🤖 AI whisper generated: ${id} in zone ${zone} with emotion ${emotion}`);
+
+    res.status(201).json({
+      ...whisper,
+      isAIGenerated: true,
+      echoLabel: "echo from the courtyard"
+    });
+  } catch (error) {
+    console.error("Error generating AI whisper:", error);
+    res.status(500).json({ error: "Failed to generate AI whisper" });
+  }
+});
+
+// Whisper Reaction Endpoint
+app.post("/api/whispers/:id/react", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reactionType, guestId } = req.body;
+    
+    // Validate inputs
+    if (!reactionType || !guestId) {
+      return res.status(400).json({ error: "Reaction type and guest ID are required" });
+    }
+    
+    // Validate reaction type
+    const validReactions = ['❤️', '😢', '😮', '🙌'];
+    if (!validReactions.includes(reactionType)) {
+      return res.status(400).json({ error: "Invalid reaction type" });
+    }
+    
+    // Check if whisper exists
+    const whisper = await db.get("SELECT * FROM whispers WHERE id = ?", [id]);
+    if (!whisper) {
+      return res.status(404).json({ error: "Whisper not found" });
+    }
+    
+    // Check if user already reacted with this type
+    const existingReaction = await db.get(
+      "SELECT * FROM whisper_reactions WHERE whisper_id = ? AND guest_id = ? AND reaction_type = ?",
+      [id, guestId, reactionType]
+    );
+    
+    if (existingReaction) {
+      // Remove reaction (toggle off)
+      await db.run(
+        "DELETE FROM whisper_reactions WHERE whisper_id = ? AND guest_id = ? AND reaction_type = ?",
+        [id, guestId, reactionType]
+      );
+      
+      console.log(`🗑️ Reaction removed: ${reactionType} on whisper ${id} by guest ${guestId}`);
+    } else {
+      // Add reaction
+      await db.run(
+        "INSERT INTO whisper_reactions (whisper_id, guest_id, reaction_type) VALUES (?, ?, ?)",
+        [id, guestId, reactionType]
+      );
+      
+      console.log(`💫 Reaction added: ${reactionType} on whisper ${id} by guest ${guestId}`);
+    }
+    
+    // Get updated reaction counts
+    const reactions = await db.all(
+      "SELECT reaction_type, COUNT(*) as count FROM whisper_reactions WHERE whisper_id = ? GROUP BY reaction_type",
+      [id]
+    );
+    
+    const reactionCounts = {
+      '❤️': 0,
+      '😢': 0,
+      '😮': 0,
+      '🙌': 0
+    };
+    
+    reactions.forEach(reaction => {
+      reactionCounts[reaction.reaction_type] = reaction.count;
+    });
+    
+    // Emit real-time reaction update
+    io.emit('whisper-reaction-update', {
+      whisperId: id,
+      reactions: reactionCounts,
+      guestId,
+      reactionType,
+      action: existingReaction ? 'removed' : 'added'
+    });
+    
+    res.json({
+      whisperId: id,
+      reactions: reactionCounts,
+      guestId,
+      reactionType,
+      action: existingReaction ? 'removed' : 'added'
+    });
+  } catch (error) {
+    console.error("Error handling whisper reaction:", error);
+    res.status(500).json({ error: "Failed to handle reaction" });
+  }
+});
+
+// Get whisper reactions
+app.get("/api/whispers/:id/reactions", async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const reactions = await db.all(
+      "SELECT reaction_type, COUNT(*) as count FROM whisper_reactions WHERE whisper_id = ? GROUP BY reaction_type",
+      [id]
+    );
+    
+    const reactionCounts = {
+      '❤️': 0,
+      '😢': 0,
+      '😮': 0,
+      '🙌': 0
+    };
+    
+    reactions.forEach(reaction => {
+      reactionCounts[reaction.reaction_type] = reaction.count;
+    });
+    
+    res.json({ whisperId: id, reactions: reactionCounts });
+  } catch (error) {
+    console.error("Error fetching whisper reactions:", error);
+    res.status(500).json({ error: "Failed to fetch reactions" });
   }
 });
 

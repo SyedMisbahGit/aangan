@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge";
 import { Progress } from "../components/ui/progress";
 import { Avatar, AvatarFallback } from "../components/ui/avatar";
+import { Button } from "../components/ui/button";
 import { 
   Heart, 
   MessageCircle, 
@@ -17,11 +18,14 @@ import {
   BookOpen,
   Users,
   Target,
-  Award
+  Award,
+  Shield
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { PrivacyPromise } from "../components/shared/PrivacyPromise";
 
 const Profile: React.FC = () => {
+  const [showPrivacyPromise, setShowPrivacyPromise] = useState(false);
   const [stats] = useState({
     whispersShared: 47,
     heartsReceived: 128,
@@ -324,7 +328,7 @@ const Profile: React.FC = () => {
           </Card>
         </motion.div>
 
-        {/* Poetic Quote */}
+        {/* Privacy & About Links */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -334,7 +338,16 @@ const Profile: React.FC = () => {
           <div className="text-sm text-neutral-500 italic">
             "Har Aangan apne nishaan sambhaal ke rakhta hai."
           </div>
-          <div>
+          <div className="flex items-center justify-center gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowPrivacyPromise(true)}
+              className="flex items-center gap-2 text-xs"
+            >
+              <Shield className="w-3 h-3" />
+              Privacy Promise
+            </Button>
             <a 
               href="/about" 
               className="text-xs text-green-600 hover:text-green-700 underline transition-colors"
@@ -344,6 +357,12 @@ const Profile: React.FC = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Privacy Promise Modal */}
+      <PrivacyPromise 
+        isOpen={showPrivacyPromise} 
+        onClose={() => setShowPrivacyPromise(false)} 
+      />
     </DreamLayout>
 );
 };
