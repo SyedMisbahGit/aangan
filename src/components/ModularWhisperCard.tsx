@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, MessageCircle, Clock, MapPin, Users } from 'lucide-react';
 import { useCUJHotspots } from '../contexts/CUJHotspotContext';
@@ -7,6 +7,7 @@ import { useRealtime } from '../contexts/RealtimeContext';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { WhisperReactions } from './whisper/WhisperReactions';
+import WhisperComments from './whisper/WhisperComments';
 
 interface Whisper {
   id: string;
@@ -41,6 +42,7 @@ export const ModularWhisperCard: React.FC<ModularWhisperCardProps> = ({
   showPresence = true,
   className = ''
 }) => {
+  const [commentsOpen, setCommentsOpen] = useState(false);
   const { getHotspotById, systemTime, campusActivity } = useCUJHotspots();
   const { narratorState } = useShhhNarrator();
   const { zoneActivity } = useRealtime();
@@ -206,10 +208,13 @@ export const ModularWhisperCard: React.FC<ModularWhisperCardProps> = ({
                 <Heart className="w-3 h-3" />
                 {whisper.likes}
               </div>
-              <div className="flex items-center gap-1">
+              <button
+                onClick={() => setCommentsOpen(!commentsOpen)}
+                className="flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer"
+              >
                 <MessageCircle className="w-3 h-3" />
                 {whisper.comments}
-              </div>
+              </button>
             </div>
             
             {!whisper.isAnonymous && whisper.author && (
@@ -220,6 +225,15 @@ export const ModularWhisperCard: React.FC<ModularWhisperCardProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Comments Section */}
+      <WhisperComments
+        whisperId={whisper.id}
+        guestId={getGuestId()}
+        isOpen={commentsOpen}
+        onToggle={() => setCommentsOpen(!commentsOpen)}
+        commentCount={whisper.comments}
+      />
     </motion.div>
   );
 }; 

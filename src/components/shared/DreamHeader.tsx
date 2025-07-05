@@ -13,12 +13,55 @@ interface DreamHeaderProps {
 }
 
 const overflowMenuItems = [
-  { path: "/capsules", icon: Calendar, label: "Capsules" },
-  { path: "/compass", icon: Compass, label: "Compass" },
-  { path: "/constellation", icon: Star, label: "Constellation" },
-  { path: "/murmurs", icon: MessageCircle, label: "Murmurs" },
-  { path: "/about", icon: Package, label: "About Aangan" },
-  { path: "/admin", icon: Package, label: "Admin" },
+  { 
+    path: "/capsules", 
+    icon: Calendar, 
+    label: "Capsules",
+    description: "Messages from the past",
+    category: "explore"
+  },
+  { 
+    path: "/compass", 
+    icon: Compass, 
+    label: "Compass",
+    description: "Navigate your feelings",
+    category: "explore"
+  },
+  { 
+    path: "/constellation", 
+    icon: Star, 
+    label: "Constellation",
+    description: "Connect with kindred spirits",
+    category: "explore"
+  },
+  { 
+    path: "/murmurs", 
+    icon: MessageCircle, 
+    label: "Murmurs",
+    description: "Campus conversations",
+    category: "explore"
+  },
+  { 
+    path: "/about", 
+    icon: Package, 
+    label: "About Aangan",
+    description: "Our story and mission",
+    category: "info"
+  },
+  { 
+    path: "/privacy", 
+    icon: Package, 
+    label: "Privacy Promise",
+    description: "Your safety matters",
+    category: "info"
+  },
+  { 
+    path: "/admin", 
+    icon: Package, 
+    label: "Admin",
+    description: "Guardian tools",
+    category: "admin"
+  },
 ];
 
 // Poetic subtitles for each route
@@ -137,22 +180,87 @@ export const DreamHeader: React.FC<DreamHeaderProps> = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 top-full mt-2 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg py-2 z-50"
+              className="absolute right-0 top-full mt-2 w-64 bg-white border border-neutral-200 rounded-lg shadow-lg py-2 z-50"
             >
-              {overflowMenuItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-2 text-sm hover:bg-green-50 transition-colors",
-                    isActive(item.path) ? "bg-green-50 text-green-600" : "text-neutral-700"
-                  )}
-                >
-                  <item.icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
+              {/* Explore Section */}
+              <div className="px-3 py-2">
+                <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">
+                  Explore
+                </h3>
+                {overflowMenuItems
+                  .filter(item => item.category === 'explore')
+                  .map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setIsMenuOpen(false)}
+                      className={cn(
+                        "flex items-start gap-3 px-3 py-2 text-sm hover:bg-green-50 transition-colors rounded-md",
+                        isActive(item.path) ? "bg-green-50 text-green-600" : "text-neutral-700"
+                      )}
+                    >
+                      <item.icon className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">{item.label}</span>
+                        <p className="text-xs text-neutral-500 mt-0.5">{item.description}</p>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+
+              {/* Info Section */}
+              <div className="border-t border-neutral-100 px-3 py-2">
+                <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">
+                  About
+                </h3>
+                {overflowMenuItems
+                  .filter(item => item.category === 'info')
+                  .map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setIsMenuOpen(false)}
+                      className={cn(
+                        "flex items-start gap-3 px-3 py-2 text-sm hover:bg-blue-50 transition-colors rounded-md",
+                        isActive(item.path) ? "bg-blue-50 text-blue-600" : "text-neutral-700"
+                      )}
+                    >
+                      <item.icon className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium">{item.label}</span>
+                        <p className="text-xs text-neutral-500 mt-0.5">{item.description}</p>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+
+              {/* Admin Section */}
+              {overflowMenuItems.some(item => item.category === 'admin') && (
+                <div className="border-t border-neutral-100 px-3 py-2">
+                  <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">
+                    Admin
+                  </h3>
+                  {overflowMenuItems
+                    .filter(item => item.category === 'admin')
+                    .map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setIsMenuOpen(false)}
+                        className={cn(
+                          "flex items-start gap-3 px-3 py-2 text-sm hover:bg-red-50 transition-colors rounded-md",
+                          isActive(item.path) ? "bg-red-50 text-red-600" : "text-neutral-700"
+                        )}
+                      >
+                        <item.icon className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <span className="font-medium">{item.label}</span>
+                          <p className="text-xs text-neutral-500 mt-0.5">{item.description}</p>
+                        </div>
+                      </Link>
+                    ))}
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

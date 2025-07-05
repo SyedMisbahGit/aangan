@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import {
   Sparkles,
   BookOpen,
 } from "lucide-react";
+import WhisperComments from "./WhisperComments";
 
 interface DreamWhisper {
   id: string;
@@ -30,6 +31,7 @@ interface DreamWhisperCardProps {
   index: number;
   onLike?: (id: string) => void;
   onReply?: (id: string) => void;
+  guestId?: string;
 }
 
 const emotionConfig = {
@@ -86,7 +88,9 @@ export const DreamWhisperCard: React.FC<DreamWhisperCardProps> = ({
   index,
   onLike,
   onReply,
+  guestId,
 }) => {
+  const [commentsOpen, setCommentsOpen] = useState(false);
   const emotion = emotionConfig[whisper.emotion];
   const isSummerSoul = whisper.tags?.includes('#summerSoul25');
 
@@ -177,7 +181,7 @@ export const DreamWhisperCard: React.FC<DreamWhisperCardProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onReply?.(whisper.id)}
+            onClick={() => setCommentsOpen(!commentsOpen)}
             className="text-dream-text-secondary hover:text-dream-primary hover:bg-dream-primary/5 transition-colors"
           >
             <MessageCircle className="h-4 w-4 mr-2" />
@@ -194,6 +198,17 @@ export const DreamWhisperCard: React.FC<DreamWhisperCardProps> = ({
           </span>
         </div>
       </div>
+
+      {/* Comments Section */}
+      {guestId && (
+        <WhisperComments
+          whisperId={whisper.id}
+          guestId={guestId}
+          isOpen={commentsOpen}
+          onToggle={() => setCommentsOpen(!commentsOpen)}
+          commentCount={whisper.replies}
+        />
+      )}
     </motion.div>
   );
 }; 

@@ -73,7 +73,20 @@ const Diary: React.FC = () => {
     "Share a moment that challenged you...",
     "What's a dream or hope you're holding close?",
     "Describe a sound, smell, or texture that caught your attention...",
-    "What's something you'd like to remember about today?"
+    "What's something you'd like to remember about today?",
+    "Write about something you want to forget...",
+    "What's a secret you're keeping from everyone?",
+    "Describe a moment when you felt truly seen...",
+    "What's a fear you're learning to face?",
+    "Share a memory that makes you smile...",
+    "What's something you're proud of but haven't told anyone?",
+    "Describe a moment of pure contentment...",
+    "What's a lesson life is teaching you right now?",
+    "Share something that made you feel less alone...",
+    "What's a dream you're afraid to admit you have?",
+    "Describe a moment when you felt brave...",
+    "What's something you're letting go of?",
+    "Share a moment that changed your perspective..."
   ];
 
   // Sample diary entries
