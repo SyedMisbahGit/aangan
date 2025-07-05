@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     proxy: {
-      '/api': 'http://localhost:3001',
+      '/api': 'https://aangan-production.up.railway.app',
     },
   },
   plugins: [

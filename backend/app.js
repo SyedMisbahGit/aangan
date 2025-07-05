@@ -24,6 +24,10 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Debug: Log the actual PORT value
+console.log(`🔧 PORT environment variable: ${process.env.PORT || 'not set'}`);
+console.log(`🔧 Using port: ${PORT}`);
+
 // Database setup
 let db;
 
