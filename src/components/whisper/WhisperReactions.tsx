@@ -83,38 +83,40 @@ export const WhisperReactions: React.FC<WhisperReactionsProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-2 mt-3">
-      {REACTION_TYPES.map((reaction) => {
-        const count = localReactions[reaction] || 0;
-        const isUserReacted = userReactions.has(reaction);
-        
-        return (
-          <motion.div
-            key={reaction}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`h-8 px-2 text-sm transition-all duration-200 ${
-                isUserReacted 
-                  ? 'bg-red-50 text-red-600 border border-red-200' 
-                  : 'hover:bg-gray-50'
-              }`}
-              onClick={() => handleReaction(reaction)}
-              disabled={reactMutation.isPending}
+    <div className="mt-3 pt-3 border-t border-neutral-200/50 bg-[#f9f9f9] rounded-b-xl -mx-4 -mb-4 px-4 pb-4">
+      <div className="flex items-center gap-2">
+        {REACTION_TYPES.map((reaction) => {
+          const count = localReactions[reaction] || 0;
+          const isUserReacted = userReactions.has(reaction);
+          
+          return (
+            <motion.div
+              key={reaction}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <span className="mr-1">{reaction}</span>
-              {count > 0 && (
-                <span className="text-xs font-medium">
-                  {count}
-                </span>
-              )}
-            </Button>
-          </motion.div>
-        );
-      })}
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`h-8 px-3 text-sm transition-all duration-200 ${
+                  isUserReacted 
+                    ? 'bg-red-50 text-red-600 border border-red-200 shadow-sm' 
+                    : 'hover:bg-white/80 hover:border-neutral-300'
+                }`}
+                onClick={() => handleReaction(reaction)}
+                disabled={reactMutation.isPending}
+              >
+                <span className="mr-1">{reaction}</span>
+                {count > 0 && (
+                  <span className="text-xs font-medium">
+                    {count}
+                  </span>
+                )}
+              </Button>
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 }; 

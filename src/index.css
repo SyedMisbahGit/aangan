@@ -16,7 +16,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f9f7f4;
-  color: #111;
+  color: #374151;
+  font-size: 16px;
 }
 
 /* Dream Pages Theme Variables */
@@ -124,15 +125,16 @@ body {
 
 /* Dream Text Styles */
 .dream-text-primary {
-  color: var(--dream-text-primary);
+  color: #1f2937;
+  font-weight: 500;
 }
 
 .dream-text-secondary {
-  color: var(--dream-text-secondary);
+  color: #4b5563;
 }
 
 .dream-text-muted {
-  color: var(--dream-text-muted);
+  color: #6b7280;
 }
 
 .dream-text-accent {
@@ -141,12 +143,14 @@ body {
 
 /* Dream Input Styles */
 .dream-input {
-  background: #fff;
-  border: 1px solid #e8e4e0;
+  background: #fdfdfd;
+  border: 1px solid #d1d5db;
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
-  color: #111;
+  color: #1f2937;
   transition: all 0.3s ease;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .dream-input:focus {
@@ -157,9 +161,9 @@ body {
 
 /* Dream Badge Styles */
 .dream-badge {
-  background: var(--dream-surface);
-  color: var(--dream-text-secondary);
-  border: 1px solid var(--dream-border);
+  background: #f9fafb;
+  color: #374151;
+  border: 1px solid #e5e7eb;
   border-radius: 9999px;
   padding: 0.25rem 0.75rem;
   font-size: 0.875rem;
@@ -236,6 +240,15 @@ body {
 .dream-header {
   text-align: center;
   margin-bottom: 2rem;
+  background: #fafaf9;
+  color: #1f2937;
+}
+
+.dream-header h1,
+.dream-header h2,
+.dream-header h3 {
+  color: #1f2937;
+  font-weight: 600;
 }
 
 .dream-title {
@@ -297,9 +310,10 @@ body {
   width: 3rem;
   height: 3rem;
   border-radius: 1.5rem;
-  color: var(--dream-text-secondary);
+  color: #4b5563;
   transition: all 0.3s ease;
   margin: 0 0.25rem;
+  font-weight: 500;
 }
 
 .dream-nav-item:hover {
@@ -310,7 +324,8 @@ body {
 
 .dream-nav-item.active {
   background: var(--dream-primary);
-  color: white;
+  color: #059669;
+  font-weight: 600;
 }
 
 /* Dream Loading States */
@@ -399,6 +414,29 @@ body {
     width: 2.5rem;
     height: 2.5rem;
   }
+  
+  body {
+    font-size: 16px;
+  }
+  
+  .dream-card p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  .dream-input {
+    font-size: 16px;
+  }
+  
+  .dream-header h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .dream-header h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
 }
 
 /* Dream Print Styles */
@@ -428,16 +466,50 @@ body {
   .dream-nav-item:hover {
     transform: none;
   }
+  
+  .dream-card,
+  .dream-input,
+  .dream-button {
+    transition: none;
+  }
 }
 
 /* Dream High Contrast Mode */
 @media (prefers-contrast: high) {
+  body {
+    color: #000;
+    background: #fff;
+  }
+  
   .dream-card {
-    border: 2px solid var(--dream-text-primary);
+    border: 2px solid #000;
+    background: #fff;
   }
   
   .dream-button {
-    border: 2px solid var(--dream-text-primary);
+    border: 2px solid #000;
+  }
+  
+  .dream-text-primary {
+    color: #000;
+  }
+  
+  .dream-text-secondary {
+    color: #333;
+  }
+  
+  .dream-text-muted {
+    color: #666;
+  }
+  
+  .dream-input {
+    border: 2px solid #000;
+    background: #fff;
+    color: #000;
+  }
+  
+  .poetic-separator::before {
+    color: #000;
   }
 }
 
@@ -559,22 +631,6 @@ input::placeholder, textarea::placeholder, .search-bar::placeholder {
   box-shadow: 0 0 30px rgba(34, 197, 94, 0.2);
 }
 
-/* Enhanced Focus States */
-.dream-input:focus {
-  outline: none;
-  border-color: var(--dream-primary);
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
-  transform: translateY(-1px);
-  transition: all 0.2s ease-out;
-}
-
-/* Gentle Hover Effects */
-.dream-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* Emotional Color Transitions */
 .emotion-joy { transition: all 0.3s ease; }
 .emotion-joy:hover { background: linear-gradient(135deg, #fef3c7, #fde68a); }
@@ -638,35 +694,18 @@ input::placeholder, textarea::placeholder, .search-bar::placeholder {
   }
 }
 
-/* Accessibility Enhancements */
-@media (prefers-reduced-motion: reduce) {
-  .whisper-card-appear,
-  .heartbeat-pulse,
-  .whisper-submit-success,
-  .loading-shimmer {
-    animation: none;
+/* Desktop Typography Enhancements */
+@media (min-width: 769px) {
+  .dream-card p {
+    font-size: 1.0625rem;
+    line-height: 1.7;
   }
   
-  .dream-card:hover {
-    transform: none;
+  .dream-header h1 {
+    font-size: 1.5rem;
   }
   
-  .dream-input:focus {
-    transform: none;
-  }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-  .dream-card {
-    border: 2px solid #000;
-  }
-  
-  .dream-input {
-    border: 2px solid #000;
-  }
-  
-  .poetic-separator::before {
-    color: #000;
+  .dream-header h2 {
+    font-size: 1.25rem;
   }
 }

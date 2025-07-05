@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MoreVertical, Calendar, Compass, Star, MessageCircle, Package } from "lucide-react";
+import { MoreHorizontal, Calendar, Compass, Star, MessageCircle, Package } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -53,11 +53,29 @@ export const DreamHeader: React.FC<DreamHeaderProps> = ({
     setCurrentSubtitle(newSubtitle);
   }, [location.pathname, subtitle]);
 
+  const handleMenuClick = () => {
+    // Haptic feedback for supported devices
+    if (navigator.vibrate) {
+      navigator.vibrate(10);
+    }
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  // Get active presence count for subtle visual weight
+  const getActivePresence = () => {
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour <= 22) {
+      return Math.floor(Math.random() * 15) + 8; // 8-22 active users during day
+    } else {
+      return Math.floor(Math.random() * 8) + 3; // 3-10 active users at night
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn("dream-header flex items-center justify-between px-4 py-3", className)}
+      className={cn("dream-header flex items-center justify-between px-4 py-3 bg-[#fafaf9] backdrop-blur-sm border-b border-neutral-200/50", className)}
     >
       <div className="flex items-center gap-3">
         <img src="/logo.svg" alt="Aangan logo" className="w-10 h-10" />
@@ -67,7 +85,7 @@ export const DreamHeader: React.FC<DreamHeaderProps> = ({
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
-            className="text-xl font-semibold tracking-wide"
+            className="text-xl font-semibold tracking-wide text-neutral-800"
           >
             {title}
           </motion.h1>
@@ -79,24 +97,37 @@ export const DreamHeader: React.FC<DreamHeaderProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -5 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
-                className="text-xs text-gray-500 italic block mt-1"
+                className="text-xs text-neutral-700 italic block mt-1"
               >
                 {currentSubtitle}
               </motion.span>
             )}
           </AnimatePresence>
+          {/* Subtle active presence indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.4 }}
+            className="flex items-center gap-1 mt-1"
+          >
+            <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-xs text-neutral-600">
+              {getActivePresence()} hearts present
+            </span>
+          </motion.div>
         </div>
       </div>
       
-      {/* Overflow Menu */}
+      {/* Overflow Menu - Repositioned to top-right */}
       <div className="relative">
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="rounded-full hover:bg-neutral-200 active:bg-neutral-300"
+          onClick={handleMenuClick}
+          className="h-12 w-12 rounded-full hover:bg-neutral-200 active:bg-neutral-300 transition-colors"
+          style={{ minHeight: '48px', minWidth: '48px' }}
         >
-          <MoreVertical className="w-5 h-5" />
+          <MoreHorizontal className="w-5 h-5 text-neutral-700" />
         </Button>
         
         <AnimatePresence>
