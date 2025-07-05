@@ -1,0 +1,32 @@
+config:
+  target: "https://aangan-production.up.railway.app"
+  phases:
+    - duration: 120
+      arrivalRate: 25     # 25 virtual users
+  socketio:
+    transports: ["websocket"]
+    auth:
+      clientKey: "superSecretSocketKey"
+
+scenarios:
+  - engine: "socketio"
+    flow:
+      - connect:
+          auth:
+            clientKey: "superSecretSocketKey"
+      - emit:
+          channel: "whisper-created"
+          data: 
+            content: "load-test whisper"
+            emotion: "joy"
+            zone: "tapri"
+            id: "{{ $randomString() }}"
+            created_at: "{{ $timestamp() }}"
+          response:
+            channel: "new-whisper"
+      - think: 5
+      - emit:
+          channel: "emotion-pulse"
+          data: "joy"
+      - think: 3
+      - disconnect: 

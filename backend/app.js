@@ -27,6 +27,19 @@ const app = express();
 
 // Trust proxy for rate limiting with X-Forwarded-For headers
 app.set('trust proxy', 1);
+console.log('✅ Express trust proxy is set to 1 (for X-Forwarded-For headers)');
+
+// Socket.IO authentication middleware
+io.use((socket, next) => {
+  const key = socket.handshake.auth?.clientKey;
+  if (key !== process.env.SOCKET_SHARED_KEY) {
+    return next(new Error("unauthorized"));
+  }
+  return next();
+});
+
+// Per-IP rate limiting for socket messages
+const msgBuckets = new Map(); // ip -> { count, ts }
 
 const server = createServer(app);
 const io = new Server(server, {
@@ -271,6 +284,50 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// Admin login route
+app.post("/api/admin/login", async (req, res) => {
+  try {
+    const { pass } = req.body;
+    
+    if (!pass) {
+      return res.status(400).json({ error: "Password required" });
+    }
+
+    // Get admin user from database
+    const adminUser = await db.get(
+      "SELECT * FROM admin_users WHERE username = ?",
+      [process.env.ADMIN_USERNAME || "admin"]
+    );
+
+    if (!adminUser) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Compare password with stored hash
+    const isValid = await bcrypt.compare(pass, adminUser.password_hash);
+    
+    if (!isValid) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { 
+        username: adminUser.username, 
+        role: "admin",
+        id: adminUser.id 
+      },
+      process.env.JWT_SECRET || "your-secret-key",
+      { expiresIn: "24h" }
+    );
+
+    res.json({ token, user: { username: adminUser.username, role: "admin" } });
+  } catch (error) {
+    console.error("Admin login error:", error);
+    res.status(500).json({ error: "Login failed" });
+  }
+});
+
 // Heartbeat endpoint
 app.post("/api/health/heartbeat", async (req, res) => {
   try {
@@ -327,6 +384,16 @@ app.post("/api/whispers", whisperLimiter, async (req, res) => {
       return res
         .status(400)
         .json({ error: "Content, emotion, and zone are required" });
+    }
+
+    // Content moderation pre-filter
+    const BAD_WORDS = ["chutiya", "bc", "mc", "madarchod", "bhosadike", "bhenchod"];
+    const hasBadWord = BAD_WORDS.some(bad => 
+      content.toLowerCase().includes(bad.toLowerCase())
+    );
+    
+    if (hasBadWord) {
+      return res.status(400).json({ error: "content-flagged" });
     }
 
     const id = uuidv4();
@@ -546,6 +613,16 @@ io.on('connection', (socket) => {
   // Handle whisper creation (real-time) with validation
   socket.on('whisper-created', (whisper) => {
     try {
+      // Per-IP rate limiting
+      const ip = socket.handshake.address;
+      const bucket = msgBuckets.get(ip) ?? { count: 0, ts: Date.now() };
+      if (Date.now() - bucket.ts > 60_000) bucket.count = 0; // reset each min
+      if (++bucket.count > 20) {
+        console.warn(`⚠️  Rate limit exceeded for IP: ${ip}`);
+        return; // drop if >20/min
+      }
+      msgBuckets.set(ip, bucket);
+
       // Validate whisper data
       if (!whisper || !whisper.content || !whisper.emotion || !whisper.zone) {
         console.warn(`⚠️  Invalid whisper data from ${socket.id}`);

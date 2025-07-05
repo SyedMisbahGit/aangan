@@ -1,0 +1,32 @@
+name: DB Nightly Backup
+on:
+  schedule:
+    - cron: '0 22 * * *'   # 3 AM IST
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Create backup
+        run: |
+          DATABASE_PATH=./backend/whispers.db node scripts/backup-db.js
+        env:
+          DATABASE_PATH: ./backend/whispers.db
+          
+      - name: Commit backup
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "chore: nightly sqlite backup"
+          add: "backups/*.gz" 

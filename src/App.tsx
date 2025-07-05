@@ -27,6 +27,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { RealtimeProvider } from './contexts/RealtimeContext';
 import axios from "axios";
 import AdminLogin from './pages/AdminLogin';
+import PrivacyBanner from './components/PrivacyBanner';
 
 const queryClient = new QueryClient();
 
@@ -208,6 +209,7 @@ const AppContent: React.FC = () => {
         variant="floating"
         onWhisperCreated={handleWhisperCreated}
       />
+      <PrivacyBanner />
     </div>
   );
 };

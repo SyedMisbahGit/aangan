@@ -31,6 +31,20 @@ const About: React.FC = () => {
         >
           "Koi sunega… zaroor."
         </motion.p>
+        
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="mt-8 p-4 bg-cream-50 rounded-lg border border-cream-200"
+        >
+          <h3 className="font-semibold text-dream-blue mb-2">Privacy Promise</h3>
+          <p className="text-sm text-inkwell-80">
+            Aangan stores <strong>no personal data</strong>. Your whispers are anonymous, 
+            your emotions are private, and your identity remains yours alone. 
+            We believe in the power of honest expression without the burden of recognition.
+          </p>
+        </motion.div>
       </motion.div>
     </DreamLayout>
   );

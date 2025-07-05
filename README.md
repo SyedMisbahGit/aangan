@@ -57,6 +57,37 @@ npm run dev
   VITE_API_URL=https://aangan-production.up.railway.app/api
   ```
 
+### Security & Backup
+
+#### Environment Variables (Backend)
+```bash
+# Required for production
+SOCKET_SHARED_KEY=your-secret-socket-key
+ADMIN_PASS_HASH=$2a$10$your-bcrypt-hash-here
+JWT_SECRET=your-super-secret-jwt-key
+```
+
+#### Database Backups
+- **Automated**: Nightly backups via GitHub Actions (3 AM IST)
+- **Manual**: Run `node scripts/backup-db.js` to create compressed backup
+- **Location**: `backups/whispers-{timestamp}.gz`
+
+#### Security Features
+- **Socket.IO Authentication**: All real-time connections require `clientKey`
+- **Rate Limiting**: Per-IP limits on whispers and socket messages
+- **Content Moderation**: Pre-filter for inappropriate content
+- **Admin Password Hashing**: bcrypt-encrypted admin passwords
+- **Trust Proxy**: Proper IP detection for rate limiting
+
+#### Stress Testing
+```bash
+# Install Artillery
+npm install -g artillery
+
+# Run stress test (25 virtual users for 2 minutes)
+npx artillery run scripts/artillery.yml
+```
+
 ---
 
 ## 🌌 WhisperVerse – The 3D Diary World

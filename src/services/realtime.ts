@@ -3,6 +3,9 @@ import { io, Socket } from 'socket.io-client';
 
 const REALTIME_URL = import.meta.env.VITE_REALTIME_URL || 'https://aangan-production.up.railway.app';
 
+// Socket authentication key - should match backend SOCKET_SHARED_KEY
+const SOCKET_CLIENT_KEY = import.meta.env.VITE_SOCKET_SHARED_KEY || 'superSecretSocketKey';
+
 export interface RealtimeWhisper {
   id: string;
   content: string;
@@ -52,6 +55,9 @@ class RealtimeService {
         reconnectionAttempts: this.maxReconnectAttempts,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
+        auth: {
+          clientKey: SOCKET_CLIENT_KEY
+        }
       });
 
       this.setupEventListeners();
