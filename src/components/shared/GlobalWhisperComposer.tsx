@@ -27,7 +27,7 @@ import { generateSummerSoulLine } from '../../contexts/ShhhNarratorContext';
 interface WhisperComposerProps {
   variant?: 'floating' | 'modal' | 'sheet';
   trigger?: React.ReactNode;
-  onWhisperCreated?: (whisper: any) => void;
+  onWhisperCreated?: (whisper: { id: string; content: string; emotion: string; timestamp: string; location: string; tags: string[]; likes: number; comments: number; isAnonymous: boolean }) => void;
 }
 
 const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({ 
@@ -95,7 +95,7 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
     'Healing 🌱',
   ];
 
-  const logSummerSoulAnalytics = (data: any) => {
+  const logSummerSoulAnalytics = (data: { location: string; emotion: string; activity: string; isCapsule: boolean; timestamp: string }) => {
     const prev = JSON.parse(localStorage.getItem('summerSoulAnalytics') || '[]');
     prev.push(data);
     localStorage.setItem('summerSoulAnalytics', JSON.stringify(prev));

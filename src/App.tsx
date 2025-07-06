@@ -7,7 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfettiEffect } from "./components/shared/ConfettiEffect";
 import { DreamNavigation } from "./components/shared/DreamNavigation";
-import { DreamThemeProvider, useDreamTheme } from "./contexts/DreamThemeContext";
+import { AanganThemeProvider, useAanganTheme } from "./contexts/DreamThemeContext";
 import { ShhhNarratorProvider, useShhhNarrator } from "./contexts/ShhhNarratorContext";
 import { CUJHotspotProvider, useCUJHotspots } from "./contexts/CUJHotspotContext";
 import { useState, useEffect } from "react";
@@ -31,12 +31,12 @@ import PrivacyBanner from './components/PrivacyBanner';
 
 const queryClient = new QueryClient();
 
-const HomeFeed = lazy(() => import("./pages/HomeFeed"));
+const Whispers = lazy(() => import("./pages/HomeFeed"));
 const CreateWhisper = lazy(() => import("./pages/CreateWhisper"));
 const Diary = lazy(() => import("./pages/Diary"));
-const Explore = lazy(() => import("./pages/Explore"));
-const Lounge = lazy(() => import("./pages/Lounge"));
-const Menu = lazy(() => import("./pages/Menu"));
+const Wander = lazy(() => import("./pages/Explore"));
+const Listen = lazy(() => import("./pages/Lounge"));
+const MyCorner = lazy(() => import("./pages/Menu"));
 const Capsules = lazy(() => import("./pages/Capsules"));
 const Shrines = lazy(() => import("./pages/Shrines"));
 const Compass = lazy(() => import("./pages/Compass"));
@@ -49,39 +49,34 @@ const Login = lazy(() => import('./pages/Login'));
 const VAPID_KEY =
   "BI3DBu7k1VWLVM9S8UkeQl9gEhlLuHwa4dLOOr77R8kTbCza8TlpKJlc3URwGG-g2-u3Tcs16unk57rXiXPVSyA";
 
-export const DreamLoadingScreen = ({ message, narratorLine, variant }: { message?: string, narratorLine?: string, variant?: 'default' | 'orbs' | 'shimmer' }) => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-cream-100 text-inkwell font-poetic text-lg animate-fade-in relative overflow-hidden">
+export const AanganLoadingScreen = ({ message, narratorLine, variant }: { message?: string, narratorLine?: string, variant?: 'default' | 'orbs' | 'shimmer' }) => (
+  <div className="min-h-screen flex flex-col items-center justify-center bg-aangan-background text-aangan-text-primary font-serif text-lg animate-aangan-fade-in relative overflow-hidden">
     {/* Floating Orbs Animation */}
     {(variant === 'orbs' || !variant) && (
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute top-1/4 left-1/3 w-24 h-24 bg-dream-accent/30 rounded-full blur-2xl animate-float-slow" />
-        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-dream-secondary/20 rounded-full blur-2xl animate-float-medium" />
-        <div className="absolute top-2/3 right-1/3 w-16 h-16 bg-dream-primary/20 rounded-full blur-2xl animate-float-fast" />
+        <div className="absolute top-1/4 left-1/3 w-24 h-24 bg-aangan-primary/30 rounded-full blur-2xl animate-aangan-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-aangan-secondary/20 rounded-full blur-2xl animate-aangan-float" />
+        <div className="absolute top-2/3 right-1/3 w-16 h-16 bg-aangan-accent/20 rounded-full blur-2xl animate-aangan-float" />
       </div>
     )}
     {/* Shimmer Animation */}
     {(variant === 'shimmer') && (
-      <div className="w-64 h-6 bg-gradient-to-r from-dream-accent/10 via-dream-accent/30 to-dream-accent/10 rounded-full animate-shimmer mb-6" />
+      <div className="w-64 h-6 bg-gradient-to-r from-aangan-primary/10 via-aangan-primary/30 to-aangan-primary/10 rounded-full animate-aangan-shimmer mb-6" />
     )}
     <div className="z-10 text-center">
-      <div className="mb-2 animate-pulse">{message || 'Shhh is sensing the campus...'}</div>
-      {narratorLine && <div className="italic text-dream-accent mt-2 animate-fade-in-slow">{narratorLine}</div>}
+      <div className="mb-2 animate-aangan-pulse-soft">{message || 'Aangan is sensing the campus...'}</div>
+      {narratorLine && <div className="italic text-aangan-primary mt-2 animate-aangan-fade-in">{narratorLine}</div>}
     </div>
   </div>
 );
 
 const AppContent: React.FC = () => {
   const [showConfetti, setShowConfetti] = useState(false);
-  const { theme, isInitialized } = useDreamTheme();
+  const { theme, isInitialized } = useAanganTheme();
   const { isReady: narratorReady } = useShhhNarrator();
   const { isReady: hotspotReady } = useCUJHotspots();
   const { addWhisper } = useWhispers();
   const [showNotifOptIn, setShowNotifOptIn] = useState(false);
-
-  // Aggregate all context readiness
-  if (!isInitialized || !narratorReady || !hotspotReady) {
-    return <DreamLoadingScreen message="Sensing the campus, warming the chai, and listening for whispers..." />;
-  }
 
   // Trigger confetti on app load for celebration
   useEffect(() => {
@@ -99,8 +94,54 @@ const AppContent: React.FC = () => {
         getAndSendFcmToken();
       }
     }
-    // eslint-disable-next-line
   }, []);
+
+  // Heartbeat ping every 10 min
+  useEffect(() => {
+    const ping = () => {
+      axios.post("/api/health/heartbeat").catch(() => {});
+    };
+    ping();
+    const interval = setInterval(ping, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Global error logger
+  useEffect(() => {
+    window.onerror = function (message, source, lineno, colno, error) {
+      axios.post("/api/logs", {
+        message: message?.toString(),
+        stack: error?.stack || null,
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        time: new Date().toISOString(),
+      }).catch(() => {});
+      return false;
+    };
+  }, []);
+
+  // Analytics tracking for page views
+  useEffect(() => {
+    const trackPageView = () => {
+      const path = window.location.pathname;
+      if (['/', '/explore', '/lounge'].includes(path)) {
+        console.log(`📊 Page view: ${path}`);
+        // In a real app, this would send to analytics service
+        axios.post("/api/analytics/page-view", {
+          path,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+        }).catch(() => {});
+      }
+    };
+
+    trackPageView();
+  }, []);
+
+  // Aggregate all context readiness
+  if (!isInitialized || !narratorReady || !hotspotReady) {
+    return <AanganLoadingScreen message="Sensing the campus, warming the chai, and listening for whispers..." />;
+  }
 
   const getAndSendFcmToken = async () => {
     try {
@@ -139,101 +180,56 @@ const AppContent: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    // Heartbeat ping every 10 min
-    const ping = () => {
-      axios.post("/api/health/heartbeat").catch(() => {});
-    };
-    ping();
-    const interval = setInterval(ping, 10 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    // Global error logger
-    window.onerror = function (message, source, lineno, colno, error) {
-      axios.post("/api/logs", {
-        message: message?.toString(),
-        stack: error?.stack || null,
-        url: window.location.href,
-        userAgent: navigator.userAgent,
-        time: new Date().toISOString(),
-      }).catch(() => {});
-      return false;
-    };
-  }, []);
-
-  // Analytics tracking for page views
-  useEffect(() => {
-    const trackPageView = () => {
-      const path = window.location.pathname;
-      if (['/', '/explore', '/lounge'].includes(path)) {
-        console.log(`📊 Page view: ${path}`);
-        // In a real app, this would send to analytics service
-        axios.post("/api/analytics/page-view", {
-          path,
-          timestamp: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-        }).catch(() => {});
-      }
-    };
-
-    trackPageView();
-  }, [location.pathname]);
-
-  const handleWhisperCreated = (whisper: any) => {
+  const handleWhisperCreated = (whisper: { id: string; content: string; emotion: string; timestamp: string; location: string; tags: string[]; likes: number; comments: number; isAnonymous: boolean }) => {
     addWhisper(whisper);
     // In a real app, this would trigger updates to feeds, notifications, etc.
   };
 
   return (
-    <div className="min-h-screen transition-colors duration-500 bg-dream-background text-dream-text-primary">
+    <div className="min-h-screen transition-colors duration-500 bg-aangan-background text-aangan-text-primary">
       {showNotifOptIn && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-dream-accent rounded-xl shadow-xl px-6 py-4 flex items-center gap-4 animate-fade-in">
-          <span className="font-medium text-dream-accent">Allow notifications? <span className="text-inkwell">Sirf zaroori nudges, spam nahi.</span></span>
-          <button onClick={() => handleNotifOptIn(true)} className="ml-4 bg-dream-accent text-white px-4 py-2 rounded-lg font-semibold hover:bg-dream-purple transition">Allow</button>
-          <button onClick={() => handleNotifOptIn(false)} className="ml-2 text-dream-accent/70 hover:text-dream-accent">No Thanks</button>
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-aangan-card border border-aangan-primary rounded-xl shadow-aangan-xl px-6 py-4 flex items-center gap-4 animate-aangan-fade-in">
+          <span className="font-medium text-aangan-primary">Allow notifications? <span className="text-aangan-text-primary">Sirf zaroori nudges, spam nahi.</span></span>
+          <button onClick={() => handleNotifOptIn(true)} className="ml-4 bg-aangan-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-aangan-primary/90 transition">Allow</button>
+          <button onClick={() => handleNotifOptIn(false)} className="ml-2 text-aangan-primary/70 hover:text-aangan-primary">No Thanks</button>
         </div>
       )}
       <Suspense
         fallback={
-          <DreamLoadingScreen 
+          <AanganLoadingScreen 
             message="Loading whispers..."
-            narratorLine="The campus is quietly gathering stories."
-            variant="orbs"
+            narratorLine="The courtyard is preparing to receive your thoughts..."
           />
         }
       >
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/" element={<PrivateRoute><HomeFeed /></PrivateRoute>} />
-          <Route path="/create" element={<PrivateRoute><CreateWhisper /></PrivateRoute>} />
-          <Route path="/diary" element={<PrivateRoute><Diary /></PrivateRoute>} />
-          <Route path="/explore" element={<PrivateRoute><Explore /></PrivateRoute>} />
-          <Route path="/lounge" element={<PrivateRoute><Lounge /></PrivateRoute>} />
-          <Route path="/menu" element={<PrivateRoute><Menu /></PrivateRoute>} />
-          <Route path="/zones" element={<PrivateRoute><Shrines /></PrivateRoute>} />
-          <Route path="/capsules" element={<PrivateRoute><Capsules /></PrivateRoute>} />
-          <Route path="/shrines" element={<PrivateRoute><Shrines /></PrivateRoute>} />
-          <Route path="/compass" element={<PrivateRoute><Compass /></PrivateRoute>} />
-          <Route path="/constellation" element={<PrivateRoute><Constellation /></PrivateRoute>} />
-          <Route path="/murmurs" element={<PrivateRoute><Murmurs /></PrivateRoute>} />
-          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/" element={<Whispers />} />
+          <Route path="/create" element={<CreateWhisper />} />
+          <Route path="/diary" element={<Diary />} />
+          <Route path="/explore" element={<Wander />} />
+          <Route path="/lounge" element={<Listen />} />
+          <Route path="/menu" element={<MyCorner />} />
+          <Route path="/capsules" element={<Capsules />} />
+          <Route path="/shrines" element={<Shrines />} />
+          <Route path="/compass" element={<Compass />} />
+          <Route path="/constellation" element={<Constellation />} />
+          <Route path="/murmurs" element={<Murmurs />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/about" element={<About />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<PrivateRoute adminOnly><Admin /></PrivateRoute>} />
           <Route path="/admin/insights" element={<PrivateRoute adminOnly><AdminInsights /></PrivateRoute>} />
-          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <DreamNavigation />
       </Suspense>
-      <ConfettiEffect isActive={showConfetti} />
-      <GlobalWhisperComposer 
-        variant="floating"
-        onWhisperCreated={handleWhisperCreated}
-      />
+
+      <GlobalWhisperComposer onWhisperCreated={handleWhisperCreated} />
+      <DreamNavigation />
       <PrivacyBanner />
+      <ConfettiEffect isActive={showConfetti} />
+      <Toaster />
+      <Sonner />
     </div>
   );
 };
@@ -283,10 +279,10 @@ function AppContentWithErrorBoundary() {
     };
   }, []);
   if (isMobile && hasError) {
-    return <div className="min-h-screen flex items-center justify-center text-center p-8 bg-dream-bg text-dream-text-primary">We're fixing something – please retry in a moment.</div>;
+    return <div className="min-h-screen flex items-center justify-center text-center p-8 bg-aangan-background text-aangan-text-primary">We're fixing something – please retry in a moment.</div>;
   }
   if (isOffline) {
-    return <div className="min-h-screen flex items-center justify-center text-center p-8 bg-[#f9f7f4] text-neutral-700 text-lg">We're floating in a quiet zone. Please reconnect.</div>;
+    return <div className="min-h-screen flex items-center justify-center text-center p-8 bg-aangan-background text-aangan-text-primary text-lg">We're floating in a quiet zone. Please reconnect.</div>;
   }
   return <AppContent />;
 }
@@ -294,7 +290,7 @@ function AppContentWithErrorBoundary() {
 const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <DreamThemeProvider>
+      <AanganThemeProvider>
         <CUJHotspotProvider>
           <ShhhNarratorProvider>
             <SummerPulseProvider>
@@ -306,7 +302,7 @@ const App: React.FC = () => {
                       <Sonner />
                       <SummerSoulProvider>
                         <BrowserRouter>
-                          <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the Dream." >
+                          <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the courtyard." >
                             <AppContentWithErrorBoundary />
                           </ErrorBoundary>
                         </BrowserRouter>
@@ -318,7 +314,7 @@ const App: React.FC = () => {
             </SummerPulseProvider>
           </ShhhNarratorProvider>
         </CUJHotspotProvider>
-      </DreamThemeProvider>
+      </AanganThemeProvider>
     </QueryClientProvider>
   );
 };

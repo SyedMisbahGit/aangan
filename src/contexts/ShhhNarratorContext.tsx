@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useCUJHotspots } from './CUJHotspotContext';
-import { DreamLoadingScreen } from '../App';
+import { AanganLoadingScreen } from '../App';
 
 export interface NarratorState {
   currentZone: string;
@@ -439,7 +439,7 @@ const fallbackLines = {
 };
 
 export const ShhhNarratorLoadingFallback = () => (
-  <DreamLoadingScreen 
+  <AanganLoadingScreen 
     message="Summoning the campus narrator..."
     narratorLine="A poetic line is forming in the quiet."
     variant="shimmer"
@@ -883,4 +883,6 @@ export function generateSummerSoulLine({ location, activity, emotion }: { locati
   if (emo) line += `, ${emo}`;
   line += '.';
   return line;
-} 
+}
+
+ 

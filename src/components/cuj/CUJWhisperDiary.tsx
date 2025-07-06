@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,44 +38,36 @@ const CUJWhisperDiary: React.FC = () => {
   const [showNudge, setShowNudge] = useState(true);
 
   // CUJ Cultural Prompt Packs
-  const promptPacks = {
+  const promptPacks = useMemo(() => ({
     "north-soul": [
-      "Kya kabhi tumne dil ka exam diya?",
-      "Hostel ki diwaron ne kya suna aaj?",
-      "Rain ke baad campus ka khamosh hissa kahan hota hai?",
-      "Koi aisa moment jo tumhe CUJ se connect karta hai?",
-      "Aaj kya feel kar rahe ho, batao?",
-      "Koi aisa sapna jo tumhe CUJ mein dekhna hai?",
-      "Hostel life mein sabse yaadgar din kya tha?",
-      "Lab ke baad thakan wali feeling kaise handle karte ho?",
-      "Udaan ke baad kya hua tha tumhare saath?",
-      "Campus mein sabse peaceful jagah kahan hai tumhare liye?",
+      "Aaj ka sabse khubsurat pal kya tha?",
+      "Kis baat ne aaj tumhe muskuraya?",
+      "Koi ek cheez jo tumhe aaj inspire ki?",
+      "Aaj ka din kaisa raha?",
+      "Kis baat ne aaj tumhe sochne par majboor kiya?",
+      "Aaj tumne kis cheez ka shukriya ada kiya?",
+      "Koi ek yaad jo aaj tumhare saath rahi?",
     ],
     "dogri-echoes": [
-      "Tussi kiwe feel kar rahe o?",
-      "Hostel di life ch kiwe ajeeb lagdi hai?",
-      "Exam de baad kiwe tension lagdi hai?",
-      "Campus ch sabse sohni jagah ki hai?",
-      "Koi aisa din jo tumhe yaad aa reha hai?",
-      "Lab de baad thakan wali feeling kaise handle karde o?",
-      "Udaan de baad kiwe emotional feel karde o?",
-      "Canteen ch sabse acha kya lagda hai?",
-      "Library ch study karde waqt kiwe feel karde o?",
-      "Hostel di raat ch kiwe sochte o?",
+      "Ajj ki sab ton waddi gall ki sikhhi?",
+      "Kis cheez ne ajj tainu sab ton zyada khush kita?",
+      "Ajj di sab ton pyari yaad ki hai?",
+      "Ajj kis cheez ne tainu hairaan kita?",
+      "Ajj kis bande naal sab ton changi gall-baat hoi?",
+      "Ajj kis cheez da intezaar kar rahe ho?",
+      "Ajj kis cheez ne tainu himmat ditti?",
     ],
     "cuj-life": [
-      "Hostel wali stories - koi share karna chahte ho?",
-      "Udaan aftermath - kya yaad aa raha hai?",
-      "Lab ke baad thakan wali feeling - kaise handle karte ho?",
-      "Library silence drop - kya sochte ho?",
-      "Exam fog - kya pressure feel kar rahe ho?",
-      "Canteen corner - koi memory share karna chahte ho?",
-      "Admin block stress - kya problem face kar rahe ho?",
-      "Quadrangle charcha - koi discussion yaad aa raha hai?",
-      "Night study session - kya motivation hai?",
-      "Fresher to senior journey - kya seekha hai?",
+      "Hostel wali yaariyaan",
+      "Library silence",
+      "Exam fog",
+      "Canteen corner",
+      "Admin block stress",
+      "Quadrangle charcha",
+      "Night study session",
+      "Fresher to senior journey",
     ],
-  };
+  }), []);
 
   const cujMoods = [
     {
@@ -130,7 +122,7 @@ const CUJWhisperDiary: React.FC = () => {
     // Set initial prompt
     const prompts = promptPacks[promptPack];
     setCurrentPrompt(prompts[Math.floor(Math.random() * prompts.length)]);
-  }, [promptPack]);
+  }, [promptPack, promptPacks]);
 
   const handleSubmit = async () => {
     if (!entry.trim() || !mood) return;

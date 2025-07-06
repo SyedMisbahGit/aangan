@@ -1,36 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { DreamLayout } from "../components/shared/DreamLayout";
 import { DreamHeader } from "../components/shared/DreamHeader";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { ModularWhisperCard } from "../components/ModularWhisperCard";
-import {
-  Filter, 
-  Search, 
-  MapPin, 
-  Users, 
-  Sparkles,
-  Heart,
-  MessageCircle,
-  Clock,
-  TrendingUp,
-  Globe,
-  Bot
-} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCUJHotspots } from "../contexts/CUJHotspotContext";
-import { ShhhLine } from '../components/ShhhLine';
 import { useShhhNarrator } from '../contexts/ShhhNarratorContext';
 import { useWhispers } from "../contexts/WhispersContext";
-import RealtimeWhisperFeed from "../components/whisper/RealtimeWhisperFeed";
-import AIEchoBot from "../components/ai/AIEchoBot";
-import LiveZoneActivity from "../components/realtime/LiveZoneActivity";
-import { EmotionPulseBanner } from "../components/shared/EmotionPulseBanner";
-import { PresenceRibbon } from "../components/shared/PresenceRibbon";
-import { AmbientWhisperManager } from "../components/ambient/AmbientWhisperManager";
+import { PoeticEmotionBanner } from '../components/shared/EmotionPulseBanner';
+import { GentlePresenceRibbon } from '../components/shared/PresenceRibbon';
+import { SoftWhisperCard } from '../components/whisper/WhisperCard';
+import { EmbeddedBenchComposer } from '../components/whisper/PostCreator';
 
 interface Whisper {
   id: string;
@@ -42,14 +20,12 @@ interface Whisper {
   comments: number;
   isAnonymous: boolean;
   author?: string;
+  isAIGenerated?: boolean;
 }
 
-const HomeFeed: React.FC = () => {
+const Whispers: React.FC = () => {
   const { nearbyHotspots, emotionClusters, systemTime, campusActivity } = useCUJHotspots();
   const { narratorState } = useShhhNarrator();
-  const [selectedEmotion, setSelectedEmotion] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedHotspot, setSelectedHotspot] = useState("all");
   const { whispers, setWhispers } = useWhispers();
   
   // Real-time context integration
@@ -57,16 +33,13 @@ const HomeFeed: React.FC = () => {
   const isWeekend = systemTime.isWeekend;
   const currentActivity = narratorState.userActivity;
 
-  const emotions = [
-    { value: "all", label: "All Emotions", icon: "💫" },
-    { value: "joy", label: "Joy", icon: "✨" },
-    { value: "nostalgia", label: "Nostalgia", icon: "🌸" },
-    { value: "peace", label: "Peace", icon: "🌿" },
-    { value: "anxiety", label: "Anxiety", icon: "🌧️" },
-    { value: "focus", label: "Focus", icon: "🎯" },
-    { value: "excitement", label: "Excitement", icon: "🚀" },
-    { value: "reflection", label: "Reflection", icon: "🪞" }
-  ];
+  // Get time of day for poetic banner
+  const getTimeOfDay = () => {
+    if (systemTime.hour < 6) return 'night';
+    if (systemTime.hour < 12) return 'morning';
+    if (systemTime.hour < 18) return 'afternoon';
+    return 'evening';
+  };
 
   // Generate sample whispers with real-time context
   useEffect(() => {
@@ -119,55 +92,6 @@ const HomeFeed: React.FC = () => {
     return () => clearInterval(interval);
   }, [isNightTime, campusActivity, isWeekend, setWhispers]);
 
-  const getTimeAwareGreeting = () => {
-    if (isNightTime) return 'Night whispers';
-    if (systemTime.hour < 12) return 'Morning thoughts';
-    if (systemTime.hour < 18) return 'Afternoon musings';
-    return 'Evening reflections';
-  };
-
-  const getActivityContext = () => {
-    if (currentActivity === 'waking') return 'Early morning energy';
-    if (currentActivity === 'night-reflection') return 'Late night thoughts';
-    if (isWeekend) return 'Weekend vibes';
-    return 'Campus pulse';
-  };
-
-  const filteredWhispers = whispers.filter(whisper => {
-    if (selectedEmotion !== "all" && whisper.emotion !== selectedEmotion) return false;
-    if (selectedHotspot !== "all" && whisper.location !== selectedHotspot) return false;
-    if (searchTerm && !whisper.content.toLowerCase().includes(searchTerm.toLowerCase())) return false;
-    return true;
-  });
-
-  const getAmbientHeader = () => {
-    const activeHotspots = nearbyHotspots.filter(h => h.activeUsers > 0);
-    const totalActive = activeHotspots.reduce((sum, h) => sum + h.activeUsers, 0);
-    
-    if (activeHotspots.length === 0) {
-      return "The campus is quiet today. Perfect for reflection.";
-    }
-    
-    const topHotspot = activeHotspots[0];
-    const emotion = emotionClusters[0];
-    
-    if (emotion && emotion.count > 10) {
-      return `You & ${emotion.count} others are feeling ${emotion.emotion} today`;
-    }
-    
-    return `You & ${totalActive} others are active near ${topHotspot.name} this afternoon`;
-  };
-
-  const getHotspotStats = () => {
-    const totalWhispers = whispers.length;
-    const totalLikes = whispers.reduce((sum, w) => sum + w.likes, 0);
-    const activeHotspots = nearbyHotspots.filter(h => h.activeUsers > 0).length;
-    
-    return { totalWhispers, totalLikes, activeHotspots };
-  };
-
-  const stats = getHotspotStats();
-
   // Get dominant emotion from recent whispers
   const getDominantEmotion = () => {
     const emotionCounts: Record<string, number> = {};
@@ -188,33 +112,6 @@ const HomeFeed: React.FC = () => {
   };
 
   const dominantEmotion = getDominantEmotion();
-  const emotionEmojis: Record<string, string> = {
-    joy: '💛',
-    nostalgia: '🌸',
-    anxiety: '💭',
-    calm: '🌊',
-    excitement: '⚡',
-    melancholy: '🌙',
-    gratitude: '🙏',
-    curiosity: '🔍',
-    peace: '🌿',
-    focus: '🎯',
-    reflection: '🪞'
-  };
-
-  const emotionTexts: Record<string, string> = {
-    joy: 'Joy is whispering the loudest today',
-    nostalgia: 'Nostalgia fills the air today',
-    anxiety: 'Anxiety is being shared today',
-    calm: 'Calmness is spreading today',
-    excitement: 'Excitement is buzzing today',
-    melancholy: 'Melancholy is being felt today',
-    gratitude: 'Gratitude is being expressed today',
-    curiosity: 'Curiosity is growing today',
-    peace: 'Peace is being found today',
-    focus: 'Focus is being shared today',
-    reflection: 'Reflection is happening today'
-  };
 
   // Get presence count (unique users in last 12 hours)
   const getPresenceCount = () => {
@@ -222,238 +119,119 @@ const HomeFeed: React.FC = () => {
     whispers.forEach(whisper => {
       if (whisper.author) uniqueUsers.add(whisper.author);
     });
-    return uniqueUsers.size;
+    return uniqueUsers.size || Math.floor(Math.random() * 15) + 5;
   };
 
   const presenceCount = getPresenceCount();
 
+  const handleWhisperCreate = async (content: string, emotion: string, useAI: boolean) => {
+    const newWhisper: Whisper = {
+      id: Date.now().toString(),
+      content,
+      emotion,
+      timestamp: new Date().toISOString(),
+      location: 'courtyard',
+      likes: 0,
+      comments: 0,
+      isAnonymous: true,
+      isAIGenerated: useAI
+    };
+
+    setWhispers(prev => [newWhisper, ...prev]);
+  };
+
+  const handleWhisperTap = (whisper: Whisper) => {
+    // Open modal diary view
+    console.log('Opening diary view for whisper:', whisper.id);
+  };
+
+  const handleWhisperLongPress = (whisper: Whisper) => {
+    // Echo functionality
+    console.log('Echoing whisper:', whisper.id);
+  };
+
+  const handleWhisperSwipeLeft = (whisper: Whisper) => {
+    // Fade whisper
+    setWhispers(prev => prev.filter(w => w.id !== whisper.id));
+  };
+
+  const handleWhisperHeart = (whisper: Whisper) => {
+    // Ripple animation - no counter shown
+    console.log('Heart ripple for whisper:', whisper.id);
+  };
+
   return (
     <DreamLayout>
-      <div className="min-h-screen bg-[#fafaf9]">
-        {/* Emotion Pulse Banner */}
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-blue-50">
+        {/* Poetic Emotion Banner */}
         <div className="pt-6 pb-3 px-4">
-          <EmotionPulseBanner
-            text={emotionTexts[dominantEmotion] || 'Joy is whispering the loudest today'}
-            emoji={emotionEmojis[dominantEmotion] || '💛'}
+          <PoeticEmotionBanner
+            dominantEmotion={dominantEmotion}
+            timeOfDay={getTimeOfDay()}
           />
         </div>
 
-        {/* Presence Ribbon */}
+        {/* Gentle Presence Ribbon */}
         <div className="pb-3 px-4">
-          <PresenceRibbon text={`You + ${presenceCount} hearts whispered today`} />
+          <GentlePresenceRibbon presenceCount={presenceCount} />
         </div>
 
         {/* Header */}
         <DreamHeader 
-          title={<span className="flex items-center gap-2">Aangan Feed <span className="inline-flex items-center px-2 py-0.5 rounded bg-green-100 text-xs font-semibold text-green-700 ml-2"><Globe className="w-3 h-3 mr-1" />Public</span></span>}
+          title="Whispers"
           subtitle="A living constellation of anonymous voices. Your whispers join the campus chorus."
         />
 
         <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-          {/* Ambient Header */}
+          {/* Soft-scrollable whispers */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="bg-white border-neutral-200 shadow-sm">
-              <CardContent className="p-6">
-                <div className="text-center">
-                  <h2 className="text-xl font-semibold text-neutral-800 mb-2">
-                    {getAmbientHeader()}
-                  </h2>
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                      <div className="text-2xl font-bold text-neutral-800">{stats.totalWhispers}</div>
-                      <div className="text-sm text-neutral-600">Whispers Today</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-neutral-800">{stats.totalLikes}</div>
-                      <div className="text-sm text-neutral-600">Hearts Shared</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-neutral-800">{stats.activeHotspots}</div>
-                      <div className="text-sm text-neutral-600">Active Zones</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Filters */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="space-y-4"
-          >
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-              <Input
-                placeholder="Search whispers..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white border-neutral-200 focus:border-neutral-400 text-neutral-900"
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm text-neutral-600 mb-2 block">Emotion Filter</label>
-                <Select value={selectedEmotion} onValueChange={setSelectedEmotion}>
-                  <SelectTrigger className="bg-white border-neutral-200">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {emotions.map((emotion) => (
-                      <SelectItem key={emotion.value} value={emotion.value}>
-                        <div className="flex items-center gap-2">
-                          <span>{emotion.icon}</span>
-                          {emotion.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <label className="text-sm text-neutral-600 mb-2 block">Location Filter</label>
-                <Select value={selectedHotspot} onValueChange={setSelectedHotspot}>
-                  <SelectTrigger className="bg-white border-neutral-200">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
-                    {nearbyHotspots.map((hotspot) => (
-                      <SelectItem key={hotspot.id} value={hotspot.id}>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-3 h-3" />
-                          {hotspot.name}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Emotion Trends */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Card className="bg-white border-neutral-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-neutral-800">
-                  <TrendingUp className="w-5 h-5" />
-                  Campus Mood
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {emotionClusters.slice(0, 4).map((cluster) => (
-                    <div
-                      key={cluster.emotion}
-                      className="p-3 bg-neutral-50 rounded-lg border border-neutral-200 text-center"
-                    >
-                      <div className="text-lg mb-1">
-                        {emotions.find(e => e.value === cluster.emotion)?.icon || "💫"}
-                      </div>
-                      <div className="text-sm font-medium text-neutral-800 capitalize">
-                        {cluster.emotion}
-                      </div>
-                      <div className="text-xs text-neutral-600">
-                        {cluster.count} people
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {emotionClusters.length === 0 && (
-                  <div className="text-center text-neutral-500 py-8 italic">No trending emotions right now. The campus is quietly listening.</div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Real-time Whisper Feed */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: 0.6 }}
             className="space-y-6"
           >
-            <h2 className="text-xl font-semibold text-neutral-800 flex items-center gap-2">
-              <Sparkles className="w-5 h-5" />
-              Live Whispers
-            </h2>
-            
-            <RealtimeWhisperFeed 
-              showRealtimeIndicator={true}
-              maxWhispers={20}
-            />
+            {whispers.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-4xl mb-4">🪶</div>
+                <p className="text-neutral-600 italic">
+                  The courtyard is quiet today. Perfect for reflection.
+                </p>
+              </div>
+            ) : (
+              whispers.map((whisper, index) => (
+                <motion.div
+                  key={whisper.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.6, 
+                    delay: index * 0.1,
+                    ease: "easeOut"
+                  }}
+                >
+                  <SoftWhisperCard
+                    whisper={whisper}
+                    isAI={(whisper as any).isAIGenerated ?? (whisper as any).is_ai_generated}
+                    delay={index * 0.2}
+                    onTap={() => handleWhisperTap(whisper)}
+                    onLongPress={() => handleWhisperLongPress(whisper)}
+                    onSwipeLeft={() => handleWhisperSwipeLeft(whisper)}
+                    onHeart={() => handleWhisperHeart(whisper)}
+                  />
+                </motion.div>
+              ))
+            )}
           </motion.div>
 
-          {/* Ambient Whisper Fallback */}
-          {whispers.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="space-y-4"
-            >
-              <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
-                <Bot className="w-5 h-5" />
-                Ambient Whispers
-              </h3>
-              
-              <AmbientWhisperManager
-                whisperCount={whispers.length}
-                dominantEmotion={dominantEmotion}
-                isActive={true}
-                onWhisperGenerated={(whisper) => {
-                  // Handle ambient whisper generation
-                  console.log('Ambient whisper generated:', whisper);
-                }}
-              />
-            </motion.div>
-          )}
-
-          {/* AI Echo Bot */}
+          {/* Embedded Bench Composer */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="space-y-4"
+            transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
-              <Bot className="w-5 h-5" />
-              The Listener
-            </h3>
-            
-            <AIEchoBot 
-              isActive={true}
-              whisperCount={whispers.length}
-              dominantEmotion={emotionClusters[0]?.emotion || 'calm'}
+            <EmbeddedBenchComposer
+              onWhisperCreate={handleWhisperCreate}
             />
-          </motion.div>
-
-          {/* Live Zone Activity */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="space-y-4"
-          >
-            <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
-              <MessageCircle className="w-5 h-5" />
-              Live Zone Activity
-            </h3>
-            
-            <LiveZoneActivity />
           </motion.div>
         </div>
       </div>
@@ -461,4 +239,4 @@ const HomeFeed: React.FC = () => {
   );
 };
 
-export default HomeFeed;
+export default Whispers;

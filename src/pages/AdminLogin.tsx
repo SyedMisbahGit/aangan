@@ -45,7 +45,7 @@ const AdminLogin: React.FC = () => {
           {error && <div className="text-red-600 text-sm mb-2 italic">{error}</div>}
           <button
             type="submit"
-            className="w-full bg-dream-blue hover:bg-dream-purple text-white font-semibold py-2 px-4 rounded-xl shadow-soft transition focus:outline-none focus:ring-2 focus:ring-dream-purple focus:ring-offset-2"
+            className="w-full bg-aangan-primary hover:bg-aangan-accent text-white font-semibold py-2 px-4 rounded-xl shadow-aangan-md transition focus:outline-none focus:ring-2 focus:ring-aangan-accent focus:ring-offset-2"
           >
             Login
           </button>

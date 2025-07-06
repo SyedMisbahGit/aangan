@@ -1,492 +1,201 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Send,
-  Shield,
-  AlertTriangle,
-  Heart,
-  Brain,
-  Megaphone,
-  Lightbulb,
-  Feather,
-  Moon,
-  Sparkles,
-  Mic,
-  FileText,
-  Clock,
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-// import ModerationFeedback from '@/components/ModerationFeedback';
-import { cn } from "@/lib/utils";
-import { theme } from "../../theme";
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Send, Sparkles, Heart, Wind, Sun, Moon, Cloud, Leaf } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 
-interface PostCreatorProps {
-  onPost: (content: string, zone: string, expiresAt?: boolean) => void;
-  loading?: boolean;
+interface EmbeddedBenchComposerProps {
+  onWhisperCreate?: (content: string, emotion: string, useAI: boolean) => void;
+  className?: string;
 }
 
-interface ModerationResult {
-  action: string;
-  confidence: number;
-  reason: string;
-  suggestions?: string[];
-}
+export const EmbeddedBenchComposer: React.FC<EmbeddedBenchComposerProps> = ({
+  onWhisperCreate,
+  className = ""
+}) => {
+  const [content, setContent] = useState('');
+  const [selectedEmotion, setSelectedEmotion] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [useAI, setUseAI] = useState(false);
+  const [isComposing, setIsComposing] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-const zonePlaceholder = [
-  "Behind Admin Block Bench",
-  "PG Hostel Rooftop",
-  "Tapri near Bus Gate",
-  "Canteen Steps",
-  "Library Silence Zone",
-  "Hostel G Whisper Wall",
-  "Udaan Lawn",
-  "Exam Fog Corner",
-];
-
-const PostCreator: React.FC<PostCreatorProps> = ({ onPost, loading }) => {
-  const [content, setContent] = useState("");
-  const [zone, setZone] = useState("");
-  const [zoneHint, setZoneHint] = useState(
-    () => zonePlaceholder[Math.floor(Math.random() * zonePlaceholder.length)],
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [moderationResult, setModerationResult] =
-    useState<ModerationResult | null>(null);
-  const [toneHint, setToneHint] = useState("");
-  const [languageHint, setLanguageHint] = useState("");
-  const [isMidnightWindow, setIsMidnightWindow] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [draftLoaded, setDraftLoaded] = useState(false);
-  const [enableExpiry, setEnableExpiry] = useState(false);
-  const { toast } = useToast();
-
-  // Check midnight window (12 AM - 1 AM)
-  useEffect(() => {
-    const checkMidnightWindow = () => {
-      const now = new Date();
-      const currentHour = now.getHours();
-      setIsMidnightWindow(currentHour === 0);
-    };
-
-    checkMidnightWindow();
-    const interval = setInterval(checkMidnightWindow, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Load draft from diary if available
-  useEffect(() => {
-    const draft = localStorage.getItem("whisper-draft");
-    if (draft && !draftLoaded) {
-      try {
-        const parsed = JSON.parse(draft);
-        setContent(parsed.content);
-        setToneHint(parsed.mood ? `${parsed.mood} thoughts detected` : "");
-        setDraftLoaded(true);
-        localStorage.removeItem("whisper-draft");
-
-        toast({
-          title: "Draft loaded from diary",
-          description: "Your private thoughts are ready to share.",
-        });
-      } catch (e) {
-        // Invalid draft format, ignore
-      }
-    }
-  }, [draftLoaded, toast]);
-
-  const categories = [
-    { id: "confession", label: "Secret Thoughts", icon: Heart },
-    { id: "academic", label: "Study Struggles", icon: Brain },
-    { id: "campus-alert", label: "Campus Updates", icon: Megaphone },
-    { id: "mental-health", label: "Inner Feelings", icon: Brain },
-    { id: "innovation", label: "Ideas & Events", icon: Lightbulb },
-    { id: "callout", label: "Concerns", icon: AlertTriangle },
-    ...(isMidnightWindow
-      ? [{ id: "midnight", label: "Midnight Confessions", icon: Moon }]
-      : []),
+  const emotions = [
+    { id: 'joy', icon: Sun, color: 'from-yellow-400 to-orange-400', label: 'Joy' },
+    { id: 'peace', icon: Cloud, color: 'from-blue-400 to-indigo-400', label: 'Peace' },
+    { id: 'nostalgia', icon: Moon, color: 'from-purple-400 to-pink-400', label: 'Nostalgia' },
+    { id: 'reflection', icon: Wind, color: 'from-gray-400 to-slate-400', label: 'Reflection' },
+    { id: 'love', icon: Heart, color: 'from-rose-400 to-red-400', label: 'Love' },
+    { id: 'growth', icon: Leaf, color: 'from-green-400 to-emerald-400', label: 'Growth' }
   ];
 
-  const detectLanguageAndContext = (text: string) => {
-    if (text.length < 5) return { tone: "", language: "" };
+  const handleSubmit = async () => {
+    if (!content.trim() || !selectedEmotion) return;
 
-    // Enhanced campus context detection
-    const campusTerms =
-      /\b(hostel|library|canteen|mess|prof|professor|exam|assignment|placement|internship|semester|lab|class|lecture|admin|sports|ground|block|wing|floor|warden|dean|hod|cr|attendance|bunk|campus|college|university|fest|techfest|cultfest|roommate|seniors|juniors|batch|branch|department|cse|ece|mech|civil|biotech|chemical|hostel\s*[a-z]|block\s*[a-z]|room\s*\d+|floor\s*\d+)\b/gi;
-
-    const emotionalTerms =
-      /\b(stressed|anxious|excited|worried|happy|sad|confused|overwhelmed|lonely|grateful|frustrated|exhausted|pumped|nervous|chill|vibes|mood|feels|energy|peaceful|restless|hopeful|vulnerable|curious|melancholy)\b/gi;
-
-    const academicStress =
-      /\b(assignment|deadline|exam|test|quiz|viva|presentation|project|submission|marks|grades|cgpa|sgpa|backlog|fail|pass|study|revision|syllabus|portion|internal|external|midsem|endsem)\b/gi;
-
-    const socialContext =
-      /\b(friends|friendship|relationship|crush|love|breakup|alone|group|party|hang|out|gossip|drama|fight|misunderstanding|support|care|trust|betray)\b/gi;
-
-    // Language detection patterns (enhanced)
-    const hinglishPattern =
-      /\b(bhai|yaar|boss|kya|hai|nahi|achha|thik|pareshaan|tension|chill|maar|dekh|arre|yahan|wahan|kuch|koi|matlab|samjha|pagal|bindaas|bakwas|chutiya|bc|mc|sala|arre|yeh|woh|toh|mere|tera|uska|kitna|bahut|thoda|kaafi|bilkul|sach|jhooth|dekho|suno|bolo|chalo|aao|jao|karo|mat|kyun|kaise|kahan|kab|kaun)\b/gi;
-
-    const southIndianPattern =
-      /\b(enna|da|ra|machcha|mama|anna|akka|scene|illa|super|mass|kalakkal|bindass|scene|set|lite|saaar|machan|dude|bro|dei|poda|adipoli|semma|gethu|vera|level)\b/gi;
-
-    const englishSlangs =
-      /\b(bruh|dude|mate|lit|fire|sus|cap|bet|facts|mood|vibe|flex|salty|cringe|stan|periodt|no cap|fr|ong|lowkey|highkey|mid|based|cringe|bussin|slaps|hits different)\b/gi;
-
-    let language = "English";
-    if (hinglishPattern.test(text)) language = "Hinglish Mix";
-    else if (southIndianPattern.test(text)) language = "Regional English";
-    else if (englishSlangs.test(text)) language = "Gen-Z English";
-
-    // Enhanced tone detection
-    let tone = "";
-    if (campusTerms.test(text) && academicStress.test(text)) {
-      tone = "Academic stress detected 📚";
-    } else if (campusTerms.test(text) && socialContext.test(text)) {
-      tone = "Campus social vibes 👥";
-    } else if (campusTerms.test(text)) {
-      tone = "Campus life context 🏫";
-    } else if (emotionalTerms.test(text)) {
-      tone = "Emotional depth sensed 💙";
-    } else if (
-      text.includes("...") ||
-      text.includes("😔") ||
-      text.includes("💔")
-    ) {
-      tone = "Heavy feelings acknowledged 🤗";
-    } else if (text.length > 10) {
-      tone = "Ready to whisper this thought 🌙";
+    setIsComposing(true);
+    
+    try {
+      if (onWhisperCreate) {
+        await onWhisperCreate(content, selectedEmotion, useAI);
+      }
+      
+      // Reset form
+      setContent('');
+      setSelectedEmotion('');
+      setIsExpanded(false);
+      setIsComposing(false);
+    } catch (error) {
+      console.error('Error creating whisper:', error);
+      setIsComposing(false);
     }
-
-    return { tone, language };
   };
 
-  const moderateContent = (text: string) => {
-    const flags = [];
-    const confidence = 0.95;
-    const suggestions: string[] = [];
-
-    // Enhanced identity detection for multilingual content
-    const phonePattern = /\b(\d{10}|\+91\d{10}|91\d{10})\b/gi;
-    const rollNumberPattern =
-      /\b(roll\s*no|student\s*id|reg\s*no|admission\s*no|exam\s*roll|id\s*no|registration|enrollment)[\s:]*([A-Z0-9]{6,15})\b/gi;
-    const namePattern =
-      /\b(my name is|i am|naam hai|called me|mera naam|i'm)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b/gi;
-    const emailPattern =
-      /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/gi;
-
-    if (phonePattern.test(text)) {
-      flags.push("Contains phone number");
-      suggestions.push("Consider removing phone numbers for privacy");
-    }
-
-    if (rollNumberPattern.test(text)) {
-      flags.push("Contains potential student ID");
-      suggestions.push(
-        "Try using 'my roll number' instead of the actual number",
-      );
-    }
-
-    if (namePattern.test(text)) {
-      flags.push("May reveal personal name");
-      suggestions.push("Consider using 'someone' or 'a friend' instead");
-    }
-
-    if (emailPattern.test(text)) {
-      flags.push("Contains email address");
-      suggestions.push("Remove email for complete anonymity");
-    }
-
-    // Enhanced location detection
-    const specificLocationPattern =
-      /\b(hostel [A-Z]|block [A-Z]|wing [A-Z]|floor \d+|room \d+|[A-Z]\d{3}|hostel\s*[a-z]|block\s*[a-z])\b/gi;
-    const addressPattern =
-      /\b(house\s*no|flat\s*no|door\s*no|pin\s*code|pincode|zipcode)[\s:]*([A-Z0-9]{2,10})\b/gi;
-
-    if (specificLocationPattern.test(text) || addressPattern.test(text)) {
-      flags.push("Contains specific location details");
-      suggestions.push(
-        "Try using general terms like 'my hostel' or 'my floor'",
-      );
-    }
-
-    // Mental health detection (enhanced for multilingual)
-    const distressSignals =
-      /\b(suicide|kill myself|end it all|can't take it|give up|marna hai|mar jaana|khatam kar|death|die|finished|done|over|khatam|enough|can't handle|breaking point|no point|useless|worthless)\b/gi;
-    const selfHarmSignals =
-      /\b(cut myself|hurt myself|harm|self harm|self-harm|blade|razor|pain|deserve pain)\b/gi;
-
-    if (distressSignals.test(text) || selfHarmSignals.test(text)) {
-      flags.push("Mental health concern detected");
-      suggestions.push("Campus counseling services are available 24/7");
-      suggestions.push("You're not alone - please reach out for support");
-      suggestions.push("Consider speaking with a trusted friend or counselor");
-      suggestions.push(
-        "Your wellbeing matters more than any academic pressure",
-      );
-    }
-
-    // Enhanced discrimination detection
-    const casteDiscrimination =
-      /\b(chamar|bhangi|quota|reservation\s*abuse|caste|brahmin|lower\s*caste|upper\s*caste|sc|st|obc|general\s*category|merit|deserving|undeserving)\b/gi;
-    const regionalDiscrimination =
-      /\b(northie|southie|bhaiya|madrasi|chinki|nepali|bihari|up\s*wala|punjabi|mallu|gulti|ghati|bong)\b/gi;
-    const genderDiscrimination =
-      /\b(slut|whore|characterless|easy|desperate|gold digger|feminazi|simp|beta|alpha|toxic masculinity)\b/gi;
-
-    if (
-      casteDiscrimination.test(text) ||
-      regionalDiscrimination.test(text) ||
-      genderDiscrimination.test(text)
-    ) {
-      flags.push("Contains potentially discriminatory language");
-      suggestions.push("Let's keep discussions respectful to all communities");
-      suggestions.push("Campus is diverse - embrace differences with kindness");
-    }
-
-    return { flags, confidence, suggestions };
-  };
-
-  // Voice to text placeholder function
-  const startVoiceInput = () => {
-    setIsListening(true);
-
-    // Placeholder for voice input
-    toast({
-      title: "Voice input",
-      description: "Voice-to-whisper feature coming soon...",
-    });
-
+  const handleExpand = () => {
+    setIsExpanded(true);
     setTimeout(() => {
-      setIsListening(false);
-    }, 2000);
+      textareaRef.current?.focus();
+    }, 100);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!content.trim() || !zone) {
-      toast({
-        title: "Incomplete whisper",
-        description: "Please add your thoughts and choose a zone.",
-        variant: "destructive",
-      });
-      return;
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      handleSubmit();
     }
-
-    setIsSubmitting(true);
-
-    const moderation = moderateContent(content);
-
-    if (moderation.flags.length > 0) {
-      setModerationResult({
-        action: "flagged",
-        confidence: moderation.confidence,
-        reason: moderation.flags.join(". "),
-        suggestions: moderation.suggestions,
-      });
-
-      toast({
-        title: "Content needs review",
-        description: "Please review the suggestions before sharing.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    setModerationResult({
-      action: "approved",
-      confidence: moderation.confidence,
-      reason: "Your whisper meets community guidelines",
-      suggestions: moderation.suggestions.length > 0 ? moderation.suggestions : undefined,
-    });
-
-    setTimeout(() => {
-      const toastTitle =
-        isMidnightWindow && zone === "midnight"
-          ? "Midnight whisper released into the void"
-          : "Your whisper has been heard";
-
-      toast({
-        title: toastTitle,
-        description: "Shared safely and anonymously with the campus.",
-      });
-      setContent("");
-      setZone("");
-      setModerationResult(null);
-      setToneHint("");
-      setLanguageHint("");
-      setIsSubmitting(false);
-      setDraftLoaded(false);
-      onPost(content, zone, enableExpiry);
-    }, 1500);
   };
-
-  const selectedCategory = categories.find((cat) => cat.id === zone);
-
-  // Modal open state (for demo, always open)
-  const [open, setOpen] = useState(true);
 
   return (
-    <AnimatePresence>
-      {open && (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className={`relative ${className}`}
+    >
+      <div className="bg-white/60 backdrop-blur-lg border border-white/40 rounded-2xl shadow-sm overflow-hidden">
+        {!isExpanded ? (
+          // Collapsed state - bench invitation
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ background: "rgba(40, 38, 55, 0.18)", backdropFilter: "blur(8px)" }}
-        >
-          <motion.div
-            initial={{ scale: 0.96, opacity: 0.7 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.96, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 180, damping: 18 }}
-            className="w-full max-w-lg mx-auto"
+            onClick={handleExpand}
+            className="p-6 cursor-pointer hover:bg-white/20 transition-colors"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <div className="card p-8" style={{ fontFamily: theme.font }}>
-              {/* Header */}
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold mb-1" style={{ color: theme.accent }}>
-                  Share Your Whisper
-                </h2>
-                <p className="text-sm" style={{ color: theme.textSecondary }}>
-                  What's on your mind tonight?
-                </p>
-                {draftLoaded && (
-                  <Badge style={{ background: theme.highlight, color: '#fff', marginLeft: 8 }}>
-                    <FileText className="h-3 w-3 mr-1" />From diary
-                  </Badge>
-                )}
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-rose-100 to-blue-100 rounded-full flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-neutral-600" />
               </div>
-
-              {/* Content Input */}
-              <Textarea
-                id="whisper-content"
-                name="whisper-content"
-                placeholder="Let your thoughts drift onto the page..."
-                value={content}
-                onChange={(e) => {
-                  setContent(e.target.value);
-                  const { tone, language } = detectLanguageAndContext(e.target.value);
-                  setToneHint(tone);
-                  setLanguageHint(language);
-                }}
-                className="border border-neutral-300 text-base rounded-xl bg-[#fdfdfd] text-neutral-800 placeholder:text-neutral-500 resize-none h-32 mb-2 transition-all duration-200 ease-in-out focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-300 focus:shadow-sm"
-                maxLength={500}
-                style={{ fontFamily: theme.font, background: theme.card, color: theme.textPrimary }}
-                onFocus={() => {
-                  if (window.visualViewport) {
-                    setTimeout(() => {
-                      window.scrollTo({
-                        top: document.body.scrollHeight,
-                        behavior: 'smooth',
-                      });
-                    }, 200);
-                  }
-                }}
-              />
-
-              {/* Character Count & Context Detection */}
-              <div className="flex items-center justify-between text-sm mb-2">
-                <span style={{ color: theme.textSecondary }}>{content.length}/500</span>
-                {languageHint && (
-                  <span style={{ color: theme.accent }}>{languageHint}</span>
-                )}
-                {toneHint && (
-                  <span style={{ color: theme.highlight }}>{toneHint}</span>
-                )}
-              </div>
-
-              {/* Zone Selection */}
-              <Select value={zone} onValueChange={setZone}>
-                <SelectTrigger className="bg-white border border-[#ececec] text-[#2d2d2d] rounded-xl mb-2">
-                  <SelectValue placeholder="Choose your zone..." />
-                </SelectTrigger>
-                <SelectContent className="bg-white border border-[#ececec] rounded-xl">
-                  {categories.map((cat) => (
-                    <SelectItem
-                      key={cat.id}
-                      value={cat.id}
-                      className="text-[#2d2d2d] hover:bg-[#f8f5f1]"
-                    >
-                      {cat.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {/* Selected Zone Display */}
-              {selectedCategory && (
-                <div className="flex items-center space-x-3 p-3 bg-[#f8f5f1] rounded-xl border border-[#ececec] mb-2">
-                  <selectedCategory.icon className="h-5 w-5" style={{ color: theme.accent }} />
-                  <span style={{ color: theme.accent, fontWeight: 500 }}>
-                    Whispering from {selectedCategory.label.toLowerCase()}
-                  </span>
-                </div>
-              )}
-
-              {/* Zone Hint */}
-              <div className="text-xs text-center bg-[#f8f5f1] p-3 rounded-xl mb-2" style={{ color: theme.textSecondary }}>
-                {zoneHint}
-              </div>
-
-              {/* Expiry Toggle */}
-              <div className="flex items-center justify-between p-3 bg-[#f8f5f1] rounded-xl mb-2">
-                <div className="flex items-center space-x-2">
-                  <Clock className="h-4 w-4" style={{ color: theme.accent }} />
-                  <Label htmlFor="expiry-toggle" className="text-sm" style={{ color: theme.textPrimary }}>
-                    Auto-expire after 24 hours
-                  </Label>
-                </div>
-                <Switch
-                  id="expiry-toggle"
-                  checked={enableExpiry}
-                  onCheckedChange={setEnableExpiry}
-                />
-              </div>
-
-              {/* Submit Button */}
-              <Button
-                onClick={handleSubmit}
-                disabled={!content.trim() || !zone || isSubmitting}
-                className={cn(
-                  "w-full rounded-xl py-4 text-white font-semibold",
-                  loading && "opacity-60 pointer-events-none"
-                )}
-                style={{ background: theme.accent, fontFamily: theme.font }}
-              >
-                <Send className="h-5 w-5 mr-2" />
-                {isSubmitting ? "Whispering..." : "Share Anonymously"}
-              </Button>
-
-              {/* Safety Notice */}
-              <div className="text-xs text-center bg-[#f8f5f1] p-3 rounded-xl mt-3" style={{ color: theme.textSecondary }}>
-                Your thoughts are safe here • Complete anonymity guaranteed • Express in any language
-              </div>
-
-              {/* Moderation Feedback */}
-              {/* {moderationResult && (
-                <ModerationFeedback moderationResult={moderationResult} />
-              )} */}
+              <span className="text-neutral-600 font-medium italic">
+                Sit for a while… What's on your heart today?
+              </span>
             </div>
           </motion.div>
+        ) : (
+          // Expanded state - composer
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: 'auto' }}
+            exit={{ height: 0 }}
+            className="p-6 space-y-4"
+          >
+            {/* Emotion picker - radial bloom */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-neutral-700">How are you feeling?</label>
+              <div className="grid grid-cols-3 gap-3">
+                {emotions.map((emotion) => {
+                  const Icon = emotion.icon;
+                  const isSelected = selectedEmotion === emotion.id;
+                  
+                  return (
+                    <motion.button
+                      key={emotion.id}
+                      onClick={() => setSelectedEmotion(emotion.id)}
+                      className={`relative p-3 rounded-xl border-2 transition-all duration-200 ${
+                        isSelected 
+                          ? `bg-gradient-to-br ${emotion.color} border-white shadow-lg` 
+                          : 'bg-white/50 border-white/30 hover:bg-white/70'
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <div className="flex flex-col items-center gap-2">
+                        <Icon className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-neutral-600'}`} />
+                        <span className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-neutral-600'}`}>
+                          {emotion.label}
+                        </span>
+                      </div>
+                      
+                      {isSelected && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center"
+                        >
+                          <div className="w-2 h-2 bg-gradient-to-br from-rose-400 to-blue-400 rounded-full" />
+                        </motion.div>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+              </div>
+
+            {/* Content textarea */}
+            <div className="space-y-2">
+              <Textarea
+                ref={textareaRef}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Share what's in your heart..."
+                className="min-h-[100px] resize-none border-white/30 bg-white/50 backdrop-blur-sm focus:bg-white/70 focus:border-white/50"
+                maxLength={500}
+              />
+              <div className="flex items-center justify-between text-xs text-neutral-500">
+                <span>{content.length}/500</span>
+                <div className="flex items-center gap-2">
+                  <span>Let AI help me whisper</span>
+                  <Switch
+                    checked={useAI}
+                    onCheckedChange={setUseAI}
+                    className="scale-75"
+                  />
+                </div>
+              </div>
+              </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center justify-between pt-2">
+              <Button
+                variant="ghost"
+                onClick={() => setIsExpanded(false)}
+                className="text-neutral-500 hover:text-neutral-700"
+              >
+                Cancel
+              </Button>
+              
+              <Button
+                onClick={handleSubmit}
+                disabled={!content.trim() || !selectedEmotion || isComposing}
+                className="bg-gradient-to-r from-rose-500 to-blue-500 hover:from-rose-600 hover:to-blue-600 text-white px-6"
+              >
+                {isComposing ? (
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Sparkles className="w-4 h-4" />
+                  </motion.div>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 mr-2" />
+                    Whisper
+                  </>
+                )}
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </div>
         </motion.div>
-      )}
-    </AnimatePresence>
   );
 };
-
-export default PostCreator;

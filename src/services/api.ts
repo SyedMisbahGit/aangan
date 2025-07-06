@@ -96,7 +96,7 @@ export const createWhisperWithExpiry = async (
 ): Promise<Whisper> => {
   const data: CreateWhisperData = {
     content,
-    emotion: emotion as any,
+    emotion: emotion as "joy" | "nostalgia" | "calm" | "anxiety" | "hope" | "love",
     zone,
     ...(expiresAt && { expiresAt: new Date().toISOString() })
   };
@@ -194,8 +194,8 @@ export const useCreateWhisper = () => {
       queryClient.invalidateQueries({ queryKey: ["whispers"] });
       
       // Add to real-time context if available
-      if (typeof window !== 'undefined' && (window as any).realtimeService) {
-        (window as any).realtimeService.broadcastWhisper(newWhisper);
+      if (typeof window !== 'undefined' && (window as Window & { realtimeService?: { broadcastWhisper: (whisper: Whisper) => void } }).realtimeService) {
+        (window as Window & { realtimeService?: { broadcastWhisper: (whisper: Whisper) => void } }).realtimeService!.broadcastWhisper(newWhisper);
       }
       
       // Dispatch whisper created event for milestones

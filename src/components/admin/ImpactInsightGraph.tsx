@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -162,7 +162,7 @@ const ImpactInsightGraph: React.FC = () => {
   ]);
 
   // AI Analysis Functions
-  const calculateImpactMetrics = (): ImpactMetrics => {
+  const calculateImpactMetrics = useCallback((): ImpactMetrics => {
     const totalReach = whisperData.reduce((sum, w) => sum + w.reach, 0);
     const avgEngagement = whisperData.reduce((sum, w) => sum + w.engagement, 0) / whisperData.length;
     const avgSentiment = whisperData.reduce((sum, w) => sum + w.sentiment, 0) / whisperData.length;
@@ -214,9 +214,9 @@ const ImpactInsightGraph: React.FC = () => {
       peakHours,
       emotionalDistribution
     };
-  };
+  }, [whisperData]);
 
-  const identifyViralWhispers = (): ViralWhisper[] => {
+  const identifyViralWhispers = useCallback((): ViralWhisper[] => {
     return whisperData
       .map(w => ({
         whisperId: w.whisperId,
@@ -229,7 +229,7 @@ const ImpactInsightGraph: React.FC = () => {
       }))
       .sort((a, b) => b.viralFactor - a.viralFactor)
       .slice(0, 3);
-  };
+  }, [whisperData]);
 
   useEffect(() => {
     setIsAnalyzing(true);
@@ -238,7 +238,7 @@ const ImpactInsightGraph: React.FC = () => {
       setViralWhispers(identifyViralWhispers());
       setIsAnalyzing(false);
     }, 1500);
-  }, [timeRange, selectedZone]);
+  }, [timeRange, selectedZone, calculateImpactMetrics, identifyViralWhispers]);
 
   const getSentimentColor = (sentiment: string) => {
     const colors = {

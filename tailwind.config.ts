@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
-import { dreamTheme, typography, spacing, borderRadius, shadows, animations, zIndex } from "./src/theme";
+import { aanganTheme, typography, spacing, borderRadius, shadows, animations, zIndex, emotionColors, zoneThemes } from "./src/theme";
 
 const config: Config = {
   darkMode: ["class"],
@@ -12,87 +12,71 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // Dream Pages Color System
+      // Aangan v1.6 Courtyard Color System
       colors: {
-        // Light mode colors
-        dream: {
+        // Main courtyard colors
+        aangan: {
           // Background colors
-          background: dreamTheme.light.background,
-          surface: dreamTheme.light.surface,
-          card: dreamTheme.light.card,
-          paper: dreamTheme.light.paper,
+          background: aanganTheme.background,
+          surface: aanganTheme.surface,
+          card: aanganTheme.card,
+          paper: aanganTheme.paper,
           
           // Border and shadow
-          border: dreamTheme.light.border,
-          shadow: dreamTheme.light.shadow,
+          border: aanganTheme.border,
+          shadow: aanganTheme.shadow,
           
           // Text colors
-          "text-primary": dreamTheme.light.textPrimary,
-          "text-secondary": dreamTheme.light.textSecondary,
-          "text-muted": dreamTheme.light.textMuted,
-          "text-accent": dreamTheme.light.textAccent,
+          "text-primary": aanganTheme.textPrimary,
+          "text-secondary": aanganTheme.textSecondary,
+          "text-muted": aanganTheme.textMuted,
+          "text-accent": aanganTheme.textAccent,
           
           // Accent colors
-          primary: dreamTheme.light.primary,
-          secondary: dreamTheme.light.secondary,
-          accent: dreamTheme.light.accent,
-          highlight: dreamTheme.light.highlight,
+          primary: aanganTheme.primary,
+          secondary: aanganTheme.secondary,
+          accent: aanganTheme.accent,
+          highlight: aanganTheme.highlight,
           
           // Emotional tones
-          joy: dreamTheme.light.joy,
-          calm: dreamTheme.light.calm,
-          nostalgia: dreamTheme.light.nostalgia,
-          hope: dreamTheme.light.hope,
-          anxiety: dreamTheme.light.anxiety,
-          loneliness: dreamTheme.light.loneliness,
+          joy: aanganTheme.joy,
+          calm: aanganTheme.calm,
+          nostalgia: aanganTheme.nostalgia,
+          hope: aanganTheme.hope,
+          anxiety: aanganTheme.anxiety,
+          loneliness: aanganTheme.loneliness,
         },
         
-        // Dark mode colors
-        "dream-dark": {
-          // Background colors
-          background: dreamTheme.dark.background,
-          surface: dreamTheme.dark.surface,
-          card: dreamTheme.dark.card,
-          paper: dreamTheme.dark.paper,
-          
-          // Border and shadow
-          border: dreamTheme.dark.border,
-          shadow: dreamTheme.dark.shadow,
-          
-          // Text colors
-          "text-primary": dreamTheme.dark.textPrimary,
-          "text-secondary": dreamTheme.dark.textSecondary,
-          "text-muted": dreamTheme.dark.textMuted,
-          "text-accent": dreamTheme.dark.textAccent,
-          
-          // Accent colors
-          primary: dreamTheme.dark.primary,
-          secondary: dreamTheme.dark.secondary,
-          accent: dreamTheme.dark.accent,
-          highlight: dreamTheme.dark.highlight,
-          
-          // Emotional tones
-          joy: dreamTheme.dark.joy,
-          calm: dreamTheme.dark.calm,
-          nostalgia: dreamTheme.dark.nostalgia,
-          hope: dreamTheme.dark.hope,
-          anxiety: dreamTheme.dark.anxiety,
-          loneliness: dreamTheme.dark.loneliness,
-        },
+        // Emotion interface colors
+        emotion: emotionColors,
+        
+        // Zone theme colors
+        zone: Object.fromEntries(
+          Object.entries(zoneThemes).map(([key, theme]) => [
+            key,
+            {
+              color: theme.color,
+              bg: theme.bg,
+              name: theme.name,
+              subtitle: theme.subtitle,
+              icon: theme.icon
+            }
+          ])
+        ),
         
         // Legacy colors for backward compatibility
-        background: dreamTheme.light.background,
-        card: dreamTheme.light.card,
-        accent: dreamTheme.light.primary,
-        highlight: dreamTheme.light.highlight,
+        background: aanganTheme.background,
+        card: aanganTheme.card,
+        accent: aanganTheme.primary,
+        highlight: aanganTheme.highlight,
         text: {
-          primary: dreamTheme.light.textPrimary,
-          secondary: dreamTheme.light.textSecondary,
+          primary: aanganTheme.textPrimary,
+          secondary: aanganTheme.textSecondary,
         },
-        border: dreamTheme.light.border,
+        border: aanganTheme.border,
       },
       
-      // Typography
+      // Typography - Handwritten meets readable
       fontFamily: {
         sans: [typography.primary],
         serif: [typography.serif],
@@ -100,68 +84,89 @@ const config: Config = {
         mono: [typography.mono],
       },
       
-      // Spacing
+      // Spacing - comfortable courtyard breathing room
       spacing: spacing,
       
-      // Border radius
+      // Border radius - soft, organic courtyard shapes
       borderRadius: borderRadius,
       
-      // Shadows
+      // Shadows - soft, paper-like, aged texture
       boxShadow: {
         ...shadows,
-        // Dream-specific shadows
-        "dream-sm": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
-        "dream-md": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-        "dream-lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-        "dream-xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-        "dream-2xl": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-        "dream-inner": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)",
-        
-        // Dark mode shadows
-        "dream-dark-sm": "0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2)",
-        "dream-dark-md": "0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3)",
-        "dream-dark-lg": "0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3)",
-        "dream-dark-xl": "0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3)",
-        "dream-dark-2xl": "0 25px 50px -12px rgba(0, 0, 0, 0.6)",
-        "dream-dark-inner": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)",
+        // Aangan-specific shadows
+        "aangan-sm": shadows.sm,
+        "aangan-md": shadows.md,
+        "aangan-lg": shadows.lg,
+        "aangan-xl": shadows.xl,
+        "aangan-2xl": shadows["2xl"],
+        "aangan-inner": shadows.inner,
+        "aangan-paper": shadows.paper,
       },
       
-      // Animation durations
+      // Animation durations - gentle, contemplative
       transitionDuration: animations,
       
       // Z-index
       zIndex: zIndex,
       
-      // Custom animations for dreamlike effects
+      // Custom animations for courtyard effects
       keyframes: {
-        "dream-fade-in": {
-          "0%": { opacity: "0", transform: "translateY(10px)" },
+        "aangan-fade-in": {
+          "0%": { opacity: "0", transform: "translateY(15px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        "dream-fade-out": {
+        "aangan-fade-out": {
           "0%": { opacity: "1", transform: "translateY(0)" },
-          "100%": { opacity: "0", transform: "translateY(-10px)" },
+          "100%": { opacity: "0", transform: "translateY(-15px)" },
         },
-        "dream-float": {
+        "aangan-float": {
           "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-5px)" },
+          "50%": { transform: "translateY(-8px)" },
         },
-        "dream-pulse-soft": {
+        "aangan-pulse-soft": {
           "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.8" },
+          "50%": { opacity: "0.85" },
         },
-        "dream-shimmer": {
+        "aangan-shimmer": {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
+        },
+        "aangan-tremble": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "25%": { transform: "translateX(-1px)" },
+          "75%": { transform: "translateX(1px)" },
+        },
+        "aangan-glow": {
+          "0%, 100%": { boxShadow: "0 0 5px rgba(217, 119, 6, 0.3)" },
+          "50%": { boxShadow: "0 0 20px rgba(217, 119, 6, 0.6)" },
+        },
+        "aangan-underline": {
+          "0%": { width: "0%" },
+          "100%": { width: "100%" },
+        },
+        "aangan-burn": {
+          "0%": { opacity: "1", transform: "scale(1)" },
+          "50%": { opacity: "0.5", transform: "scale(1.05)" },
+          "100%": { opacity: "0", transform: "scale(0.8)" },
+        },
+        "aangan-wind": {
+          "0%": { transform: "translateX(-100%)", opacity: "0" },
+          "50%": { opacity: "1" },
+          "100%": { transform: "translateX(100%)", opacity: "0" },
         },
       },
       
       animation: {
-        "dream-fade-in": "dream-fade-in 0.5s ease-out",
-        "dream-fade-out": "dream-fade-out 0.5s ease-in",
-        "dream-float": "dream-float 3s ease-in-out infinite",
-        "dream-pulse-soft": "dream-pulse-soft 2s ease-in-out infinite",
-        "dream-shimmer": "dream-shimmer 2s linear infinite",
+        "aangan-fade-in": "aangan-fade-in 0.6s ease-out",
+        "aangan-fade-out": "aangan-fade-out 0.6s ease-in",
+        "aangan-float": "aangan-float 4s ease-in-out infinite",
+        "aangan-pulse-soft": "aangan-pulse-soft 3s ease-in-out infinite",
+        "aangan-shimmer": "aangan-shimmer 2.5s linear infinite",
+        "aangan-tremble": "aangan-tremble 0.5s ease-in-out",
+        "aangan-glow": "aangan-glow 2s ease-in-out infinite",
+        "aangan-underline": "aangan-underline 0.8s ease-out",
+        "aangan-burn": "aangan-burn 1.5s ease-in-out",
+        "aangan-wind": "aangan-wind 3s ease-in-out infinite",
       },
     },
   },

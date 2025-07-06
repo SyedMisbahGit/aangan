@@ -164,6 +164,15 @@ async function initializeDatabase() {
       FOREIGN KEY (whisper_id) REFERENCES whispers(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS whisper_comments (
+      id TEXT PRIMARY KEY,
+      whisper_id TEXT NOT NULL,
+      content TEXT NOT NULL,
+      guest_id TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (whisper_id) REFERENCES whispers(id) ON DELETE CASCADE
+    );
+
     CREATE TABLE IF NOT EXISTS admin_users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username TEXT UNIQUE NOT NULL,
@@ -357,6 +366,16 @@ const whisperLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 5, // limit each IP to 5 whispers per 10 min
   message: "Too many whispers, please wait a while.",
+  keyGenerator: (req) => {
+    return req.ip || req.connection.remoteAddress || 'unknown';
+  }
+});
+
+// Comment rate-limit: 10 per minute per IP
+const commentLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 10, // limit each IP to 10 comments per minute
+  message: "Too many comments, please wait a while.",
   keyGenerator: (req) => {
     return req.ip || req.connection.remoteAddress || 'unknown';
   }
@@ -784,6 +803,56 @@ app.get("/api/whispers/:id/reactions", async (req, res) => {
   } catch (error) {
     console.error("Error fetching whisper reactions:", error);
     res.status(500).json({ error: "Failed to fetch reactions" });
+  }
+});
+
+// Comment endpoint with rate limiting
+app.post("/api/comments", commentLimiter, async (req, res) => {
+  try {
+    const { whisperId, content, guestId } = req.body;
+    
+    if (!whisperId || !content || !guestId) {
+      return res.status(400).json({ error: "Whisper ID, content, and guest ID are required" });
+    }
+    
+    // Check if whisper exists
+    const whisper = await db.get("SELECT * FROM whispers WHERE id = ?", [whisperId]);
+    if (!whisper) {
+      return res.status(404).json({ error: "Whisper not found" });
+    }
+    
+    // Content moderation pre-filter
+    const BAD_WORDS = ["chutiya", "bc", "mc", "madarchod", "bhosadike", "bhenchod"];
+    const hasBadWord = BAD_WORDS.some(bad => 
+      content.toLowerCase().includes(bad.toLowerCase())
+    );
+    
+    if (hasBadWord) {
+      return res.status(400).json({ error: "content-flagged" });
+    }
+    
+    const id = uuidv4();
+    await db.run(
+      "INSERT INTO whisper_comments (id, whisper_id, content, guest_id) VALUES (?, ?, ?, ?)",
+      [id, whisperId, content, guestId]
+    );
+    
+    const comment = await db.get("SELECT * FROM whisper_comments WHERE id = ?", [id]);
+    comment.timestamp = formatTimestamp(comment.created_at);
+    
+    // Emit real-time comment event
+    io.emit('new-comment', {
+      ...comment,
+      timestamp: formatTimestamp(comment.created_at),
+      realTime: true
+    });
+    
+    console.log(`💬 New comment created: ${id} on whisper ${whisperId}`);
+    
+    res.status(201).json(comment);
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    res.status(500).json({ error: "Failed to create comment" });
   }
 });
 

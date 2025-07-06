@@ -43,7 +43,7 @@ const About: React.FC = () => {
           transition={{ delay: 1.2, duration: 0.8 }}
           className="mt-8 p-4 bg-cream-50 rounded-lg border border-cream-200"
         >
-          <h3 className="font-semibold text-dream-blue mb-2">Privacy Promise</h3>
+          <h3 className="font-semibold text-aangan-primary mb-2">Privacy Promise</h3>
           <p className="text-sm text-inkwell-80">
             Aangan stores <strong>no personal data</strong>. Your whispers are anonymous, 
             your emotions are private, and your identity remains yours alone. 

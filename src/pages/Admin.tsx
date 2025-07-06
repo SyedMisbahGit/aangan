@@ -99,6 +99,7 @@ const Admin: React.FC = () => {
   const [jwt, setJwt] = useState<string | null>(null);
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [loginLoading, setLoginLoading] = useState(false);
 
   // Broadcast Notification State
   const [broadcast, setBroadcast] = useState({ title: "", body: "", url: "" });

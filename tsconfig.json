@@ -1,8 +1,7 @@
 {
-  "files": [],
+  "files": ["src/setupTests.ts"],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    { "path": "./tsconfig.app.json" }
   ],
   "compilerOptions": {
     "baseUrl": ".",
@@ -14,6 +13,10 @@
     "skipLibCheck": true,
     "allowJs": true,
     "noUnusedLocals": false,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "types": ["@testing-library/jest-dom", "jest"],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"]
   }
 }

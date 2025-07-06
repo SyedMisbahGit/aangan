@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, RefreshCw, PenTool } from 'lucide-react';
 import { useShhhNarrator } from '../contexts/ShhhNarratorContext';
@@ -27,13 +27,15 @@ const WhisperPrompt: React.FC<WhisperPromptProps> = ({
   const { nearbyHotspots } = useCUJHotspots();
 
   // Enhanced prompt templates based on context
-  const promptTemplates = {
+  const promptTemplates = useMemo(() => ({
     timeBased: {
       morning: [
-        "The morning light is fresh and new. What do you want to carry with you today?",
-        "Dawn brings possibilities. What's stirring in your heart this morning?",
-        "The day stretches before you like an unwritten page. What story will you tell?",
-        "Morning thoughts are often the purest. What's on your mind as the world wakes up?"
+        "The morning light is fresh and new. What's fresh in your heart today?",
+        "Dawn brings clarity. What's become clear to you?",
+        "Morning whispers are the purest. What pure thought wants to be shared?",
+        "The day has found its rhythm. What rhythm is your heart beating to?",
+        "Afternoon is for reflection. What moment from today deserves to be remembered?",
+        "The light is golden now. What golden thought is worth sharing?"
       ],
       afternoon: [
         "Afternoon sun warms everything it touches. What's warming your soul right now?",
@@ -130,24 +132,20 @@ const WhisperPrompt: React.FC<WhisperPromptProps> = ({
         "Blessings speak in whispers. What blessing is whispering to you?"
       ]
     }
-  };
+  }), []);
 
-  const getRandomPrompt = (prompts: string[]): string => {
+  const getRandomPrompt = useCallback((prompts: string[]): string => {
     return prompts[Math.floor(Math.random() * prompts.length)];
-  };
+  }, []);
 
-  const generatePrompt = async () => {
+  const generatePrompt = useCallback(async () => {
     setIsGenerating(true);
-    
     // Simulate AI generation delay
     await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
-
     const targetZone = zone || narratorState.currentZone;
     const targetMood = mood || narratorState.currentMood;
     const targetTime = time || narratorState.currentTime;
-
     let prompt = '';
-
     // Try zone-specific prompts first
     if (targetZone && promptTemplates.zoneBased[targetZone as keyof typeof promptTemplates.zoneBased]) {
       prompt = getRandomPrompt(promptTemplates.zoneBased[targetZone as keyof typeof promptTemplates.zoneBased]);
@@ -164,15 +162,14 @@ const WhisperPrompt: React.FC<WhisperPromptProps> = ({
     else {
       prompt = "The moment holds its breath, waiting for your story to unfold. What story do you want to tell?";
     }
-
     setCurrentPrompt(prompt);
     onPromptGenerated?.(prompt);
     setIsGenerating(false);
-  };
+  }, [zone, mood, time, narratorState, promptTemplates, getRandomPrompt, onPromptGenerated]);
 
   useEffect(() => {
     generatePrompt();
-  }, [zone, mood, time]);
+  }, [zone, mood, time, generatePrompt]);
 
   const getVariantStyles = () => {
     switch (variant) {

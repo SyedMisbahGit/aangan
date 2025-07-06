@@ -33,7 +33,8 @@ const Onboarding: React.FC = () => {
       return () => clearTimeout(timeout);
     } else {
       // Last step: mark complete and redirect
-      setOnboardingComplete().then(() => navigate('/'));
+      setOnboardingComplete();
+      setTimeout(() => navigate('/'), 500);
     }
   }, [step, setOnboardingComplete, navigate]);
 
@@ -43,7 +44,7 @@ const Onboarding: React.FC = () => {
         <div className="w-full max-w-lg mt-8 mb-2">
           <div className="h-2 bg-inkwell/10 rounded-full overflow-hidden">
             <motion.div
-              className="h-2 bg-dream-accent rounded-full"
+              className="h-2 bg-aangan-accent rounded-full"
               initial={false}
               animate={{ width: `${((step + 1) / steps.length) * 100}%` }}
               transition={{ duration: 0.5, ease: 'easeInOut' }}

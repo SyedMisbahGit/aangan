@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,8 @@ import {
   TreePine,
   Building2,
   Flame,
+  Code,
+  Rocket,
 } from "lucide-react";
 
 interface CUJZone {
@@ -65,123 +67,135 @@ const CUJCampusPulse: React.FC = () => {
     festSeason: false,
   });
 
-  const cujZones = [
+  const cujZones = useMemo(() => [
     {
       id: "1",
-      name: "Hostel Heart",
-      realName: "Student Hostels",
+      name: "Hostel Block",
+      realName: "Student Residences",
       type: "hostel" as const,
+      activity: 85,
+      mood: "cozy",
+      whisperCount: 23,
+      isActive: true,
+      weather: "clear",
+      culturalContext: "Late night study sessions and roommate bonding",
+      ritualActive: true,
+      aura: "warm-glow",
       icon: Home,
-      culturalContext: "Hostel wali stories, late night confessions",
-      aura: "emotion-aura-joy",
-      description: "Late-night laughter, secrets, and stargazing.",
+      description: "Where dreams are dreamed and friendships forged"
     },
     {
       id: "2",
-      name: "Lab Complex",
-      realName: "Science & Tech Labs",
+      name: "Computer Lab",
+      realName: "Tech Innovation Hub",
       type: "lab" as const,
-      icon: TestTube,
-      culturalContext: "Lab ke baad thakan wali feeling",
-      aura: "emotion-aura-loneliness",
-      description: "Stress, anxiety, and silent support.",
+      activity: 92,
+      mood: "focused",
+      whisperCount: 31,
+      isActive: true,
+      weather: "clear",
+      culturalContext: "Code debugging and project collaborations",
+      ritualActive: false,
+      aura: "electric-blue",
+      icon: Code,
+      description: "Where algorithms meet ambition"
     },
     {
       id: "3",
-      name: "Main Quad",
-      realName: "Central Quadrangle",
+      name: "Central Quad",
+      realName: "Academic Heart",
       type: "quad" as const,
-      icon: TreePine,
-      culturalContext: "Chai pe charcha, friendship circles",
-      aura: "emotion-aura-joy",
-      description: "Festival vibes and new beginnings.",
+      activity: 78,
+      mood: "energetic",
+      whisperCount: 19,
+      isActive: true,
+      weather: "sunny",
+      culturalContext: "Campus events and casual conversations",
+      ritualActive: true,
+      aura: "golden-sun",
+      icon: MapPin,
+      description: "The pulse of campus life"
     },
     {
       id: "4",
       name: "Admin Block",
-      realName: "Administrative Block",
+      realName: "Administrative Center",
       type: "admin" as const,
+      activity: 45,
+      mood: "formal",
+      whisperCount: 8,
+      isActive: false,
+      weather: "cloudy",
+      culturalContext: "Official matters and academic planning",
+      ritualActive: false,
+      aura: "professional-gray",
       icon: Building2,
-      culturalContext: "Documentation stress, official matters",
-      aura: "emotion-aura-loneliness",
-      description: "Raw, late-night whispers and secrets.",
+      description: "Where policies meet practice"
     },
     {
       id: "5",
-      name: "Knowledge Hub",
-      realName: "Central Library",
+      name: "Library",
+      realName: "Knowledge Sanctuary",
       type: "library" as const,
+      activity: 67,
+      mood: "peaceful",
+      whisperCount: 15,
+      isActive: true,
+      weather: "clear",
+      culturalContext: "Deep study and intellectual exploration",
+      ritualActive: true,
+      aura: "scholarly-green",
       icon: BookOpen,
-      culturalContext: "Library silence, study pressure",
-      aura: "emotion-aura-nostalgia",
-      description: "Quiet confessions and exam fog.",
+      description: "Where wisdom whispers from every shelf"
     },
     {
       id: "6",
-      name: "Udaan Ground",
-      realName: "Udaan Festival Ground",
+      name: "Udaan Center",
+      realName: "Innovation Hub",
       type: "udaan" as const,
-      icon: Music,
-      culturalContext: "Udaan aftermath, fest memories",
-      aura: "emotion-aura-joy",
-      description: "Late-night laughter, secrets, and stargazing.",
+      activity: 88,
+      mood: "excited",
+      whisperCount: 27,
+      isActive: true,
+      weather: "sunny",
+      culturalContext: "Startup dreams and entrepreneurial spirit",
+      ritualActive: true,
+      aura: "innovative-purple",
+      icon: Rocket,
+      description: "Where ideas take flight"
     },
     {
       id: "7",
-      name: "Canteen Corner",
-      realName: "Student Canteen",
+      name: "Canteen",
+      realName: "Food Court",
       type: "canteen" as const,
+      activity: 95,
+      mood: "social",
+      whisperCount: 42,
+      isActive: true,
+      weather: "clear",
+      culturalContext: "Food conversations and cultural exchange",
+      ritualActive: true,
+      aura: "warm-orange",
       icon: Coffee,
-      culturalContext: "Chai breaks, food discussions",
-      aura: "emotion-aura-joy",
-      description: "Chai-fueled gossip and heart-to-heart talks.",
-    },
-  ];
+      description: "Where chai and conversations flow freely"
+    }
+  ], []);
 
-  const cujMoods = {
-    peaceful: {
-      emoji: "🕊️",
-      color: "text-green-400",
-      bg: "bg-green-400/20",
-      dogri: "Shanti",
-    },
-    excited: {
-      emoji: "✨",
-      color: "text-yellow-400",
-      bg: "bg-yellow-400/20",
-      dogri: "Utsah",
-    },
-    contemplative: {
-      emoji: "🌙",
-      color: "text-blue-400",
-      bg: "bg-blue-400/20",
-      dogri: "Vichar",
-    },
-    stressed: {
-      emoji: "🌀",
-      color: "text-purple-400",
-      bg: "bg-purple-400/20",
-      dogri: "Tension",
-    },
-    joyful: {
-      emoji: "💝",
-      color: "text-pink-400",
-      bg: "bg-pink-400/20",
-      dogri: "Khushi",
-    },
-    nostalgic: {
-      emoji: "💫",
-      color: "text-indigo-400",
-      bg: "bg-indigo-400/20",
-      dogri: "Yaad",
-    },
-    homesick: {
-      emoji: "🏠",
-      color: "text-orange-400",
-      bg: "bg-orange-400/20",
-      dogri: "Ghar ki yaad",
-    },
-  };
+  const cujMoods = useMemo(() => ({
+    peaceful: { emoji: "😌", dogri: "Shanti", context: "Calm & Serene" },
+    energetic: { emoji: "⚡", dogri: "Jazba", context: "Full of Energy" },
+    focused: { emoji: "🎯", dogri: "Dhyan", context: "Deeply Concentrated" },
+    cozy: { emoji: "🏠", dogri: "Aaram", context: "Comfortable & Warm" },
+    social: { emoji: "👥", dogri: "Sangat", context: "Community Spirit" },
+    excited: { emoji: "🚀", dogri: "Josh", context: "Enthusiastic" },
+    formal: { emoji: "👔", dogri: "Reshami", context: "Professional" },
+    nostalgic: { emoji: "🌙", dogri: "Yaad", context: "Reminiscing" },
+    grateful: { emoji: "🙏", dogri: "Shukriya", context: "Thankful" },
+    determined: { emoji: "💪", dogri: "Irada", context: "Strong Will" },
+    curious: { emoji: "🤔", dogri: "Jigyasa", context: "Inquisitive" },
+    inspired: { emoji: "✨", dogri: "Prerna", context: "Motivated" }
+  }), []);
 
   const weatherIcons = {
     clear: Sun,
@@ -260,7 +274,7 @@ const CUJCampusPulse: React.FC = () => {
     const interval = setInterval(updatePulseData, 30000); // Update every 30 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [cujMoods, cujZones]);
 
   const getZoneIcon = (type: CUJZone["type"]) => {
     const zone = cujZones.find((z) => z.type === type);

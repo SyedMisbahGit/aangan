@@ -80,7 +80,7 @@ const Login: React.FC = () => {
         />
         <div className="w-full max-w-md bg-paper-light rounded-2xl shadow-soft p-8 mt-6 border border-cream-200 transition-colors duration-500">
           {magicLinkError ? (
-            <div className="text-center text-2xl text-dream-accent font-poetic py-12">
+            <div className="text-center text-2xl text-aangan-accent font-poetic py-12">
               {magicLinkError}
               <br />
               <Button className="mt-6" onClick={() => { setMagicLinkError(null); window.history.replaceState({}, document.title, '/login'); }}>
@@ -103,7 +103,7 @@ const Login: React.FC = () => {
                 onChange={e => setEmail(e.target.value)}
                 required
                 disabled={sent || loading}
-                                  className="mb-2 bg-cream-50 text-inkwell border border-cream-200 focus:ring-dream-blue"
+                                  className="mb-2 bg-aangan-paper text-aangan-text-primary border border-aangan-border focus:ring-aangan-primary"
                 autoComplete="email"
                 ref={emailInputRef}
               />
@@ -119,7 +119,7 @@ const Login: React.FC = () => {
               ) : (
                 <Button
                   type="submit"
-                  className="w-full bg-dream-blue hover:bg-dream-purple text-white font-semibold py-2 px-4 rounded-xl shadow-soft transition focus:outline-none focus:ring-2 focus:ring-dream-purple focus:ring-offset-2 disabled:opacity-50"
+                  className="w-full bg-aangan-primary hover:bg-aangan-accent text-white font-semibold py-2 px-4 rounded-xl shadow-aangan-md transition focus:outline-none focus:ring-2 focus:ring-aangan-accent focus:ring-offset-2 disabled:opacity-50"
                   disabled={loading}
                 >
                   {loading ? 'Sending...' : 'Send Magic Link'}
@@ -129,7 +129,7 @@ const Login: React.FC = () => {
           )}
           <button
             onClick={handleGuestLogin}
-            className="w-full bg-dream-blue hover:bg-dream-purple text-white font-semibold py-2 px-4 rounded-xl shadow-soft transition focus:outline-none focus:ring-2 focus:ring-dream-purple focus:ring-offset-2 mt-4"
+            className="w-full bg-aangan-primary hover:bg-aangan-accent text-white font-semibold py-2 px-4 rounded-xl shadow-aangan-md transition focus:outline-none focus:ring-2 focus:ring-aangan-accent focus:ring-offset-2 mt-4"
           >
             Continue as Guest
           </button>

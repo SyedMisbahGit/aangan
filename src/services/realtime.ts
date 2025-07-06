@@ -40,7 +40,7 @@ class RealtimeService {
   private isConnected = false;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
-  private listeners: Map<string, Set<Function>> = new Map();
+  private listeners: Map<string, Set<(...args: unknown[]) => void>> = new Map();
 
   constructor() {
     this.initializeSocket();
@@ -261,21 +261,21 @@ class RealtimeService {
   }
 
   // Event listeners
-  on(event: string, callback: Function) {
+  on(event: string, callback: (...args: unknown[]) => void) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
     this.listeners.get(event)!.add(callback);
   }
 
-  off(event: string, callback: Function) {
+  off(event: string, callback: (...args: unknown[]) => void) {
     const eventListeners = this.listeners.get(event);
     if (eventListeners) {
       eventListeners.delete(callback);
     }
   }
 
-  private emit(event: string, data?: any) {
+  private emit(event: string, data?: unknown) {
     const eventListeners = this.listeners.get(event);
     if (eventListeners) {
       eventListeners.forEach(callback => {
@@ -313,14 +313,14 @@ export const useRealtimeWhispers = (callback: (whisper: RealtimeWhisper) => void
   }, [callback]);
 };
 
-export const useRealtimeZoneActivity = (callback: (data: any) => void) => {
+export const useRealtimeZoneActivity = (callback: (data: { zone: string; activity: { users: number; lastActivity: string }; totalActive: number }) => void) => {
   React.useEffect(() => {
     realtimeService.on('zone-activity-update', callback);
     return () => realtimeService.off('zone-activity-update', callback);
   }, [callback]);
 };
 
-export const useRealtimeEmotionPulse = (callback: (data: any) => void) => {
+export const useRealtimeEmotionPulse = (callback: (data: { emotion: string; pulse: { count: number; lastPulse: string }; totalPulses: number }) => void) => {
   React.useEffect(() => {
     realtimeService.on('emotion-pulse-update', callback);
     return () => realtimeService.off('emotion-pulse-update', callback);

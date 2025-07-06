@@ -32,8 +32,9 @@ export const useWhispers = () => {
 export const WhispersProvider = ({ children }: { children: ReactNode }) => {
   const [whispers, setWhispers] = useState<Whisper[]>([]);
   const addWhisper = (whisper: Whisper) => setWhispers((prev) => [whisper, ...prev]);
+  const value: WhispersContextType = { whispers, setWhispers, addWhisper };
   return (
-    <WhispersContext.Provider value={{ whispers, setWhispers, addWhisper }}>
+    <WhispersContext.Provider value={value}>
       {children}
     </WhispersContext.Provider>
   );

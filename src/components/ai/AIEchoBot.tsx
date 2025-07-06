@@ -45,7 +45,7 @@ const AIEchoBot: React.FC<AIEchoBotProps> = ({
   const { toast } = useToast();
 
   // AI Echo generation logic
-  const generateAIEcho = useCallback((whisper: any): AIEcho | null => {
+  const generateAIEcho = useCallback((whisper: { id: string; content: string; emotion: string }): AIEcho | null => {
     const now = new Date();
     const timeSinceLastEcho = lastEchoTime ? now.getTime() - lastEchoTime.getTime() : Infinity;
     
@@ -118,7 +118,7 @@ const AIEchoBot: React.FC<AIEchoBotProps> = ({
   useEffect(() => {
     if (!isActive || !isConnected) return;
 
-    const handleNewWhisper = (whisper: any) => {
+    const handleNewWhisper = (whisper: { id: string; content: string; emotion: string }) => {
       setIsListening(true);
       
       // Simulate AI processing time

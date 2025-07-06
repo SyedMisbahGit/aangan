@@ -19,7 +19,7 @@ import { useRealtime } from '@/contexts/RealtimeContext';
 
 interface ZoneInfo {
   name: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   description: string;
   color: string;
 }

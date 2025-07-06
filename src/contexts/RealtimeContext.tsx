@@ -22,7 +22,7 @@ interface RealtimeContextType {
   totalActiveUsers: number;
   
   // Socket instance
-  socket: any;
+  socket: ReturnType<typeof realtimeService.getSocket>;
   
   // Actions
   joinZone: (zone: string) => void;

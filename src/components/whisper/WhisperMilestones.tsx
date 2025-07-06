@@ -73,7 +73,7 @@ export const WhisperMilestones: React.FC = () => {
     }));
     
     setMilestones(newMilestones);
-  }, []);
+  }, [milestones]);
 
   // Listen for new whispers and update count
   useEffect(() => {

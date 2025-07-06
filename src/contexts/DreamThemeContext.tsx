@@ -1,41 +1,44 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { DreamLoadingScreen } from '../App';
+import { AanganLoadingScreen } from '../App';
 
 type Theme = 'light' | 'dark';
 
-interface DreamThemeContextType {
+interface AanganThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   isInitialized: boolean;
 }
 
-const DreamThemeContext = createContext<DreamThemeContextType | undefined>(undefined);
+const AanganThemeContext = createContext<AanganThemeContextType | undefined>(undefined);
 
-export const useDreamTheme = () => {
-  const context = useContext(DreamThemeContext);
+export const useAanganTheme = () => {
+  const context = useContext(AanganThemeContext);
   if (!context) {
-    throw new Error('useDreamTheme must be used within a DreamThemeProvider');
+    throw new Error('useAanganTheme must be used within an AanganThemeProvider');
   }
   return context;
 };
 
-interface DreamThemeProviderProps {
+// Legacy export for backward compatibility
+export const useDreamTheme = useAanganTheme;
+
+interface AanganThemeProviderProps {
   children: ReactNode;
 }
 
-export const DreamThemeProvider: React.FC<DreamThemeProviderProps> = ({ children }) => {
+export const AanganThemeProvider: React.FC<AanganThemeProviderProps> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>('light');
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
-    const savedTheme = localStorage.getItem('dream-theme') as Theme;
+    const savedTheme = localStorage.getItem('aangan-theme') as Theme;
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     
     const initialTheme = savedTheme || systemTheme;
     setThemeState(initialTheme);
     setIsInitialized(true);
-    console.log('DreamThemeContext ready:', { theme: initialTheme });
+    console.log('AanganThemeContext ready:', { theme: initialTheme });
   }, []);
 
   // Apply theme to document and ensure proper z-index stacking
@@ -60,10 +63,10 @@ export const DreamThemeProvider: React.FC<DreamThemeProviderProps> = ({ children
     root.style.setProperty('--z-toast', '200');
     
     // Save to localStorage
-    localStorage.setItem('dream-theme', theme);
+    localStorage.setItem('aangan-theme', theme);
     
     // Force reflow to ensure theme changes are applied
-    root.offsetHeight;
+    void root.offsetHeight;
   }, [theme, isInitialized]);
 
   // Listen for system theme changes
@@ -75,7 +78,7 @@ export const DreamThemeProvider: React.FC<DreamThemeProviderProps> = ({ children
     const handleChange = (e: MediaQueryListEvent) => {
       const newTheme: Theme = e.matches ? 'dark' : 'light';
       // Only auto-switch if user hasn't manually set a preference
-      if (!localStorage.getItem('dream-theme')) {
+      if (!localStorage.getItem('aangan-theme')) {
         setThemeState(newTheme);
       }
     };
@@ -91,8 +94,8 @@ export const DreamThemeProvider: React.FC<DreamThemeProviderProps> = ({ children
   // Prevent hydration mismatch by not rendering until initialized
   if (!isInitialized) {
     return (
-      <DreamLoadingScreen 
-        message="Warming the Dream Theme..."
+      <AanganLoadingScreen 
+        message="Warming the Aangan Theme..."
         narratorLine="The colors of the campus are still waking up."
         variant="orbs"
       />
@@ -100,8 +103,11 @@ export const DreamThemeProvider: React.FC<DreamThemeProviderProps> = ({ children
   }
 
   return (
-    <DreamThemeContext.Provider value={{ theme, setTheme, isInitialized }}>
+    <AanganThemeContext.Provider value={{ theme, setTheme, isInitialized }}>
       {children}
-    </DreamThemeContext.Provider>
+    </AanganThemeContext.Provider>
   );
-}; 
+};
+
+// Legacy export for backward compatibility
+export const DreamThemeProvider = AanganThemeProvider; 

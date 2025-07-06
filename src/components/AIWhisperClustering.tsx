@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Brain,
   Heart,
@@ -41,7 +41,7 @@ const AIWhisperClustering: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Sample whispers for demonstration
-  const sampleWhispers: Whisper[] = [
+  const sampleWhispers: Whisper[] = useMemo(() => [
     {
       id: "1",
       content: "Udaan ke baad ka scene? Sab log alag ho gaye...",
@@ -87,7 +87,7 @@ const AIWhisperClustering: React.FC = () => {
       timestamp: new Date(),
       intensity: 7,
     },
-  ];
+  ], []);
 
   // AI Clustering Logic
   useEffect(() => {
@@ -143,7 +143,7 @@ const AIWhisperClustering: React.FC = () => {
       setClusters(newClusters);
       setIsAnalyzing(false);
     }, 2000);
-  }, []);
+  }, [sampleWhispers]);
 
   return (
     <div className="whisper-orb floating-orb p-8 max-w-4xl mx-auto">

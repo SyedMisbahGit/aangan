@@ -14,7 +14,7 @@ const buttonVariants = cva(
         destructive:
           "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-red-500/25 hover:shadow-pink-500/40",
         outline:
-          "border-2 border-green-600/40 bg-paper-light dark:bg-dream-dark-card text-green-600 hover:bg-green-600/10 hover:text-white hover:border-green-600/60",
+          "border-2 border-green-600/40 bg-paper-light text-green-600 hover:bg-green-600/10 hover:text-white hover:border-green-600/60",
         secondary:
           "bg-gradient-to-r from-green-600 to-green-500 text-white shadow-soft hover:shadow-medium",
         ghost: "text-green-600 hover:bg-green-600/10 hover:text-white",
@@ -54,4 +54,5 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = "Button";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { Button, buttonVariants };

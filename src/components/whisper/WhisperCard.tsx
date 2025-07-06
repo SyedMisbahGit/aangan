@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Clock, Sparkles } from 'lucide-react';
+import { Heart, MessageCircle, Clock, Sparkles, Wind, Eye } from 'lucide-react';
+import { emotionColors } from '@/theme';
 
 interface Whisper {
   id: string;
@@ -15,53 +16,91 @@ interface Whisper {
   isAIGenerated?: boolean;
   echoLabel?: string;
   reactions?: Record<string, number>;
+  isEphemeral?: boolean;
+  isDiary?: boolean;
 }
 
-interface WhisperCardProps {
+interface SoftWhisperCardProps {
   whisper: Whisper;
   isAI?: boolean;
   delay?: number;
+  onTap?: () => void;
+  onLongPress?: () => void;
+  onSwipeLeft?: () => void;
+  onHeart?: () => void;
 }
 
-export const WhisperCard: React.FC<WhisperCardProps> = ({ 
+export const SoftWhisperCard: React.FC<SoftWhisperCardProps> = ({ 
   whisper, 
   isAI = false, 
-  delay = 0 
+  delay = 0,
+  onTap,
+  onLongPress,
+  onSwipeLeft,
+  onHeart
 }) => {
   const [showAI, setShowAI] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [isBurning, setIsBurning] = useState(false);
+  const [isSeen, setIsSeen] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+  const [showEmotionTooltip, setShowEmotionTooltip] = useState(false);
+
+  const emotionColor = emotionColors[whisper.emotion as keyof typeof emotionColors] || emotionColors.calm;
+
+  // Get first line as diary title
+  const firstLine = whisper.content.split('\n')[0];
+  const remainingContent = whisper.content.split('\n').slice(1).join('\n');
 
   useEffect(() => {
     if (isAI) {
       const timer = setTimeout(() => {
         setShowAI(true);
-        // Play soft chime sound if not muted
-        if (!isMuted) {
-          // Create a gentle chime sound
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-          
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          
-          oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-          oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.5);
-          
-          gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-          
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.5);
-        }
       }, delay * 1000);
 
       return () => clearTimeout(timer);
     }
-  }, [isAI, delay, isMuted]);
+  }, [isAI, delay]);
+
+  const handleTap = () => {
+    if (onTap) onTap();
+  };
+
+  const handleLongPress = () => {
+    if (onLongPress) onLongPress();
+  };
+
+  const handleHeart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onHeart) onHeart();
+  };
 
   if (isAI && !showAI) {
     return null;
+  }
+
+  if (isBurning) {
+    return (
+      <motion.div
+        initial={{ opacity: 1, scale: 1 }}
+        animate={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 1.5, ease: "easeInOut" }}
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-50/80 to-orange-50/80 backdrop-blur-md border border-rose-200/30 p-6"
+      >
+        <div className="text-center py-8">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="text-4xl mb-4"
+          >
+            🔥
+          </motion.div>
+          <p className="text-sm italic text-neutral-600">
+            "burned after reading..."
+          </p>
+        </div>
+      </motion.div>
+    );
   }
 
   return (
@@ -70,21 +109,76 @@ export const WhisperCard: React.FC<WhisperCardProps> = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ 
-          duration: 0.6, 
+          duration: 0.8, 
           ease: "easeOut",
           delay: isAI ? 0.5 : 0 
         }}
-        className={`dream-card relative overflow-hidden ${
-          isAI ? 'bg-green-50/50 border-green-200/50' : ''
+        className={`relative overflow-hidden rounded-2xl bg-white/40 backdrop-blur-lg border border-white/30 shadow-sm hover:shadow-md transition-all duration-300 ${
+          isAI ? 'border-blue-200/50' : ''
         }`}
+        onMouseEnter={() => setIsSeen(true)}
+        onMouseDown={() => setIsPressed(true)}
+        onMouseUp={() => setIsPressed(false)}
+        onTouchStart={() => setIsPressed(true)}
+        onTouchEnd={() => setIsPressed(false)}
+        onClick={handleTap}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          handleLongPress();
+        }}
       >
+        {/* Soft emotion background wash */}
+        <div 
+          className="absolute inset-0 opacity-5 pointer-events-none"
+          style={{
+            background: `radial-gradient(circle at 30% 20%, ${emotionColor.glow}40, transparent 50%)`
+          }}
+        />
+
+        {/* Floating emotion dot */}
+        <div className="absolute top-4 right-4">
+          <motion.div
+            className="relative"
+            onMouseEnter={() => setShowEmotionTooltip(true)}
+            onMouseLeave={() => setShowEmotionTooltip(false)}
+          >
+            <motion.div
+              className="w-3 h-3 rounded-full cursor-pointer"
+              style={{ backgroundColor: emotionColor.border }}
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.7, 1, 0.7]
+              }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+            
+            {/* Emotion tooltip */}
+            <AnimatePresence>
+              {showEmotionTooltip && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="absolute -top-8 right-0 bg-neutral-800/90 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap z-10"
+                >
+                  {whisper.emotion}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+
         {/* AI Echo Badge */}
         {isAI && (
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8, duration: 0.4 }}
-            className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-green-100/80 text-green-700 text-xs rounded-full border border-green-200/50"
+            className="absolute top-4 left-4 flex items-center gap-1 px-2 py-1 bg-blue-100/80 text-blue-700 text-xs rounded-full border border-blue-200/50 backdrop-blur-sm"
           >
             <Sparkles className="w-3 h-3" />
             <span className="font-medium">Aangan's Echo</span>
@@ -92,53 +186,59 @@ export const WhisperCard: React.FC<WhisperCardProps> = ({
         )}
 
         {/* Whisper Content */}
-        <div className={`${isAI ? 'italic text-green-800/90' : ''}`}>
-          <p className="text-dream-text-primary leading-relaxed mb-3">
-            {whisper.content}
-          </p>
-        </div>
-
-        {/* Whisper Metadata */}
-        <div className="flex items-center justify-between text-xs text-dream-text-muted">
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {new Date(whisper.timestamp).toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              })}
-            </span>
-            {whisper.location && (
-              <span className="px-2 py-1 bg-dream-paper rounded-full">
-                {whisper.location}
-              </span>
-            )}
-          </div>
+        <div className="p-6 pt-8">
+          {/* Diary title (first line) */}
+          <h3 className="text-lg font-semibold text-neutral-800 mb-3 leading-relaxed">
+            {firstLine}
+          </h3>
           
-          <div className="flex items-center gap-2">
-            {whisper.reactions && Object.keys(whisper.reactions).length > 0 && (
-              <span className="flex items-center gap-1">
-                <Heart className="w-3 h-3 text-red-400" />
-                {Object.values(whisper.reactions).reduce((a: number, b: number) => a + b, 0)}
-              </span>
-            )}
+          {/* Remaining content */}
+          {remainingContent && (
+            <p className="text-neutral-700 leading-relaxed mb-4">
+              {remainingContent}
+            </p>
+          )}
+
+          {/* Soft action bar */}
+          <div className="flex items-center justify-between pt-4 border-t border-white/30">
+            <div className="flex items-center gap-4">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleHeart}
+                className="flex items-center gap-1 text-neutral-600 hover:text-rose-500 transition-colors"
+              >
+                <Heart className="w-4 h-4" />
+                <span className="text-sm">Heart</span>
+              </motion.button>
+              
+              {whisper.comments > 0 && (
+                <div className="flex items-center gap-1 text-neutral-500">
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="text-sm">{whisper.comments}</span>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-1 text-neutral-400 text-xs">
+              <Clock className="w-3 h-3" />
+              <span>{new Date(whisper.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
           </div>
         </div>
 
-        {/* AI Echo Subtitle */}
-        {isAI && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2, duration: 0.4 }}
-            className="mt-3 pt-3 border-t border-green-200/30 text-xs text-green-600/80 italic"
-          >
-            "an anonymous soul replies with warmth..."
-          </motion.div>
-        )}
+        {/* Press animation */}
+        <motion.div
+          animate={{ 
+            scale: isPressed ? 0.98 : 1,
+            opacity: isPressed ? 0.8 : 1
+          }}
+          transition={{ duration: 0.1 }}
+          className="absolute inset-0 pointer-events-none"
+        />
       </motion.div>
     </AnimatePresence>
   );
 };
 
-export default WhisperCard; 
+export default SoftWhisperCard; 

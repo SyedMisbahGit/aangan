@@ -81,7 +81,7 @@ export const EmotionSlowMode = () => {
     } else if (distressLevel >= 4 && !slowMode.isActive) {
       activateSlowMode("moderate", "Elevated emotional activity");
     }
-  }, [distressLevel, slowMode.isActive]);
+  }, [distressLevel, slowMode.isActive]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activateSlowMode = (
     intensity: "gentle" | "moderate" | "intense",
@@ -129,7 +129,7 @@ export const EmotionSlowMode = () => {
     } else if (slowMode.isActive && slowMode.timeRemaining <= 0) {
       deactivateSlowMode();
     }
-  }, [slowMode.isActive, slowMode.timeRemaining]);
+  }, [slowMode.isActive, slowMode.timeRemaining]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getIntensityColor = (intensity: string) => {
     switch (intensity) {

@@ -146,7 +146,7 @@ const Shrines: React.FC = () => {
     return hotspotWhispers[hotspotId as keyof typeof hotspotWhispers] || [];
   };
 
-  const getKarmaLevel = (hotspot: any) => {
+  const getKarmaLevel = (hotspot: { energyLevel: number }) => {
     const energy = hotspot.energyLevel;
     if (energy > 80) return { level: "Rising", color: "text-green-600", icon: "🌱" };
     if (energy > 60) return { level: "Stable", color: "text-blue-600", icon: "🌊" };

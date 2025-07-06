@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ export const PostFeed = ({ refreshTrigger }: PostFeedProps) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const samplePosts: Post[] = [
+  const samplePosts = useMemo(() => ([
     {
       id: "1",
       content:
@@ -65,7 +65,7 @@ export const PostFeed = ({ refreshTrigger }: PostFeedProps) => {
       sentiment: "neutral",
       trending: false,
     },
-  ];
+  ]), []);
 
   useEffect(() => {
     setLoading(true);
@@ -74,7 +74,7 @@ export const PostFeed = ({ refreshTrigger }: PostFeedProps) => {
       setLoading(false);
     }, 300); // 300ms delay for skeleton
     return () => clearTimeout(timer);
-  }, [refreshTrigger]);
+  }, [refreshTrigger, samplePosts]);
 
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {

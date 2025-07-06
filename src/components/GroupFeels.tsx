@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Users, Cloud, Moon, Coffee, BookOpen } from "lucide-react";
@@ -18,7 +18,7 @@ export const GroupFeels = () => {
   const [clusters, setClusters] = useState<EmotionCluster[]>([]);
   const [currentTimeframe, setCurrentTimeframe] = useState("this week");
 
-  const generateClusters = () => {
+  const generateClusters = useCallback(() => {
     const emotions: EmotionCluster[] = [
       {
         id: "1",
@@ -73,7 +73,7 @@ export const GroupFeels = () => {
     ];
 
     setClusters(emotions);
-  };
+  }, [currentTimeframe]);
 
   useEffect(() => {
     generateClusters();
@@ -81,7 +81,7 @@ export const GroupFeels = () => {
     // Refresh clusters every few minutes to show dynamic data
     const interval = setInterval(generateClusters, 120000);
     return () => clearInterval(interval);
-  }, [currentTimeframe]);
+  }, [generateClusters]);
 
   const getTotalPeople = () => {
     return clusters.reduce((sum, cluster) => sum + cluster.count, 0);

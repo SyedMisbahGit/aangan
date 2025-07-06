@@ -121,7 +121,7 @@ export const AmbientWhisperManager: React.FC<AmbientWhisperManagerProps> = ({
   const [lastWhisperTime, setLastWhisperTime] = useState<Date | null>(null);
   const [ambientCount, setAmbientCount] = useState(0);
   const [showTrend, setShowTrend] = useState(false);
-  const [currentTrend, setCurrentTrend] = useState<any>(null);
+  const [currentTrend, setCurrentTrend] = useState<{ emotion: string; message: string; color: string; icon: React.ReactNode } | null>(null);
 
   // Generate ambient whisper with proper timing
   const generateAmbientWhisper = useCallback(() => {

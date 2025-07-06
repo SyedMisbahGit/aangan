@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Loader2, Heart, Clock, MapPin } from 'lucide-react';
 import { useShhhNarrator } from '../contexts/ShhhNarratorContext';
@@ -42,7 +42,7 @@ export const ShhhLine: React.FC<ShhhLineProps> = ({
     hotspotSystemTime
   };
 
-  const getLineFromFallback = () => {
+  const getLineFromFallback = useCallback(() => {
     // Get lines based on different categories
     const zoneLines = fallbackLines.zones[realTimeData.zone]?.[realTimeData.emotion] || [];
     const timeLines = fallbackLines.times[realTimeData.timeOfDay] || [];
@@ -57,9 +57,9 @@ export const ShhhLine: React.FC<ShhhLineProps> = ({
     }
     
     return allLines[Math.floor(Math.random() * allLines.length)];
-  };
+  }, [realTimeData.zone, realTimeData.emotion, realTimeData.timeOfDay]);
 
-  const generateLine = async () => {
+  const generateLine = useCallback(async () => {
     setIsGenerating(true);
     
     try {
@@ -102,11 +102,11 @@ export const ShhhLine: React.FC<ShhhLineProps> = ({
     } finally {
       setIsGenerating(false);
     }
-  };
+  }, [getLineFromFallback, realTimeData.systemTime.hour, realTimeData.userActivity, realTimeData.campusActivity]);
 
   useEffect(() => {
     generateLine();
-  }, [variant, context, emotion, zone, timeOfDay, userActivity, realTimeData.systemTime.hour, realTimeData.campusActivity]);
+  }, [generateLine, variant, context, emotion, zone, timeOfDay, userActivity]);
 
   // Auto-refresh every 2 minutes for real-time awareness
   useEffect(() => {
@@ -117,7 +117,7 @@ export const ShhhLine: React.FC<ShhhLineProps> = ({
     }, 120000);
 
     return () => clearInterval(interval);
-  }, [isGenerating]);
+  }, [isGenerating, generateLine]);
 
   if (isGenerating) {
     return (

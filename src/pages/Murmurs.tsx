@@ -41,8 +41,8 @@ const Murmurs: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedZone, setSelectedZone] = useState("all");
   const [selectedEmotion, setSelectedEmotion] = useState("all");
-  const [whispers, setWhispers] = useState<any[]>([]);
-  const [trendingTopics, setTrendingTopics] = useState<any[]>([]);
+  const [whispers, setWhispers] = useState<Array<{ id: number; content: string; emotion: string; visibility: string; hotspot: string; timestamp: string; hearts: number; replies: number; author: string; proximity: number; vibeMatch: number; groupSize: number }>>([]);
+  const [trendingTopics, setTrendingTopics] = useState<Array<{ id: number; topic: string; emotion: string; count: number; trend: string; change: number; hotspots: string[] }>>([]);
   
   const { nearbyHotspots, emotionClusters, getEmotionTrends } = useCUJHotspots();
   const { isSummerSoulActive } = useSummerSoul();

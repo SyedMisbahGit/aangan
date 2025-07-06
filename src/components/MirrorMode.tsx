@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Mirror, Heart, Sparkles, Send } from "lucide-react";
+import { Heart, Sparkles, Send, Square } from "lucide-react";
 
 interface MirrorEntry {
   id: string;
@@ -17,7 +17,7 @@ export const MirrorMode = () => {
   const [todayPrompt, setTodayPrompt] = useState("");
   const [showEcho, setShowEcho] = useState<MirrorEntry | null>(null);
 
-  const reflectionPrompts = [
+  const reflectionPrompts = useMemo(() => [
     "What do you need to hear tonight?",
     "What would you tell your younger self right now?",
     "What fear are you carrying that isn't yours to hold?",
@@ -26,7 +26,7 @@ export const MirrorMode = () => {
     "What truth are you avoiding about yourself?",
     "What would self-compassion say to you now?",
     "What boundary do you need to set with yourself?",
-  ];
+  ], []);
 
   useEffect(() => {
     // Set daily prompt
@@ -69,7 +69,7 @@ export const MirrorMode = () => {
 
     const timer = setTimeout(maybeEcho, 2000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [reflectionPrompts]);
 
   const handleSaveReflection = () => {
     if (!currentReflection.trim()) return;
@@ -123,7 +123,7 @@ export const MirrorMode = () => {
       <Card className="bg-white/5 backdrop-blur-lg border-white/10 p-6">
         <div className="space-y-6 text-center">
           <div className="flex items-center justify-center space-x-3">
-            <Mirror className="h-6 w-6 text-purple-300 animate-pulse" />
+            <Square className="h-6 w-6 text-purple-300 animate-pulse" />
             <h3 className="text-white font-medium">Your Mirror Echoes Back</h3>
           </div>
 
@@ -158,7 +158,7 @@ export const MirrorMode = () => {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center space-x-3">
-          <Mirror className="h-6 w-6 text-purple-300 animate-pulse" />
+          <Square className="h-6 w-6 text-purple-300 animate-pulse" />
           <div>
             <h3 className="text-white font-medium">Mirror Mode</h3>
             <p className="text-gray-400 text-sm">

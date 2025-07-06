@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
-import { DreamLoadingScreen } from '../App';
+import { AanganLoadingScreen } from '../App';
 
 export interface CUJHotspot {
   id: string;
@@ -66,7 +66,7 @@ interface CUJHotspotProviderProps {
 }
 
 export const CUJHotspotLoadingFallback = () => (
-  <DreamLoadingScreen 
+  <AanganLoadingScreen 
     message="Mapping campus hotspots..."
     narratorLine="The pulse of the campus is being felt."
     variant="orbs"

@@ -96,42 +96,42 @@ const Diary: React.FC = () => {
     const timer = setTimeout(() => {
       const sampleEntries: Whisper[] = [
         {
-          id: '1',
-          content: "Today I found myself sitting by the library window, watching the rain fall gently on the campus. There's something about the way the light filters through the clouds that makes everything feel softer, more contemplative. I realized how much I've grown this semester, not just academically, but in understanding myself better.",
-          emotion: "peaceful",
+          id: "1",
+          content: "Today I realized that growth isn't always comfortable. The moments that stretch us the most are often the ones that shape us into who we're meant to become.",
+          emotion: "reflective",
           timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          location: "library",
+          location: "diary",
           likes: 0,
           comments: 0,
           isAnonymous: true,
           author: undefined,
-          prompt: "What's a moment today that made you pause and reflect?",
-          tags: ["reflection", "growth", "rain"]
+          prompt: "Write about a moment of personal growth",
+          tags: ["growth", "reflection", "personal"]
         },
         {
-          id: '2',
-          content: "Had the most unexpected conversation with a stranger at Tapri today. We talked about everything from poetry to the meaning of life. It's amazing how connections can form in the most ordinary moments. Sometimes the best friendships start with a simple 'hello' over chai.",
-          emotion: "joy",
-          timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-          location: "tapri",
-          likes: 3,
-          comments: 0,
-          isAnonymous: true,
-          author: undefined,
-          prompt: "Describe a connection you made today...",
-          tags: ["friendship", "conversation", "tapri"]
-        },
-        {
-          id: '3',
-          content: "Feeling a bit overwhelmed with all the deadlines approaching. But then I remembered that every challenge is an opportunity to grow stronger. Taking deep breaths and reminding myself that I'm capable of handling whatever comes my way.",
-          emotion: "anxious",
-          timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-          location: "dorm",
+          id: "2",
+          content: "The library was unusually quiet today. In that silence, I found clarity about my future. Sometimes the loudest revelations come in the quietest moments.",
+          emotion: "peaceful",
+          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          location: "diary",
           likes: 0,
           comments: 0,
           isAnonymous: true,
           author: undefined,
-          prompt: "What's something that challenged you today?",
+          prompt: "Describe a moment of unexpected clarity",
+          tags: ["clarity", "future", "silence"]
+        },
+        {
+          id: "3",
+          content: "Stress is building up again. But today I'm choosing to see it as a sign that I'm pushing my boundaries, not that I'm failing. Perspective changes everything.",
+          emotion: "stressed",
+          timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+          location: "diary",
+          likes: 0,
+          comments: 0,
+          isAnonymous: true,
+          author: undefined,
+          prompt: "Write about how you handle stress",
           tags: ["stress", "growth", "resilience"]
         }
       ];
@@ -139,6 +139,7 @@ const Diary: React.FC = () => {
       setLoading(false);
     }, 300);
     return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getRandomPrompt = () => {

@@ -5,7 +5,13 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  { 
+    ignores: ["dist/**", "dev-dist/**", "coverage/**", "**/workbox-*.js", "**/node_modules/**"],
+    linterOptions: {
+      reportUnusedDisableDirectives: "error",
+      noInlineConfig: false,
+    },
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -24,6 +30,7 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       "@typescript-eslint/no-unused-vars": "off",
+      "react-hooks/exhaustive-deps": "warn", // Allow warnings for complex dependencies
     },
   },
 );

@@ -243,12 +243,11 @@ const OnboardingGuide: React.FC = () => {
             </motion.div>
           </AnimatePresence>
           {/* Step indicators (dots) */}
-          <div className="flex justify-center gap-2 mb-4 mt-2" aria-label="Step indicators">
-            {onboardingSteps.map((_, i) => (
-              <span
+          <div className="flex justify-center space-x-2 mt-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
                 key={i}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${i === currentStep ? 'bg-dream-accent' : 'bg-inkwell/20'}`}
-                aria-current={i === currentStep ? 'step' : undefined}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${i === currentStep ? 'bg-aangan-accent' : 'bg-aangan-text-muted/20'}`}
               />
             ))}
           </div>

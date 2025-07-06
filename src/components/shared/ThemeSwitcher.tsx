@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Sun, Moon, Sparkles, Palette } from "lucide-react";
 
@@ -12,31 +12,26 @@ export const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
   const [currentTheme, setCurrentTheme] = useState<Theme>("inkbloom");
   const [isOpen, setIsOpen] = useState(false);
 
-  const themes: {
-    id: Theme;
-    name: string;
-    icon: React.ReactNode;
-    description: string;
-  }[] = [
+  const themes = useMemo(() => ([
     {
-      id: "dormlight",
+      id: "dormlight" as Theme,
       name: "Dormlight",
       icon: <Sun className="h-4 w-4" />,
       description: "Warm & Comfortable",
     },
     {
-      id: "inkbloom",
+      id: "inkbloom" as Theme,
       name: "InkBloom",
       icon: <Sparkles className="h-4 w-4" />,
       description: "Vibrant & Expressive",
     },
     {
-      id: "void",
+      id: "void" as Theme,
       name: "Void",
       icon: <Moon className="h-4 w-4" />,
       description: "Deep & Contemplative",
     },
-  ];
+  ]), []);
 
   const applyTheme = (theme: Theme) => {
     // Remove all theme classes
@@ -63,7 +58,7 @@ export const ThemeSwitcher = ({ className }: ThemeSwitcherProps) => {
     if (savedTheme && themes.some((t) => t.id === savedTheme)) {
       applyTheme(savedTheme);
     }
-  }, []);
+  }, [themes]);
 
   const currentThemeData = themes.find((t) => t.id === currentTheme);
 

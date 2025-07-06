@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, BookOpenText, Search, MoonStar, Menu } from "lucide-react";
+import { Feather, BookOpenText, Compass, Headphones, Sprout } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const DreamNavigation = () => {
@@ -9,17 +9,17 @@ export const DreamNavigation = () => {
   const location = useLocation();
 
   const navigationItems = [
-    { path: "/", icon: Home, label: "Feed" },
+    { path: "/", icon: Feather, label: "Whispers" },
     { path: "/diary", icon: BookOpenText, label: "Diary" },
-    { path: "/explore", icon: Search, label: "Explore" },
-    { path: "/lounge", icon: MoonStar, label: "Lounge" },
-    { path: "/menu", icon: Menu, label: "Menu" },
+    { path: "/explore", icon: Compass, label: "Wander" },
+    { path: "/lounge", icon: Headphones, label: "Listen" },
+    { path: "/menu", icon: Sprout, label: "My Corner" },
   ];
 
   // Enhanced keyboard detection with better handling
   useEffect(() => {
-    let hideTimeout: NodeJS.Timeout;
-    let showTimeout: NodeJS.Timeout;
+    let hideTimeout: ReturnType<typeof setTimeout>;
+    let showTimeout: ReturnType<typeof setTimeout>;
 
     const handleViewportChange = () => {
       if (window.visualViewport) {

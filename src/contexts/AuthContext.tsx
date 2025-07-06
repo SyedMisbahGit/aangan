@@ -9,7 +9,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signInWithMagicLink: (email: string) => Promise<{ error: any }>;
+  signInWithMagicLink: (email: string) => Promise<{ error: string | null }>;
   signOut: () => void;
   setOnboardingComplete: () => void;
 }
@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const signInWithMagicLink = async (email: string): Promise<{ error: any }> => {
+  const signInWithMagicLink = async (email: string): Promise<{ error: string | null }> => {
     try {
       // For now, just simulate the magic link process
       // In a real implementation, you'd call your Railway backend
@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Simulate success (you can replace this with actual API call)
       return { error: null };
     } catch (error) {
-      return { error };
+      return { error: error instanceof Error ? error.message : 'Unknown error occurred' };
     }
   };
 

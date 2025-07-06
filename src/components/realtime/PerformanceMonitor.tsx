@@ -35,11 +35,10 @@ export const PerformanceMonitor: React.FC = () => {
           'disconnected',
         latency: isConnected ? Math.random() * 500 + 50 : 0,
         messageDeliveryRate: isConnected ? 95 + Math.random() * 5 : 0,
-        memoryUsage: performance.memory?.usedJSHeapSize ? 
-          performance.memory.usedJSHeapSize / 1024 / 1024 : 0,
-        batteryLevel: (navigator as any).getBattery?.() ? 
-          (navigator as any).getBattery().then((battery: any) => battery.level * 100) : undefined,
-        networkType: (navigator as any).connection?.effectiveType || 'unknown'
+        memoryUsage: (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize ? 
+          (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory!.usedJSHeapSize / 1024 / 1024 : 0,
+        batteryLevel: undefined, // Battery API is async, would need separate state
+        networkType: (navigator as Navigator & { connection?: { effectiveType: string } }).connection?.effectiveType || 'unknown'
       };
 
       setMetrics(newMetrics);
@@ -50,6 +49,7 @@ export const PerformanceMonitor: React.FC = () => {
     updateMetrics(); // Initial update
 
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, connectionStatus]);
 
   const getConnectionIcon = () => {
@@ -183,9 +183,9 @@ export const PerformanceMonitor: React.FC = () => {
 
         {/* Quick Stats */}
         <div className="flex justify-between text-xs text-muted-foreground pt-2 border-t">
-          <span>Active: {connectionStatus.activeConnections || 0}</span>
-          <span>Zones: {connectionStatus.activeZones || 0}</span>
-          <span>Uptime: {Math.floor(connectionStatus.uptime || 0)}s</span>
+          <span>Status: {isConnected ? 'Connected' : 'Disconnected'}</span>
+          <span>Attempts: {connectionStatus.reconnectAttempts}</span>
+          <span>Max: {connectionStatus.maxReconnectAttempts}</span>
         </div>
       </CardContent>
     </Card>

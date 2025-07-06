@@ -1,5 +1,5 @@
-# 🔇 Shhh - WhisperVerse  
-**An anonymous, emotionally intelligent campus social platform with 3D immersive design**
+# 🌸 Aangan - Dreamy Courtyard of Whispers  
+**An emotionally intelligent, poetic anonymous social platform with a quiet, reflective atmosphere**
 
 [![React](https://img.shields.io/badge/React-18.0-blue.svg)](https://reactjs.org/)  
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)  
@@ -9,9 +9,11 @@
 
 ---
 
-## ❓ What is Shhh?
+## 🌙 What is Aangan?
 
-**Shhh** is a revolutionary **anonymous social platform** designed for **Central University of Jammu (CUJ)** students. It blends emotional intelligence, cultural sensitivity, and a futuristic 3D experience to create a **safe space for self-expression and connection**.
+**Aangan** (आंगन) is a **dreamy, poetic courtyard** where hearts find their voice in whispers. It's an emotionally intelligent anonymous social platform designed for **Central University of Jammu (CUJ)** students, creating a **quiet, reflective space** for gentle self-expression and connection.
+
+*"Your Aangan keeps your silences safe"*
 
 ---
 
@@ -19,6 +21,30 @@
 
 - **Frontend (Vercel):** [https://college-whisper.vercel.app/](https://college-whisper.vercel.app/)
 - **Backend (Railway):** [https://aangan-production.up.railway.app/api](https://aangan-production.up.railway.app/api)
+
+---
+
+## ✨ Version 1.6 - Dreamy Courtyard Redesign
+
+### 🌸 New Experience
+- **Whispers** - Soft-scrollable whispers in light glass containers with floating emotion dots
+- **Gentle Interactions** - Tap to open modal diary view, long-press to "Echo," swipe left to "Fade"
+- **Poetic Presence** - Time-based poetic narration replacing emotion banners
+- **Embedded Bench** - Composer as a bench at the bottom with "Sit for a while… What's on your heart today?"
+- **Radial Bloom** - Emotion picker with optional AI whisper assistance
+
+### 🏡 Navigation Transformation
+- **Feed** → **Whispers** - The main courtyard experience
+- **Explore** → **Wander** - Organic tiles: "🏡 Near Me," "✨ Under the Stars," "💭 What's Being Felt"
+- **Lounge** → **Listen** - Velvet gradient background with whispers fading in like breath
+- **Menu** → **My Corner** - Soft list with "Sit in Silence" toggle for candle-lit meditation
+
+### 🕯️ New Features
+- **Gentle Presence Ribbon** - Poetic presence text like "9 hearts sat here quietly today 🫧"
+- **Sit in Silence** - Dims UI and lets whispers drift in every 15-20 seconds with candle flicker
+- **Hidden Scrollbars** - Clean, minimal interface
+- **No Counters** - Heart with ripple animation but no numbers
+- **Auto-fading Elements** - Like incense smoke, gentle and ephemeral
 
 ---
 
@@ -51,11 +77,71 @@ npm install
 npm run dev
 ```
 
+### Testing
+```bash
+# Run tests
+npm test
+
+# Run tests with coverage
+npm test -- --coverage
+
+# Run tests in watch mode
+npm test -- --watch
+```
+
+## 🤝 Contributing
+
+### Development Setup
+
+1. **Fork and clone** the repository
+2. **Install dependencies**: `npm install`
+3. **Set up environment**: Copy `backend/env.example` to `backend/.env`
+4. **Start development server**: `npm run dev`
+
+### Code Quality Standards
+
+- **Linting**: `npm run lint` (must pass with zero warnings)
+- **Testing**: `npm test` (must maintain 80% coverage)
+- **Type Safety**: All TypeScript errors must be resolved
+- **Commit Messages**: Use conventional commits format
+
+### Pre-commit Hooks
+
+The project uses Husky to enforce code quality:
+
+```bash
+# Install Husky (if not already installed)
+npx husky-init && npm install
+
+# Pre-commit hook will run:
+# - npm run lint
+# - npm test
+```
+
+### Pull Request Process
+
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Make your changes following the code standards
+3. Run tests: `npm test -- --coverage`
+4. Run lint: `npm run lint -- --max-warnings=0`
+5. Commit with conventional format: `feat: add new feature`
+6. Push and create a PR
+
+### CI/CD Pipeline
+
+The GitHub Actions CI will:
+- ✅ Run linting with zero warnings allowed
+- ✅ Execute tests with 80% coverage threshold
+- ✅ Build the project successfully
+- ✅ Deploy to staging/production on merge to main
+
 ### Environment Variables
-- For local development, create a `.env` file:
-  ```
-  VITE_API_URL=https://aangan-production.up.railway.app/api
-  ```
+
+For local development, create a `.env` file:
+```
+VITE_API_URL=https://aangan-production.up.railway.app/api
+TEST=false  # Set to true for shorter rate limits during testing
+```
 
 ### Security & Backup
 
@@ -90,15 +176,26 @@ npx artillery run scripts/artillery.yml
 
 ---
 
-## 🌌 WhisperVerse – The 3D Diary World
+## 🌸 Aangan Experience
 
-Experience the future of anonymous social media with:
+### 🏡 The Courtyard
+- **Whispers** - Soft glass containers with gentle interactions
+- **Floating Emotion Dots** - Mood indicators with poetic tooltips
+- **Nested Replies** - Styled like folded paper, intimate and personal
+- **Poetic Presence** - Time-based narration that speaks to the heart
 
-- 🌐 **Floating Whisper Orbs** (mood-reactive)
-- 🛕 **3D Shrine Portals** for emotional venting
-- 🔤 **Kinetic Typography** that responds to mood
-- ✨ **Dynamic Light Auras** reflecting campus-wide emotions
-- 🌱 **Organic Motion** using neumorphism and perspective tilt
+### 🧘 Mindful Interactions
+- **Tap** - Open modal diary view for deeper reflection
+- **Long-press** - "Echo" a whisper, creating gentle ripples
+- **Swipe Left** - "Fade" whispers away like morning mist
+- **Heart** - Ripple animation without counters, pure emotion
+
+### 🎨 Design Philosophy
+- **Glassmorphism** - Light, blurred containers that feel ethereal
+- **Gentle Animations** - Smooth transitions that don't startle
+- **Poetic Language** - Every element speaks with intention
+- **Minimal Interface** - Hidden scrollbars, clean lines
+- **Candle-lit Moments** - "Sit in Silence" for meditation
 
 ---
 
@@ -118,26 +215,23 @@ Experience the future of anonymous social media with:
 - 🎉 **Campus Rituals** – Traditional & modern  
 - 🌍 **Local Culture** – Jammu-specific flavor
 
----
-
-## 🌀 WhisperVerse 3D
-
-- 🫧 **Floating Diary Orbs**  
-- ✨ **Whisper Constellations**  
-- 🧠 **AI Whisper Clustering**  
-- 🧭 **Smart Campus Discovery**  
-- 🧘 **Emotion Slow Mode**  
-- 📈 **Growth Tracker**
+### 🌸 New v1.6 Features
+- 🏡 **Dreamy Courtyard** - Whispers in soft glass containers
+- 🧘 **Mindful Interactions** - Tap, long-press, swipe with intention
+- 🕯️ **Sit in Silence** - Meditation mode with candle flicker
+- 🌸 **Poetic Presence** - Time-based emotional narration
+- 🎨 **Gentle Design** - Auto-fading elements like incense smoke
 
 ---
 
 ## 🎨 Design System
 
 - 🎭 **Mood-Pulse Hybrid Themes**: Dormlight, InkBloom, Void  
-- 🌫️ **Glassmorphism**  
-- 🎥 **Kinetic Animations**  
-- 🌑 **Dark Mode**  
-- 🎯 **Responsive Design with Perspective Tilt**
+- 🌫️ **Glassmorphism** - Light, blurred, ethereal containers
+- 🎥 **Gentle Animations** - Smooth, non-startling transitions
+- 🌑 **Dark Mode** with candle-lit moments
+- 🎯 **Responsive Design** with perspective tilt
+- 🕯️ **Meditation Mode** - Dimmed UI with drifting whispers
 
 ---
 
@@ -146,3 +240,36 @@ Experience the future of anonymous social media with:
 - 🌐 **Dogri Integration**  
 - 🏛️ **CUJ Context & Community Focus**  
 - 🤝 **Cultural Sensitivity in UX**
+- 🌸 **Poetic Language** - Every interaction speaks to the heart
+- 🏡 **Courtyard Metaphor** - Safe, intimate, communal space
+
+---
+
+## 📱 Navigation Guide
+
+### 🌸 Whispers (Home)
+- Soft-scrollable feed of whispers
+- Floating emotion dots with tooltips
+- Embedded bench composer at bottom
+- Gentle interactions: tap, long-press, swipe
+
+### 🏡 Wander (Explore)
+- **Near Me** - Local whispers and activities
+- **Under the Stars** - Trending and popular content
+- **What's Being Felt** - Emotional pulse of campus
+
+### 🎧 Listen (Lounge)
+- Velvet gradient background
+- Whispers fade in slowly like breath
+- No buttons or controls, pure listening
+- Hidden scrollbars for clean experience
+
+### 🏠 My Corner (Menu)
+- **Diary** - Personal reflection space
+- **Settings** - App configuration
+- **About** - Platform information
+- **Sit in Silence** - Meditation toggle with candle flicker
+
+---
+
+*"In the quiet corners of Aangan, every whisper finds its home"*

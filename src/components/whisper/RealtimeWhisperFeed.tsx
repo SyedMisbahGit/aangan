@@ -33,7 +33,7 @@ const RealtimeWhisperFeed: React.FC<RealtimeWhisperFeedProps> = ({
   showRealtimeIndicator = true,
   maxWhispers = 50
 }) => {
-  const [allWhispers, setAllWhispers] = useState<any[]>([]);
+  const [allWhispers, setAllWhispers] = useState<Array<{ id: string; content: string; emotion: string; zone: string; timestamp: string }>>([]);
   const [newWhispersCount, setNewWhispersCount] = useState(0);
   const [lastRefresh, setLastRefresh] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -265,34 +265,43 @@ const RealtimeWhisperFeed: React.FC<RealtimeWhisperFeedProps> = ({
           </motion.div>
         ) : (
           <div className="space-y-6">
-            {filteredWhispers.map((whisper, index) => (
-              <motion.div
-                key={whisper.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative"
-              >
-                {/* Real-time indicator for new whispers */}
-                {whisper.realTime && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute -top-2 -right-2 z-10"
-                  >
-                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                  </motion.div>
-                )}
-                
-                <ModularWhisperCard
-                  whisper={whisper}
-                  variant={index === 0 ? "featured" : "default"}
-                  showHotspot={true}
-                  showEmotionTag={true}
-                />
-              </motion.div>
-            ))}
+            {filteredWhispers.map((whisper, index) => {
+              // Ensure all required properties for ModularWhisperCard
+              const completeWhisper = {
+                ...whisper,
+                location: (whisper as any).location ?? whisper.zone ?? '',
+                likes: (whisper as any).likes ?? 0,
+                comments: (whisper as any).comments ?? 0,
+                isAnonymous: (whisper as any).isAnonymous ?? true,
+              };
+              return (
+                <motion.div
+                  key={whisper.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="relative"
+                >
+                  {/* Real-time indicator for new whispers */}
+                  {typeof (whisper as any).realTime !== 'undefined' && (whisper as any).realTime && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-2 -right-2 z-10"
+                    >
+                      <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                    </motion.div>
+                  )}
+                  <ModularWhisperCard
+                    whisper={completeWhisper}
+                    variant={index === 0 ? "featured" : "default"}
+                    showHotspot={true}
+                    showEmotionTag={true}
+                  />
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </AnimatePresence>

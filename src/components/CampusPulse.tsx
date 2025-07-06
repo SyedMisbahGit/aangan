@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,7 +47,7 @@ const CampusPulse: React.FC = () => {
     zones: [],
   });
 
-  const zones = [
+  const zones = useMemo(() => [
     {
       id: "1",
       name: "Central Library",
@@ -64,9 +64,9 @@ const CampusPulse: React.FC = () => {
     { id: "4", name: "Main Quad", type: "quad" as const, icon: Heart },
     { id: "5", name: "Fitness Center", type: "gym" as const, icon: Zap },
     { id: "6", name: "Science Labs", type: "lab" as const, icon: Wifi },
-  ];
+  ], []);
 
-  const moods = {
+  const moods = useMemo(() => ({
     peaceful: { emoji: "🕊️", color: "text-green-400", bg: "bg-green-400/20" },
     excited: { emoji: "✨", color: "text-yellow-400", bg: "bg-yellow-400/20" },
     contemplative: {
@@ -81,7 +81,7 @@ const CampusPulse: React.FC = () => {
       color: "text-indigo-400",
       bg: "bg-indigo-400/20",
     },
-  };
+  }), []);
 
   const weatherIcons = {
     clear: Sun,
@@ -131,7 +131,7 @@ const CampusPulse: React.FC = () => {
     const interval = setInterval(updatePulseData, 30000); // Update every 30 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [moods, zones]);
 
   const getZoneIcon = (type: CampusZone["type"]) => {
     const zone = zones.find((z) => z.type === type);

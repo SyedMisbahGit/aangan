@@ -1,21 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { DreamLayout } from '../components/shared/DreamLayout';
-import { Card, CardContent } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  MoonStar, 
-  Coffee, 
-  Waves, 
-  Heart, 
-  Eye, 
-  X,
+  Headphones, 
+  Wind, 
   Sparkles,
-  Music
+  Moon,
+  Heart,
+  Cloud,
+  Sun,
+  Leaf,
+  Compass
 } from 'lucide-react';
-import { useWhispers } from '../contexts/WhispersContext';
-import { AmbientWhisperManager } from '../components/ambient/AmbientWhisperManager';
 
 interface AmbientWhisper {
   id: string;
@@ -25,73 +21,69 @@ interface AmbientWhisper {
   isPoetic: boolean;
 }
 
-const Lounge: React.FC = () => {
+const Listen: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
   const [currentWhisper, setCurrentWhisper] = useState<AmbientWhisper | null>(null);
   const [opacity, setOpacity] = useState(1);
-  const { whispers } = useWhispers();
+  const [candleFlicker, setCandleFlicker] = useState(1);
 
-  const ambientWhispers: Omit<AmbientWhisper, 'id' | 'timestamp'>[] = [
+  const ambientWhispers = useMemo(() => ([
     {
-      content: "The campus is quiet tonight. Perfect for reflection.",
+      id: "1",
+      content: "The quad is so peaceful at night. You can hear your own thoughts.",
       emotion: "peaceful",
-      isPoetic: true
+      timestamp: new Date().toISOString(),
+      isPoetic: true,
     },
     {
-      content: "Sometimes the best conversations happen in silence.",
-      emotion: "reflective",
-      isPoetic: true
-    },
-    {
-      content: "The library remembers every whispered dream.",
+      id: "2",
+      content: "Sometimes I wish the canteen served chai after 8pm.",
       emotion: "nostalgic",
-      isPoetic: true
+      timestamp: new Date().toISOString(),
+      isPoetic: false,
     },
     {
-      content: "Tapri chai tastes better when shared with thoughts.",
-      emotion: "warm",
-      isPoetic: true
-    },
-    {
-      content: "The quad is breathing. Can you feel it?",
-      emotion: "alive",
-      isPoetic: true
-    },
-    {
-      content: "Midnight thoughts have their own rhythm.",
-      emotion: "contemplative",
-      isPoetic: true
-    },
-    {
-      content: "Every student carries a universe of stories.",
+      id: "3",
+      content: "The library lights look like stars from the hostel roof.",
       emotion: "wonder",
-      isPoetic: true
+      timestamp: new Date().toISOString(),
+      isPoetic: true,
     },
     {
-      content: "The wind carries whispers from yesterday.",
-      emotion: "nostalgic",
-      isPoetic: true
+      id: "4",
+      content: "Found a quiet corner in the garden. Perfect for getting lost in thoughts.",
+      emotion: "reflection",
+      timestamp: new Date().toISOString(),
+      isPoetic: true,
+    },
+    {
+      id: "5",
+      content: "The sound of rain on the hostel roof is the most peaceful thing.",
+      emotion: "calm",
+      timestamp: new Date().toISOString(),
+      isPoetic: true,
     }
-  ];
+  ]), []);
+
+  const icons: Record<string, React.ComponentType<{ className?: string }>> = {
+    joy: Sun,
+    peace: Cloud,
+    nostalgia: Moon,
+    reflection: Wind,
+    anxiety: Leaf,
+    excitement: Sparkles,
+    focus: Compass,
+    love: Heart
+  };
 
   const emotionColors: Record<string, string> = {
     peaceful: 'text-blue-300',
-    reflective: 'text-purple-300',
-    nostalgic: 'text-pink-300',
-    warm: 'text-orange-300',
-    alive: 'text-green-300',
-    contemplative: 'text-indigo-300',
-    wonder: 'text-yellow-300'
-  };
-
-  const emotionBgs: Record<string, string> = {
-    peaceful: 'bg-blue-500/10',
-    reflective: 'bg-purple-500/10',
-    nostalgic: 'bg-pink-500/10',
-    warm: 'bg-orange-500/10',
-    alive: 'bg-green-500/10',
-    contemplative: 'bg-indigo-500/10',
-    wonder: 'bg-yellow-500/10'
+    nostalgic: 'text-purple-300',
+    wonder: 'text-yellow-300',
+    reflection: 'text-gray-300',
+    calm: 'text-green-300',
+    joy: 'text-orange-300',
+    growth: 'text-emerald-300'
   };
 
   useEffect(() => {
@@ -111,8 +103,8 @@ const Lounge: React.FC = () => {
         });
         
         // Fade in new whisper
-        setTimeout(() => setOpacity(1), 100);
-      }, 1000);
+        setTimeout(() => setOpacity(1), 1000);
+      }, 2000);
     };
 
     // Start with first whisper
@@ -125,10 +117,21 @@ const Lounge: React.FC = () => {
       });
     }
 
-    // Cycle every 7 seconds
-    const interval = setInterval(cycleWhispers, 7000);
+    // Cycle every 12 seconds
+    const interval = setInterval(cycleWhispers, 12000);
     return () => clearInterval(interval);
-  }, [isActive, currentWhisper]);
+  }, [isActive, currentWhisper, ambientWhispers]);
+
+  // Candle flicker effect
+  useEffect(() => {
+    if (!isActive) return;
+
+    const flickerInterval = setInterval(() => {
+      setCandleFlicker(0.7 + Math.random() * 0.6);
+    }, 2000);
+
+    return () => clearInterval(flickerInterval);
+  }, [isActive]);
 
   // Handle escape key
   useEffect(() => {
@@ -142,139 +145,168 @@ const Lounge: React.FC = () => {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isActive]);
 
-  const handleInteraction = (type: 'seen' | 'echo' | 'fade') => {
-    if (!currentWhisper) return;
-
-    switch (type) {
-      case 'seen':
-        // Visual feedback for feeling seen
-        break;
-      case 'echo':
-        // Add ripple effect
-        break;
-      case 'fade':
-        // Immediately fade this whisper
-        setOpacity(0);
-        break;
-    }
-  };
-
   if (!isActive) {
     return (
       <DreamLayout>
-        <div className="min-h-screen bg-[#fafaf9] flex items-center justify-center p-4">
-          <Card className="bg-white border-neutral-200 shadow-sm p-12 text-center max-w-md">
+        <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-blue-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-center max-w-md"
+          >
             <div className="space-y-6">
               <div className="relative">
-                <Coffee className="h-16 w-16 text-purple-500 mx-auto" />
+                <Headphones className="h-16 w-16 text-purple-500 mx-auto" />
                 <div className="absolute -inset-6 bg-purple-400/20 rounded-full blur opacity-50"></div>
               </div>
 
               <div>
                 <h2 className="text-2xl font-light text-neutral-800 mb-4">
-                  Whisper Lounge
+                  Listen
                 </h2>
                 <p className="text-neutral-600 text-sm mb-8 leading-relaxed">
-                  A gentle space where thoughts drift by like clouds. No pressure to
-                  engage, just presence and peace.
+                  A gentle space where whispers drift by like breath. 
+                  No pressure to engage, just presence and peace.
                 </p>
 
-                <Button
+                <motion.button
                   onClick={() => setIsActive(true)}
                   className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl px-8 py-3"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <Waves className="h-4 w-4 mr-2" />
-                  Enter the Lounge
-                </Button>
+                  <Wind className="h-4 w-4 mr-2 inline" />
+                  Enter the Space
+                </motion.button>
               </div>
             </div>
-          </Card>
+          </motion.div>
         </div>
       </DreamLayout>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="relative w-full max-w-2xl">
-        {/* Close button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsActive(false)}
-          className="absolute -top-12 right-0 text-white/70 hover:text-white"
+    <div className="fixed inset-0 z-50 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 flex items-center justify-center p-4 overflow-hidden">
+      {/* Candle flicker effect */}
+      <motion.div
+        className="absolute top-4 right-4 w-2 h-8 bg-gradient-to-b from-yellow-400 to-orange-600 rounded-full"
+        animate={{ 
+          opacity: candleFlicker,
+          scaleY: [1, 1.2, 1],
+          boxShadow: [
+            '0 0 10px rgba(251, 191, 36, 0.3)',
+            '0 0 20px rgba(251, 191, 36, 0.6)',
+            '0 0 10px rgba(251, 191, 36, 0.3)'
+          ]
+        }}
+        transition={{ 
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
+      {currentWhisper && (
+        <motion.div
+          className="relative w-full max-w-2xl"
+          style={{ opacity }}
+          transition={{ duration: 2000, ease: "easeInOut" }}
         >
-          <X className="w-5 h-5" />
-        </Button>
-
-        {currentWhisper && (
+          {/* Whisper content */}
           <motion.div
-            className="space-y-8 transition-all duration-1000"
-            style={{ opacity }}
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50, scale: 0.9 }}
+            transition={{ duration: 2, ease: "easeOut" }}
+            className="text-center space-y-8"
           >
-            {/* Mood Indicator */}
+            {/* Emotion indicator */}
             <div className="flex justify-center">
-              <Badge
-                className={`${emotionBgs[currentWhisper.emotion]} ${emotionColors[currentWhisper.emotion]} text-xs px-4 py-2 rounded-full`}
-              >
-                {currentWhisper.emotion}
-              </Badge>
+              {(() => {
+                const EmotionIcon = icons[currentWhisper.emotion] || Heart;
+                return (
+                  <motion.div
+                    animate={{ 
+                      rotate: [0, 5, -5, 0],
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{ 
+                      duration: 4, 
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                    className={`text-4xl ${emotionColors[currentWhisper.emotion] || 'text-white'}`}
+                  >
+                    <EmotionIcon className="w-12 h-12" />
+                  </motion.div>
+                );
+              })()}
             </div>
 
-            {/* Content */}
-            <div
-              className={`${emotionBgs[currentWhisper.emotion]} rounded-2xl p-8 backdrop-blur-md border border-white/5`}
+            {/* Whisper text */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1, duration: 1.5 }}
+              className="space-y-6"
             >
-              <p className="text-white text-lg leading-relaxed font-light">
-                {currentWhisper.content}
+              <p className="text-white/90 text-xl leading-relaxed font-light italic">
+                "{currentWhisper.content}"
               </p>
-            </div>
-
-            {/* Gentle Interactions */}
-            <div className="flex justify-center space-x-6">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleInteraction("seen")}
-                className="text-white/40 hover:text-purple-300 hover:bg-purple-500/10 rounded-full p-3 transition-all duration-300"
-              >
-                <Eye className="h-5 w-5" />
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleInteraction("echo")}
-                className="text-white/40 hover:text-blue-300 hover:bg-blue-500/10 rounded-full p-3 transition-all duration-300"
-              >
-                <Heart className="h-5 w-5" />
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleInteraction("fade")}
-                className="text-white/40 hover:text-gray-300 hover:bg-gray-500/10 rounded-full p-3 transition-all duration-300"
-              >
-                <Waves className="h-5 w-5" />
-              </Button>
-            </div>
+              
+              {currentWhisper.isPoetic && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 2, duration: 1 }}
+                  className="text-white/60 text-sm"
+                >
+                  ✨ a poetic whisper
+                </motion.div>
+              )}
+            </motion.div>
           </motion.div>
-        )}
 
-        {/* Exit */}
-        <div className="mt-12 text-center">
-          <Button
-            variant="ghost"
-            onClick={() => setIsActive(false)}
-            className="text-white/50 hover:text-white text-xs"
-          >
-            Leave quietly
-          </Button>
-        </div>
-      </div>
+          {/* Ambient particles */}
+          <div className="absolute inset-0 pointer-events-none">
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 bg-white/20 rounded-full"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+                animate={{
+                  y: [-20, -100],
+                  opacity: [0, 1, 0],
+                  scale: [0, 1, 0]
+                }}
+                transition={{
+                  duration: 8 + Math.random() * 4,
+                  repeat: Infinity,
+                  delay: Math.random() * 5,
+                  ease: "easeOut"
+                }}
+              />
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Gentle instruction */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 3, duration: 1 }}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/40 text-sm"
+      >
+        Press ESC to return
+      </motion.div>
     </div>
   );
 };
 
-export default Lounge; 
+export default Listen; 

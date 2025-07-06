@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -170,7 +170,7 @@ const PromptGeneratorPanel: React.FC = () => {
   };
 
   // AI Prompt Generator
-  const generateIntelligentPrompts = (): GeneratedPrompt[] => {
+  const generateIntelligentPrompts = useCallback((): GeneratedPrompt[] => {
     const context = generatePromptContext();
     setPromptContext(context);
 
@@ -182,21 +182,11 @@ const PromptGeneratorPanel: React.FC = () => {
     });
 
     return filteredTemplates.slice(0, 6).map(template => {
-      let prompt = template.basePrompt;
-      
-      // Replace variables with context
-      if (template.variables.includes("zone")) {
-        prompt = prompt.replace("{zone}", template.targetZone);
-      }
-      if (template.variables.includes("currentTime")) {
-        prompt = prompt.replace("{currentTime}", context.currentTime);
-      }
-      if (template.variables.includes("dayOfWeek")) {
-        prompt = prompt.replace("{dayOfWeek}", context.dayOfWeek);
-      }
-      if (template.variables.includes("weather")) {
-        prompt = prompt.replace("{weather}", context.weather);
-      }
+      const prompt = template.basePrompt
+        .replace("{time}", context.currentTime)
+        .replace("{day}", context.dayOfWeek)
+        .replace("{weather}", context.weather)
+        .replace("{zones}", context.activeZones.join(", "));
 
       return {
         id: `${template.id}-${Date.now()}`,
@@ -209,7 +199,7 @@ const PromptGeneratorPanel: React.FC = () => {
         isDeployed: false
       };
     });
-  };
+  }, [selectedCategory, selectedZone, selectedEmotion, promptTemplates]);
 
   useEffect(() => {
     setIsGenerating(true);
@@ -217,7 +207,7 @@ const PromptGeneratorPanel: React.FC = () => {
       setGeneratedPrompts(generateIntelligentPrompts());
       setIsGenerating(false);
     }, 1500);
-  }, [selectedCategory, selectedZone, selectedEmotion]);
+  }, [selectedCategory, selectedZone, selectedEmotion, generateIntelligentPrompts]);
 
   const copyToClipboard = async (prompt: string) => {
     try {

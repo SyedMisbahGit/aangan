@@ -16,6 +16,8 @@ import {
   Zap,
   X,
   BookOpen,
+  Clock,
+  MapPin,
 } from "lucide-react";
 import { useSummerPulse } from '../../contexts/SummerPulseContext';
 
@@ -25,22 +27,24 @@ interface DreamComposerProps {
   isOpen?: boolean;
 }
 
-const emotionOptions = [
-  { id: "joy", label: "Joy", icon: Sparkles, color: "bg-dream-joy/10 text-dream-joy border-dream-joy/20" },
-  { id: "calm", label: "Calm", icon: Wind, color: "bg-dream-calm/10 text-dream-calm border-dream-calm/20" },
-  { id: "nostalgia", label: "Nostalgia", icon: Moon, color: "bg-dream-nostalgia/10 text-dream-nostalgia border-dream-nostalgia/20" },
-  { id: "hope", label: "Hope", icon: Leaf, color: "bg-dream-hope/10 text-dream-hope border-dream-hope/20" },
-  { id: "anxiety", label: "Anxiety", icon: Flame, color: "bg-dream-anxiety/10 text-dream-anxiety border-dream-anxiety/20" },
-  { id: "loneliness", label: "Loneliness", icon: Droplets, color: "bg-dream-loneliness/10 text-dream-loneliness border-dream-loneliness/20" },
+const emotions = [
+  { id: "joy", label: "Joy", icon: Sparkles, color: "bg-aangan-joy/10 text-aangan-joy border-aangan-joy/20" },
+  { id: "calm", label: "Calm", icon: Wind, color: "bg-aangan-calm/10 text-aangan-calm border-aangan-calm/20" },
+  { id: "nostalgia", label: "Nostalgia", icon: Moon, color: "bg-aangan-nostalgia/10 text-aangan-nostalgia border-aangan-nostalgia/20" },
+  { id: "hope", label: "Hope", icon: Leaf, color: "bg-aangan-hope/10 text-aangan-hope border-aangan-hope/20" },
+  { id: "anxiety", label: "Anxiety", icon: Flame, color: "bg-aangan-anxiety/10 text-aangan-anxiety border-aangan-anxiety/20" },
+  { id: "loneliness", label: "Loneliness", icon: Droplets, color: "bg-aangan-loneliness/10 text-aangan-loneliness border-aangan-loneliness/20" },
 ];
 
-const prompts = [
-  "What's on your mind today?",
-  "Share a moment that made you smile...",
-  "What's something you've been thinking about?",
-  "Describe a feeling you can't quite put into words...",
-  "What's your secret wish for today?",
-  "Share something you'd never say out loud...",
+const writingPrompts = [
+  "What's weighing on your heart today?",
+  "Share a moment that made you smile",
+  "What are you grateful for right now?",
+  "Describe a challenge you're facing",
+  "What's your biggest dream?",
+  "Share something you learned recently",
+  "What's making you anxious?",
+  "Describe a place that feels like home",
 ];
 
 export const DreamComposer: React.FC<DreamComposerProps> = ({
@@ -50,8 +54,15 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
 }) => {
   const [content, setContent] = useState("");
   const [selectedEmotion, setSelectedEmotion] = useState<string>("");
-  const [currentPrompt, setCurrentPrompt] = useState(prompts[0]);
+  const [currentPrompt, setCurrentPrompt] = useState("");
   const { isSummerPulseActive, getSummerPrompt, label: summerLabel, summerTags } = useSummerPulse();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentPrompt(writingPrompts[Math.floor(Math.random() * writingPrompts.length)]);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (isSummerPulseActive) {
@@ -60,17 +71,20 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
   }, [isSummerPulseActive, getSummerPrompt]);
 
   const handleSubmit = () => {
-    if (content.trim() && selectedEmotion) {
+    if (!content.trim() || !selectedEmotion) return;
+
+    setIsSubmitting(true);
+    setTimeout(() => {
       const whisper = {
         content: content.trim(),
         emotion: selectedEmotion,
         tags: isSummerPulseActive ? [...summerTags] : [],
       };
       onSubmit(whisper.content, whisper.emotion);
+      setIsSubmitting(false);
       setContent("");
       setSelectedEmotion("");
-      setCurrentPrompt(prompts[Math.floor(Math.random() * prompts.length)]);
-    }
+    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -82,6 +96,7 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
   const characterCount = content.length;
   const maxCharacters = 500;
   const isOverLimit = characterCount > maxCharacters;
+  const isNearLimit = characterCount > 400;
 
   if (!isOpen) return null;
 
@@ -93,6 +108,7 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
         exit={{ opacity: 0, y: 50 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="fixed inset-0 z-50 flex items-end justify-center p-4"
+        onClick={onClose}
       >
         {/* Backdrop */}
         <motion.div
@@ -109,20 +125,21 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="dream-card w-full max-w-md p-6 shadow-dream-2xl relative"
+          className="aangan-card w-full max-w-md p-6 shadow-aangan-2xl relative"
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-dream-primary" />
-              <h3 className="font-medium text-dream-text-primary">New Whisper</h3>
+              <BookOpen className="h-5 w-5 text-aangan-primary" />
+              <h3 className="font-medium text-aangan-text-primary">New Whisper</h3>
             </div>
             {onClose && (
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={onClose}
-                className="h-8 w-8 p-0 text-dream-text-secondary hover:text-dream-text-primary"
+                className="h-8 w-8 p-0 text-aangan-text-secondary hover:text-aangan-text-primary"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -130,15 +147,11 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
           </div>
 
           {/* Prompt */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 p-3 bg-dream-paper rounded-lg border border-dream-border/50"
-          >
-            <p className="text-sm text-dream-text-secondary italic">
-              "{currentPrompt}"
+          <div className="mb-4 p-3 bg-aangan-surface/50 rounded-lg border border-aangan-border/30">
+            <p className="text-sm text-aangan-text-secondary italic">
+              💭 {currentPrompt}
             </p>
-          </motion.div>
+          </div>
 
           {/* Content Input */}
           <div className="mb-4">
@@ -146,12 +159,14 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
               value={content}
               onChange={(e) => setContent(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder="Write your whisper here..."
-              className="dream-input min-h-[120px] resize-none text-neutral-800 placeholder:text-neutral-500 border border-neutral-300 bg-[#fdfdfd] transition-all duration-200 ease-in-out focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-300 focus:shadow-sm focus:animate-pulse"
+              placeholder="Share your thoughts, feelings, or experiences..."
+              className={`aangan-input w-full h-32 resize-none ${
+                isOverLimit ? "border-aangan-anxiety" : isNearLimit ? "border-aangan-highlight" : ""
+              }`}
               maxLength={maxCharacters}
               onFocus={() => {
                 // Add heartbeat pulse effect
-                const textarea = document.querySelector('.dream-input') as HTMLElement;
+                const textarea = document.querySelector('.aangan-input') as HTMLElement;
                 if (textarea) {
                   textarea.style.boxShadow = '0 0 0 3px rgba(34, 197, 94, 0.1)';
                   setTimeout(() => {
@@ -176,7 +191,7 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
                 }
               }}
               onBlur={() => {
-                const textarea = document.querySelector('.dream-input') as HTMLElement;
+                const textarea = document.querySelector('.aangan-input') as HTMLElement;
                 if (textarea) {
                   textarea.style.boxShadow = '';
                 }
@@ -184,45 +199,35 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
             />
             
             {/* Character Count */}
-            <div className="flex justify-between items-center mt-2">
-              <span className={`text-xs ${
-                isOverLimit ? 'text-dream-anxiety' : 'text-dream-text-muted'
-              }`}>
-                {characterCount}/{maxCharacters}
-              </span>
-              <span className="text-xs text-dream-text-muted">
-                ⌘+Enter to send
-              </span>
+            <div className={`text-xs mt-1 text-right ${
+              isOverLimit ? "text-aangan-anxiety" : isNearLimit ? "text-aangan-highlight" : "text-aangan-text-muted"
+            }`}>
+              {characterCount}/{maxCharacters}
             </div>
           </div>
 
           {/* Emotion Selection */}
           <div className="mb-6">
-            <p className="text-sm font-medium text-dream-text-primary mb-3">
+            <label className="block text-sm font-medium text-aangan-text-primary mb-3">
               How are you feeling?
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {emotionOptions.map((emotion) => {
-                const Icon = emotion.icon;
-                const isSelected = selectedEmotion === emotion.id;
-                
-                return (
-                  <Button
-                    key={emotion.id}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedEmotion(emotion.id)}
-                    className={`h-12 transition-all ${
-                      isSelected
-                        ? `${emotion.color} border-2`
-                        : "border-dream-border text-dream-text-secondary hover:text-dream-text-primary"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4 mr-1" />
-                    <span className="text-xs">{emotion.label}</span>
-                  </Button>
-                );
-              })}
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {emotions.map((emotion) => (
+                <button
+                  key={emotion.id}
+                  onClick={() => setSelectedEmotion(emotion.id)}
+                  className={`p-3 rounded-lg border transition-all duration-200 text-left ${
+                    selectedEmotion === emotion.id
+                      ? `${emotion.color} border-2`
+                      : "bg-aangan-card border-aangan-border hover:border-aangan-primary/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <emotion.icon className="w-4 h-4" />
+                    <span className="text-sm font-medium">{emotion.label}</span>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
 
@@ -236,20 +241,29 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
           {/* Submit Button */}
           <Button
             onClick={handleSubmit}
-            disabled={!content.trim() || !selectedEmotion || isOverLimit}
-            className="dream-button w-full"
+            disabled={!content.trim() || !selectedEmotion || isSubmitting || isOverLimit}
+            className="w-full bg-aangan-primary hover:bg-aangan-primary/90 text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Send className="h-4 w-4 mr-2" />
-            Send Whisper
+            {isSubmitting ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Sending...
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Send className="w-4 h-4" />
+                Send Whisper
+              </div>
+            )}
           </Button>
 
           {/* Tips */}
-          <div className="mt-4 p-3 bg-dream-paper rounded-lg border border-dream-border/50">
+          <div className="mt-4 p-3 bg-aangan-surface/50 rounded-lg border border-aangan-border/30">
             <div className="flex items-center gap-2 mb-2">
-              <Zap className="h-4 w-4 text-dream-secondary" />
-              <span className="text-xs font-medium text-dream-text-primary">Tips</span>
+              <Zap className="h-4 w-4 text-aangan-secondary" />
+              <span className="text-xs font-medium text-aangan-text-primary">Tips</span>
             </div>
-            <ul className="text-xs text-dream-text-secondary space-y-1">
+            <ul className="text-xs text-aangan-text-secondary space-y-1">
               <li>• Your whisper is anonymous</li>
               <li>• Be kind and respectful</li>
               <li>• Share what's in your heart</li>
@@ -259,4 +273,6 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
       </motion.div>
     </AnimatePresence>
   );
-}; 
+};
+
+export default DreamComposer; 

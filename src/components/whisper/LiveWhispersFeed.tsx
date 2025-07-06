@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,44 +37,39 @@ export const LiveWhispersFeed = () => {
   const [activeTab, setActiveTab] = useState<"latest" | "trending">("latest");
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
-  // Enhanced sample whispers with AI-detected campus context
-  const sampleWhispers: Whisper[] = [
+  const sampleWhispers = useMemo(() => ([
     {
       id: "1",
-      content:
-        "The silence in the library at 3 AM hits different when you're questioning every life choice...",
-      category: "Midnight Confessions",
-      timestamp: new Date(Date.now() - 30 * 60 * 1000),
-      reactions: { fire: 12, heart: 8, tears: 3, shock: 2 },
-      detectedZone: "Central Library",
-      detectedTopics: ["Late Night", "Self Reflection", "Academic Stress"],
-      isMidnight: true,
-      fadeTime: new Date(Date.now() + 18 * 60 * 60 * 1000),
+      content: "Saw a dog sleeping peacefully in the sun near the library. Made my day!",
+      category: "Campus Moments",
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      reactions: { fire: 12, heart: 8, tears: 1, shock: 0 },
+      detectedZone: "Library",
+      detectedTopics: ["Dog", "Peaceful", "Library"],
+      fadeTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
     },
     {
       id: "2",
-      content:
-        "That moment when you realize everyone else also has no idea what they're doing...",
-      category: "Inner Feelings",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      reactions: { fire: 24, heart: 15, tears: 6, shock: 8 },
-      detectedZone: "Hostel F",
-      detectedTopics: ["Life Realizations", "Imposter Syndrome", "Growth"],
-      fadeTime: new Date(Date.now() + 22 * 60 * 60 * 1000),
+      content: "Someone left a note in the canteen: 'You are loved.' Whoever you are, thank you!",
+      category: "Secret Thoughts",
+      timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),
+      reactions: { fire: 3, heart: 15, tears: 0, shock: 2 },
+      detectedZone: "Canteen",
+      detectedTopics: ["Note", "Kindness", "Canteen"],
+      fadeTime: new Date(Date.now() + 12 * 60 * 60 * 1000),
     },
     {
       id: "3",
-      content:
-        "Someone just smiled at me in the canteen and now I'm overthinking it for the next 6 hours",
-      category: "Secret Thoughts",
-      timestamp: new Date(Date.now() - 45 * 60 * 1000),
-      reactions: { fire: 18, heart: 25, tears: 2, shock: 12 },
-      detectedZone: "Main Canteen",
-      detectedTopics: ["Social Interactions", "Overthinking", "Campus Life"],
-      fadeTime: new Date(Date.now() + 23 * 60 * 60 * 1000),
-      similarity: true,
+      content: "Midnight confession: I actually like the rain here.",
+      category: "Midnight Confessions",
+      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
+      reactions: { fire: 0, heart: 2, tears: 0, shock: 0 },
+      detectedZone: "Hostel Block",
+      detectedTopics: ["Rain", "Confession"],
+      isMidnight: true,
+      fadeTime: new Date(Date.now() + 6 * 60 * 60 * 1000),
     },
-  ];
+  ]), []);
 
   useEffect(() => {
     setWhispers(sampleWhispers);
@@ -85,7 +80,7 @@ export const LiveWhispersFeed = () => {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [sampleWhispers]);
 
   const handleRefresh = () => {
     setNewWhispersCount(0);

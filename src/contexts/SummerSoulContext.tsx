@@ -49,4 +49,6 @@ export const SummerSoulProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </SummerSoulContext.Provider>
   );
-}; 
+};
+
+ 

@@ -1,225 +1,373 @@
-import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Moon, CloudRain, GraduationCap, Sparkles, Clock } from "lucide-react";
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Wind, Eye, Sparkles, Flame, BookOpen, Heart } from 'lucide-react';
 
-interface Ritual {
+interface WhisperRitual {
   id: string;
-  name: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  isActive: boolean;
-  nextAvailable?: Date;
-  rarity: "common" | "rare" | "legendary";
-  prompt: string;
+  type: 'fade-in' | 'burn' | 'wind' | 'seen' | 'echo' | 'diary-streak';
+  whisperId: string;
+  timestamp: Date;
+  isCompleted: boolean;
 }
 
-export const WhisperRituals = () => {
-  const [activeRituals, setActiveRituals] = useState<Ritual[]>([]);
-  const [selectedRitual, setSelectedRitual] = useState<Ritual | null>(null);
+interface WhisperRitualsProps {
+  whisperId: string;
+  isEphemeral?: boolean;
+  isDiary?: boolean;
+  isEcho?: boolean;
+  onRitualComplete?: (ritualType: string) => void;
+  className?: string;
+}
 
-  // Simulate ritual availability based on time and context
+export const WhisperRituals: React.FC<WhisperRitualsProps> = ({
+  whisperId,
+  isEphemeral = false,
+  isDiary = false,
+  isEcho = false,
+  onRitualComplete,
+  className = ""
+}) => {
+  const [rituals, setRituals] = useState<WhisperRitual[]>([]);
+  const [isMuted, setIsMuted] = useState(false);
+  const [diaryStreak, setDiaryStreak] = useState(0);
+
+  // Initialize rituals based on whisper properties
   useEffect(() => {
-    const now = new Date();
-    const hour = now.getHours();
-    const isFullMoon = Math.random() > 0.8; // Simulate moon phase
-    const isRaining = Math.random() > 0.7; // Simulate weather
-
-    const rituals: Ritual[] = [
+    const initialRituals: WhisperRitual[] = [
       {
-        id: "full-moon",
-        name: "Full Moon Whisper",
-        description: "Once a month, when the moon is full",
-        icon: Moon,
-        isActive: isFullMoon,
-        nextAvailable: isFullMoon
-          ? undefined
-          : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        rarity: "legendary",
-        prompt:
-          "Under the full moon's gaze, what truth do you carry that weighs heaviest tonight?",
-      },
-      {
-        id: "rain-mode",
-        name: "Rain Mode",
-        description: "Active only during rainfall on campus",
-        icon: CloudRain,
-        isActive: isRaining,
-        nextAvailable: isRaining
-          ? undefined
-          : new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-        rarity: "rare",
-        prompt:
-          "Let the rain wash away what you've been holding. What falls with the drops?",
-      },
-      {
-        id: "classroom-ghost",
-        name: "Classroom Ghost Drop",
-        description: "Write from lecture halls during class hours",
-        icon: GraduationCap,
-        isActive: hour >= 9 && hour <= 17,
-        nextAvailable:
-          hour >= 9 && hour <= 17
-            ? undefined
-            : new Date(Date.now() + ((9 - hour + 24) % 24) * 60 * 60 * 1000),
-        rarity: "common",
-        prompt:
-          "In this room full of minds, what thought echoes only in yours?",
-      },
+        id: `${whisperId}-fade-in`,
+        type: 'fade-in',
+        whisperId,
+        timestamp: new Date(),
+        isCompleted: false
+      }
     ];
 
-    setActiveRituals(rituals);
-  }, []);
+    if (isEphemeral) {
+      initialRituals.push({
+        id: `${whisperId}-wind`,
+        type: 'wind',
+        whisperId,
+        timestamp: new Date(),
+        isCompleted: false
+      });
+    }
 
-  const getRarityColor = (rarity: string) => {
-    switch (rarity) {
-      case "legendary":
-        return "bg-purple-500/20 text-purple-200 border-purple-400/30";
-      case "rare":
-        return "bg-blue-500/20 text-blue-200 border-blue-400/30";
-      case "common":
-        return "bg-green-500/20 text-green-200 border-green-400/30";
-      default:
-        return "bg-gray-500/20 text-gray-200 border-gray-400/30";
+    if (isDiary) {
+      initialRituals.push({
+        id: `${whisperId}-diary-streak`,
+        type: 'diary-streak',
+        whisperId,
+        timestamp: new Date(),
+        isCompleted: false
+      });
+    }
+
+    if (isEcho) {
+      initialRituals.push({
+        id: `${whisperId}-echo`,
+        type: 'echo',
+        whisperId,
+        timestamp: new Date(),
+        isCompleted: false
+      });
+    }
+
+    setRituals(initialRituals);
+  }, [whisperId, isEphemeral, isDiary, isEcho]);
+
+  // Play gentle sound effect
+  const playSound = useCallback((frequency: number, duration: number, volume: number = 0.1) => {
+    if (isMuted) return;
+
+    try {
+      const audioContext = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.8, audioContext.currentTime + duration);
+      
+      gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + duration);
+    } catch (error) {
+      console.log('Audio not supported');
+    }
+  }, [isMuted]);
+
+  // Handle ritual completion
+  const completeRitual = useCallback((ritualType: string) => {
+    setRituals(prev => prev.map(ritual => 
+      ritual.type === ritualType 
+        ? { ...ritual, isCompleted: true }
+        : ritual
+    ));
+
+    // Play appropriate sound
+    switch (ritualType) {
+      case 'fade-in':
+        playSound(600, 0.4, 0.05);
+        break;
+      case 'burn':
+        playSound(200, 1.5, 0.08);
+        break;
+      case 'wind':
+        playSound(400, 0.8, 0.06);
+        break;
+      case 'seen':
+        playSound(500, 0.3, 0.04);
+        break;
+      case 'echo':
+        playSound(800, 0.6, 0.07);
+        break;
+      case 'diary-streak':
+        playSound(700, 0.5, 0.06);
+        break;
+    }
+
+    onRitualComplete?.(ritualType);
+  }, [playSound, onRitualComplete]);
+
+  // Handle burn after reading
+  const handleBurnAfterReading = () => {
+    if (!isDiary) return;
+
+    const burnRitual: WhisperRitual = {
+      id: `${whisperId}-burn`,
+      type: 'burn',
+      whisperId,
+      timestamp: new Date(),
+      isCompleted: false
+    };
+
+    setRituals(prev => [...prev, burnRitual]);
+    completeRitual('burn');
+  };
+
+  // Handle seen ritual
+  const handleSeen = () => {
+    const seenRitual: WhisperRitual = {
+      id: `${whisperId}-seen`,
+      type: 'seen',
+      whisperId,
+      timestamp: new Date(),
+      isCompleted: false
+    };
+
+    setRituals(prev => [...prev, seenRitual]);
+    completeRitual('seen');
+  };
+
+  // Handle send to wind
+  const handleSendToWind = () => {
+    if (!isEphemeral) return;
+
+    completeRitual('wind');
+  };
+
+  // Handle echo ritual
+  const handleEcho = () => {
+    if (!isEcho) return;
+
+    completeRitual('echo');
+  };
+
+  // Handle diary streak
+  const handleDiaryStreak = () => {
+    if (!isDiary) return;
+
+    setDiaryStreak(prev => prev + 1);
+    completeRitual('diary-streak');
+  };
+
+  // Auto-complete fade-in ritual
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      completeRitual('fade-in');
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [completeRitual]);
+
+  const getRitualIcon = (type: string) => {
+    switch (type) {
+      case 'fade-in': return <Eye className="w-4 h-4" />;
+      case 'burn': return <Flame className="w-4 h-4" />;
+      case 'wind': return <Wind className="w-4 h-4" />;
+      case 'seen': return <Eye className="w-4 h-4" />;
+      case 'echo': return <Sparkles className="w-4 h-4" />;
+      case 'diary-streak': return <BookOpen className="w-4 h-4" />;
+      default: return <Heart className="w-4 h-4" />;
     }
   };
 
-  const handleRitualSelect = (ritual: Ritual) => {
-    if (ritual.isActive) {
-      setSelectedRitual(ritual);
+  const getRitualText = (type: string) => {
+    switch (type) {
+      case 'fade-in': return 'whisper appeared';
+      case 'burn': return 'burned after reading';
+      case 'wind': return 'sent to the wind';
+      case 'seen': return 'I sat with this';
+      case 'echo': return 'echoed through courtyard';
+      case 'diary-streak': return `diary streak: ${diaryStreak}`;
+      default: return 'ritual completed';
     }
   };
 
-  const formatTimeUntil = (date: Date) => {
-    const now = new Date();
-    const diff = date.getTime() - now.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(hours / 24);
-
-    if (days > 0) return `${days}d ${hours % 24}h`;
-    return `${hours}h`;
+  const getRitualColor = (type: string) => {
+    switch (type) {
+      case 'fade-in': return 'text-aangan-secondary';
+      case 'burn': return 'text-aangan-anxiety';
+      case 'wind': return 'text-aangan-accent';
+      case 'seen': return 'text-aangan-secondary';
+      case 'echo': return 'text-aangan-primary';
+      case 'diary-streak': return 'text-aangan-secondary';
+      default: return 'text-aangan-text-secondary';
+    }
   };
-
-  if (selectedRitual) {
-    return (
-      <Card className="bg-white/5 backdrop-blur-lg border-white/10 p-6">
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <selectedRitual.icon className="h-6 w-6 text-purple-300 animate-pulse" />
-              <div>
-                <h3 className="text-white font-medium">
-                  {selectedRitual.name}
-                </h3>
-                <p className="text-gray-400 text-sm">Sacred writing ritual</p>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              onClick={() => setSelectedRitual(null)}
-              className="text-gray-300 hover:text-white"
-            >
-              Close
-            </Button>
-          </div>
-
-          <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-            <p className="text-purple-200 text-center italic leading-relaxed">
-              "{selectedRitual.prompt}"
-            </p>
-          </div>
-
-          <div className="text-center space-y-2">
-            <p className="text-gray-400 text-sm">
-              This ritual whisper will carry special energy
-            </p>
-            <div className="flex justify-center">
-              <Sparkles className="h-4 w-4 text-purple-400 animate-pulse" />
-            </div>
-          </div>
-        </div>
-      </Card>
-    );
-  }
 
   return (
-    <Card className="bg-white/5 backdrop-blur-lg border-white/10 p-6">
-      <div className="space-y-6">
-        <div className="flex items-center space-x-3">
-          <Sparkles className="h-6 w-6 text-purple-300 animate-pulse" />
-          <div>
-            <h3 className="text-white font-medium">Whisper Rituals</h3>
-            <p className="text-gray-400 text-sm">
-              Sacred moments for deeper truths
-            </p>
-          </div>
-        </div>
+    <div className={`space-y-2 ${className}`}>
+      {/* Active Rituals */}
+      <AnimatePresence>
+        {rituals.map((ritual) => (
+          <motion.div
+            key={ritual.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            className={`flex items-center gap-2 text-xs ${getRitualColor(ritual.type)}`}
+          >
+            {getRitualIcon(ritual.type)}
+            <span className="italic">
+              {getRitualText(ritual.type)}
+            </span>
+            {ritual.isCompleted && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="w-2 h-2 bg-aangan-primary rounded-full"
+              />
+            )}
+          </motion.div>
+        ))}
+      </AnimatePresence>
 
-        <div className="space-y-4">
-          {activeRituals.map((ritual) => {
-            const Icon = ritual.icon;
-            return (
-              <div
-                key={ritual.id}
-                onClick={() => handleRitualSelect(ritual)}
-                className={`p-4 rounded-xl border backdrop-blur-md transition-all duration-300 ${
-                  ritual.isActive
-                    ? "bg-purple-500/20 border-purple-400/30 cursor-pointer hover:bg-purple-500/30 hover:scale-[1.02]"
-                    : "bg-gray-500/10 border-gray-500/20 opacity-60"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Icon
-                      className={`h-5 w-5 ${ritual.isActive ? "text-purple-300 animate-pulse" : "text-gray-400"}`}
-                    />
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span
-                          className={`font-medium text-sm ${ritual.isActive ? "text-purple-200" : "text-gray-400"}`}
-                        >
-                          {ritual.name}
-                        </span>
-                        <Badge className={getRarityColor(ritual.rarity)}>
-                          {ritual.rarity}
-                        </Badge>
-                      </div>
-                      <p className="text-gray-400 text-xs">
-                        {ritual.description}
-                      </p>
-                    </div>
-                  </div>
+      {/* Ritual Actions */}
+      <div className="flex items-center gap-2 mt-3">
+        {/* Seen Button */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleSeen}
+          className="flex items-center gap-1 px-2 py-1 text-xs text-aangan-text-muted hover:text-aangan-secondary transition-colors"
+        >
+          <Eye className="w-3 h-3" />
+          <span>seen</span>
+        </motion.button>
 
-                  <div className="text-right">
-                    {ritual.isActive ? (
-                      <div className="flex items-center space-x-1 text-purple-300">
-                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                        <span className="text-xs">Active</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center space-x-1 text-gray-500">
-                        <Clock className="h-3 w-3" />
-                        <span className="text-xs">
-                          {ritual.nextAvailable &&
-                            formatTimeUntil(ritual.nextAvailable)}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {/* Burn After Reading Button */}
+        {isDiary && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleBurnAfterReading}
+            className="flex items-center gap-1 px-2 py-1 text-xs text-aangan-text-muted hover:text-aangan-anxiety transition-colors"
+          >
+            <Flame className="w-3 h-3" />
+            <span>burn</span>
+          </motion.button>
+        )}
 
-        <div className="text-center p-4 bg-white/5 rounded-xl backdrop-blur-md">
-          <p className="text-gray-300 text-sm leading-relaxed">
-            Rituals appear at sacred moments. When available, they offer deeper
-            prompts for meaningful whispers.
-          </p>
-        </div>
+        {/* Send to Wind Button */}
+        {isEphemeral && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSendToWind}
+            className="flex items-center gap-1 px-2 py-1 text-xs text-aangan-text-muted hover:text-aangan-accent transition-colors"
+          >
+            <Wind className="w-3 h-3" />
+            <span>to wind</span>
+          </motion.button>
+        )}
+
+        {/* Echo Button */}
+        {isEcho && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleEcho}
+            className="flex items-center gap-1 px-2 py-1 text-xs text-aangan-text-muted hover:text-aangan-primary transition-colors"
+          >
+            <Sparkles className="w-3 h-3" />
+            <span>echo</span>
+          </motion.button>
+        )}
+
+        {/* Diary Streak Button */}
+        {isDiary && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleDiaryStreak}
+            className="flex items-center gap-1 px-2 py-1 text-xs text-aangan-text-muted hover:text-aangan-secondary transition-colors"
+          >
+            <BookOpen className="w-3 h-3" />
+            <span>streak</span>
+          </motion.button>
+        )}
       </div>
-    </Card>
+
+      {/* Burn Animation Overlay */}
+      <AnimatePresence>
+        {rituals.some(r => r.type === 'burn' && r.isCompleted) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-gradient-to-br from-aangan-anxiety/20 to-transparent pointer-events-none"
+          >
+            <motion.div
+              initial={{ scale: 0, rotate: 0 }}
+              animate={{ scale: 1, rotate: 360 }}
+              exit={{ scale: 0, rotate: 720 }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl"
+            >
+              🔥
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Wind Animation */}
+      <AnimatePresence>
+        {rituals.some(r => r.type === 'wind' && r.isCompleted) && (
+          <motion.div
+            initial={{ x: '-100%', opacity: 0 }}
+            animate={{ x: '100%', opacity: 1 }}
+            exit={{ x: '100%', opacity: 0 }}
+            transition={{ duration: 3, ease: "easeInOut" }}
+            className="absolute inset-0 pointer-events-none"
+          >
+            <motion.div
+              animate={{ x: [0, 100] }}
+              transition={{ duration: 3, ease: "easeInOut" }}
+              className="absolute top-1/2 left-0 text-2xl text-aangan-accent/60"
+            >
+              💨
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
+
+export default WhisperRituals;

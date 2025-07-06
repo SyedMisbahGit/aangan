@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,40 +19,29 @@ export const WhisperLounge = () => {
   const [currentPost, setCurrentPost] = useState<AmbientPost | null>(null);
   const [isActive, setIsActive] = useState(false);
 
-  const samplePosts: Omit<AmbientPost, "isVisible" | "opacity">[] = [
+  const samplePosts = useMemo(() => ([
     {
       id: "1",
-      content:
-        "Late night thoughts hit different when you're alone in the library. Sometimes silence speaks louder than words.",
-      category: "contemplation",
+      content: "Sometimes I wonder if anyone else feels as lost as I do right now.",
+      category: "Inner Feelings",
       mood: "melancholy",
       timestamp: new Date(),
     },
     {
       id: "2",
-      content:
-        "Found a handwritten note tucked in an old textbook today. Made me wonder about all the stories these walls have witnessed.",
-      category: "discovery",
-      mood: "curious",
+      content: "The way the light falls through the library windows at 4 PM is pure magic.",
+      category: "Campus Moments",
+      mood: "wonder",
       timestamp: new Date(),
     },
     {
       id: "3",
-      content:
-        "The way morning light filters through the hostel corridor... there's poetry in the ordinary moments we usually miss.",
-      category: "observation",
-      mood: "peaceful",
-      timestamp: new Date(),
-    },
-    {
-      id: "4",
-      content:
-        "Sometimes I write messages I'll never send, words that exist only in the space between thought and courage.",
-      category: "confession",
+      content: "I miss the sound of my roommate's laughter. The silence is too loud.",
+      category: "Secret Thoughts",
       mood: "vulnerable",
       timestamp: new Date(),
     },
-  ];
+  ]), []);
 
   useEffect(() => {
     if (!isActive) return;
@@ -92,7 +81,7 @@ export const WhisperLounge = () => {
     }, 8000);
 
     return () => clearInterval(interval);
-  }, [isActive, currentPost]);
+  }, [isActive, currentPost, samplePosts]);
 
   const handleInteraction = (type: "seen" | "echo" | "fade") => {
     if (!currentPost) return;
