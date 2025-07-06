@@ -30,6 +30,23 @@ interface SoftWhisperCardProps {
   onHeart?: () => void;
 }
 
+// Add formatTimestamp helper
+function formatTimestamp(timestamp: string) {
+  // If timestamp is already formatted (like "2m ago"), return it as is
+  if (timestamp.includes('ago') || timestamp.includes('now')) {
+    return timestamp;
+  }
+  
+  // Otherwise, treat it as a date and format it
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+  if (diffInMinutes < 1) return 'Just now';
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+  if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+  return `${Math.floor(diffInMinutes / 1440)}d ago`;
+}
+
 export const SoftWhisperCard: React.FC<SoftWhisperCardProps> = ({ 
   whisper, 
   isAI = false, 
@@ -172,6 +189,15 @@ export const SoftWhisperCard: React.FC<SoftWhisperCardProps> = ({
           </motion.div>
         </div>
 
+        {/* Emotion Badge for testing */}
+        <div 
+          data-testid="emotion-badge" 
+          className="absolute top-4 left-4 px-2 py-1 bg-neutral-800/90 text-white text-xs rounded-md"
+          style={{ display: 'none' }} // Hidden but accessible for tests
+        >
+          {whisper.emotion}
+        </div>
+
         {/* AI Echo Badge */}
         {isAI && (
           <motion.div
@@ -222,7 +248,9 @@ export const SoftWhisperCard: React.FC<SoftWhisperCardProps> = ({
             
             <div className="flex items-center gap-1 text-neutral-400 text-xs">
               <Clock className="w-3 h-3" />
-              <span>{new Date(whisper.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+              <span data-testid="whisper-timestamp">
+                {formatTimestamp(whisper.timestamp)}
+              </span>
             </div>
           </div>
         </div>

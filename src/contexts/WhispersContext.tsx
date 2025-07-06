@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode } from "react";
 
 export interface Whisper {
   id: string;
@@ -22,12 +22,6 @@ interface WhispersContextType {
 }
 
 const WhispersContext = createContext<WhispersContextType | undefined>(undefined);
-
-export const useWhispers = () => {
-  const ctx = useContext(WhispersContext);
-  if (!ctx) throw new Error("useWhispers must be used within a WhispersProvider");
-  return ctx;
-};
 
 export const WhispersProvider = ({ children }: { children: ReactNode }) => {
   const [whispers, setWhispers] = useState<Whisper[]>([]);

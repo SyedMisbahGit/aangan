@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useEffect, useState, ReactNode } from 'react';
 import realtimeService, { 
   RealtimeWhisper, 
   ZoneActivity, 
@@ -36,14 +36,6 @@ interface RealtimeContextType {
 }
 
 const RealtimeContext = createContext<RealtimeContextType | undefined>(undefined);
-
-export const useRealtime = () => {
-  const context = useContext(RealtimeContext);
-  if (context === undefined) {
-    throw new Error('useRealtime must be used within a RealtimeProvider');
-  }
-  return context;
-};
 
 interface RealtimeProviderProps {
   children: ReactNode;

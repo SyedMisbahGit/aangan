@@ -19,6 +19,9 @@ import { useRealtime } from '@/contexts/RealtimeContext';
 import { useWhispers } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 import { ModularWhisperCard } from '@/components/ModularWhisperCard';
+import type { Whisper } from '@/services/api';
+
+type WhisperWithRealtime = Whisper & { realTime?: boolean };
 
 interface RealtimeWhisperFeedProps {
   zone?: string;
@@ -33,7 +36,7 @@ const RealtimeWhisperFeed: React.FC<RealtimeWhisperFeedProps> = ({
   showRealtimeIndicator = true,
   maxWhispers = 50
 }) => {
-  const [allWhispers, setAllWhispers] = useState<Array<{ id: string; content: string; emotion: string; zone: string; timestamp: string }>>([]);
+  const [allWhispers, setAllWhispers] = useState<WhisperWithRealtime[]>([]);
   const [newWhispersCount, setNewWhispersCount] = useState(0);
   const [lastRefresh, setLastRefresh] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -267,12 +270,13 @@ const RealtimeWhisperFeed: React.FC<RealtimeWhisperFeedProps> = ({
           <div className="space-y-6">
             {filteredWhispers.map((whisper, index) => {
               // Ensure all required properties for ModularWhisperCard
-              const completeWhisper = {
+              const completeWhisper: WhisperWithRealtime = {
                 ...whisper,
-                location: (whisper as any).location ?? whisper.zone ?? '',
-                likes: (whisper as any).likes ?? 0,
-                comments: (whisper as any).comments ?? 0,
-                isAnonymous: (whisper as any).isAnonymous ?? true,
+                location: whisper.location ?? whisper.zone ?? '',
+                likes: whisper.likes ?? 0,
+                comments: whisper.comments ?? 0,
+                isAnonymous: whisper.isAnonymous ?? true,
+                realTime: whisper.realTime,
               };
               return (
                 <motion.div
@@ -284,7 +288,7 @@ const RealtimeWhisperFeed: React.FC<RealtimeWhisperFeedProps> = ({
                   className="relative"
                 >
                   {/* Real-time indicator for new whispers */}
-                  {typeof (whisper as any).realTime !== 'undefined' && (whisper as any).realTime && (
+                  {whisper.realTime && (
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}

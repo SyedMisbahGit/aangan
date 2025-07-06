@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useEffect, useState, ReactNode } from 'react';
 import { AanganLoadingScreen } from '../App';
 
 type Theme = 'light' | 'dark';
@@ -10,17 +10,6 @@ interface AanganThemeContextType {
 }
 
 const AanganThemeContext = createContext<AanganThemeContextType | undefined>(undefined);
-
-export const useAanganTheme = () => {
-  const context = useContext(AanganThemeContext);
-  if (!context) {
-    throw new Error('useAanganTheme must be used within an AanganThemeProvider');
-  }
-  return context;
-};
-
-// Legacy export for backward compatibility
-export const useDreamTheme = useAanganTheme;
 
 interface AanganThemeProviderProps {
   children: ReactNode;

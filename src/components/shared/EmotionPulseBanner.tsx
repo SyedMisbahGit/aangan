@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wind, Sparkles } from 'lucide-react';
 
@@ -16,43 +16,43 @@ export const PoeticEmotionBanner: React.FC<PoeticEmotionBannerProps> = ({
   const [isVisible, setIsVisible] = useState(true);
   const [currentLine, setCurrentLine] = useState("");
 
-  const poeticLines = {
+  const poeticLines = useMemo(() => ({
     joy: [
-      "The air here feels light today. Some hearts whispered about letting go.",
-      "Joy is floating through the courtyard like morning light.",
-      "Laughter echoes softly between the whispers today."
-    ],
-    peace: [
-      "A gentle calm settles over the space. Hearts are finding their quiet.",
-      "The courtyard breathes peace today. Thoughts drift like clouds.",
-      "Serenity whispers through the air, touching every soul here."
+      "Sunbeams dance across the quad, laughter echoing in the air.",
+      "A gentle breeze carries the warmth of shared smiles.",
+      "Petals swirl in the sunlight, hearts light as feathers."
     ],
     nostalgia: [
-      "Memories drift through the air like autumn leaves.",
-      "The past and present dance together in today's whispers.",
-      "Nostalgia paints the courtyard in warm, golden light."
+      "Old benches remember every secret, every sigh.",
+      "The scent of rain on stone brings back a thousand yesterdays.",
+      "Footsteps fade, but memories linger in the dusk."
     ],
-    reflection: [
-      "Deep thoughts ripple through the space like water.",
-      "The courtyard holds space for introspection today.",
-      "Minds wander and wonder in the quiet between words."
+    calm: [
+      "Stillness settles over the courtyard, a hush before the dawn.",
+      "Soft clouds drift, inviting quiet reflection.",
+      "The world slows, and peace finds a place to rest."
+    ],
+    peace: [
+      "Stillness settles over the courtyard, a hush before the dawn.",
+      "Soft clouds drift, inviting quiet reflection.",
+      "The world slows, and peace finds a place to rest."
     ],
     anxiety: [
-      "Hearts are heavy with unspoken worries. The space holds them gently.",
-      "Anxiety whispers through the air, but so does hope.",
-      "The courtyard understands. Every feeling is welcome here."
+      "Shadows lengthen, and worries gather like clouds.",
+      "A restless wind stirs the leaves, echoing unspoken fears.",
+      "The night feels heavy, but hope glimmers at the edge."
     ],
-    excitement: [
-      "Energy buzzes through the space like electricity.",
-      "Excitement dances between the whispers today.",
-      "The courtyard pulses with anticipation and possibility."
+    hope: [
+      "A single star pierces the twilight, promising new beginnings.",
+      "Green shoots push through the earth, undaunted by the cold.",
+      "The sky blushes with the promise of tomorrow."
     ],
-    focus: [
-      "Minds are sharp and clear today. Purpose fills the air.",
-      "Focus flows through the space like a steady river.",
-      "The courtyard hums with concentrated energy."
+    love: [
+      "Hands brush in passing, sparks leaping between fingertips.",
+      "Eyes meet across the crowd, and the world softens.",
+      "A whispered secret, a shared smile, a heart unburdened."
     ]
-  };
+  }), []);
 
   const getTimeContext = () => {
     if (timeOfDay === 'morning') return "Morning light";

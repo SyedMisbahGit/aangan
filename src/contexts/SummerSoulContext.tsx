@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
+import React, { createContext, useState, ReactNode, useMemo } from 'react';
 
 // Date until which SummerSoul is active (July 21, 2025, 00:00 local time)
 const SUMMER_SOUL_END = new Date('2025-07-21T00:00:00');
@@ -18,12 +18,6 @@ interface SummerSoulContextType {
 }
 
 const SummerSoulContext = createContext<SummerSoulContextType | undefined>(undefined);
-
-export const useSummerSoul = () => {
-  const ctx = useContext(SummerSoulContext);
-  if (!ctx) throw new Error('useSummerSoul must be used within a SummerSoulProvider');
-  return ctx;
-};
 
 export const SummerSoulProvider = ({ children }: { children: ReactNode }) => {
   const [locationTag, setLocationTag] = useState<LocationTag>('');

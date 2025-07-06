@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { DreamLayout } from "../components/shared/DreamLayout";
 import { DreamHeader } from "../components/shared/DreamHeader";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCUJHotspots } from "../contexts/CUJHotspotContext";
-import { useShhhNarrator } from '../contexts/ShhhNarratorContext';
-import { useWhispers } from "../contexts/WhispersContext";
+import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
+import { useShhhNarrator } from '../contexts/use-shhh-narrator';
+import { useWhispers } from '../contexts/use-whispers';
 import { PoeticEmotionBanner } from '../components/shared/EmotionPulseBanner';
 import { GentlePresenceRibbon } from '../components/shared/PresenceRibbon';
 import { SoftWhisperCard } from '../components/whisper/WhisperCard';
@@ -21,6 +21,11 @@ interface Whisper {
   isAnonymous: boolean;
   author?: string;
   isAIGenerated?: boolean;
+}
+
+interface WhisperWithAI extends Whisper {
+  isAIGenerated?: boolean;
+  is_ai_generated?: boolean;
 }
 
 const Whispers: React.FC = () => {
@@ -210,8 +215,8 @@ const Whispers: React.FC = () => {
                   }}
                 >
                   <SoftWhisperCard
-                    whisper={whisper}
-                    isAI={(whisper as any).isAIGenerated ?? (whisper as any).is_ai_generated}
+                    whisper={whisper as WhisperWithAI}
+                    isAI={(whisper as WhisperWithAI).isAIGenerated ?? (whisper as WhisperWithAI).is_ai_generated}
                     delay={index * 0.2}
                     onTap={() => handleWhisperTap(whisper)}
                     onLongPress={() => handleWhisperLongPress(whisper)}

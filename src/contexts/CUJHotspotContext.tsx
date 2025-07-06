@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
 import { AanganLoadingScreen } from '../App';
+import { useCUJHotspots } from "./use-cuj-hotspots";
 
 export interface CUJHotspot {
   id: string;
@@ -52,14 +53,6 @@ interface CUJHotspotContextType {
 }
 
 const CUJHotspotContext = createContext<CUJHotspotContextType | undefined>(undefined);
-
-export const useCUJHotspots = () => {
-  const context = useContext(CUJHotspotContext);
-  if (!context) {
-    throw new Error('useCUJHotspots must be used within a CUJHotspotProvider');
-  }
-  return context;
-};
 
 interface CUJHotspotProviderProps {
   children: ReactNode;

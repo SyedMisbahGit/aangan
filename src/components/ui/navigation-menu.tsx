@@ -4,6 +4,7 @@ import { cva } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { navigationMenuTriggerStyle } from "./navigation-menu-trigger-style";
 
 const NavigationMenu = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Root>,
@@ -42,10 +43,6 @@ const NavigationMenuItem = NavigationMenuPrimitive.Item;
 
 // Accessibility: Radix NavigationMenu provides keyboard navigation, aria attributes, and focus management out of the box.
 // We add extra mobile tap feedback and ensure touch targets are at least 44px tall.
-
-const navigationMenuTriggerStyle = cva(
-  "group inline-flex h-11 min-h-[44px] w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 active:bg-accent/30 active:text-accent-foreground",
-);
 
 const NavigationMenuTrigger = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Trigger>,
@@ -127,5 +124,4 @@ export {
   NavigationMenuLink,
   NavigationMenuIndicator,
   NavigationMenuViewport,
-  navigationMenuTriggerStyle,
 };

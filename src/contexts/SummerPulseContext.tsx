@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useMemo } from 'react';
 
 interface SummerPulseContextType {
   isSummerPulseActive: boolean;
@@ -29,12 +29,6 @@ const SUMMER_LABEL = "🌿 The Quiet Between — Whispers from this summer's sil
 const SUMMER_END_DATE = new Date('2025-07-14T23:59:59.999Z');
 
 const SummerPulseContext = createContext<SummerPulseContextType | undefined>(undefined);
-
-export const useSummerPulse = () => {
-  const ctx = useContext(SummerPulseContext);
-  if (!ctx) throw new Error('useSummerPulse must be used within SummerPulseProvider');
-  return ctx;
-};
 
 function getTimeIndex(): number {
   const hour = new Date().getHours();
