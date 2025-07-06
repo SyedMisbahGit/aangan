@@ -21,7 +21,7 @@ interface WhispersContextType {
   addWhisper: (whisper: Whisper) => void;
 }
 
-const WhispersContext = createContext<WhispersContextType | undefined>(undefined);
+export const WhispersContext = React.createContext<WhispersContextType | undefined>(undefined);
 
 export const WhispersProvider = ({ children }: { children: ReactNode }) => {
   const [whispers, setWhispers] = useState<Whisper[]>([]);
@@ -32,4 +32,10 @@ export const WhispersProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </WhispersContext.Provider>
   );
+};
+
+export const useWhispers = () => {
+  const ctx = React.useContext(WhispersContext);
+  if (!ctx) throw new Error('useWhispers must be used within a WhispersProvider');
+  return ctx;
 }; 

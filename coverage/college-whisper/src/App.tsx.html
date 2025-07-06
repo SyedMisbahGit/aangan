@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/244</span>
+                <span class='fraction'>0/241</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/244</span>
+                <span class='fraction'>0/241</span>
             </div>
         
             
@@ -385,10 +385,7 @@
 <a name='L320'></a><a href='#L320'>320</a>
 <a name='L321'></a><a href='#L321'>321</a>
 <a name='L322'></a><a href='#L322'>322</a>
-<a name='L323'></a><a href='#L323'>323</a>
-<a name='L324'></a><a href='#L324'>324</a>
-<a name='L325'></a><a href='#L325'>325</a>
-<a name='L326'></a><a href='#L326'>326</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L323'></a><a href='#L323'>323</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -589,7 +586,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -612,16 +608,14 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -722,7 +716,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfettiEffect } from "./components/shared/ConfettiEffect";
 import { DreamNavigation } from "./components/shared/DreamNavigation";
-import { DreamThemeProvider, useDreamTheme } from "./contexts/DreamThemeContext";
+import { AanganThemeProvider, useAanganTheme } from "./contexts/DreamThemeContext";
 import { ShhhNarratorProvider, useShhhNarrator } from "./contexts/ShhhNarratorContext";
 import { CUJHotspotProvider, useCUJHotspots } from "./contexts/CUJHotspotContext";
 import { useState, useEffect } from "react";
@@ -746,12 +740,12 @@ import PrivacyBanner from './components/PrivacyBanner';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >const queryClient = new QueryClient();</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >const HomeFeed = lazy(() =&gt; import("./pages/HomeFeed"));</span>
+<span class="cstat-no" title="statement not covered" >const Whispers = lazy(() =&gt; import("./pages/HomeFeed"));</span>
 <span class="cstat-no" title="statement not covered" >const CreateWhisper = lazy(() =&gt; import("./pages/CreateWhisper"));</span>
 <span class="cstat-no" title="statement not covered" >const Diary = lazy(() =&gt; import("./pages/Diary"));</span>
-<span class="cstat-no" title="statement not covered" >const Explore = lazy(() =&gt; import("./pages/Explore"));</span>
-<span class="cstat-no" title="statement not covered" >const Lounge = lazy(() =&gt; import("./pages/Lounge"));</span>
-<span class="cstat-no" title="statement not covered" >const Menu = lazy(() =&gt; import("./pages/Menu"));</span>
+<span class="cstat-no" title="statement not covered" >const Wander = lazy(() =&gt; import("./pages/Explore"));</span>
+<span class="cstat-no" title="statement not covered" >const Listen = lazy(() =&gt; import("./pages/Lounge"));</span>
+<span class="cstat-no" title="statement not covered" >const MyCorner = lazy(() =&gt; import("./pages/Menu"));</span>
 <span class="cstat-no" title="statement not covered" >const Capsules = lazy(() =&gt; import("./pages/Capsules"));</span>
 <span class="cstat-no" title="statement not covered" >const Shrines = lazy(() =&gt; import("./pages/Shrines"));</span>
 <span class="cstat-no" title="statement not covered" >const Compass = lazy(() =&gt; import("./pages/Compass"));</span>
@@ -764,30 +758,30 @@ import PrivacyBanner from './components/PrivacyBanner';
 <span class="cstat-no" title="statement not covered" >const VAPID_KEY =</span>
 <span class="cstat-no" title="statement not covered" >  "BI3DBu7k1VWLVM9S8UkeQl9gEhlLuHwa4dLOOr77R8kTbCza8TlpKJlc3URwGG-g2-u3Tcs16unk57rXiXPVSyA";</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export const DreamLoadingScreen = ({ message, narratorLine, variant }: { message?: string, narratorLine?: string, variant?: 'default' | 'orbs' | 'shimmer' }) =&gt; (</span>
-<span class="cstat-no" title="statement not covered" >  &lt;div className="min-h-screen flex flex-col items-center justify-center bg-cream-100 text-inkwell font-poetic text-lg animate-fade-in relative overflow-hidden"&gt;</span>
+<span class="cstat-no" title="statement not covered" >export const AanganLoadingScreen = ({ message, narratorLine, variant }: { message?: string, narratorLine?: string, variant?: 'default' | 'orbs' | 'shimmer' }) =&gt; (</span>
+<span class="cstat-no" title="statement not covered" >  &lt;div className="min-h-screen flex flex-col items-center justify-center bg-aangan-background text-aangan-text-primary font-serif text-lg animate-aangan-fade-in relative overflow-hidden"&gt;</span>
     {/* Floating Orbs Animation */}
 <span class="cstat-no" title="statement not covered" >    {(variant === 'orbs' || !variant) &amp;&amp; (</span>
 <span class="cstat-no" title="statement not covered" >      &lt;div className="absolute inset-0 pointer-events-none z-0"&gt;</span>
-<span class="cstat-no" title="statement not covered" >        &lt;div className="absolute top-1/4 left-1/3 w-24 h-24 bg-dream-accent/30 rounded-full blur-2xl animate-float-slow" /&gt;</span>
-<span class="cstat-no" title="statement not covered" >        &lt;div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-dream-secondary/20 rounded-full blur-2xl animate-float-medium" /&gt;</span>
-<span class="cstat-no" title="statement not covered" >        &lt;div className="absolute top-2/3 right-1/3 w-16 h-16 bg-dream-primary/20 rounded-full blur-2xl animate-float-fast" /&gt;</span>
+<span class="cstat-no" title="statement not covered" >        &lt;div className="absolute top-1/4 left-1/3 w-24 h-24 bg-aangan-primary/30 rounded-full blur-2xl animate-aangan-float" /&gt;</span>
+<span class="cstat-no" title="statement not covered" >        &lt;div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-aangan-secondary/20 rounded-full blur-2xl animate-aangan-float" /&gt;</span>
+<span class="cstat-no" title="statement not covered" >        &lt;div className="absolute top-2/3 right-1/3 w-16 h-16 bg-aangan-accent/20 rounded-full blur-2xl animate-aangan-float" /&gt;</span>
       &lt;/div&gt;
     )}
     {/* Shimmer Animation */}
 <span class="cstat-no" title="statement not covered" >    {(variant === 'shimmer') &amp;&amp; (</span>
-<span class="cstat-no" title="statement not covered" >      &lt;div className="w-64 h-6 bg-gradient-to-r from-dream-accent/10 via-dream-accent/30 to-dream-accent/10 rounded-full animate-shimmer mb-6" /&gt;</span>
+<span class="cstat-no" title="statement not covered" >      &lt;div className="w-64 h-6 bg-gradient-to-r from-aangan-primary/10 via-aangan-primary/30 to-aangan-primary/10 rounded-full animate-aangan-shimmer mb-6" /&gt;</span>
     )}
 <span class="cstat-no" title="statement not covered" >    &lt;div className="z-10 text-center"&gt;</span>
-<span class="cstat-no" title="statement not covered" >      &lt;div className="mb-2 animate-pulse"&gt;{message || 'Shhh is sensing the campus...'}&lt;/div&gt;</span>
-<span class="cstat-no" title="statement not covered" >      {narratorLine &amp;&amp; &lt;div className="italic text-dream-accent mt-2 animate-fade-in-slow"&gt;{narratorLine}&lt;/div&gt;}</span>
+<span class="cstat-no" title="statement not covered" >      &lt;div className="mb-2 animate-aangan-pulse-soft"&gt;{message || 'Aangan is sensing the campus...'}&lt;/div&gt;</span>
+<span class="cstat-no" title="statement not covered" >      {narratorLine &amp;&amp; &lt;div className="italic text-aangan-primary mt-2 animate-aangan-fade-in"&gt;{narratorLine}&lt;/div&gt;}</span>
     &lt;/div&gt;
   &lt;/div&gt;
 );
 &nbsp;
 <span class="cstat-no" title="statement not covered" >const AppContent: React.FC = () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  const [showConfetti, setShowConfetti] = useState(false);</span>
-<span class="cstat-no" title="statement not covered" >  const { theme, isInitialized } = useDreamTheme();</span>
+<span class="cstat-no" title="statement not covered" >  const { theme, isInitialized } = useAanganTheme();</span>
 <span class="cstat-no" title="statement not covered" >  const { isReady: narratorReady } = useShhhNarrator();</span>
 <span class="cstat-no" title="statement not covered" >  const { isReady: hotspotReady } = useCUJHotspots();</span>
 <span class="cstat-no" title="statement not covered" >  const { addWhisper } = useWhispers();</span>
@@ -855,7 +849,7 @@ import PrivacyBanner from './components/PrivacyBanner';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  // Aggregate all context readiness</span>
 <span class="cstat-no" title="statement not covered" >  if (!isInitialized || !narratorReady || !hotspotReady) {</span>
-<span class="cstat-no" title="statement not covered" >    return &lt;DreamLoadingScreen message="Sensing the campus, warming the chai, and listening for whispers..." /&gt;;</span>
+<span class="cstat-no" title="statement not covered" >    return &lt;AanganLoadingScreen message="Sensing the campus, warming the chai, and listening for whispers..." /&gt;;</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const getAndSendFcmToken = async () =&gt; {</span>
@@ -901,53 +895,50 @@ import PrivacyBanner from './components/PrivacyBanner';
 <span class="cstat-no" title="statement not covered" >  };</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
-<span class="cstat-no" title="statement not covered" >    &lt;div className="min-h-screen transition-colors duration-500 bg-dream-background text-dream-text-primary"&gt;</span>
+<span class="cstat-no" title="statement not covered" >    &lt;div className="min-h-screen transition-colors duration-500 bg-aangan-background text-aangan-text-primary"&gt;</span>
 <span class="cstat-no" title="statement not covered" >      {showNotifOptIn &amp;&amp; (</span>
-<span class="cstat-no" title="statement not covered" >        &lt;div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-dream-accent rounded-xl shadow-xl px-6 py-4 flex items-center gap-4 animate-fade-in"&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;span className="font-medium text-dream-accent"&gt;Allow notifications? &lt;span className="text-inkwell"&gt;Sirf zaroori nudges, spam nahi.&lt;/span&gt;&lt;/span&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;button onClick={() =&gt; handleNotifOptIn(true)} className="ml-4 bg-dream-accent text-white px-4 py-2 rounded-lg font-semibold hover:bg-dream-purple transition"&gt;Allow&lt;/button&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;button onClick={() =&gt; handleNotifOptIn(false)} className="ml-2 text-dream-accent/70 hover:text-dream-accent"&gt;No Thanks&lt;/button&gt;</span>
+<span class="cstat-no" title="statement not covered" >        &lt;div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-aangan-card border border-aangan-primary rounded-xl shadow-aangan-xl px-6 py-4 flex items-center gap-4 animate-aangan-fade-in"&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;span className="font-medium text-aangan-primary"&gt;Allow notifications? &lt;span className="text-aangan-text-primary"&gt;Sirf zaroori nudges, spam nahi.&lt;/span&gt;&lt;/span&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;button onClick={() =&gt; handleNotifOptIn(true)} className="ml-4 bg-aangan-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-aangan-primary/90 transition"&gt;Allow&lt;/button&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;button onClick={() =&gt; handleNotifOptIn(false)} className="ml-2 text-aangan-primary/70 hover:text-aangan-primary"&gt;No Thanks&lt;/button&gt;</span>
         &lt;/div&gt;
       )}
 <span class="cstat-no" title="statement not covered" >      &lt;Suspense</span>
 <span class="cstat-no" title="statement not covered" >        fallback={</span>
-<span class="cstat-no" title="statement not covered" >          &lt;DreamLoadingScreen </span>
+<span class="cstat-no" title="statement not covered" >          &lt;AanganLoadingScreen </span>
 <span class="cstat-no" title="statement not covered" >            message="Loading whispers..."</span>
-<span class="cstat-no" title="statement not covered" >            narratorLine="The campus is quietly gathering stories."</span>
-<span class="cstat-no" title="statement not covered" >            variant="orbs"</span>
+<span class="cstat-no" title="statement not covered" >            narratorLine="The courtyard is preparing to receive your thoughts..."</span>
           /&gt;
         }
       &gt;
 <span class="cstat-no" title="statement not covered" >        &lt;Routes&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/login" element={&lt;Login /&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/onboarding" element={&lt;Onboarding /&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/" element={&lt;PrivateRoute&gt;&lt;HomeFeed /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/create" element={&lt;PrivateRoute&gt;&lt;CreateWhisper /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/diary" element={&lt;PrivateRoute&gt;&lt;Diary /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/explore" element={&lt;PrivateRoute&gt;&lt;Explore /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/lounge" element={&lt;PrivateRoute&gt;&lt;Lounge /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/menu" element={&lt;PrivateRoute&gt;&lt;Menu /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/zones" element={&lt;PrivateRoute&gt;&lt;Shrines /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/capsules" element={&lt;PrivateRoute&gt;&lt;Capsules /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/shrines" element={&lt;PrivateRoute&gt;&lt;Shrines /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/compass" element={&lt;PrivateRoute&gt;&lt;Compass /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/constellation" element={&lt;PrivateRoute&gt;&lt;Constellation /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/murmurs" element={&lt;PrivateRoute&gt;&lt;Murmurs /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/profile" element={&lt;PrivateRoute&gt;&lt;Profile /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/" element={&lt;Whispers /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/create" element={&lt;CreateWhisper /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/diary" element={&lt;Diary /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/explore" element={&lt;Wander /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/lounge" element={&lt;Listen /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/menu" element={&lt;MyCorner /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/capsules" element={&lt;Capsules /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/shrines" element={&lt;Shrines /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/compass" element={&lt;Compass /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/constellation" element={&lt;Constellation /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/murmurs" element={&lt;Murmurs /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/profile" element={&lt;Profile /&gt;} /&gt;</span>
 <span class="cstat-no" title="statement not covered" >          &lt;Route path="/about" element={&lt;About /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/login" element={&lt;Login /&gt;} /&gt;</span>
 <span class="cstat-no" title="statement not covered" >          &lt;Route path="/admin" element={&lt;PrivateRoute adminOnly&gt;&lt;Admin /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
 <span class="cstat-no" title="statement not covered" >          &lt;Route path="/admin/insights" element={&lt;PrivateRoute adminOnly&gt;&lt;AdminInsights /&gt;&lt;/PrivateRoute&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Route path="/admin-login" element={&lt;AdminLogin /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Route path="/admin/login" element={&lt;AdminLogin /&gt;} /&gt;</span>
 <span class="cstat-no" title="statement not covered" >          &lt;Route path="*" element={&lt;NotFound /&gt;} /&gt;</span>
         &lt;/Routes&gt;
-<span class="cstat-no" title="statement not covered" >        &lt;DreamNavigation /&gt;</span>
       &lt;/Suspense&gt;
-<span class="cstat-no" title="statement not covered" >      &lt;ConfettiEffect isActive={showConfetti} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >      &lt;GlobalWhisperComposer </span>
-<span class="cstat-no" title="statement not covered" >        variant="floating"</span>
-<span class="cstat-no" title="statement not covered" >        onWhisperCreated={handleWhisperCreated}</span>
-      /&gt;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      &lt;GlobalWhisperComposer onWhisperCreated={handleWhisperCreated} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >      &lt;DreamNavigation /&gt;</span>
 <span class="cstat-no" title="statement not covered" >      &lt;PrivacyBanner /&gt;</span>
+<span class="cstat-no" title="statement not covered" >      &lt;ConfettiEffect isActive={showConfetti} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >      &lt;Toaster /&gt;</span>
+<span class="cstat-no" title="statement not covered" >      &lt;Sonner /&gt;</span>
     &lt;/div&gt;
   );
 <span class="cstat-no" title="statement not covered" >};</span>
@@ -997,10 +988,10 @@ import PrivacyBanner from './components/PrivacyBanner';
 <span class="cstat-no" title="statement not covered" >    };</span>
 <span class="cstat-no" title="statement not covered" >  }, []);</span>
 <span class="cstat-no" title="statement not covered" >  if (isMobile &amp;&amp; hasError) {</span>
-<span class="cstat-no" title="statement not covered" >    return &lt;div className="min-h-screen flex items-center justify-center text-center p-8 bg-dream-bg text-dream-text-primary"&gt;We're fixing something – please retry in a moment.&lt;/div&gt;;</span>
+<span class="cstat-no" title="statement not covered" >    return &lt;div className="min-h-screen flex items-center justify-center text-center p-8 bg-aangan-background text-aangan-text-primary"&gt;We're fixing something – please retry in a moment.&lt;/div&gt;;</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" >  if (isOffline) {</span>
-<span class="cstat-no" title="statement not covered" >    return &lt;div className="min-h-screen flex items-center justify-center text-center p-8 bg-[#f9f7f4] text-neutral-700 text-lg"&gt;We're floating in a quiet zone. Please reconnect.&lt;/div&gt;;</span>
+<span class="cstat-no" title="statement not covered" >    return &lt;div className="min-h-screen flex items-center justify-center text-center p-8 bg-aangan-background text-aangan-text-primary text-lg"&gt;We're floating in a quiet zone. Please reconnect.&lt;/div&gt;;</span>
 <span class="cstat-no" title="statement not covered" >  }</span>
 <span class="cstat-no" title="statement not covered" >  return &lt;AppContent /&gt;;</span>
 <span class="cstat-no" title="statement not covered" >}</span>
@@ -1008,7 +999,7 @@ import PrivacyBanner from './components/PrivacyBanner';
 <span class="cstat-no" title="statement not covered" >const App: React.FC = () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return (</span>
 <span class="cstat-no" title="statement not covered" >    &lt;QueryClientProvider client={queryClient}&gt;</span>
-<span class="cstat-no" title="statement not covered" >      &lt;DreamThemeProvider&gt;</span>
+<span class="cstat-no" title="statement not covered" >      &lt;AanganThemeProvider&gt;</span>
 <span class="cstat-no" title="statement not covered" >        &lt;CUJHotspotProvider&gt;</span>
 <span class="cstat-no" title="statement not covered" >          &lt;ShhhNarratorProvider&gt;</span>
 <span class="cstat-no" title="statement not covered" >            &lt;SummerPulseProvider&gt;</span>
@@ -1020,7 +1011,7 @@ import PrivacyBanner from './components/PrivacyBanner';
 <span class="cstat-no" title="statement not covered" >                      &lt;Sonner /&gt;</span>
 <span class="cstat-no" title="statement not covered" >                      &lt;SummerSoulProvider&gt;</span>
 <span class="cstat-no" title="statement not covered" >                        &lt;BrowserRouter&gt;</span>
-<span class="cstat-no" title="statement not covered" >                          &lt;ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the Dream." &gt;</span>
+<span class="cstat-no" title="statement not covered" >                          &lt;ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the courtyard." &gt;</span>
 <span class="cstat-no" title="statement not covered" >                            &lt;AppContentWithErrorBoundary /&gt;</span>
                           &lt;/ErrorBoundary&gt;
                         &lt;/BrowserRouter&gt;
@@ -1032,7 +1023,7 @@ import PrivacyBanner from './components/PrivacyBanner';
             &lt;/SummerPulseProvider&gt;
           &lt;/ShhhNarratorProvider&gt;
         &lt;/CUJHotspotProvider&gt;
-      &lt;/DreamThemeProvider&gt;
+      &lt;/AanganThemeProvider&gt;
     &lt;/QueryClientProvider&gt;
   );
 <span class="cstat-no" title="statement not covered" >};</span>
@@ -1045,7 +1036,7 @@ import PrivacyBanner from './components/PrivacyBanner';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-05T20:19:54.882Z
+                at 2025-07-06T18:31:26.300Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

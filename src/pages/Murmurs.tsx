@@ -29,11 +29,12 @@ import {
   MoreHorizontal
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCUJHotspots } from "../contexts/CUJHotspotContext";
+import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
 import { ShhhLine } from '@/components/ShhhLine';
 import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
 import { DreamWhisperCard } from '../components/whisper/DreamWhisperCard';
-import { useSummerSoul } from '../contexts/SummerSoulContext';
+import { useSummerSoul } from '../contexts/use-summer-soul';
+import type { DreamWhisper } from '../components/whisper/ModularWhisperCard';
 
 const Murmurs: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
@@ -41,7 +42,7 @@ const Murmurs: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedZone, setSelectedZone] = useState("all");
   const [selectedEmotion, setSelectedEmotion] = useState("all");
-  const [whispers, setWhispers] = useState<Array<{ id: number; content: string; emotion: string; visibility: string; hotspot: string; timestamp: string; hearts: number; replies: number; author: string; proximity: number; vibeMatch: number; groupSize: number }>>([]);
+  const [whispers, setWhispers] = useState<DreamWhisper[]>([]);
   const [trendingTopics, setTrendingTopics] = useState<Array<{ id: number; topic: string; emotion: string; count: number; trend: string; change: number; hotspots: string[] }>>([]);
   
   const { nearbyHotspots, emotionClusters, getEmotionTrends } = useCUJHotspots();
@@ -79,10 +80,10 @@ const Murmurs: React.FC = () => {
   useEffect(() => {
     const sampleWhispers = [
       {
-        id: 1,
+        id: "1",
         content: "You + 8 others near ISRO shared similar thoughts about the upcoming hackathon. The energy is electric!",
         emotion: "excitement",
-        visibility: "public" as const,
+        visibility: "public",
         hotspot: "isro",
         timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
         hearts: 23,
@@ -90,13 +91,15 @@ const Murmurs: React.FC = () => {
         author: "Anonymous",
         proximity: 180,
         vibeMatch: 0.9,
-        groupSize: 8
+        groupSize: 8,
+        tags: [],
+        likes: 0
       },
       {
-        id: 2,
+        id: "2",
         content: "The way the library transforms during exam season is fascinating. Everyone's in their own world yet connected by the same purpose.",
         emotion: "calm",
-        visibility: "anonymous" as const,
+        visibility: "anonymous",
         hotspot: "library",
         timestamp: new Date(Date.now() - 12 * 60 * 1000).toISOString(),
         hearts: 15,
@@ -104,13 +107,15 @@ const Murmurs: React.FC = () => {
         author: "Anonymous",
         proximity: 90,
         vibeMatch: 0.7,
-        groupSize: 12
+        groupSize: 12,
+        tags: [],
+        likes: 0
       },
       {
-        id: 3,
+        id: "3",
         content: "Found someone who shares my love for midnight walks around campus. The stars seem closer here, and conversations flow like the gentle breeze.",
         emotion: "nostalgia",
-        visibility: "public" as const,
+        visibility: "public",
         hotspot: "quad",
         timestamp: new Date(Date.now() - 18 * 60 * 1000).toISOString(),
         hearts: 31,
@@ -118,13 +123,15 @@ const Murmurs: React.FC = () => {
         author: "Anonymous",
         proximity: 30,
         vibeMatch: 0.8,
-        groupSize: 5
+        groupSize: 5,
+        tags: [],
+        likes: 0
       },
       {
-        id: 4,
+        id: "4",
         content: "The chai at Tapri has a way of making everything feel better. Watching the sunset with friends, sharing stories, and feeling grateful for these moments.",
         emotion: "gratitude",
-        visibility: "public" as const,
+        visibility: "public",
         hotspot: "tapri",
         timestamp: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
         hearts: 28,
@@ -132,13 +139,15 @@ const Murmurs: React.FC = () => {
         author: "Anonymous",
         proximity: 50,
         vibeMatch: 0.6,
-        groupSize: 15
+        groupSize: 15,
+        tags: [],
+        likes: 0
       },
       {
-        id: 5,
+        id: "5",
         content: "Sometimes I wonder about the stories these ancient walls could tell. The Baba Surgal Dev Mandir has witnessed generations of students finding their path.",
         emotion: "melancholy",
-        visibility: "anonymous" as const,
+        visibility: "anonymous",
         hotspot: "baba-surgal",
         timestamp: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
         hearts: 19,
@@ -146,13 +155,15 @@ const Murmurs: React.FC = () => {
         author: "Anonymous",
         proximity: 200,
         vibeMatch: 0.5,
-        groupSize: 3
+        groupSize: 3,
+        tags: [],
+        likes: 0
       },
       {
-        id: 6,
+        id: "6",
         content: "The energy in the DDE building today is electric. Everyone's working on their final projects, and you can feel the collective determination in the air.",
         emotion: "excitement",
-        visibility: "public" as const,
+        visibility: "public",
         hotspot: "dde",
         timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
         hearts: 42,
@@ -160,7 +171,9 @@ const Murmurs: React.FC = () => {
         author: "Anonymous",
         proximity: 120,
         vibeMatch: 0.9,
-        groupSize: 20
+        groupSize: 20,
+        tags: [],
+        likes: 0
       }
     ];
     setWhispers(sampleWhispers);

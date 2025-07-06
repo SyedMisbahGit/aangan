@@ -293,8 +293,8 @@ const Listen: React.FC = () => {
               />
             ))}
           </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
 
       {/* Gentle instruction */}
       <motion.div

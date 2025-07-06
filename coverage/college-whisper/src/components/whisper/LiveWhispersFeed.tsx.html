@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/213</span>
+                <span class='fraction'>0/208</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/213</span>
+                <span class='fraction'>0/208</span>
             </div>
         
             
@@ -394,12 +394,7 @@
 <a name='L329'></a><a href='#L329'>329</a>
 <a name='L330'></a><a href='#L330'>330</a>
 <a name='L331'></a><a href='#L331'>331</a>
-<a name='L332'></a><a href='#L332'>332</a>
-<a name='L333'></a><a href='#L333'>333</a>
-<a name='L334'></a><a href='#L334'>334</a>
-<a name='L335'></a><a href='#L335'>335</a>
-<a name='L336'></a><a href='#L336'>336</a>
-<a name='L337'></a><a href='#L337'>337</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L332'></a><a href='#L332'>332</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -471,11 +466,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -735,7 +725,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { useState, useEffect } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { useState, useEffect, useMemo } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -774,44 +764,39 @@ interface Whisper {
 <span class="cstat-no" title="statement not covered" >  const [activeTab, setActiveTab] = useState&lt;"latest" | "trending"&gt;("latest");</span>
 <span class="cstat-no" title="statement not covered" >  const [lastRefresh, setLastRefresh] = useState(new Date());</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  // Enhanced sample whispers with AI-detected campus context</span>
-<span class="cstat-no" title="statement not covered" >  const sampleWhispers: Whisper[] = [</span>
+<span class="cstat-no" title="statement not covered" >  const sampleWhispers = useMemo(() =&gt; ([</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "1",</span>
-<span class="cstat-no" title="statement not covered" >      content:</span>
-<span class="cstat-no" title="statement not covered" >        "The silence in the library at 3 AM hits different when you're questioning every life choice...",</span>
-<span class="cstat-no" title="statement not covered" >      category: "Midnight Confessions",</span>
-<span class="cstat-no" title="statement not covered" >      timestamp: new Date(Date.now() - 30 * 60 * 1000),</span>
-<span class="cstat-no" title="statement not covered" >      reactions: { fire: 12, heart: 8, tears: 3, shock: 2 },</span>
-<span class="cstat-no" title="statement not covered" >      detectedZone: "Central Library",</span>
-<span class="cstat-no" title="statement not covered" >      detectedTopics: ["Late Night", "Self Reflection", "Academic Stress"],</span>
-<span class="cstat-no" title="statement not covered" >      isMidnight: true,</span>
-<span class="cstat-no" title="statement not covered" >      fadeTime: new Date(Date.now() + 18 * 60 * 60 * 1000),</span>
+<span class="cstat-no" title="statement not covered" >      content: "Saw a dog sleeping peacefully in the sun near the library. Made my day!",</span>
+<span class="cstat-no" title="statement not covered" >      category: "Campus Moments",</span>
+<span class="cstat-no" title="statement not covered" >      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),</span>
+<span class="cstat-no" title="statement not covered" >      reactions: { fire: 12, heart: 8, tears: 1, shock: 0 },</span>
+<span class="cstat-no" title="statement not covered" >      detectedZone: "Library",</span>
+<span class="cstat-no" title="statement not covered" >      detectedTopics: ["Dog", "Peaceful", "Library"],</span>
+<span class="cstat-no" title="statement not covered" >      fadeTime: new Date(Date.now() + 24 * 60 * 60 * 1000),</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "2",</span>
-<span class="cstat-no" title="statement not covered" >      content:</span>
-<span class="cstat-no" title="statement not covered" >        "That moment when you realize everyone else also has no idea what they're doing...",</span>
-<span class="cstat-no" title="statement not covered" >      category: "Inner Feelings",</span>
-<span class="cstat-no" title="statement not covered" >      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),</span>
-<span class="cstat-no" title="statement not covered" >      reactions: { fire: 24, heart: 15, tears: 6, shock: 8 },</span>
-<span class="cstat-no" title="statement not covered" >      detectedZone: "Hostel F",</span>
-<span class="cstat-no" title="statement not covered" >      detectedTopics: ["Life Realizations", "Imposter Syndrome", "Growth"],</span>
-<span class="cstat-no" title="statement not covered" >      fadeTime: new Date(Date.now() + 22 * 60 * 60 * 1000),</span>
+<span class="cstat-no" title="statement not covered" >      content: "Someone left a note in the canteen: 'You are loved.' Whoever you are, thank you!",</span>
+<span class="cstat-no" title="statement not covered" >      category: "Secret Thoughts",</span>
+<span class="cstat-no" title="statement not covered" >      timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),</span>
+<span class="cstat-no" title="statement not covered" >      reactions: { fire: 3, heart: 15, tears: 0, shock: 2 },</span>
+<span class="cstat-no" title="statement not covered" >      detectedZone: "Canteen",</span>
+<span class="cstat-no" title="statement not covered" >      detectedTopics: ["Note", "Kindness", "Canteen"],</span>
+<span class="cstat-no" title="statement not covered" >      fadeTime: new Date(Date.now() + 12 * 60 * 60 * 1000),</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "3",</span>
-<span class="cstat-no" title="statement not covered" >      content:</span>
-<span class="cstat-no" title="statement not covered" >        "Someone just smiled at me in the canteen and now I'm overthinking it for the next 6 hours",</span>
-<span class="cstat-no" title="statement not covered" >      category: "Secret Thoughts",</span>
-<span class="cstat-no" title="statement not covered" >      timestamp: new Date(Date.now() - 45 * 60 * 1000),</span>
-<span class="cstat-no" title="statement not covered" >      reactions: { fire: 18, heart: 25, tears: 2, shock: 12 },</span>
-<span class="cstat-no" title="statement not covered" >      detectedZone: "Main Canteen",</span>
-<span class="cstat-no" title="statement not covered" >      detectedTopics: ["Social Interactions", "Overthinking", "Campus Life"],</span>
-<span class="cstat-no" title="statement not covered" >      fadeTime: new Date(Date.now() + 23 * 60 * 60 * 1000),</span>
-<span class="cstat-no" title="statement not covered" >      similarity: true,</span>
+<span class="cstat-no" title="statement not covered" >      content: "Midnight confession: I actually like the rain here.",</span>
+<span class="cstat-no" title="statement not covered" >      category: "Midnight Confessions",</span>
+<span class="cstat-no" title="statement not covered" >      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),</span>
+<span class="cstat-no" title="statement not covered" >      reactions: { fire: 0, heart: 2, tears: 0, shock: 0 },</span>
+<span class="cstat-no" title="statement not covered" >      detectedZone: "Hostel Block",</span>
+<span class="cstat-no" title="statement not covered" >      detectedTopics: ["Rain", "Confession"],</span>
+<span class="cstat-no" title="statement not covered" >      isMidnight: true,</span>
+<span class="cstat-no" title="statement not covered" >      fadeTime: new Date(Date.now() + 6 * 60 * 60 * 1000),</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >  ];</span>
+<span class="cstat-no" title="statement not covered" >  ]), []);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useEffect(() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setWhispers(sampleWhispers);</span>
@@ -822,7 +807,7 @@ interface Whisper {
 <span class="cstat-no" title="statement not covered" >    }, 30000);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return () =&gt; clearInterval(interval);</span>
-<span class="cstat-no" title="statement not covered" >  }, []);</span>
+<span class="cstat-no" title="statement not covered" >  }, [sampleWhispers]);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const handleRefresh = () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setNewWhispersCount(0);</span>
@@ -1078,7 +1063,7 @@ interface Whisper {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-05T20:19:54.882Z
+                at 2025-07-06T18:31:26.300Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

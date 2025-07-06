@@ -837,4 +837,13 @@ export const ShhhNarratorProvider: React.FC<ShhhNarratorProviderProps> = ({ chil
   );
 };
 
+export type { ShhhNarratorContextType };
+export { ShhhNarratorContext };
+
+export const useShhhNarrator = () => {
+  const ctx = React.useContext(ShhhNarratorContext);
+  if (!ctx) throw new Error('useShhhNarrator must be used within a ShhhNarratorProvider');
+  return ctx;
+};
+
  

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/271</span>
+                <span class='fraction'>0/269</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/271</span>
+                <span class='fraction'>0/269</span>
             </div>
         
             
@@ -468,14 +468,7 @@
 <a name='L403'></a><a href='#L403'>403</a>
 <a name='L404'></a><a href='#L404'>404</a>
 <a name='L405'></a><a href='#L405'>405</a>
-<a name='L406'></a><a href='#L406'>406</a>
-<a name='L407'></a><a href='#L407'>407</a>
-<a name='L408'></a><a href='#L408'>408</a>
-<a name='L409'></a><a href='#L409'>409</a>
-<a name='L410'></a><a href='#L410'>410</a>
-<a name='L411'></a><a href='#L411'>411</a>
-<a name='L412'></a><a href='#L412'>412</a>
-<a name='L413'></a><a href='#L413'>413</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L406'></a><a href='#L406'>406</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -558,10 +551,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -571,11 +561,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -585,21 +575,17 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -887,7 +873,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useEffect } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useEffect, useCallback } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" >import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";</span>
 <span class="cstat-no" title="statement not covered" >import { Badge } from "../ui/badge";</span>
 <span class="cstat-no" title="statement not covered" >import { Button } from "../ui/button";</span>
@@ -965,62 +951,55 @@ interface MoodArc {
 <span class="cstat-no" title="statement not covered" >  ]);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  // AI Analysis Functions</span>
-<span class="cstat-no" title="statement not covered" >  const analyzeEmotionTrend = (): EmotionTrend =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  const analyzeEmotionTrend = useCallback((): EmotionTrend =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    const recentData = emotionData.slice(-10);</span>
 <span class="cstat-no" title="statement not covered" >    const avgIntensity = recentData.reduce((sum, point) =&gt; sum + point.intensity, 0) / recentData.length;</span>
-<span class="cstat-no" title="statement not covered" >    const earlyData = emotionData.slice(-20, -10);</span>
-<span class="cstat-no" title="statement not covered" >    const earlyAvgIntensity = earlyData.reduce((sum, point) =&gt; sum + point.intensity, 0) / earlyData.length;</span>
-    
-<span class="cstat-no" title="statement not covered" >    const trend = avgIntensity &gt; earlyAvgIntensity ? "upward" : avgIntensity &lt; earlyAvgIntensity ? "downward" : "stable";</span>
-<span class="cstat-no" title="statement not covered" >    const confidence = Math.abs(avgIntensity - earlyAvgIntensity) * 100;</span>
-    
-<span class="cstat-no" title="statement not covered" >    // Detect anomalies</span>
-<span class="cstat-no" title="statement not covered" >    const intensities = recentData.map(d =&gt; d.intensity);</span>
-<span class="cstat-no" title="statement not covered" >    const maxIntensity = Math.max(...intensities);</span>
-<span class="cstat-no" title="statement not covered" >    const minIntensity = Math.min(...intensities);</span>
-<span class="cstat-no" title="statement not covered" >    const anomaly = maxIntensity - minIntensity &gt; 0.4 ? {</span>
-<span class="cstat-no" title="statement not covered" >      type: maxIntensity &gt; 0.8 ? "spike" : "dip",</span>
-<span class="cstat-no" title="statement not covered" >      description: maxIntensity &gt; 0.8 ? "Emotional spike detected" : "Emotional dip detected",</span>
-<span class="cstat-no" title="statement not covered" >      impact: maxIntensity &gt; 0.8 ? "positive" : "negative"</span>
+<span class="cstat-no" title="statement not covered" >    const dominantEmotion = recentData.reduce((acc, point) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      acc[point.emotion] = (acc[point.emotion] || 0) + 1;</span>
+<span class="cstat-no" title="statement not covered" >      return acc;</span>
+<span class="cstat-no" title="statement not covered" >    }, {} as Record&lt;string, number&gt;);</span>
+<span class="cstat-no" title="statement not covered" >    const topEmotion = Object.entries(dominantEmotion).sort((a, b) =&gt; b[1] - a[1])[0]?.[0] || "peaceful";</span>
+<span class="cstat-no" title="statement not covered" >    const trend = avgIntensity &gt; 0.7 ? "upward" : avgIntensity &lt; 0.3 ? "downward" : "stable";</span>
+<span class="cstat-no" title="statement not covered" >    const confidence = Math.floor(Math.random() * 30) + 70; // 70-100%</span>
+<span class="cstat-no" title="statement not covered" >    const pattern = `Dominant emotion: ${topEmotion} with ${(avgIntensity * 100).toFixed(0)}% intensity`;</span>
+<span class="cstat-no" title="statement not covered" >    const recommendation = trend === "upward" ? "Consider mood-lifting activities" : </span>
+<span class="cstat-no" title="statement not covered" >                          trend === "downward" ? "Focus on self-care and support" : </span>
+<span class="cstat-no" title="statement not covered" >                          "Maintain current positive trajectory";</span>
+<span class="cstat-no" title="statement not covered" >    const anomaly = confidence &gt; 90 ? {</span>
+<span class="cstat-no" title="statement not covered" >      type: "spike" as const,</span>
+<span class="cstat-no" title="statement not covered" >      description: "Unusual emotional spike detected",</span>
+<span class="cstat-no" title="statement not covered" >      impact: "positive" as const</span>
 <span class="cstat-no" title="statement not covered" >    } : undefined;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
 <span class="cstat-no" title="statement not covered" >      trend,</span>
-<span class="cstat-no" title="statement not covered" >      confidence: Math.min(confidence, 95),</span>
-<span class="cstat-no" title="statement not covered" >      pattern: trend === "upward" ? "Community mood is improving" : </span>
-<span class="cstat-no" title="statement not covered" >               trend === "downward" ? "Community mood is declining" : </span>
-<span class="cstat-no" title="statement not covered" >               "Community mood is stable",</span>
-<span class="cstat-no" title="statement not covered" >      recommendation: trend === "upward" ? "Consider positive reinforcement prompts" :</span>
-<span class="cstat-no" title="statement not covered" >                     trend === "downward" ? "Deploy supportive nudges and capsule deliveries" :</span>
-<span class="cstat-no" title="statement not covered" >                     "Maintain current engagement strategies",</span>
+<span class="cstat-no" title="statement not covered" >      confidence,</span>
+<span class="cstat-no" title="statement not covered" >      pattern,</span>
+<span class="cstat-no" title="statement not covered" >      recommendation,</span>
 <span class="cstat-no" title="statement not covered" >      anomaly</span>
 <span class="cstat-no" title="statement not covered" >    };</span>
-<span class="cstat-no" title="statement not covered" >  };</span>
+<span class="cstat-no" title="statement not covered" >  }, [emotionData]);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  const detectMoodArc = (): MoodArc =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  const detectMoodArc = useCallback((): MoodArc =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    const recentData = emotionData.slice(-6);</span>
 <span class="cstat-no" title="statement not covered" >    const intensities = recentData.map(d =&gt; d.intensity);</span>
 <span class="cstat-no" title="statement not covered" >    const avgIntensity = intensities.reduce((sum, i) =&gt; sum + i, 0) / intensities.length;</span>
-    
-<span class="cstat-no" title="statement not covered" >    let phase: MoodArc["phase"];</span>
-<span class="cstat-no" title="statement not covered" >    if (avgIntensity &gt; 0.8) phase = "peak";</span>
-<span class="cstat-no" title="statement not covered" >    else if (avgIntensity &gt; 0.6) phase = "rising";</span>
-<span class="cstat-no" title="statement not covered" >    else if (avgIntensity &gt; 0.4) phase = "falling";</span>
-<span class="cstat-no" title="statement not covered" >    else phase = "valley";</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    const dominantEmotion = recentData.reduce((prev, current) =&gt; </span>
-<span class="cstat-no" title="statement not covered" >      current.intensity &gt; prev.intensity ? current : prev</span>
-<span class="cstat-no" title="statement not covered" >    ).emotion;</span>
-&nbsp;
+<span class="cstat-no" title="statement not covered" >    const phase = avgIntensity &gt; 0.8 ? "peak" : avgIntensity &gt; 0.5 ? "rising" : avgIntensity &gt; 0.2 ? "falling" : "valley";</span>
+<span class="cstat-no" title="statement not covered" >    const duration = Math.floor(Math.random() * 8) + 4; // 4-12 hours</span>
+<span class="cstat-no" title="statement not covered" >    const dominantEmotion = recentData.reduce((acc, point) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      acc[point.emotion] = (acc[point.emotion] || 0) + 1;</span>
+<span class="cstat-no" title="statement not covered" >      return acc;</span>
+<span class="cstat-no" title="statement not covered" >    }, {} as Record&lt;string, number&gt;);</span>
+<span class="cstat-no" title="statement not covered" >    const topEmotion = Object.entries(dominantEmotion).sort((a, b) =&gt; b[1] - a[1])[0]?.[0] || "peaceful";</span>
 <span class="cstat-no" title="statement not covered" >    const zones = [...new Set(recentData.map(d =&gt; d.zone))];</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return {</span>
 <span class="cstat-no" title="statement not covered" >      phase,</span>
-<span class="cstat-no" title="statement not covered" >      duration: recentData.length,</span>
-<span class="cstat-no" title="statement not covered" >      dominantEmotion,</span>
+<span class="cstat-no" title="statement not covered" >      duration,</span>
+<span class="cstat-no" title="statement not covered" >      dominantEmotion: topEmotion,</span>
 <span class="cstat-no" title="statement not covered" >      zones</span>
 <span class="cstat-no" title="statement not covered" >    };</span>
-<span class="cstat-no" title="statement not covered" >  };</span>
+<span class="cstat-no" title="statement not covered" >  }, [emotionData]);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useEffect(() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setIsAnalyzing(true);</span>
@@ -1031,7 +1010,7 @@ interface MoodArc {
 <span class="cstat-no" title="statement not covered" >      setMoodArc(detectMoodArc());</span>
 <span class="cstat-no" title="statement not covered" >      setIsAnalyzing(false);</span>
 <span class="cstat-no" title="statement not covered" >    }, 1500);</span>
-<span class="cstat-no" title="statement not covered" >  }, [timeRange, selectedZone]);</span>
+<span class="cstat-no" title="statement not covered" >  }, [timeRange, selectedZone, analyzeEmotionTrend, detectMoodArc]);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const getEmotionColor = (emotion: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    const colors: { [key: string]: string } = {</span>
@@ -1306,7 +1285,7 @@ interface MoodArc {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-05T20:19:54.882Z
+                at 2025-07-06T18:31:26.300Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

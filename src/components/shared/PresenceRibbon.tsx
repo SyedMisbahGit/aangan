@@ -60,19 +60,19 @@ export const GentlePresenceRibbon: React.FC<GentlePresenceRibbonProps> = ({
             className="flex items-center justify-center p-3 bg-gradient-to-r from-rose-50/60 to-blue-50/60 backdrop-blur-sm border border-rose-200/20 rounded-xl"
           >
             <div className="flex items-center gap-2">
-              <motion.div
-                animate={{ 
+            <motion.div
+              animate={{ 
                   scale: [1, 1.1, 1],
                   opacity: [0.7, 1, 0.7]
-                }}
-                transition={{ 
-                  duration: 3, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
+              }}
+              transition={{ 
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
               >
                 <Heart className="w-4 h-4 text-rose-400" />
-              </motion.div>
+          </motion.div>
               <span className="text-sm font-medium text-neutral-600 leading-relaxed">
                 {currentText}
               </span>
@@ -93,7 +93,7 @@ export const GentlePresenceRibbon: React.FC<GentlePresenceRibbonProps> = ({
           </motion.div>
 
           {/* Incense smoke effect */}
-          <motion.div
+        <motion.div
             className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-1 h-8 bg-gradient-to-b from-rose-200/30 to-transparent rounded-full"
             animate={{ 
               opacity: [0, 1, 0],

@@ -541,11 +541,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { useState, useEffect } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { useState, useEffect, useMemo } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Mirror, Heart, Sparkles, Send } from "lucide-react";
+import { Heart, Sparkles, Send, Square } from "lucide-react";
 &nbsp;
 interface MirrorEntry {
   id: string;
@@ -560,7 +560,7 @@ interface MirrorEntry {
 <span class="cstat-no" title="statement not covered" >  const [todayPrompt, setTodayPrompt] = useState("");</span>
 <span class="cstat-no" title="statement not covered" >  const [showEcho, setShowEcho] = useState&lt;MirrorEntry | null&gt;(null);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  const reflectionPrompts = [</span>
+<span class="cstat-no" title="statement not covered" >  const reflectionPrompts = useMemo(() =&gt; [</span>
 <span class="cstat-no" title="statement not covered" >    "What do you need to hear tonight?",</span>
 <span class="cstat-no" title="statement not covered" >    "What would you tell your younger self right now?",</span>
 <span class="cstat-no" title="statement not covered" >    "What fear are you carrying that isn't yours to hold?",</span>
@@ -569,7 +569,7 @@ interface MirrorEntry {
 <span class="cstat-no" title="statement not covered" >    "What truth are you avoiding about yourself?",</span>
 <span class="cstat-no" title="statement not covered" >    "What would self-compassion say to you now?",</span>
 <span class="cstat-no" title="statement not covered" >    "What boundary do you need to set with yourself?",</span>
-<span class="cstat-no" title="statement not covered" >  ];</span>
+<span class="cstat-no" title="statement not covered" >  ], []);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useEffect(() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    // Set daily prompt</span>
@@ -612,7 +612,7 @@ interface MirrorEntry {
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    const timer = setTimeout(maybeEcho, 2000);</span>
 <span class="cstat-no" title="statement not covered" >    return () =&gt; clearTimeout(timer);</span>
-<span class="cstat-no" title="statement not covered" >  }, []);</span>
+<span class="cstat-no" title="statement not covered" >  }, [reflectionPrompts]);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const handleSaveReflection = () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (!currentReflection.trim()) return;</span>
@@ -666,7 +666,7 @@ interface MirrorEntry {
 <span class="cstat-no" title="statement not covered" >      &lt;Card className="bg-white/5 backdrop-blur-lg border-white/10 p-6"&gt;</span>
 <span class="cstat-no" title="statement not covered" >        &lt;div className="space-y-6 text-center"&gt;</span>
 <span class="cstat-no" title="statement not covered" >          &lt;div className="flex items-center justify-center space-x-3"&gt;</span>
-<span class="cstat-no" title="statement not covered" >            &lt;Mirror className="h-6 w-6 text-purple-300 animate-pulse" /&gt;</span>
+<span class="cstat-no" title="statement not covered" >            &lt;Square className="h-6 w-6 text-purple-300 animate-pulse" /&gt;</span>
 <span class="cstat-no" title="statement not covered" >            &lt;h3 className="text-white font-medium"&gt;Your Mirror Echoes Back&lt;/h3&gt;</span>
           &lt;/div&gt;
 &nbsp;
@@ -701,7 +701,7 @@ interface MirrorEntry {
 <span class="cstat-no" title="statement not covered" >      &lt;div className="space-y-6"&gt;</span>
         {/* Header */}
 <span class="cstat-no" title="statement not covered" >        &lt;div className="flex items-center space-x-3"&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Mirror className="h-6 w-6 text-purple-300 animate-pulse" /&gt;</span>
+<span class="cstat-no" title="statement not covered" >          &lt;Square className="h-6 w-6 text-purple-300 animate-pulse" /&gt;</span>
 <span class="cstat-no" title="statement not covered" >          &lt;div&gt;</span>
 <span class="cstat-no" title="statement not covered" >            &lt;h3 className="text-white font-medium"&gt;Mirror Mode&lt;/h3&gt;</span>
 <span class="cstat-no" title="statement not covered" >            &lt;p className="text-gray-400 text-sm"&gt;</span>
@@ -787,7 +787,7 @@ interface MirrorEntry {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-05T20:19:54.882Z
+                at 2025-07-06T18:31:26.300Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

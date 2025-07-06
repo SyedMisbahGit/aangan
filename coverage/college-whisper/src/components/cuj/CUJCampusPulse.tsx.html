@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/335</span>
+                <span class='fraction'>0/347</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/335</span>
+                <span class='fraction'>0/347</span>
             </div>
         
             
@@ -569,7 +569,21 @@
 <a name='L504'></a><a href='#L504'>504</a>
 <a name='L505'></a><a href='#L505'>505</a>
 <a name='L506'></a><a href='#L506'>506</a>
-<a name='L507'></a><a href='#L507'>507</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L507'></a><a href='#L507'>507</a>
+<a name='L508'></a><a href='#L508'>508</a>
+<a name='L509'></a><a href='#L509'>509</a>
+<a name='L510'></a><a href='#L510'>510</a>
+<a name='L511'></a><a href='#L511'>511</a>
+<a name='L512'></a><a href='#L512'>512</a>
+<a name='L513'></a><a href='#L513'>513</a>
+<a name='L514'></a><a href='#L514'>514</a>
+<a name='L515'></a><a href='#L515'>515</a>
+<a name='L516'></a><a href='#L516'>516</a>
+<a name='L517'></a><a href='#L517'>517</a>
+<a name='L518'></a><a href='#L518'>518</a>
+<a name='L519'></a><a href='#L519'>519</a>
+<a name='L520'></a><a href='#L520'>520</a>
+<a name='L521'></a><a href='#L521'>521</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -592,6 +606,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -708,7 +724,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -739,6 +759,14 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1075,7 +1103,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useEffect } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >import React, { useState, useEffect, useMemo } from "react";</span></span></span>
 <span class="cstat-no" title="statement not covered" >import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";</span>
 <span class="cstat-no" title="statement not covered" >import { Badge } from "@/components/ui/badge";</span>
 import { Button } from "@/components/ui/button";
@@ -1098,6 +1126,8 @@ import {
   TreePine,
   Building2,
   Flame,
+  Code,
+  Rocket,
 <span class="cstat-no" title="statement not covered" >} from "lucide-react";</span>
 &nbsp;
 interface CUJZone {
@@ -1142,123 +1172,135 @@ interface CUJPulseData {
 <span class="cstat-no" title="statement not covered" >    festSeason: false,</span>
 <span class="cstat-no" title="statement not covered" >  });</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  const cujZones = [</span>
+<span class="cstat-no" title="statement not covered" >  const cujZones = useMemo(() =&gt; [</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "1",</span>
-<span class="cstat-no" title="statement not covered" >      name: "Hostel Heart",</span>
-<span class="cstat-no" title="statement not covered" >      realName: "Student Hostels",</span>
+<span class="cstat-no" title="statement not covered" >      name: "Hostel Block",</span>
+<span class="cstat-no" title="statement not covered" >      realName: "Student Residences",</span>
 <span class="cstat-no" title="statement not covered" >      type: "hostel" as const,</span>
+<span class="cstat-no" title="statement not covered" >      activity: 85,</span>
+<span class="cstat-no" title="statement not covered" >      mood: "cozy",</span>
+<span class="cstat-no" title="statement not covered" >      whisperCount: 23,</span>
+<span class="cstat-no" title="statement not covered" >      isActive: true,</span>
+<span class="cstat-no" title="statement not covered" >      weather: "clear",</span>
+<span class="cstat-no" title="statement not covered" >      culturalContext: "Late night study sessions and roommate bonding",</span>
+<span class="cstat-no" title="statement not covered" >      ritualActive: true,</span>
+<span class="cstat-no" title="statement not covered" >      aura: "warm-glow",</span>
 <span class="cstat-no" title="statement not covered" >      icon: Home,</span>
-<span class="cstat-no" title="statement not covered" >      culturalContext: "Hostel wali stories, late night confessions",</span>
-<span class="cstat-no" title="statement not covered" >      aura: "emotion-aura-joy",</span>
-<span class="cstat-no" title="statement not covered" >      description: "Late-night laughter, secrets, and stargazing.",</span>
+<span class="cstat-no" title="statement not covered" >      description: "Where dreams are dreamed and friendships forged"</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "2",</span>
-<span class="cstat-no" title="statement not covered" >      name: "Lab Complex",</span>
-<span class="cstat-no" title="statement not covered" >      realName: "Science &amp; Tech Labs",</span>
+<span class="cstat-no" title="statement not covered" >      name: "Computer Lab",</span>
+<span class="cstat-no" title="statement not covered" >      realName: "Tech Innovation Hub",</span>
 <span class="cstat-no" title="statement not covered" >      type: "lab" as const,</span>
-<span class="cstat-no" title="statement not covered" >      icon: TestTube,</span>
-<span class="cstat-no" title="statement not covered" >      culturalContext: "Lab ke baad thakan wali feeling",</span>
-<span class="cstat-no" title="statement not covered" >      aura: "emotion-aura-loneliness",</span>
-<span class="cstat-no" title="statement not covered" >      description: "Stress, anxiety, and silent support.",</span>
+<span class="cstat-no" title="statement not covered" >      activity: 92,</span>
+<span class="cstat-no" title="statement not covered" >      mood: "focused",</span>
+<span class="cstat-no" title="statement not covered" >      whisperCount: 31,</span>
+<span class="cstat-no" title="statement not covered" >      isActive: true,</span>
+<span class="cstat-no" title="statement not covered" >      weather: "clear",</span>
+<span class="cstat-no" title="statement not covered" >      culturalContext: "Code debugging and project collaborations",</span>
+<span class="cstat-no" title="statement not covered" >      ritualActive: false,</span>
+<span class="cstat-no" title="statement not covered" >      aura: "electric-blue",</span>
+<span class="cstat-no" title="statement not covered" >      icon: Code,</span>
+<span class="cstat-no" title="statement not covered" >      description: "Where algorithms meet ambition"</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "3",</span>
-<span class="cstat-no" title="statement not covered" >      name: "Main Quad",</span>
-<span class="cstat-no" title="statement not covered" >      realName: "Central Quadrangle",</span>
+<span class="cstat-no" title="statement not covered" >      name: "Central Quad",</span>
+<span class="cstat-no" title="statement not covered" >      realName: "Academic Heart",</span>
 <span class="cstat-no" title="statement not covered" >      type: "quad" as const,</span>
-<span class="cstat-no" title="statement not covered" >      icon: TreePine,</span>
-<span class="cstat-no" title="statement not covered" >      culturalContext: "Chai pe charcha, friendship circles",</span>
-<span class="cstat-no" title="statement not covered" >      aura: "emotion-aura-joy",</span>
-<span class="cstat-no" title="statement not covered" >      description: "Festival vibes and new beginnings.",</span>
+<span class="cstat-no" title="statement not covered" >      activity: 78,</span>
+<span class="cstat-no" title="statement not covered" >      mood: "energetic",</span>
+<span class="cstat-no" title="statement not covered" >      whisperCount: 19,</span>
+<span class="cstat-no" title="statement not covered" >      isActive: true,</span>
+<span class="cstat-no" title="statement not covered" >      weather: "sunny",</span>
+<span class="cstat-no" title="statement not covered" >      culturalContext: "Campus events and casual conversations",</span>
+<span class="cstat-no" title="statement not covered" >      ritualActive: true,</span>
+<span class="cstat-no" title="statement not covered" >      aura: "golden-sun",</span>
+<span class="cstat-no" title="statement not covered" >      icon: MapPin,</span>
+<span class="cstat-no" title="statement not covered" >      description: "The pulse of campus life"</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "4",</span>
 <span class="cstat-no" title="statement not covered" >      name: "Admin Block",</span>
-<span class="cstat-no" title="statement not covered" >      realName: "Administrative Block",</span>
+<span class="cstat-no" title="statement not covered" >      realName: "Administrative Center",</span>
 <span class="cstat-no" title="statement not covered" >      type: "admin" as const,</span>
+<span class="cstat-no" title="statement not covered" >      activity: 45,</span>
+<span class="cstat-no" title="statement not covered" >      mood: "formal",</span>
+<span class="cstat-no" title="statement not covered" >      whisperCount: 8,</span>
+<span class="cstat-no" title="statement not covered" >      isActive: false,</span>
+<span class="cstat-no" title="statement not covered" >      weather: "cloudy",</span>
+<span class="cstat-no" title="statement not covered" >      culturalContext: "Official matters and academic planning",</span>
+<span class="cstat-no" title="statement not covered" >      ritualActive: false,</span>
+<span class="cstat-no" title="statement not covered" >      aura: "professional-gray",</span>
 <span class="cstat-no" title="statement not covered" >      icon: Building2,</span>
-<span class="cstat-no" title="statement not covered" >      culturalContext: "Documentation stress, official matters",</span>
-<span class="cstat-no" title="statement not covered" >      aura: "emotion-aura-loneliness",</span>
-<span class="cstat-no" title="statement not covered" >      description: "Raw, late-night whispers and secrets.",</span>
+<span class="cstat-no" title="statement not covered" >      description: "Where policies meet practice"</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "5",</span>
-<span class="cstat-no" title="statement not covered" >      name: "Knowledge Hub",</span>
-<span class="cstat-no" title="statement not covered" >      realName: "Central Library",</span>
+<span class="cstat-no" title="statement not covered" >      name: "Library",</span>
+<span class="cstat-no" title="statement not covered" >      realName: "Knowledge Sanctuary",</span>
 <span class="cstat-no" title="statement not covered" >      type: "library" as const,</span>
+<span class="cstat-no" title="statement not covered" >      activity: 67,</span>
+<span class="cstat-no" title="statement not covered" >      mood: "peaceful",</span>
+<span class="cstat-no" title="statement not covered" >      whisperCount: 15,</span>
+<span class="cstat-no" title="statement not covered" >      isActive: true,</span>
+<span class="cstat-no" title="statement not covered" >      weather: "clear",</span>
+<span class="cstat-no" title="statement not covered" >      culturalContext: "Deep study and intellectual exploration",</span>
+<span class="cstat-no" title="statement not covered" >      ritualActive: true,</span>
+<span class="cstat-no" title="statement not covered" >      aura: "scholarly-green",</span>
 <span class="cstat-no" title="statement not covered" >      icon: BookOpen,</span>
-<span class="cstat-no" title="statement not covered" >      culturalContext: "Library silence, study pressure",</span>
-<span class="cstat-no" title="statement not covered" >      aura: "emotion-aura-nostalgia",</span>
-<span class="cstat-no" title="statement not covered" >      description: "Quiet confessions and exam fog.",</span>
+<span class="cstat-no" title="statement not covered" >      description: "Where wisdom whispers from every shelf"</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "6",</span>
-<span class="cstat-no" title="statement not covered" >      name: "Udaan Ground",</span>
-<span class="cstat-no" title="statement not covered" >      realName: "Udaan Festival Ground",</span>
+<span class="cstat-no" title="statement not covered" >      name: "Udaan Center",</span>
+<span class="cstat-no" title="statement not covered" >      realName: "Innovation Hub",</span>
 <span class="cstat-no" title="statement not covered" >      type: "udaan" as const,</span>
-<span class="cstat-no" title="statement not covered" >      icon: Music,</span>
-<span class="cstat-no" title="statement not covered" >      culturalContext: "Udaan aftermath, fest memories",</span>
-<span class="cstat-no" title="statement not covered" >      aura: "emotion-aura-joy",</span>
-<span class="cstat-no" title="statement not covered" >      description: "Late-night laughter, secrets, and stargazing.",</span>
+<span class="cstat-no" title="statement not covered" >      activity: 88,</span>
+<span class="cstat-no" title="statement not covered" >      mood: "excited",</span>
+<span class="cstat-no" title="statement not covered" >      whisperCount: 27,</span>
+<span class="cstat-no" title="statement not covered" >      isActive: true,</span>
+<span class="cstat-no" title="statement not covered" >      weather: "sunny",</span>
+<span class="cstat-no" title="statement not covered" >      culturalContext: "Startup dreams and entrepreneurial spirit",</span>
+<span class="cstat-no" title="statement not covered" >      ritualActive: true,</span>
+<span class="cstat-no" title="statement not covered" >      aura: "innovative-purple",</span>
+<span class="cstat-no" title="statement not covered" >      icon: Rocket,</span>
+<span class="cstat-no" title="statement not covered" >      description: "Where ideas take flight"</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "7",</span>
-<span class="cstat-no" title="statement not covered" >      name: "Canteen Corner",</span>
-<span class="cstat-no" title="statement not covered" >      realName: "Student Canteen",</span>
+<span class="cstat-no" title="statement not covered" >      name: "Canteen",</span>
+<span class="cstat-no" title="statement not covered" >      realName: "Food Court",</span>
 <span class="cstat-no" title="statement not covered" >      type: "canteen" as const,</span>
+<span class="cstat-no" title="statement not covered" >      activity: 95,</span>
+<span class="cstat-no" title="statement not covered" >      mood: "social",</span>
+<span class="cstat-no" title="statement not covered" >      whisperCount: 42,</span>
+<span class="cstat-no" title="statement not covered" >      isActive: true,</span>
+<span class="cstat-no" title="statement not covered" >      weather: "clear",</span>
+<span class="cstat-no" title="statement not covered" >      culturalContext: "Food conversations and cultural exchange",</span>
+<span class="cstat-no" title="statement not covered" >      ritualActive: true,</span>
+<span class="cstat-no" title="statement not covered" >      aura: "warm-orange",</span>
 <span class="cstat-no" title="statement not covered" >      icon: Coffee,</span>
-<span class="cstat-no" title="statement not covered" >      culturalContext: "Chai breaks, food discussions",</span>
-<span class="cstat-no" title="statement not covered" >      aura: "emotion-aura-joy",</span>
-<span class="cstat-no" title="statement not covered" >      description: "Chai-fueled gossip and heart-to-heart talks.",</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >  ];</span>
+<span class="cstat-no" title="statement not covered" >      description: "Where chai and conversations flow freely"</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >  ], []);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  const cujMoods = {</span>
-<span class="cstat-no" title="statement not covered" >    peaceful: {</span>
-<span class="cstat-no" title="statement not covered" >      emoji: "🕊️",</span>
-<span class="cstat-no" title="statement not covered" >      color: "text-green-400",</span>
-<span class="cstat-no" title="statement not covered" >      bg: "bg-green-400/20",</span>
-<span class="cstat-no" title="statement not covered" >      dogri: "Shanti",</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >    excited: {</span>
-<span class="cstat-no" title="statement not covered" >      emoji: "✨",</span>
-<span class="cstat-no" title="statement not covered" >      color: "text-yellow-400",</span>
-<span class="cstat-no" title="statement not covered" >      bg: "bg-yellow-400/20",</span>
-<span class="cstat-no" title="statement not covered" >      dogri: "Utsah",</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >    contemplative: {</span>
-<span class="cstat-no" title="statement not covered" >      emoji: "🌙",</span>
-<span class="cstat-no" title="statement not covered" >      color: "text-blue-400",</span>
-<span class="cstat-no" title="statement not covered" >      bg: "bg-blue-400/20",</span>
-<span class="cstat-no" title="statement not covered" >      dogri: "Vichar",</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >    stressed: {</span>
-<span class="cstat-no" title="statement not covered" >      emoji: "🌀",</span>
-<span class="cstat-no" title="statement not covered" >      color: "text-purple-400",</span>
-<span class="cstat-no" title="statement not covered" >      bg: "bg-purple-400/20",</span>
-<span class="cstat-no" title="statement not covered" >      dogri: "Tension",</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >    joyful: {</span>
-<span class="cstat-no" title="statement not covered" >      emoji: "💝",</span>
-<span class="cstat-no" title="statement not covered" >      color: "text-pink-400",</span>
-<span class="cstat-no" title="statement not covered" >      bg: "bg-pink-400/20",</span>
-<span class="cstat-no" title="statement not covered" >      dogri: "Khushi",</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >    nostalgic: {</span>
-<span class="cstat-no" title="statement not covered" >      emoji: "💫",</span>
-<span class="cstat-no" title="statement not covered" >      color: "text-indigo-400",</span>
-<span class="cstat-no" title="statement not covered" >      bg: "bg-indigo-400/20",</span>
-<span class="cstat-no" title="statement not covered" >      dogri: "Yaad",</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >    homesick: {</span>
-<span class="cstat-no" title="statement not covered" >      emoji: "🏠",</span>
-<span class="cstat-no" title="statement not covered" >      color: "text-orange-400",</span>
-<span class="cstat-no" title="statement not covered" >      bg: "bg-orange-400/20",</span>
-<span class="cstat-no" title="statement not covered" >      dogri: "Ghar ki yaad",</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >  };</span>
+<span class="cstat-no" title="statement not covered" >  const cujMoods = useMemo(() =&gt; ({</span>
+<span class="cstat-no" title="statement not covered" >    peaceful: { emoji: "😌", dogri: "Shanti", context: "Calm &amp; Serene" },</span>
+<span class="cstat-no" title="statement not covered" >    energetic: { emoji: "⚡", dogri: "Jazba", context: "Full of Energy" },</span>
+<span class="cstat-no" title="statement not covered" >    focused: { emoji: "🎯", dogri: "Dhyan", context: "Deeply Concentrated" },</span>
+<span class="cstat-no" title="statement not covered" >    cozy: { emoji: "🏠", dogri: "Aaram", context: "Comfortable &amp; Warm" },</span>
+<span class="cstat-no" title="statement not covered" >    social: { emoji: "👥", dogri: "Sangat", context: "Community Spirit" },</span>
+<span class="cstat-no" title="statement not covered" >    excited: { emoji: "🚀", dogri: "Josh", context: "Enthusiastic" },</span>
+<span class="cstat-no" title="statement not covered" >    formal: { emoji: "👔", dogri: "Reshami", context: "Professional" },</span>
+<span class="cstat-no" title="statement not covered" >    nostalgic: { emoji: "🌙", dogri: "Yaad", context: "Reminiscing" },</span>
+<span class="cstat-no" title="statement not covered" >    grateful: { emoji: "🙏", dogri: "Shukriya", context: "Thankful" },</span>
+<span class="cstat-no" title="statement not covered" >    determined: { emoji: "💪", dogri: "Irada", context: "Strong Will" },</span>
+<span class="cstat-no" title="statement not covered" >    curious: { emoji: "🤔", dogri: "Jigyasa", context: "Inquisitive" },</span>
+<span class="cstat-no" title="statement not covered" >    inspired: { emoji: "✨", dogri: "Prerna", context: "Motivated" }</span>
+<span class="cstat-no" title="statement not covered" >  }), []);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const weatherIcons = {</span>
 <span class="cstat-no" title="statement not covered" >    clear: Sun,</span>
@@ -1337,7 +1379,7 @@ interface CUJPulseData {
 <span class="cstat-no" title="statement not covered" >    const interval = setInterval(updatePulseData, 30000); // Update every 30 seconds</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return () =&gt; clearInterval(interval);</span>
-<span class="cstat-no" title="statement not covered" >  }, []);</span>
+<span class="cstat-no" title="statement not covered" >  }, [cujMoods, cujZones]);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const getZoneIcon = (type: CUJZone["type"]) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    const zone = cujZones.find((z) =&gt; z.type === type);</span>
@@ -1588,7 +1630,7 @@ interface CUJPulseData {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-05T20:19:54.882Z
+                at 2025-07-06T18:31:26.300Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

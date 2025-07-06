@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/173</span>
+                <span class='fraction'>0/162</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/173</span>
+                <span class='fraction'>0/162</span>
             </div>
         
             
@@ -302,18 +302,7 @@
 <a name='L237'></a><a href='#L237'>237</a>
 <a name='L238'></a><a href='#L238'>238</a>
 <a name='L239'></a><a href='#L239'>239</a>
-<a name='L240'></a><a href='#L240'>240</a>
-<a name='L241'></a><a href='#L241'>241</a>
-<a name='L242'></a><a href='#L242'>242</a>
-<a name='L243'></a><a href='#L243'>243</a>
-<a name='L244'></a><a href='#L244'>244</a>
-<a name='L245'></a><a href='#L245'>245</a>
-<a name='L246'></a><a href='#L246'>246</a>
-<a name='L247'></a><a href='#L247'>247</a>
-<a name='L248'></a><a href='#L248'>248</a>
-<a name='L249'></a><a href='#L249'>249</a>
-<a name='L250'></a><a href='#L250'>250</a>
-<a name='L251'></a><a href='#L251'>251</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L240'></a><a href='#L240'>240</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -357,17 +346,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -563,7 +541,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { useState, useEffect } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { useState, useEffect, useMemo } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -584,40 +562,29 @@ interface AmbientPost {
 <span class="cstat-no" title="statement not covered" >  const [currentPost, setCurrentPost] = useState&lt;AmbientPost | null&gt;(null);</span>
 <span class="cstat-no" title="statement not covered" >  const [isActive, setIsActive] = useState(false);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  const samplePosts: Omit&lt;AmbientPost, "isVisible" | "opacity"&gt;[] = [</span>
+<span class="cstat-no" title="statement not covered" >  const samplePosts = useMemo(() =&gt; ([</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "1",</span>
-<span class="cstat-no" title="statement not covered" >      content:</span>
-<span class="cstat-no" title="statement not covered" >        "Late night thoughts hit different when you're alone in the library. Sometimes silence speaks louder than words.",</span>
-<span class="cstat-no" title="statement not covered" >      category: "contemplation",</span>
+<span class="cstat-no" title="statement not covered" >      content: "Sometimes I wonder if anyone else feels as lost as I do right now.",</span>
+<span class="cstat-no" title="statement not covered" >      category: "Inner Feelings",</span>
 <span class="cstat-no" title="statement not covered" >      mood: "melancholy",</span>
 <span class="cstat-no" title="statement not covered" >      timestamp: new Date(),</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "2",</span>
-<span class="cstat-no" title="statement not covered" >      content:</span>
-<span class="cstat-no" title="statement not covered" >        "Found a handwritten note tucked in an old textbook today. Made me wonder about all the stories these walls have witnessed.",</span>
-<span class="cstat-no" title="statement not covered" >      category: "discovery",</span>
-<span class="cstat-no" title="statement not covered" >      mood: "curious",</span>
+<span class="cstat-no" title="statement not covered" >      content: "The way the light falls through the library windows at 4 PM is pure magic.",</span>
+<span class="cstat-no" title="statement not covered" >      category: "Campus Moments",</span>
+<span class="cstat-no" title="statement not covered" >      mood: "wonder",</span>
 <span class="cstat-no" title="statement not covered" >      timestamp: new Date(),</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
 <span class="cstat-no" title="statement not covered" >      id: "3",</span>
-<span class="cstat-no" title="statement not covered" >      content:</span>
-<span class="cstat-no" title="statement not covered" >        "The way morning light filters through the hostel corridor... there's poetry in the ordinary moments we usually miss.",</span>
-<span class="cstat-no" title="statement not covered" >      category: "observation",</span>
-<span class="cstat-no" title="statement not covered" >      mood: "peaceful",</span>
-<span class="cstat-no" title="statement not covered" >      timestamp: new Date(),</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >    {</span>
-<span class="cstat-no" title="statement not covered" >      id: "4",</span>
-<span class="cstat-no" title="statement not covered" >      content:</span>
-<span class="cstat-no" title="statement not covered" >        "Sometimes I write messages I'll never send, words that exist only in the space between thought and courage.",</span>
-<span class="cstat-no" title="statement not covered" >      category: "confession",</span>
+<span class="cstat-no" title="statement not covered" >      content: "I miss the sound of my roommate's laughter. The silence is too loud.",</span>
+<span class="cstat-no" title="statement not covered" >      category: "Secret Thoughts",</span>
 <span class="cstat-no" title="statement not covered" >      mood: "vulnerable",</span>
 <span class="cstat-no" title="statement not covered" >      timestamp: new Date(),</span>
 <span class="cstat-no" title="statement not covered" >    },</span>
-<span class="cstat-no" title="statement not covered" >  ];</span>
+<span class="cstat-no" title="statement not covered" >  ]), []);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useEffect(() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (!isActive) return;</span>
@@ -657,7 +624,7 @@ interface AmbientPost {
 <span class="cstat-no" title="statement not covered" >    }, 8000);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return () =&gt; clearInterval(interval);</span>
-<span class="cstat-no" title="statement not covered" >  }, [isActive, currentPost]);</span>
+<span class="cstat-no" title="statement not covered" >  }, [isActive, currentPost, samplePosts]);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const handleInteraction = (type: "seen" | "echo" | "fade") =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (!currentPost) return;</span>
@@ -820,7 +787,7 @@ interface AmbientPost {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-05T20:19:54.882Z
+                at 2025-07-06T18:31:26.300Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

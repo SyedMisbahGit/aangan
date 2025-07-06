@@ -31,9 +31,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { ShhhLine } from '@/components/ShhhLine';
 import WhisperPrompt from '@/components/WhisperPrompt';
-import { useSummerPulse } from '../contexts/SummerPulseContext';
-import { useWhispers } from "../contexts/WhispersContext";
-import { Whisper } from '../contexts/WhispersContext';
+import { useSummerPulse } from '../contexts/use-summer-pulse';
+import { useWhispers } from "../contexts/use-whispers";
+import type { Whisper } from '../contexts/WhispersContext';
 import { CustomSkeletonCard } from "@/components/ui/skeleton";
 import { DiaryStreakCounter } from "../components/shared/DiaryStreakCounter";
 

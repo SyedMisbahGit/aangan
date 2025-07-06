@@ -1,6 +1,6 @@
 import React, { createContext, useMemo } from 'react';
 
-interface SummerPulseContextType {
+export interface SummerPulseContextType {
   isSummerPulseActive: boolean;
   getSummerPrompt: () => string;
   getSummerNarratorLine: () => string;
@@ -28,7 +28,7 @@ const SUMMER_TAGS = ["#summer25", "#quietBetween", "#offlineHeart"];
 const SUMMER_LABEL = "🌿 The Quiet Between — Whispers from this summer's silence";
 const SUMMER_END_DATE = new Date('2025-07-14T23:59:59.999Z');
 
-const SummerPulseContext = createContext<SummerPulseContextType | undefined>(undefined);
+export const SummerPulseContext = createContext<SummerPulseContextType | undefined>(undefined);
 
 function getTimeIndex(): number {
   const hour = new Date().getHours();

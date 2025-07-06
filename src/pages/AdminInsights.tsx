@@ -9,7 +9,7 @@ import ImpactInsightGraph from "../components/admin/ImpactInsightGraph";
 import PromptGeneratorPanel from "../components/admin/PromptGeneratorPanel";
 import SummerSoulAnalytics from '../components/admin/SummerSoulAnalytics';
 import { Brain, TrendingUp, MapPin, Users, Lightbulb, BarChart3, Sun } from "lucide-react";
-import { useSummerPulse } from '../contexts/SummerPulseContext';
+import { useSummerPulse } from '../contexts/use-summer-pulse';
 import { Navigate } from 'react-router-dom';
 import { DreamLoadingScreen } from '../App';
 

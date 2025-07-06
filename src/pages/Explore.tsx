@@ -15,7 +15,7 @@ import {
   Cloud,
   Leaf
 } from 'lucide-react';
-import { useCUJHotspots } from '../contexts/CUJHotspotContext';
+import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
 
 const Wander: React.FC = () => {
   const { nearbyHotspots, emotionClusters } = useCUJHotspots();
@@ -113,10 +113,10 @@ const Wander: React.FC = () => {
               const Icon = space.icon;
               
               return (
-                <motion.div
+              <motion.div
                   key={space.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
                   <Card 
@@ -127,7 +127,7 @@ const Wander: React.FC = () => {
                       <div className="flex items-center gap-3 mb-4">
                         <div className={`w-12 h-12 bg-gradient-to-br ${space.color} rounded-xl flex items-center justify-center`}>
                           <Icon className="w-6 h-6 text-white" />
-                        </div>
+                          </div>
                         <div>
                           <h3 className="text-lg font-semibold text-neutral-800">
                             {space.title}
@@ -136,7 +136,7 @@ const Wander: React.FC = () => {
                             {space.subtitle}
                           </p>
                         </div>
-                      </div>
+                    </div>
                       
                       <p className="text-sm text-neutral-700 mb-4 leading-relaxed">
                         {space.description}
@@ -158,13 +158,13 @@ const Wander: React.FC = () => {
                               <span className="text-xs text-neutral-500">
                                 {item.activeUsers} hearts
                               </span>
-                            </div>
+                    </div>
                           );
                         })}
                       </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                  </CardContent>
+                </Card>
+              </motion.div>
               );
             })}
           </div>
@@ -223,7 +223,7 @@ const Wander: React.FC = () => {
                                     <span className="text-sm text-neutral-500">
                                       {item.activeUsers} hearts
                                     </span>
-                                  </div>
+                          </div>
                                   <p className="text-sm text-neutral-600">
                                     {item.emotion} whispers drift through this space
                                   </p>

@@ -183,7 +183,6 @@ const MyCorner: React.FC = () => {
           {sitInSilence && (
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
               className="absolute top-4 right-4 w-2 h-8 bg-gradient-to-b from-yellow-400 to-orange-600 rounded-full"
               animate={{ 
                 opacity: [0.7, 1, 0.7],
@@ -252,10 +251,10 @@ const MyCorner: React.FC = () => {
                         </div>
                         <div className={`text-2xl font-bold ${sitInSilence ? 'text-white' : 'text-neutral-800'}`}>
                           {stat.value}
-                        </div>
+                      </div>
                         <div className={`text-sm ${sitInSilence ? 'text-white/60' : 'text-neutral-600'}`}>
                           {stat.label}
-                        </div>
+                    </div>
                       </motion.div>
                     );
                   })}
@@ -286,15 +285,15 @@ const MyCorner: React.FC = () => {
                         ? 'bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20' 
                         : `${item.bgColor} border ${item.borderColor} hover:shadow-lg`
                     }`}>
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                               sitInSilence ? 'bg-white/10' : item.bgColor
                             }`}>
                               <Icon className={`w-5 h-5 ${sitInSilence ? 'text-white' : item.color}`} />
-                            </div>
-                            <div>
+                        </div>
+                        <div>
                               <h3 className={`font-medium ${sitInSilence ? 'text-white' : 'text-neutral-800'}`}>
                                 {item.title}
                               </h3>
@@ -304,10 +303,10 @@ const MyCorner: React.FC = () => {
                             </div>
                           </div>
                           <ArrowRight className={`w-4 h-4 ${sitInSilence ? 'text-white/40' : 'text-neutral-400'}`} />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
                 </motion.div>
               );
             })}
@@ -340,28 +339,28 @@ const MyCorner: React.FC = () => {
                             ? 'bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20' 
                             : `${item.bgColor} border ${item.borderColor} hover:shadow-lg`
                         }`}>
-                          <CardContent className="p-4">
-                            <div className="flex items-center justify-between">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                                   sitInSilence ? 'bg-white/10' : item.bgColor
                                 }`}>
                                   <Icon className={`w-5 h-5 ${sitInSilence ? 'text-white' : item.color}`} />
-                                </div>
-                                <div>
+                          </div>
+                          <div>
                                   <h3 className={`font-medium ${sitInSilence ? 'text-white' : 'text-neutral-800'}`}>
                                     {item.title}
                                   </h3>
                                   <p className={`text-sm ${sitInSilence ? 'text-white/60' : 'text-neutral-600'}`}>
                                     {item.description}
                                   </p>
-                                </div>
-                              </div>
+                          </div>
+                        </div>
                               <ArrowRight className={`w-4 h-4 ${sitInSilence ? 'text-white/40' : 'text-neutral-400'}`} />
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
                     </motion.div>
                   );
                 })}

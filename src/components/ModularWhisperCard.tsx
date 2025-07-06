@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, MessageCircle, Clock, MapPin, Users } from 'lucide-react';
-import { useCUJHotspots } from '../contexts/CUJHotspotContext';
-import { useShhhNarrator } from '../contexts/ShhhNarratorContext';
-import { useRealtime } from '../contexts/RealtimeContext';
+import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
+import { useShhhNarrator } from '../contexts/use-shhh-narrator';
+import { useRealtime } from '../contexts/use-realtime';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { WhisperReactions } from './whisper/WhisperReactions';

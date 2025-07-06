@@ -35,7 +35,7 @@ import { useCUJHotspots } from "../contexts/CUJHotspotContext";
 import ModularWhisperCard from "../components/whisper/ModularWhisperCard";
 import { ShhhLine } from '@/components/ShhhLine';
 import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
-import { useSummerPulse } from '../contexts/SummerPulseContext';
+import { useSummerPulse } from '../contexts/use-summer-pulse';
 import { CustomSkeletonCard } from "@/components/ui/skeleton";
 
 const Shrines: React.FC = () => {

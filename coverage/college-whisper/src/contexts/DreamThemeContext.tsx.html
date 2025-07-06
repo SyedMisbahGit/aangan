@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/70</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/70</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
@@ -164,12 +164,7 @@
 <a name='L99'></a><a href='#L99'>99</a>
 <a name='L100'></a><a href='#L100'>100</a>
 <a name='L101'></a><a href='#L101'>101</a>
-<a name='L102'></a><a href='#L102'>102</a>
-<a name='L103'></a><a href='#L103'>103</a>
-<a name='L104'></a><a href='#L104'>104</a>
-<a name='L105'></a><a href='#L105'>105</a>
-<a name='L106'></a><a href='#L106'>106</a>
-<a name='L107'></a><a href='#L107'>107</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L102'></a><a href='#L102'>102</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -180,14 +175,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -275,44 +262,39 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';</span></span></span>
-import { DreamLoadingScreen } from '../App';
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { createContext, useEffect, useState, ReactNode } from 'react';<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+import { AanganLoadingScreen } from '../App';
 &nbsp;
 type Theme = 'light' | 'dark';
 &nbsp;
-interface DreamThemeContextType {
+interface AanganThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) =&gt; void;
   isInitialized: boolean;
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >const DreamThemeContext = createContext&lt;DreamThemeContextType | undefined&gt;(undefined);</span>
+<span class="cstat-no" title="statement not covered" >const AanganThemeContext = createContext&lt;AanganThemeContextType | undefined&gt;(undefined);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export const useDreamTheme = () =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  const context = useContext(DreamThemeContext);</span>
-<span class="cstat-no" title="statement not covered" >  if (!context) {</span>
-<span class="cstat-no" title="statement not covered" >    throw new Error('useDreamTheme must be used within a DreamThemeProvider');</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
-<span class="cstat-no" title="statement not covered" >  return context;</span>
-<span class="cstat-no" title="statement not covered" >};</span>
-&nbsp;
-interface DreamThemeProviderProps {
+interface AanganThemeProviderProps {
   children: ReactNode;
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export const DreamThemeProvider: React.FC&lt;DreamThemeProviderProps&gt; = ({ children }) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >export const AanganThemeProvider: React.FC&lt;AanganThemeProviderProps&gt; = ({ children }) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  const [theme, setThemeState] = useState&lt;Theme&gt;('light');</span>
 <span class="cstat-no" title="statement not covered" >  const [isInitialized, setIsInitialized] = useState(false);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  // Initialize theme from localStorage or system preference</span>
 <span class="cstat-no" title="statement not covered" >  useEffect(() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    const savedTheme = localStorage.getItem('dream-theme') as Theme;</span>
+<span class="cstat-no" title="statement not covered" >    const savedTheme = localStorage.getItem('aangan-theme') as Theme;</span>
 <span class="cstat-no" title="statement not covered" >    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';</span>
     
 <span class="cstat-no" title="statement not covered" >    const initialTheme = savedTheme || systemTheme;</span>
 <span class="cstat-no" title="statement not covered" >    setThemeState(initialTheme);</span>
 <span class="cstat-no" title="statement not covered" >    setIsInitialized(true);</span>
-<span class="cstat-no" title="statement not covered" >    console.log('DreamThemeContext ready:', { theme: initialTheme });</span>
+<span class="cstat-no" title="statement not covered" >    console.log('AanganThemeContext ready:', { theme: initialTheme });</span>
 <span class="cstat-no" title="statement not covered" >  }, []);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  // Apply theme to document and ensure proper z-index stacking</span>
@@ -337,7 +319,7 @@ interface DreamThemeProviderProps {
 <span class="cstat-no" title="statement not covered" >    root.style.setProperty('--z-toast', '200');</span>
     
 <span class="cstat-no" title="statement not covered" >    // Save to localStorage</span>
-<span class="cstat-no" title="statement not covered" >    localStorage.setItem('dream-theme', theme);</span>
+<span class="cstat-no" title="statement not covered" >    localStorage.setItem('aangan-theme', theme);</span>
     
 <span class="cstat-no" title="statement not covered" >    // Force reflow to ensure theme changes are applied</span>
 <span class="cstat-no" title="statement not covered" >    void root.offsetHeight;</span>
@@ -352,7 +334,7 @@ interface DreamThemeProviderProps {
 <span class="cstat-no" title="statement not covered" >    const handleChange = (e: MediaQueryListEvent) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      const newTheme: Theme = e.matches ? 'dark' : 'light';</span>
 <span class="cstat-no" title="statement not covered" >      // Only auto-switch if user hasn't manually set a preference</span>
-<span class="cstat-no" title="statement not covered" >      if (!localStorage.getItem('dream-theme')) {</span>
+<span class="cstat-no" title="statement not covered" >      if (!localStorage.getItem('aangan-theme')) {</span>
 <span class="cstat-no" title="statement not covered" >        setThemeState(newTheme);</span>
 <span class="cstat-no" title="statement not covered" >      }</span>
 <span class="cstat-no" title="statement not covered" >    };</span>
@@ -368,8 +350,8 @@ interface DreamThemeProviderProps {
 <span class="cstat-no" title="statement not covered" >  // Prevent hydration mismatch by not rendering until initialized</span>
 <span class="cstat-no" title="statement not covered" >  if (!isInitialized) {</span>
 <span class="cstat-no" title="statement not covered" >    return (</span>
-<span class="cstat-no" title="statement not covered" >      &lt;DreamLoadingScreen </span>
-<span class="cstat-no" title="statement not covered" >        message="Warming the Dream Theme..."</span>
+<span class="cstat-no" title="statement not covered" >      &lt;AanganLoadingScreen </span>
+<span class="cstat-no" title="statement not covered" >        message="Warming the Aangan Theme..."</span>
 <span class="cstat-no" title="statement not covered" >        narratorLine="The colors of the campus are still waking up."</span>
 <span class="cstat-no" title="statement not covered" >        variant="orbs"</span>
       /&gt;
@@ -377,18 +359,21 @@ interface DreamThemeProviderProps {
 <span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
-<span class="cstat-no" title="statement not covered" >    &lt;DreamThemeContext.Provider value={{ theme, setTheme, isInitialized }}&gt;</span>
+<span class="cstat-no" title="statement not covered" >    &lt;AanganThemeContext.Provider value={{ theme, setTheme, isInitialized }}&gt;</span>
 <span class="cstat-no" title="statement not covered" >      {children}</span>
-    &lt;/DreamThemeContext.Provider&gt;
+    &lt;/AanganThemeContext.Provider&gt;
   );
-<span class="cstat-no" title="statement not covered" >}; </span></pre></td></tr></table></pre>
+<span class="cstat-no" title="statement not covered" >};</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >// Legacy export for backward compatibility</span>
+<span class="cstat-no" title="statement not covered" >export const DreamThemeProvider = AanganThemeProvider; </span></pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-05T20:19:54.882Z
+                at 2025-07-06T18:31:26.300Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

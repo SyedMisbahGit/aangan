@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/239</span>
+                <span class='fraction'>0/231</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/239</span>
+                <span class='fraction'>0/231</span>
             </div>
         
             
@@ -413,15 +413,7 @@
 <a name='L348'></a><a href='#L348'>348</a>
 <a name='L349'></a><a href='#L349'>349</a>
 <a name='L350'></a><a href='#L350'>350</a>
-<a name='L351'></a><a href='#L351'>351</a>
-<a name='L352'></a><a href='#L352'>352</a>
-<a name='L353'></a><a href='#L353'>353</a>
-<a name='L354'></a><a href='#L354'>354</a>
-<a name='L355'></a><a href='#L355'>355</a>
-<a name='L356'></a><a href='#L356'>356</a>
-<a name='L357'></a><a href='#L357'>357</a>
-<a name='L358'></a><a href='#L358'>358</a>
-<a name='L359'></a><a href='#L359'>359</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L351'></a><a href='#L351'>351</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -491,14 +483,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -779,7 +763,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useEffect } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useEffect, useMemo } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" >import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";</span>
 <span class="cstat-no" title="statement not covered" >import { Button } from "@/components/ui/button";</span>
 <span class="cstat-no" title="statement not covered" >import { Textarea } from "@/components/ui/textarea";</span>
@@ -819,44 +803,36 @@ interface DiaryEntry {
 <span class="cstat-no" title="statement not covered" >  const [showNudge, setShowNudge] = useState(true);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  // CUJ Cultural Prompt Packs</span>
-<span class="cstat-no" title="statement not covered" >  const promptPacks = {</span>
+<span class="cstat-no" title="statement not covered" >  const promptPacks = useMemo(() =&gt; ({</span>
 <span class="cstat-no" title="statement not covered" >    "north-soul": [</span>
-<span class="cstat-no" title="statement not covered" >      "Kya kabhi tumne dil ka exam diya?",</span>
-<span class="cstat-no" title="statement not covered" >      "Hostel ki diwaron ne kya suna aaj?",</span>
-<span class="cstat-no" title="statement not covered" >      "Rain ke baad campus ka khamosh hissa kahan hota hai?",</span>
-<span class="cstat-no" title="statement not covered" >      "Koi aisa moment jo tumhe CUJ se connect karta hai?",</span>
-<span class="cstat-no" title="statement not covered" >      "Aaj kya feel kar rahe ho, batao?",</span>
-<span class="cstat-no" title="statement not covered" >      "Koi aisa sapna jo tumhe CUJ mein dekhna hai?",</span>
-<span class="cstat-no" title="statement not covered" >      "Hostel life mein sabse yaadgar din kya tha?",</span>
-<span class="cstat-no" title="statement not covered" >      "Lab ke baad thakan wali feeling kaise handle karte ho?",</span>
-<span class="cstat-no" title="statement not covered" >      "Udaan ke baad kya hua tha tumhare saath?",</span>
-<span class="cstat-no" title="statement not covered" >      "Campus mein sabse peaceful jagah kahan hai tumhare liye?",</span>
+<span class="cstat-no" title="statement not covered" >      "Aaj ka sabse khubsurat pal kya tha?",</span>
+<span class="cstat-no" title="statement not covered" >      "Kis baat ne aaj tumhe muskuraya?",</span>
+<span class="cstat-no" title="statement not covered" >      "Koi ek cheez jo tumhe aaj inspire ki?",</span>
+<span class="cstat-no" title="statement not covered" >      "Aaj ka din kaisa raha?",</span>
+<span class="cstat-no" title="statement not covered" >      "Kis baat ne aaj tumhe sochne par majboor kiya?",</span>
+<span class="cstat-no" title="statement not covered" >      "Aaj tumne kis cheez ka shukriya ada kiya?",</span>
+<span class="cstat-no" title="statement not covered" >      "Koi ek yaad jo aaj tumhare saath rahi?",</span>
 <span class="cstat-no" title="statement not covered" >    ],</span>
 <span class="cstat-no" title="statement not covered" >    "dogri-echoes": [</span>
-<span class="cstat-no" title="statement not covered" >      "Tussi kiwe feel kar rahe o?",</span>
-<span class="cstat-no" title="statement not covered" >      "Hostel di life ch kiwe ajeeb lagdi hai?",</span>
-<span class="cstat-no" title="statement not covered" >      "Exam de baad kiwe tension lagdi hai?",</span>
-<span class="cstat-no" title="statement not covered" >      "Campus ch sabse sohni jagah ki hai?",</span>
-<span class="cstat-no" title="statement not covered" >      "Koi aisa din jo tumhe yaad aa reha hai?",</span>
-<span class="cstat-no" title="statement not covered" >      "Lab de baad thakan wali feeling kaise handle karde o?",</span>
-<span class="cstat-no" title="statement not covered" >      "Udaan de baad kiwe emotional feel karde o?",</span>
-<span class="cstat-no" title="statement not covered" >      "Canteen ch sabse acha kya lagda hai?",</span>
-<span class="cstat-no" title="statement not covered" >      "Library ch study karde waqt kiwe feel karde o?",</span>
-<span class="cstat-no" title="statement not covered" >      "Hostel di raat ch kiwe sochte o?",</span>
+<span class="cstat-no" title="statement not covered" >      "Ajj ki sab ton waddi gall ki sikhhi?",</span>
+<span class="cstat-no" title="statement not covered" >      "Kis cheez ne ajj tainu sab ton zyada khush kita?",</span>
+<span class="cstat-no" title="statement not covered" >      "Ajj di sab ton pyari yaad ki hai?",</span>
+<span class="cstat-no" title="statement not covered" >      "Ajj kis cheez ne tainu hairaan kita?",</span>
+<span class="cstat-no" title="statement not covered" >      "Ajj kis bande naal sab ton changi gall-baat hoi?",</span>
+<span class="cstat-no" title="statement not covered" >      "Ajj kis cheez da intezaar kar rahe ho?",</span>
+<span class="cstat-no" title="statement not covered" >      "Ajj kis cheez ne tainu himmat ditti?",</span>
 <span class="cstat-no" title="statement not covered" >    ],</span>
 <span class="cstat-no" title="statement not covered" >    "cuj-life": [</span>
-<span class="cstat-no" title="statement not covered" >      "Hostel wali stories - koi share karna chahte ho?",</span>
-<span class="cstat-no" title="statement not covered" >      "Udaan aftermath - kya yaad aa raha hai?",</span>
-<span class="cstat-no" title="statement not covered" >      "Lab ke baad thakan wali feeling - kaise handle karte ho?",</span>
-<span class="cstat-no" title="statement not covered" >      "Library silence drop - kya sochte ho?",</span>
-<span class="cstat-no" title="statement not covered" >      "Exam fog - kya pressure feel kar rahe ho?",</span>
-<span class="cstat-no" title="statement not covered" >      "Canteen corner - koi memory share karna chahte ho?",</span>
-<span class="cstat-no" title="statement not covered" >      "Admin block stress - kya problem face kar rahe ho?",</span>
-<span class="cstat-no" title="statement not covered" >      "Quadrangle charcha - koi discussion yaad aa raha hai?",</span>
-<span class="cstat-no" title="statement not covered" >      "Night study session - kya motivation hai?",</span>
-<span class="cstat-no" title="statement not covered" >      "Fresher to senior journey - kya seekha hai?",</span>
+<span class="cstat-no" title="statement not covered" >      "Hostel wali yaariyaan",</span>
+<span class="cstat-no" title="statement not covered" >      "Library silence",</span>
+<span class="cstat-no" title="statement not covered" >      "Exam fog",</span>
+<span class="cstat-no" title="statement not covered" >      "Canteen corner",</span>
+<span class="cstat-no" title="statement not covered" >      "Admin block stress",</span>
+<span class="cstat-no" title="statement not covered" >      "Quadrangle charcha",</span>
+<span class="cstat-no" title="statement not covered" >      "Night study session",</span>
+<span class="cstat-no" title="statement not covered" >      "Fresher to senior journey",</span>
 <span class="cstat-no" title="statement not covered" >    ],</span>
-<span class="cstat-no" title="statement not covered" >  };</span>
+<span class="cstat-no" title="statement not covered" >  }), []);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const cujMoods = [</span>
 <span class="cstat-no" title="statement not covered" >    {</span>
@@ -911,7 +887,7 @@ interface DiaryEntry {
 <span class="cstat-no" title="statement not covered" >    // Set initial prompt</span>
 <span class="cstat-no" title="statement not covered" >    const prompts = promptPacks[promptPack];</span>
 <span class="cstat-no" title="statement not covered" >    setCurrentPrompt(prompts[Math.floor(Math.random() * prompts.length)]);</span>
-<span class="cstat-no" title="statement not covered" >  }, [promptPack]);</span>
+<span class="cstat-no" title="statement not covered" >  }, [promptPack, promptPacks]);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const handleSubmit = async () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (!entry.trim() || !mood) return;</span>
@@ -1144,7 +1120,7 @@ interface DiaryEntry {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-05T20:19:54.882Z
+                at 2025-07-06T18:31:26.300Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

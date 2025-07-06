@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/394</span>
+                <span class='fraction'>0/395</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/394</span>
+                <span class='fraction'>0/395</span>
             </div>
         
             
@@ -646,7 +646,8 @@
 <a name='L581'></a><a href='#L581'>581</a>
 <a name='L582'></a><a href='#L582'>582</a>
 <a name='L583'></a><a href='#L583'>583</a>
-<a name='L584'></a><a href='#L584'>584</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L584'></a><a href='#L584'>584</a>
+<a name='L585'></a><a href='#L585'>585</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -738,6 +739,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1327,42 +1329,42 @@ import { Whisper } from '../contexts/WhispersContext';
 <span class="cstat-no" title="statement not covered" >    const timer = setTimeout(() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      const sampleEntries: Whisper[] = [</span>
 <span class="cstat-no" title="statement not covered" >        {</span>
-<span class="cstat-no" title="statement not covered" >          id: '1',</span>
-<span class="cstat-no" title="statement not covered" >          content: "Today I found myself sitting by the library window, watching the rain fall gently on the campus. There's something about the way the light filters through the clouds that makes everything feel softer, more contemplative. I realized how much I've grown this semester, not just academically, but in understanding myself better.",</span>
-<span class="cstat-no" title="statement not covered" >          emotion: "peaceful",</span>
+<span class="cstat-no" title="statement not covered" >          id: "1",</span>
+<span class="cstat-no" title="statement not covered" >          content: "Today I realized that growth isn't always comfortable. The moments that stretch us the most are often the ones that shape us into who we're meant to become.",</span>
+<span class="cstat-no" title="statement not covered" >          emotion: "reflective",</span>
 <span class="cstat-no" title="statement not covered" >          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),</span>
-<span class="cstat-no" title="statement not covered" >          location: "library",</span>
+<span class="cstat-no" title="statement not covered" >          location: "diary",</span>
 <span class="cstat-no" title="statement not covered" >          likes: 0,</span>
 <span class="cstat-no" title="statement not covered" >          comments: 0,</span>
 <span class="cstat-no" title="statement not covered" >          isAnonymous: true,</span>
 <span class="cstat-no" title="statement not covered" >          author: undefined,</span>
-<span class="cstat-no" title="statement not covered" >          prompt: "What's a moment today that made you pause and reflect?",</span>
-<span class="cstat-no" title="statement not covered" >          tags: ["reflection", "growth", "rain"]</span>
+<span class="cstat-no" title="statement not covered" >          prompt: "Write about a moment of personal growth",</span>
+<span class="cstat-no" title="statement not covered" >          tags: ["growth", "reflection", "personal"]</span>
 <span class="cstat-no" title="statement not covered" >        },</span>
 <span class="cstat-no" title="statement not covered" >        {</span>
-<span class="cstat-no" title="statement not covered" >          id: '2',</span>
-<span class="cstat-no" title="statement not covered" >          content: "Had the most unexpected conversation with a stranger at Tapri today. We talked about everything from poetry to the meaning of life. It's amazing how connections can form in the most ordinary moments. Sometimes the best friendships start with a simple 'hello' over chai.",</span>
-<span class="cstat-no" title="statement not covered" >          emotion: "joy",</span>
-<span class="cstat-no" title="statement not covered" >          timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),</span>
-<span class="cstat-no" title="statement not covered" >          location: "tapri",</span>
-<span class="cstat-no" title="statement not covered" >          likes: 3,</span>
-<span class="cstat-no" title="statement not covered" >          comments: 0,</span>
-<span class="cstat-no" title="statement not covered" >          isAnonymous: true,</span>
-<span class="cstat-no" title="statement not covered" >          author: undefined,</span>
-<span class="cstat-no" title="statement not covered" >          prompt: "Describe a connection you made today...",</span>
-<span class="cstat-no" title="statement not covered" >          tags: ["friendship", "conversation", "tapri"]</span>
-<span class="cstat-no" title="statement not covered" >        },</span>
-<span class="cstat-no" title="statement not covered" >        {</span>
-<span class="cstat-no" title="statement not covered" >          id: '3',</span>
-<span class="cstat-no" title="statement not covered" >          content: "Feeling a bit overwhelmed with all the deadlines approaching. But then I remembered that every challenge is an opportunity to grow stronger. Taking deep breaths and reminding myself that I'm capable of handling whatever comes my way.",</span>
-<span class="cstat-no" title="statement not covered" >          emotion: "anxious",</span>
-<span class="cstat-no" title="statement not covered" >          timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),</span>
-<span class="cstat-no" title="statement not covered" >          location: "dorm",</span>
+<span class="cstat-no" title="statement not covered" >          id: "2",</span>
+<span class="cstat-no" title="statement not covered" >          content: "The library was unusually quiet today. In that silence, I found clarity about my future. Sometimes the loudest revelations come in the quietest moments.",</span>
+<span class="cstat-no" title="statement not covered" >          emotion: "peaceful",</span>
+<span class="cstat-no" title="statement not covered" >          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),</span>
+<span class="cstat-no" title="statement not covered" >          location: "diary",</span>
 <span class="cstat-no" title="statement not covered" >          likes: 0,</span>
 <span class="cstat-no" title="statement not covered" >          comments: 0,</span>
 <span class="cstat-no" title="statement not covered" >          isAnonymous: true,</span>
 <span class="cstat-no" title="statement not covered" >          author: undefined,</span>
-<span class="cstat-no" title="statement not covered" >          prompt: "What's something that challenged you today?",</span>
+<span class="cstat-no" title="statement not covered" >          prompt: "Describe a moment of unexpected clarity",</span>
+<span class="cstat-no" title="statement not covered" >          tags: ["clarity", "future", "silence"]</span>
+<span class="cstat-no" title="statement not covered" >        },</span>
+<span class="cstat-no" title="statement not covered" >        {</span>
+<span class="cstat-no" title="statement not covered" >          id: "3",</span>
+<span class="cstat-no" title="statement not covered" >          content: "Stress is building up again. But today I'm choosing to see it as a sign that I'm pushing my boundaries, not that I'm failing. Perspective changes everything.",</span>
+<span class="cstat-no" title="statement not covered" >          emotion: "stressed",</span>
+<span class="cstat-no" title="statement not covered" >          timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),</span>
+<span class="cstat-no" title="statement not covered" >          location: "diary",</span>
+<span class="cstat-no" title="statement not covered" >          likes: 0,</span>
+<span class="cstat-no" title="statement not covered" >          comments: 0,</span>
+<span class="cstat-no" title="statement not covered" >          isAnonymous: true,</span>
+<span class="cstat-no" title="statement not covered" >          author: undefined,</span>
+<span class="cstat-no" title="statement not covered" >          prompt: "Write about how you handle stress",</span>
 <span class="cstat-no" title="statement not covered" >          tags: ["stress", "growth", "resilience"]</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >      ];</span>
@@ -1370,6 +1372,7 @@ import { Whisper } from '../contexts/WhispersContext';
 <span class="cstat-no" title="statement not covered" >      setLoading(false);</span>
 <span class="cstat-no" title="statement not covered" >    }, 300);</span>
 <span class="cstat-no" title="statement not covered" >    return () =&gt; clearTimeout(timer);</span>
+<span class="cstat-no" title="statement not covered" >  // eslint-disable-next-line react-hooks/exhaustive-deps</span>
 <span class="cstat-no" title="statement not covered" >  }, []);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const getRandomPrompt = () =&gt; {</span>
@@ -1819,7 +1822,7 @@ import { Whisper } from '../contexts/WhispersContext';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-05T20:19:54.882Z
+                at 2025-07-06T18:31:26.300Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

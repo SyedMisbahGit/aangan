@@ -17,7 +17,7 @@ interface SummerSoulContextType {
   setCurrentEmotion: (emotion: CurrentEmotion) => void;
 }
 
-const SummerSoulContext = createContext<SummerSoulContextType | undefined>(undefined);
+export const SummerSoulContext = createContext<SummerSoulContextType | undefined>(undefined);
 
 export const SummerSoulProvider = ({ children }: { children: ReactNode }) => {
   const [locationTag, setLocationTag] = useState<LocationTag>('');

@@ -99,4 +99,10 @@ export const AanganThemeProvider: React.FC<AanganThemeProviderProps> = ({ childr
 };
 
 // Legacy export for backward compatibility
-export const DreamThemeProvider = AanganThemeProvider; 
+export const DreamThemeProvider = AanganThemeProvider;
+
+export const useAanganTheme = () => {
+  const ctx = React.useContext(AanganThemeContext);
+  if (!ctx) throw new Error('useAanganTheme must be used within an AanganThemeProvider');
+  return ctx;
+}; 

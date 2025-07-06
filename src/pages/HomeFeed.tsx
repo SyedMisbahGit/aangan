@@ -204,10 +204,10 @@ const Whispers: React.FC = () => {
               </div>
             ) : (
               whispers.map((whisper, index) => (
-                <motion.div
+          <motion.div
                   key={whisper.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
                   transition={{ 
                     duration: 0.6, 
                     delay: index * 0.1,

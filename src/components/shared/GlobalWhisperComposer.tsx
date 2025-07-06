@@ -19,10 +19,10 @@ import {
   Unlock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCUJHotspots } from '../../contexts/CUJHotspotContext';
-import { useWhispers } from '../../contexts/WhispersContext';
-import { useSummerSoul, LocationTag } from '../../contexts/SummerSoulContext';
-import { generateSummerSoulLine } from '../../contexts/ShhhNarratorContext';
+import { useCUJHotspots } from '../../contexts/use-cuj-hotspots';
+import { useWhispers } from '../../contexts/use-whispers';
+import { useSummerSoul, LocationTag } from '../../contexts/use-summer-soul';
+// import { generateSummerSoulLine } from '../../contexts/ShhhNarratorContext';
 
 interface WhisperComposerProps {
   variant?: 'floating' | 'modal' | 'sheet';

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/399</span>
+                <span class='fraction'>0/390</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/399</span>
+                <span class='fraction'>0/390</span>
             </div>
         
             
@@ -638,17 +638,7 @@
 <a name='L573'></a><a href='#L573'>573</a>
 <a name='L574'></a><a href='#L574'>574</a>
 <a name='L575'></a><a href='#L575'>575</a>
-<a name='L576'></a><a href='#L576'>576</a>
-<a name='L577'></a><a href='#L577'>577</a>
-<a name='L578'></a><a href='#L578'>578</a>
-<a name='L579'></a><a href='#L579'>579</a>
-<a name='L580'></a><a href='#L580'>580</a>
-<a name='L581'></a><a href='#L581'>581</a>
-<a name='L582'></a><a href='#L582'>582</a>
-<a name='L583'></a><a href='#L583'>583</a>
-<a name='L584'></a><a href='#L584'>584</a>
-<a name='L585'></a><a href='#L585'>585</a>
-<a name='L586'></a><a href='#L586'>586</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L576'></a><a href='#L576'>576</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -833,16 +823,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1233,7 +1213,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useEffect } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useEffect, useCallback } from "react";<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
 <span class="cstat-no" title="statement not covered" >import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";</span>
 <span class="cstat-no" title="statement not covered" >import { Badge } from "../ui/badge";</span>
 <span class="cstat-no" title="statement not covered" >import { Button } from "../ui/button";</span>
@@ -1405,7 +1385,7 @@ interface PromptContext {
 <span class="cstat-no" title="statement not covered" >  };</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  // AI Prompt Generator</span>
-<span class="cstat-no" title="statement not covered" >  const generateIntelligentPrompts = (): GeneratedPrompt[] =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  const generateIntelligentPrompts = useCallback((): GeneratedPrompt[] =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    const context = generatePromptContext();</span>
 <span class="cstat-no" title="statement not covered" >    setPromptContext(context);</span>
 &nbsp;
@@ -1417,21 +1397,11 @@ interface PromptContext {
 <span class="cstat-no" title="statement not covered" >    });</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return filteredTemplates.slice(0, 6).map(template =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      let prompt = template.basePrompt;</span>
-      
-<span class="cstat-no" title="statement not covered" >      // Replace variables with context</span>
-<span class="cstat-no" title="statement not covered" >      if (template.variables.includes("zone")) {</span>
-<span class="cstat-no" title="statement not covered" >        prompt = prompt.replace("{zone}", template.targetZone);</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" >      if (template.variables.includes("currentTime")) {</span>
-<span class="cstat-no" title="statement not covered" >        prompt = prompt.replace("{currentTime}", context.currentTime);</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" >      if (template.variables.includes("dayOfWeek")) {</span>
-<span class="cstat-no" title="statement not covered" >        prompt = prompt.replace("{dayOfWeek}", context.dayOfWeek);</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" >      if (template.variables.includes("weather")) {</span>
-<span class="cstat-no" title="statement not covered" >        prompt = prompt.replace("{weather}", context.weather);</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
+<span class="cstat-no" title="statement not covered" >      const prompt = template.basePrompt</span>
+<span class="cstat-no" title="statement not covered" >        .replace("{time}", context.currentTime)</span>
+<span class="cstat-no" title="statement not covered" >        .replace("{day}", context.dayOfWeek)</span>
+<span class="cstat-no" title="statement not covered" >        .replace("{weather}", context.weather)</span>
+<span class="cstat-no" title="statement not covered" >        .replace("{zones}", context.activeZones.join(", "));</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      return {</span>
 <span class="cstat-no" title="statement not covered" >        id: `${template.id}-${Date.now()}`,</span>
@@ -1444,7 +1414,7 @@ interface PromptContext {
 <span class="cstat-no" title="statement not covered" >        isDeployed: false</span>
 <span class="cstat-no" title="statement not covered" >      };</span>
 <span class="cstat-no" title="statement not covered" >    });</span>
-<span class="cstat-no" title="statement not covered" >  };</span>
+<span class="cstat-no" title="statement not covered" >  }, [selectedCategory, selectedZone, selectedEmotion, promptTemplates]);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useEffect(() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setIsGenerating(true);</span>
@@ -1452,7 +1422,7 @@ interface PromptContext {
 <span class="cstat-no" title="statement not covered" >      setGeneratedPrompts(generateIntelligentPrompts());</span>
 <span class="cstat-no" title="statement not covered" >      setIsGenerating(false);</span>
 <span class="cstat-no" title="statement not covered" >    }, 1500);</span>
-<span class="cstat-no" title="statement not covered" >  }, [selectedCategory, selectedZone, selectedEmotion]);</span>
+<span class="cstat-no" title="statement not covered" >  }, [selectedCategory, selectedZone, selectedEmotion, generateIntelligentPrompts]);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const copyToClipboard = async (prompt: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
@@ -1825,7 +1795,7 @@ interface PromptContext {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-05T20:19:54.882Z
+                at 2025-07-06T18:31:26.300Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

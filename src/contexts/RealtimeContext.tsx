@@ -160,4 +160,10 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({ children }) 
       {children}
     </RealtimeContext.Provider>
   );
+};
+
+export const useRealtime = () => {
+  const ctx = React.useContext(RealtimeContext);
+  if (!ctx) throw new Error('useRealtime must be used within a RealtimeProvider');
+  return ctx;
 }; 

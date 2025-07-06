@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, RefreshCw, PenTool } from 'lucide-react';
-import { useShhhNarrator } from '../contexts/ShhhNarratorContext';
-import { useCUJHotspots } from '../contexts/CUJHotspotContext';
+import { useShhhNarrator } from '../contexts/use-shhh-narrator';
+import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
 
 interface WhisperPromptProps {
   zone?: string;

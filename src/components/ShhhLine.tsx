@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Loader2, Heart, Clock, MapPin } from 'lucide-react';
-import { useShhhNarrator } from '../contexts/ShhhNarratorContext';
-import { useCUJHotspots } from '../contexts/CUJHotspotContext';
+import { useShhhNarrator } from '../contexts/use-shhh-narrator';
+import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
 import fallbackLines from '../data/shhhFallbackLines.json';
 
 interface ShhhLineProps {

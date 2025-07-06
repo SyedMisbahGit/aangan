@@ -244,19 +244,19 @@ export const SoftWhisperCard: React.FC<SoftWhisperCardProps> = ({
                   <span className="text-sm">{whisper.comments}</span>
                 </div>
               )}
-            </div>
-            
+        </div>
+
             <div className="flex items-center gap-1 text-neutral-400 text-xs">
               <Clock className="w-3 h-3" />
               <span data-testid="whisper-timestamp">
                 {formatTimestamp(whisper.timestamp)}
               </span>
-            </div>
+          </div>
           </div>
         </div>
 
         {/* Press animation */}
-        <motion.div
+          <motion.div
           animate={{ 
             scale: isPressed ? 0.98 : 1,
             opacity: isPressed ? 0.8 : 1

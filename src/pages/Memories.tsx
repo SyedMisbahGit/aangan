@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { DreamLayout } from '../components/shared/DreamLayout';
 import { DreamHeader } from '../components/shared/DreamHeader';
 import { DreamWhisperCard } from '../components/whisper/DreamWhisperCard';
-import { useWhispers } from '../contexts/WhispersContext';
+import { useWhispers } from '../hooks/useWhispers';
 
 const locationLabels: Record<string, string> = {
   'Home': 'Home 🏠',
