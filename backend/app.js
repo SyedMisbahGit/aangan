@@ -8,12 +8,14 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
 import { v4 as uuidv4 } from "uuid";
 import { readFileSync } from "fs";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import fetch from "node-fetch";
+import { db } from "./db.js";
+import { whispersCollection } from "./vector.js";
+import dayjs from "dayjs";
 
 // Load environment variables
 dotenv.config();
@@ -28,18 +30,6 @@ const app = express();
 // Trust proxy for rate limiting with X-Forwarded-For headers
 app.set('trust proxy', 1);
 console.log('✅ Express trust proxy is set to 1 (for X-Forwarded-For headers)');
-
-// Socket.IO authentication middleware
-io.use((socket, next) => {
-  const key = socket.handshake.auth?.clientKey;
-  if (key !== process.env.SOCKET_SHARED_KEY) {
-    return next(new Error("unauthorized"));
-  }
-  return next();
-});
-
-// Per-IP rate limiting for socket messages
-const msgBuckets = new Map(); // ip -> { count, ts }
 
 const server = createServer(app);
 const io = new Server(server, {
@@ -60,6 +50,18 @@ const io = new Server(server, {
   },
 });
 
+// Socket.IO authentication middleware (must come after io is defined)
+io.use((socket, next) => {
+  const key = socket.handshake.auth?.clientKey;
+  if (key !== process.env.SOCKET_SHARED_KEY) {
+    return next(new Error("unauthorized"));
+  }
+  return next();
+});
+
+// Per-IP rate limiting for socket messages
+const msgBuckets = new Map(); // ip -> { count, ts }
+
 const PORT = process.env.PORT || 3001;
 
 // Debug: Log the actual PORT value
@@ -67,8 +69,6 @@ console.log(`🔧 PORT environment variable: ${process.env.PORT || 'not set'}`);
 console.log(`🔧 Using port: ${PORT}`);
 
 // Database setup
-let db;
-
 const ADMIN_API_KEY = process.env.ADMIN_API_KEY || "changeme";
 
 // Real-time connection tracking with improved stability
@@ -122,112 +122,6 @@ setInterval(async () => {
     console.error('Error cleaning up expired whispers:', error);
   }
 }, 12 * 60 * 60 * 1000); // 12 hours
-
-async function initializeDatabase() {
-  try {
-    const DB_PATH = process.env.DB_PATH || join(__dirname, "whispers.db");
-    console.log(`📁 Database path: ${DB_PATH}`);
-    
-    db = await open({
-      filename: DB_PATH,
-      driver: sqlite3.Database,
-    });
-    
-    console.log("✅ Database connection established");
-  } catch (error) {
-    console.error("❌ Database initialization failed:", error);
-    throw error;
-  }
-
-  // Create tables
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS whispers (
-      id TEXT PRIMARY KEY,
-      content TEXT NOT NULL,
-      emotion TEXT NOT NULL,
-      zone TEXT NOT NULL,
-      likes INTEGER DEFAULT 0,
-      replies INTEGER DEFAULT 0,
-      is_ai_generated BOOLEAN DEFAULT 0,
-      expires_at DATETIME,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS whisper_reactions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      whisper_id TEXT NOT NULL,
-      guest_id TEXT NOT NULL,
-      reaction_type TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(whisper_id, guest_id, reaction_type),
-      FOREIGN KEY (whisper_id) REFERENCES whispers(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS whisper_comments (
-      id TEXT PRIMARY KEY,
-      whisper_id TEXT NOT NULL,
-      content TEXT NOT NULL,
-      guest_id TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (whisper_id) REFERENCES whispers(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS admin_users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS feature_toggles (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      feature_name TEXT UNIQUE NOT NULL,
-      enabled BOOLEAN DEFAULT 1,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS analytics_events (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      event_type TEXT NOT NULL,
-      event_data TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS fcm_tokens (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      token TEXT UNIQUE NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
-
-  // Insert default admin user if not exists
-  const adminExists = await db.get(
-    "SELECT id FROM admin_users WHERE username = ?",
-    [process.env.ADMIN_USERNAME || "admin"],
-  );
-  if (!adminExists) {
-    const passwordHash = await bcrypt.hash(
-      process.env.ADMIN_PASSWORD || "admin123",
-      10,
-    );
-    await db.run(
-      "INSERT INTO admin_users (username, password_hash) VALUES (?, ?)",
-      [process.env.ADMIN_USERNAME || "admin", passwordHash],
-    );
-  }
-
-  // Insert default feature toggles
-  const features = ["shrines", "capsules", "mirrorMode", "murmurs"];
-  for (const feature of features) {
-    await db.run(
-      "INSERT OR IGNORE INTO feature_toggles (feature_name, enabled) VALUES (?, ?)",
-      [feature, 1],
-    );
-  }
-
-  console.log("✅ Database initialized successfully");
-}
 
 // Ambient Whisper System
 let lastWhisperTime = new Date();
@@ -319,8 +213,21 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'"],
         scriptSrc: ["'self'"],
         imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https://aangan-production.up.railway.app"],
+        fontSrc: ["'self'", "data:"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+        upgradeInsecureRequests: [],
       },
     },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true
+    },
+    noSniff: true,
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
   }),
 );
 
@@ -345,6 +252,37 @@ app.use(
 app.use(compression());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Input validation middleware
+const validateInput = (req, res, next) => {
+  // Sanitize string inputs
+  const sanitizeString = (str) => {
+    if (typeof str !== 'string') return str;
+    return str.trim().replace(/[<>]/g, ''); // Basic XSS prevention
+  };
+
+  // Sanitize request body
+  if (req.body) {
+    Object.keys(req.body).forEach(key => {
+      if (typeof req.body[key] === 'string') {
+        req.body[key] = sanitizeString(req.body[key]);
+      }
+    });
+  }
+
+  // Sanitize query parameters
+  if (req.query) {
+    Object.keys(req.query).forEach(key => {
+      if (typeof req.query[key] === 'string') {
+        req.query[key] = sanitizeString(req.query[key]);
+      }
+    });
+  }
+
+  next();
+};
+
+app.use(validateInput);
 
 // Rate limiting with proper IP detection
 const limiter = rateLimit({
@@ -381,18 +319,38 @@ const commentLimiter = rateLimit({
   }
 });
 
-// Authentication middleware (admin only)
-const authenticateAdminJWT = (req, res, next) => {
+// Helper: get admin user and last password change
+async function getAdminUser(username) {
+  return await db.get(
+    "SELECT * FROM admin_users WHERE username = ?",
+    [username]
+  );
+}
+
+// Helper: get last password change timestamp for admin
+async function getLastPasswordChange(username) {
+  const user = await getAdminUser(username);
+  return user && user.last_password_change ? new Date(user.last_password_change) : null;
+}
+
+// Authentication middleware (admin only) with complete mediation
+const authenticateAdminJWT = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) {
     return res.status(401).json({ error: "Access token required" });
   }
   try {
-    jwt.verify(token, process.env.JWT_SECRET || "your-secret-key");
+    const payload = jwt.verify(token, process.env.JWT_SECRET || "your-secret-key");
+    // Check for token revocation (last password change)
+    const lastPasswordChange = await getLastPasswordChange(payload.username);
+    if (lastPasswordChange && payload.iat * 1000 < lastPasswordChange.getTime()) {
+      return res.status(403).json({ error: "Token revoked due to password change" });
+    }
+    req.user = payload;
     next();
   } catch (error) {
-    return res.status(403).json({ error: "Invalid token" });
+    return res.status(403).json({ error: "Invalid or expired token" });
   }
 };
 
@@ -409,46 +367,82 @@ app.get("/api/health", (req, res) => {
 });
 
 // Admin login route
-app.post("/api/admin/login", async (req, res) => {
+app.post("/api/auth/login", async (req, res) => {
   try {
-    const { pass } = req.body;
-    
-    if (!pass) {
-      return res.status(400).json({ error: "Password required" });
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: "Username and password required" });
     }
-
     // Get admin user from database
-    const adminUser = await db.get(
-      "SELECT * FROM admin_users WHERE username = ?",
-      [process.env.ADMIN_USERNAME || "admin"]
-    );
-
+    const adminUser = await getAdminUser(username);
     if (!adminUser) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-
     // Compare password with stored hash
-    const isValid = await bcrypt.compare(pass, adminUser.password_hash);
-    
+    const isValid = await bcrypt.compare(password, adminUser.password_hash);
     if (!isValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-
-    // Generate JWT token
+    // Generate short-lived JWT token (15m)
     const token = jwt.sign(
-      { 
-        username: adminUser.username, 
+      {
+        username: adminUser.username,
         role: "admin",
-        id: adminUser.id 
+        id: adminUser.id,
       },
       process.env.JWT_SECRET || "your-secret-key",
-      { expiresIn: "24h" }
+      { expiresIn: "15m" }
     );
-
     res.json({ token, user: { username: adminUser.username, role: "admin" } });
   } catch (error) {
     console.error("Admin login error:", error);
     res.status(500).json({ error: "Login failed" });
+  }
+});
+
+// Refresh endpoint
+app.post("/api/auth/refresh", async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ error: "Token required" });
+    let payload;
+    try {
+      payload = jwt.verify(token, process.env.JWT_SECRET || "your-secret-key", { ignoreExpiration: true });
+    } catch (err) {
+      return res.status(403).json({ error: "Invalid token" });
+    }
+    // Check for token revocation
+    const lastPasswordChange = await getLastPasswordChange(payload.username);
+    if (lastPasswordChange && payload.iat * 1000 < lastPasswordChange.getTime()) {
+      return res.status(403).json({ error: "Token revoked due to password change" });
+    }
+    // Issue new short-lived JWT
+    const newToken = jwt.sign(
+      {
+        username: payload.username,
+        role: payload.role,
+        id: payload.id,
+      },
+      process.env.JWT_SECRET || "your-secret-key",
+      { expiresIn: "15m" }
+    );
+    res.json({ token: newToken });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to refresh token" });
+  }
+});
+
+// Password change endpoint (for demonstration, not exposed in UI)
+app.post("/api/admin/change-password", authenticateAdminJWT, async (req, res) => {
+  try {
+    const { username } = req.user;
+    const { newPassword } = req.body;
+    if (!newPassword) return res.status(400).json({ error: "New password required" });
+    const hash = await bcrypt.hash(newPassword, 10);
+    await db.run("UPDATE admin_users SET password_hash = ?, last_password_change = ? WHERE username = ?", [hash, new Date().toISOString(), username]);
+    res.json({ success: true, message: "Password changed and all tokens revoked." });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to change password" });
   }
 });
 
@@ -465,32 +459,16 @@ app.post("/api/health/heartbeat", async (req, res) => {
 app.get("/api/whispers", async (req, res) => {
   try {
     const { zone, emotion, limit = 50, offset = 0 } = req.query;
-
-    let query = "SELECT * FROM whispers WHERE (expires_at IS NULL OR expires_at > datetime('now'))";
-    let params = [];
-
-    if (zone || emotion) {
-      if (zone) {
-        query += " AND zone = ?";
-        params.push(zone);
-      }
-      if (emotion) {
-        query += " AND emotion = ?";
-        params.push(emotion);
-      }
-    }
-
-    query += " ORDER BY created_at DESC LIMIT ? OFFSET ?";
-    params.push(parseInt(limit), parseInt(offset));
-
-    const whispers = await db.all(query, params);
-
-    // Format timestamps
+    let query = db("whispers").where(function() {
+      this.whereNull("expires_at").orWhere("expires_at", ">", db.fn.now());
+    });
+    if (zone) query = query.andWhere("zone", zone);
+    if (emotion) query = query.andWhere("emotion", emotion);
+    const whispers = await query.orderBy("created_at", "desc").limit(limit).offset(offset);
     const formattedWhispers = whispers.map((whisper) => ({
       ...whisper,
       timestamp: formatTimestamp(whisper.created_at),
     }));
-
     res.json(formattedWhispers);
   } catch (error) {
     console.error("Error fetching whispers:", error);
@@ -500,79 +478,60 @@ app.get("/api/whispers", async (req, res) => {
 
 app.post("/api/whispers", whisperLimiter, async (req, res) => {
   try {
-    const { content, emotion, zone, expiresAt } = req.body;
-
+    const { content, emotion, zone, expiresAt, embedding } = req.body;
     if (!content || !emotion || !zone) {
-      return res
-        .status(400)
-        .json({ error: "Content, emotion, and zone are required" });
+      return res.status(400).json({ error: "Content, emotion, and zone are required" });
     }
-
-    // Content moderation pre-filter
+    // Content moderation
     const BAD_WORDS = ["chutiya", "bc", "mc", "madarchod", "bhosadike", "bhenchod"];
-    const hasBadWord = BAD_WORDS.some(bad => 
-      content.toLowerCase().includes(bad.toLowerCase())
-    );
-    
-    if (hasBadWord) {
-      return res.status(400).json({ error: "content-flagged" });
-    }
-
+    const hasBadWord = BAD_WORDS.some(bad => content.toLowerCase().includes(bad.toLowerCase()));
+    if (hasBadWord) return res.status(400).json({ error: "content-flagged" });
     const id = uuidv4();
-    
-    // Handle expiry
     let expiryValue = null;
     if (expiresAt) {
       const expiryDate = new Date();
-      expiryDate.setHours(expiryDate.getHours() + 24); // 24 hours from now
+      expiryDate.setHours(expiryDate.getHours() + 24);
       expiryValue = expiryDate.toISOString();
     }
-    
-    await db.run(
-      "INSERT INTO whispers (id, content, emotion, zone, expires_at) VALUES (?, ?, ?, ?, ?)",
-      [id, content, emotion, zone, expiryValue],
-    );
-
-    const whisper = await db.get("SELECT * FROM whispers WHERE id = ?", [id]);
+    await db("whispers").insert({ id, content, emotion, zone, expires_at: expiryValue });
+    // Embedding table (skip for SQLite)
+    if (db.client.config.client === "pg" && process.env.OPENAI_KEY) {
+      try {
+        const openaiRes = await fetch("https://api.openai.com/v1/embeddings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.OPENAI_KEY}`,
+          },
+          body: JSON.stringify({
+            input: content,
+            model: "text-embedding-ada-002"
+          })
+        });
+        const openaiData = await openaiRes.json();
+        if (openaiData.data && openaiData.data[0] && openaiData.data[0].embedding) {
+          const embedding = openaiData.data[0].embedding;
+          await db("whisper_embeddings").insert({ whisper_id: id, embedding });
+          console.log("Embedding saved:", embedding.slice(0, 5), "...");
+        } else {
+          console.error("OpenAI embedding error:", openaiData);
+        }
+      } catch (err) {
+        console.error("Failed to generate embedding:", err);
+      }
+    }
+    const [whisper] = await db("whispers").where({ id });
     whisper.timestamp = formatTimestamp(whisper.created_at);
-
-    // Emit real-time whisper event
-    io.emit('new-whisper', {
-      ...whisper,
-      timestamp: formatTimestamp(whisper.created_at),
-      realTime: true
-    });
-
-    // Emit zone-specific whisper event
-    io.to(`zone-${zone}`).emit('zone-whisper', {
-      ...whisper,
-      timestamp: formatTimestamp(whisper.created_at),
-      realTime: true
-    });
-
+    io.emit('new-whisper', { ...whisper, timestamp: whisper.timestamp, realTime: true });
+    io.to(`zone-${zone}`).emit('zone-whisper', { ...whisper, timestamp: whisper.timestamp, realTime: true });
     // Update emotion pulse
     const currentPulse = emotionPulse.get(emotion) || { count: 0, lastPulse: new Date() };
     currentPulse.count += 1;
     currentPulse.lastPulse = new Date();
     emotionPulse.set(emotion, currentPulse);
-
-    // Broadcast emotion pulse update
-    io.emit('emotion-pulse-update', {
-      emotion,
-      pulse: currentPulse,
-      totalPulses: Array.from(emotionPulse.values()).reduce((sum, pulse) => sum + pulse.count, 0)
-    });
-
-    console.log(`📝 New whisper created and broadcast: ${id} in zone ${zone} with emotion ${emotion}`);
-
-    // Update last whisper time for ambient system
+    io.emit('emotion-pulse-update', { emotion, pulse: currentPulse, totalPulses: Array.from(emotionPulse.values()).reduce((sum, pulse) => sum + pulse.count, 0) });
     lastWhisperTime = new Date();
-    
-    // Start ambient system if not already active
-    if (!isAmbientSystemActive) {
-      startAmbientWhisperSystem();
-    }
-
+    if (!isAmbientSystemActive) startAmbientWhisperSystem();
     res.status(201).json(whisper);
   } catch (error) {
     console.error("Error creating whisper:", error);
@@ -693,85 +652,25 @@ app.post("/api/ai/generate-whisper", async (req, res) => {
 });
 
 // Whisper Reaction Endpoint
-app.post("/api/whispers/:id/react", async (req, res) => {
+app.post("/api/reactions", async (req, res) => {
   try {
-    const { id } = req.params;
-    const { reactionType, guestId } = req.body;
-    
-    // Validate inputs
-    if (!reactionType || !guestId) {
-      return res.status(400).json({ error: "Reaction type and guest ID are required" });
-    }
-    
-    // Validate reaction type
+    const { id, reactionType, guestId } = req.body;
+    if (!reactionType || !guestId) return res.status(400).json({ error: "Reaction type and guest ID are required" });
     const validReactions = ['❤️', '😢', '😮', '🙌'];
-    if (!validReactions.includes(reactionType)) {
-      return res.status(400).json({ error: "Invalid reaction type" });
-    }
-    
-    // Check if whisper exists
-    const whisper = await db.get("SELECT * FROM whispers WHERE id = ?", [id]);
-    if (!whisper) {
-      return res.status(404).json({ error: "Whisper not found" });
-    }
-    
-    // Check if user already reacted with this type
-    const existingReaction = await db.get(
-      "SELECT * FROM whisper_reactions WHERE whisper_id = ? AND guest_id = ? AND reaction_type = ?",
-      [id, guestId, reactionType]
-    );
-    
+    if (!validReactions.includes(reactionType)) return res.status(400).json({ error: "Invalid reaction type" });
+    const whisper = await db("whispers").where({ id }).first();
+    if (!whisper) return res.status(404).json({ error: "Whisper not found" });
+    const existingReaction = await db("whisper_reactions").where({ whisper_id: id, guest_id: guestId, reaction_type: reactionType }).first();
     if (existingReaction) {
-      // Remove reaction (toggle off)
-      await db.run(
-        "DELETE FROM whisper_reactions WHERE whisper_id = ? AND guest_id = ? AND reaction_type = ?",
-        [id, guestId, reactionType]
-      );
-      
-      console.log(`🗑️ Reaction removed: ${reactionType} on whisper ${id} by guest ${guestId}`);
+      await db("whisper_reactions").where({ whisper_id: id, guest_id: guestId, reaction_type: reactionType }).del();
     } else {
-      // Add reaction
-      await db.run(
-        "INSERT INTO whisper_reactions (whisper_id, guest_id, reaction_type) VALUES (?, ?, ?)",
-        [id, guestId, reactionType]
-      );
-      
-      console.log(`💫 Reaction added: ${reactionType} on whisper ${id} by guest ${guestId}`);
+      await db("whisper_reactions").insert({ whisper_id: id, guest_id: guestId, reaction_type: reactionType });
     }
-    
-    // Get updated reaction counts
-    const reactions = await db.all(
-      "SELECT reaction_type, COUNT(*) as count FROM whisper_reactions WHERE whisper_id = ? GROUP BY reaction_type",
-      [id]
-    );
-    
-    const reactionCounts = {
-      '❤️': 0,
-      '😢': 0,
-      '😮': 0,
-      '🙌': 0
-    };
-    
-    reactions.forEach(reaction => {
-      reactionCounts[reaction.reaction_type] = reaction.count;
-    });
-    
-    // Emit real-time reaction update
-    io.emit('whisper-reaction-update', {
-      whisperId: id,
-      reactions: reactionCounts,
-      guestId,
-      reactionType,
-      action: existingReaction ? 'removed' : 'added'
-    });
-    
-    res.json({
-      whisperId: id,
-      reactions: reactionCounts,
-      guestId,
-      reactionType,
-      action: existingReaction ? 'removed' : 'added'
-    });
+    const reactions = await db("whisper_reactions").where({ whisper_id: id }).select("reaction_type").count("reaction_type as count").groupBy("reaction_type");
+    const reactionCounts = { '❤️': 0, '😢': 0, '😮': 0, '🙌': 0 };
+    reactions.forEach(reaction => { reactionCounts[reaction.reaction_type] = reaction.count; });
+    io.emit('whisper-reaction-update', { whisperId: id, reactions: reactionCounts, guestId, reactionType, action: existingReaction ? 'removed' : 'added' });
+    res.json({ whisperId: id, reactions: reactionCounts, guestId, reactionType, action: existingReaction ? 'removed' : 'added' });
   } catch (error) {
     console.error("Error handling whisper reaction:", error);
     res.status(500).json({ error: "Failed to handle reaction" });
@@ -782,23 +681,9 @@ app.post("/api/whispers/:id/react", async (req, res) => {
 app.get("/api/whispers/:id/reactions", async (req, res) => {
   try {
     const { id } = req.params;
-    
-    const reactions = await db.all(
-      "SELECT reaction_type, COUNT(*) as count FROM whisper_reactions WHERE whisper_id = ? GROUP BY reaction_type",
-      [id]
-    );
-    
-    const reactionCounts = {
-      '❤️': 0,
-      '😢': 0,
-      '😮': 0,
-      '🙌': 0
-    };
-    
-    reactions.forEach(reaction => {
-      reactionCounts[reaction.reaction_type] = reaction.count;
-    });
-    
+    const reactions = await db("whisper_reactions").where({ whisper_id: id }).select("reaction_type").count("reaction_type as count").groupBy("reaction_type");
+    const reactionCounts = { '❤️': 0, '😢': 0, '😮': 0, '🙌': 0 };
+    reactions.forEach(reaction => { reactionCounts[reaction.reaction_type] = reaction.count; });
     res.json({ whisperId: id, reactions: reactionCounts });
   } catch (error) {
     console.error("Error fetching whisper reactions:", error);
@@ -810,49 +695,237 @@ app.get("/api/whispers/:id/reactions", async (req, res) => {
 app.post("/api/comments", commentLimiter, async (req, res) => {
   try {
     const { whisperId, content, guestId } = req.body;
-    
-    if (!whisperId || !content || !guestId) {
-      return res.status(400).json({ error: "Whisper ID, content, and guest ID are required" });
-    }
-    
-    // Check if whisper exists
-    const whisper = await db.get("SELECT * FROM whispers WHERE id = ?", [whisperId]);
-    if (!whisper) {
-      return res.status(404).json({ error: "Whisper not found" });
-    }
-    
-    // Content moderation pre-filter
+    if (!whisperId || !content || !guestId) return res.status(400).json({ error: "Whisper ID, content, and guest ID are required" });
+    const whisper = await db("whispers").where({ id: whisperId }).first();
+    if (!whisper) return res.status(404).json({ error: "Whisper not found" });
     const BAD_WORDS = ["chutiya", "bc", "mc", "madarchod", "bhosadike", "bhenchod"];
-    const hasBadWord = BAD_WORDS.some(bad => 
-      content.toLowerCase().includes(bad.toLowerCase())
-    );
-    
-    if (hasBadWord) {
-      return res.status(400).json({ error: "content-flagged" });
-    }
-    
+    const hasBadWord = BAD_WORDS.some(bad => content.toLowerCase().includes(bad.toLowerCase()));
+    if (hasBadWord) return res.status(400).json({ error: "content-flagged" });
     const id = uuidv4();
-    await db.run(
-      "INSERT INTO whisper_comments (id, whisper_id, content, guest_id) VALUES (?, ?, ?, ?)",
-      [id, whisperId, content, guestId]
-    );
-    
-    const comment = await db.get("SELECT * FROM whisper_comments WHERE id = ?", [id]);
+    await db("whisper_comments").insert({ id, whisper_id: whisperId, content, guest_id: guestId });
+    const [comment] = await db("whisper_comments").where({ id });
     comment.timestamp = formatTimestamp(comment.created_at);
-    
-    // Emit real-time comment event
-    io.emit('new-comment', {
-      ...comment,
-      timestamp: formatTimestamp(comment.created_at),
-      realTime: true
-    });
-    
-    console.log(`💬 New comment created: ${id} on whisper ${whisperId}`);
-    
+    io.emit('new-comment', { ...comment, timestamp: comment.timestamp, realTime: true });
     res.status(201).json(comment);
   } catch (error) {
     console.error("Error creating comment:", error);
     res.status(500).json({ error: "Failed to create comment" });
+  }
+});
+
+// Stub endpoint for analytics page view (dev only)
+app.post('/api/analytics/page-view', (req, res) => {
+  res.status(200).json({ ok: true });
+});
+
+// Stub endpoint for FCM token registration (dev only)
+app.post('/api/fcm-token', (req, res) => {
+  res.status(200).json({ ok: true });
+});
+
+// Admin and Analytics Routes (Protected by Authentication)
+// GET /api/analytics/whispers - Get whisper analytics
+app.get('/api/analytics/whispers', authenticateAdminJWT, async (req, res) => {
+  try {
+    const whispers = await db("whispers").select('*').orderBy('created_at', 'desc').limit(100);
+    const analytics = {
+      total: whispers.length,
+      byEmotion: {},
+      byZone: {},
+      recentActivity: whispers.slice(0, 10).map(w => ({
+        id: w.id,
+        content: w.content.substring(0, 50) + '...',
+        emotion: w.emotion,
+        zone: w.zone,
+        created_at: w.created_at
+      }))
+    };
+    
+    whispers.forEach(whisper => {
+      analytics.byEmotion[whisper.emotion] = (analytics.byEmotion[whisper.emotion] || 0) + 1;
+      analytics.byZone[whisper.zone] = (analytics.byZone[whisper.zone] || 0) + 1;
+    });
+    
+    res.json(analytics);
+  } catch (error) {
+    console.error("Error fetching whisper analytics:", error);
+    res.status(500).json({ error: "Failed to fetch analytics" });
+  }
+});
+
+// GET /api/analytics/zones - Get zone analytics
+app.get('/api/analytics/zones', authenticateAdminJWT, async (req, res) => {
+  try {
+    const zones = await db("whispers")
+      .select('zone')
+      .count('* as whisper_count')
+      .groupBy('zone')
+      .orderBy('whisper_count', 'desc');
+    
+    const zoneAnalytics = zones.map(zone => ({
+      zone: zone.zone,
+      whisper_count: zone.whisper_count,
+      activity_level: zone.whisper_count > 50 ? 'high' : zone.whisper_count > 20 ? 'medium' : 'low'
+    }));
+    
+    res.json(zoneAnalytics);
+  } catch (error) {
+    console.error("Error fetching zone analytics:", error);
+    res.status(500).json({ error: "Failed to fetch zone analytics" });
+  }
+});
+
+// POST /api/admin/broadcast - Send broadcast notification
+app.post('/api/admin/broadcast', authenticateAdminJWT, async (req, res) => {
+  try {
+    const { title, body, url } = req.body;
+    
+    if (!title || !body) {
+      return res.status(400).json({ error: "Title and body are required" });
+    }
+    
+    // Log the broadcast attempt
+    console.log(`📢 Admin broadcast: ${title} - ${body}`);
+    
+    // In a real implementation, this would send push notifications
+    // For now, just acknowledge the request
+    res.json({ 
+      success: true, 
+      message: "Broadcast queued for delivery",
+      broadcast: { title, body, url, timestamp: new Date().toISOString() }
+    });
+  } catch (error) {
+    console.error("Error sending broadcast:", error);
+    res.status(500).json({ error: "Failed to send broadcast" });
+  }
+});
+
+// GET /api/admin/fcm-tokens - Get registered FCM tokens
+app.get('/api/admin/fcm-tokens', authenticateAdminJWT, async (req, res) => {
+  try {
+    // In a real implementation, this would fetch from database
+    // For now, return mock data
+    res.json({ 
+      tokens: [],
+      total: 0,
+      message: "FCM tokens would be fetched from database"
+    });
+  } catch (error) {
+    console.error("Error fetching FCM tokens:", error);
+    res.status(500).json({ error: "Failed to fetch FCM tokens" });
+  }
+});
+
+// GET /api/auth/verify - Verify admin token
+app.get('/api/auth/verify', authenticateAdminJWT, (req, res) => {
+  try {
+    // Token is already verified by middleware
+    res.json({ 
+      valid: true, 
+      user: { role: "admin" },
+      message: "Token is valid"
+    });
+  } catch (error) {
+    res.status(401).json({ error: "Invalid token" });
+  }
+});
+
+// GET /api/features/toggles - Get feature toggles (public read)
+app.get('/api/features/toggles', (req, res) => {
+  try {
+    // Return current feature toggles
+    res.json({
+      features: {
+        aiWhisperGeneration: true,
+        realtimeNotifications: true,
+        emotionPulse: true,
+        zoneActivity: true,
+        ambientWhispers: true
+      },
+      lastUpdated: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch feature toggles" });
+  }
+});
+
+// POST /api/features/toggles - Update feature toggles (admin only)
+app.post('/api/features/toggles', authenticateAdminJWT, (req, res) => {
+  try {
+    const { feature, enabled } = req.body;
+    
+    if (!feature || typeof enabled !== 'boolean') {
+      return res.status(400).json({ error: "Feature name and enabled status required" });
+    }
+    
+    // In a real implementation, this would update database
+    console.log(`🔧 Feature toggle updated: ${feature} = ${enabled}`);
+    
+    res.json({ 
+      success: true, 
+      feature, 
+      enabled, 
+      message: "Feature toggle updated",
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Error updating feature toggle:", error);
+    res.status(500).json({ error: "Failed to update feature toggle" });
+  }
+});
+
+// POST /api/auth/login - Admin login (already exists, but ensure it's secure)
+// This route should remain public as it's the entry point for authentication
+
+// Search related whispers endpoint
+app.post("/api/search/related", async (req, res) => {
+  try {
+    const { id, text, topK = 5 } = req.body;
+    let embedding;
+
+    // 1. Get embedding for the query
+    if (id) {
+      // Fetch embedding from DB
+      const row = await db("whisper_embeddings").where({ whisper_id: id }).first();
+      if (!row) return res.status(404).json({ error: "Whisper embedding not found" });
+      embedding = row.embedding;
+    } else if (text && process.env.OPENAI_KEY) {
+      // Generate embedding from text
+      const openaiRes = await fetch("https://api.openai.com/v1/embeddings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.OPENAI_KEY}`,
+        },
+        body: JSON.stringify({
+          input: text,
+          model: "text-embedding-ada-002"
+        })
+      });
+      const openaiData = await openaiRes.json();
+      if (openaiData.data && openaiData.data[0] && openaiData.data[0].embedding) {
+        embedding = openaiData.data[0].embedding;
+      } else {
+        return res.status(500).json({ error: "Failed to generate embedding" });
+      }
+    } else {
+      return res.status(400).json({ error: "Provide either id or text" });
+    }
+
+    // 2. Query Chroma for similar vectors
+    const results = await (await whispersCollection).query({
+      queryEmbeddings: [embedding],
+      nResults: topK,
+    });
+
+    // 3. Fetch full whisper data for the results
+    const ids = results.ids[0];
+    const whispers = await db("whispers").whereIn("id", ids);
+
+    res.json({ matches: whispers });
+  } catch (err) {
+    console.error("Error in /api/search/related:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -880,9 +953,7 @@ async function startServer() {
     console.log(`🔧 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔧 DB_PATH: ${process.env.DB_PATH || 'default'}`);
     
-    console.log("📊 Initializing database...");
-    await initializeDatabase();
-    console.log("✅ Database initialized successfully");
+    console.log("📊 Database ready via Knex and migrations.");
 
     // Add a small delay to ensure everything is ready
     console.log("⏳ Waiting for system to stabilize...");
@@ -1115,6 +1186,28 @@ io.on('connection', (socket) => {
   // Handle errors
   socket.on('error', (error) => {
     console.error(`❌ Socket error for ${socket.id}:`, error);
+  });
+
+  // WebSocket: Periodic re-authentication
+  const reauthInterval = setInterval(() => {
+    socket.emit('reauthenticate');
+  }, 10 * 60 * 1000); // every 10 minutes
+  socket.on('auth', async ({ token }) => {
+    try {
+      const payload = jwt.verify(token, process.env.JWT_SECRET || "your-secret-key");
+      // Optionally check for revocation here as well
+      const lastPasswordChange = await getLastPasswordChange(payload.username);
+      if (lastPasswordChange && payload.iat * 1000 < lastPasswordChange.getTime()) {
+        socket.disconnect(true);
+        return;
+      }
+      // If valid, keep connection
+    } catch (err) {
+      socket.disconnect(true);
+    }
+  });
+  socket.on('disconnect', () => {
+    clearInterval(reauthInterval);
   });
 });
 

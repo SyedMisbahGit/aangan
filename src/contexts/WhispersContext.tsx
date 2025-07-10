@@ -1,25 +1,5 @@
 import React, { createContext, useState, ReactNode } from "react";
-
-export interface Whisper {
-  id: string;
-  content: string;
-  emotion: string;
-  timestamp: string;
-  location: string;
-  likes: number;
-  comments: number;
-  isAnonymous: boolean;
-  author?: string;
-  prompt?: string;
-  tags?: string[];
-  isPublic?: boolean;
-}
-
-interface WhispersContextType {
-  whispers: Whisper[];
-  setWhispers: React.Dispatch<React.SetStateAction<Whisper[]>>;
-  addWhisper: (whisper: Whisper) => void;
-}
+import { Whisper, WhispersContextType } from './WhispersContext.helpers';
 
 export const WhispersContext = React.createContext<WhispersContextType | undefined>(undefined);
 

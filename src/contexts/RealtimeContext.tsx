@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useState, ReactNode } from 'react';
+import { RealtimeContextType, RealtimeProviderProps } from './RealtimeContext.helpers';
 import realtimeService, { 
   RealtimeWhisper, 
   ZoneActivity, 
@@ -6,40 +7,7 @@ import realtimeService, {
   RealtimeActivity 
 } from '../services/realtime';
 
-interface RealtimeContextType {
-  // Connection status
-  isConnected: boolean;
-  connectionStatus: {
-    isConnected: boolean;
-    reconnectAttempts: number;
-    maxReconnectAttempts: number;
-  };
-  
-  // Real-time data
-  realtimeWhispers: RealtimeWhisper[];
-  zoneActivity: Map<string, { users: number; lastActivity: string }>;
-  emotionPulse: Map<string, { count: number; lastPulse: string }>;
-  totalActiveUsers: number;
-  
-  // Socket instance
-  socket: ReturnType<typeof realtimeService.getSocket>;
-  
-  // Actions
-  joinZone: (zone: string) => void;
-  leaveZone: (zone: string) => void;
-  sendEmotionPulse: (emotion: string) => void;
-  broadcastWhisper: (whisper: RealtimeWhisper) => void;
-  
-  // Connection management
-  connect: () => void;
-  disconnect: () => void;
-}
-
 const RealtimeContext = createContext<RealtimeContextType | undefined>(undefined);
-
-interface RealtimeProviderProps {
-  children: ReactNode;
-}
 
 export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);

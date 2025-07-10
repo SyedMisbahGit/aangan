@@ -1,7 +1,8 @@
 import React from 'react';
 import { io, Socket } from 'socket.io-client';
 
-const REALTIME_URL = import.meta.env.VITE_REALTIME_URL || 'https://aangan-production.up.railway.app';
+// For local dev, set VITE_REALTIME_URL=ws://localhost:3001 in your .env file
+const REALTIME_URL = import.meta.env.VITE_REALTIME_URL || (import.meta.env.DEV ? 'ws://localhost:3001' : 'https://aangan-production.up.railway.app');
 
 // Socket authentication key - should match backend SOCKET_SHARED_KEY
 const SOCKET_CLIENT_KEY = import.meta.env.VITE_SOCKET_SHARED_KEY || 'superSecretSocketKey';

@@ -1,19 +1,8 @@
 import React, { createContext, useEffect, useState, ReactNode } from 'react';
+import { Theme, AanganThemeContextType, AanganThemeProviderProps } from './DreamThemeContext.helpers';
 import { AanganLoadingScreen } from '../App';
 
-type Theme = 'light' | 'dark';
-
-interface AanganThemeContextType {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  isInitialized: boolean;
-}
-
 const AanganThemeContext = createContext<AanganThemeContextType | undefined>(undefined);
-
-interface AanganThemeProviderProps {
-  children: ReactNode;
-}
 
 export const AanganThemeProvider: React.FC<AanganThemeProviderProps> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>('light');

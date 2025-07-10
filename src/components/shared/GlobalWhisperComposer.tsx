@@ -23,6 +23,7 @@ import { useCUJHotspots } from '../../contexts/use-cuj-hotspots';
 import { useWhispers } from '../../contexts/use-whispers';
 import { useSummerSoul, LocationTag } from '../../contexts/use-summer-soul';
 // import { generateSummerSoulLine } from '../../contexts/ShhhNarratorContext';
+import { EmbeddedBenchComposer } from '../whisper/PostCreator';
 
 interface WhisperComposerProps {
   variant?: 'floating' | 'modal' | 'sheet';
@@ -83,7 +84,7 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
   const summerSoulLocations = [
     { value: 'Home', label: 'At Home 🏠' },
     { value: 'Internship', label: 'Internship 🧑‍💼' },
-    { value: 'On Campus', label: 'Still on Campus 🏫' },
+    { value: 'On Campus', label: 'Still on Campus ��' },
     { value: 'Travelling', label: 'Travelling ✈️' },
     { value: 'Somewhere else', label: 'Somewhere else 🌌' },
   ];
@@ -404,105 +405,8 @@ const GlobalWhisperComposer: React.FC<WhisperComposerProps> = ({
     </div>
   );
 
-  if (variant === 'floating') {
-    return (
-      <>
-        <motion.div
-          className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Button
-            onClick={() => setIsOpen(true)}
-            className="w-14 h-14 rounded-full bg-white text-green-600 shadow-lg border border-neutral-200 hover:bg-green-50 hover:text-green-700 active:bg-green-100 transition-colors"
-          >
-            <Plus className="w-6 h-6" />
-          </Button>
-        </motion.div>
-
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-inkwell/20 backdrop-blur-sm z-50 flex items-end justify-center p-4"
-              onClick={() => setIsOpen(false)}
-            >
-              <motion.div
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                className="bg-paper-light rounded-t-2xl p-6 w-full max-w-md shadow-soft"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-inkwell">New Whisper</h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsOpen(false)}
-                    className="text-inkwell/60 hover:text-inkwell"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-                {renderContent()}
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </>
-    );
-  }
-
-  if (variant === 'modal') {
-    return (
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          {trigger || (
-            <Button className="bg-inkwell hover:bg-inkwell/90 text-paper-light">
-              <MessageCircle className="w-4 h-4 mr-2" />
-              New Whisper
-            </Button>
-          )}
-        </DialogTrigger>
-        <DialogContent className="bg-paper-light border-inkwell/10 shadow-soft max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-inkwell">Whisper to Aangan</DialogTitle>
-          </DialogHeader>
-          {renderContent()}
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  if (variant === 'sheet') {
-    return (
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
-          {trigger || (
-            <Button className="bg-inkwell hover:bg-inkwell/90 text-paper-light">
-              <MessageCircle className="w-4 h-4 mr-2" />
-              New Whisper
-            </Button>
-          )}
-        </SheetTrigger>
-        <SheetContent side="bottom" className="bg-paper-light border-inkwell/10 h-[80vh]">
-          <SheetHeader>
-            <SheetTitle className="text-inkwell">Whisper to Aangan</SheetTitle>
-          </SheetHeader>
-          <div className="mt-6">
-            {renderContent()}
-          </div>
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
-  return null;
+  // Remove FAB slot and export EmbeddedBenchComposer as default
+  return <EmbeddedBenchComposer />;
 };
 
 export default GlobalWhisperComposer; 

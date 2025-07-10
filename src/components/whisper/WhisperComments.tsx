@@ -236,7 +236,7 @@ export const WhisperComments: React.FC<WhisperCommentsProps> = ({
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder={replyingTo ? "Write your reply..." : "Join the conversation..."}
-                  className="min-h-[60px] text-sm border-neutral-200 bg-white resize-none"
+                  className="bg-white text-neutral-900 placeholder:text-neutral-500 border border-neutral-200 rounded-xl min-h-[60px] text-sm resize-none"
                   maxLength={300}
                 />
                 

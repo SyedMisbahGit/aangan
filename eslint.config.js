@@ -6,7 +6,16 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   { 
-    ignores: ["dist/**", "dev-dist/**", "coverage/**", "**/workbox-*.js", "**/node_modules/**"],
+    ignores: [
+      "dist/**", 
+      "dev-dist/**", 
+      "coverage/**", 
+      "**/workbox-*.js", 
+      "**/node_modules/**",
+      "*.min.js",
+      ".env*",
+      "public/**"
+    ],
     linterOptions: {
       reportUnusedDisableDirectives: "error",
       noInlineConfig: false,

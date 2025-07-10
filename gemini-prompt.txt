@@ -1,0 +1,33 @@
+You are now working on a poetic, emotion-aware, campus-rooted social app called "Aangan," designed for students at Central University of Jammu (CUJ). The app is built using React (TypeScript + Vite), TailwindCSS, and Express backend with SQLite or PostgreSQL. It is deployed as a PWA and accessible via browser and mobile. 
+
+Your goal is to now **create version v1.8**, focused on grounding Aangan in real campus context and improving the emotional usability of the app.
+
+🔧 Tasks for this version:
+1. **CUJ Campus Personalization**
+   - Introduce a lightweight onboarding flow for new users where they choose/confirm:
+     - Which CUJ location they're near (e.g., Tapri, Library, Hostel)
+     - How they feel (emotion from emotion palette)
+     - Optionally, a poetic nickname
+   - Save this in localStorage for anonymous session memory
+
+2. **Context-Aware Whisper Suggestions**
+   - Show context-aware poetic prompts based on location and emotion during whisper composition.
+   - Example: "You sit at Tapri, heart humming with nostalgia 🍵 — want to whisper something?"
+
+3. **Fix these UX issues from user feedback**
+   - Fix floating + button visibility bug where font isn't visible when typing.
+   - Esc showing on Listen icon — remove it.
+   - Add a global back button on top left of each main screen for smoother navigation.
+   - Make sure whisper composer opens reliably, and input text is visible clearly.
+
+4. **Add a minimal Whisper Archive**
+   - Create a new section in "My Corner" → "Archive"
+   - Let user see past whispers (stored in localStorage or indexedDB for now).
+   - Show title line, time, and location of whisper.
+
+💡 Design Philosophy Reminder:
+- App feels like a courtyard, not a feed.
+- Remove metrics, show poetic presence instead.
+- All labels and metaphors should be emotionally soft and grounded in shared feeling.
+
+Please write optimized React (TSX) + Tailwind + backend (Express+SQLite) code changes and file edits as needed. Generate only the code needed for this version update. If file structure needs to be changed, specify it clearly. 

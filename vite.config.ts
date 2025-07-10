@@ -14,6 +14,20 @@ export default defineConfig(({ mode }) => ({
       '/api': 'https://aangan-production.up.railway.app',
     },
   },
+  build: {
+    target: 'es2015',
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-toast'],
+          utils: ['axios', 'date-fns', 'clsx'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
   plugins: [
     react(),
     mode === "development" && componentTagger(),
@@ -30,6 +44,19 @@ export default defineConfig(({ mode }) => ({
       manifest: manifest as Partial<ManifestOptions>,
       workbox: {
         navigateFallback: '/offline.html',
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/aangan-production\.up\.railway\.app\/api/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24, // 24 hours
+              },
+            },
+          },
+        ],
       },
       devOptions: {
         enabled: true

@@ -36,6 +36,7 @@ import { useWhispers } from "../contexts/use-whispers";
 import type { Whisper } from '../contexts/WhispersContext';
 import { CustomSkeletonCard } from "@/components/ui/skeleton";
 import { DiaryStreakCounter } from "../components/shared/DiaryStreakCounter";
+import SoftBack from '../components/shared/SoftBack';
 
 const Diary: React.FC = () => {
   const { whispers: entries, setWhispers: setEntries } = useWhispers();
@@ -211,8 +212,11 @@ const Diary: React.FC = () => {
 
   const moodStats = getMoodStats();
 
+  const showSoftBack = window.history.length > 1;
+
   return (
     <DreamLayout>
+      {showSoftBack && <SoftBack />}
       <div className="min-h-screen bg-[#fafaf9]">
         {/* Poetic AI Narrator */}
         <div className="pt-6 pb-4 px-4">
@@ -432,7 +436,7 @@ const Diary: React.FC = () => {
                           placeholder="What's stirring in your courtyard today?"
                           value={currentEntry}
                           onChange={(e) => setCurrentEntry(e.target.value)}
-                          className="min-h-[120px] bg-white border-neutral-200 focus:border-neutral-400 resize-none"
+                          className="bg-[#fafaf9] text-neutral-800 placeholder:text-neutral-500 focus:ring-2 focus:ring-green-500 caret-green-600 min-h-[120px] border border-neutral-300 rounded-xl p-4 shadow-sm resize-none"
                           maxLength={1000}
                         />
                         <div className="text-xs text-neutral-500 mt-1 text-right">

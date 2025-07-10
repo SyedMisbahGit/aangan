@@ -147,7 +147,7 @@ export const EmbeddedBenchComposer: React.FC<EmbeddedBenchComposerProps> = ({
                 onChange={(e) => setContent(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Share what's in your heart..."
-                className="min-h-[100px] resize-none border-white/30 bg-white/50 backdrop-blur-sm focus:bg-white/70 focus:border-white/50"
+                className="bg-white text-neutral-900 placeholder:text-neutral-500 border border-neutral-200 rounded-xl min-h-[100px] resize-none p-4 shadow-sm"
                 maxLength={500}
               />
               <div className="flex items-center justify-between text-xs text-neutral-500">

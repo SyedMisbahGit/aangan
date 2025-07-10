@@ -236,6 +236,7 @@ const Whispers: React.FC = () => {
           >
             <EmbeddedBenchComposer
               onWhisperCreate={handleWhisperCreate}
+              className="bg-white text-neutral-900 placeholder:text-neutral-500 border border-neutral-200 rounded-xl"
             />
           </motion.div>
         </div>

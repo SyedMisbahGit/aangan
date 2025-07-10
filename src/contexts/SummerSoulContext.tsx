@@ -1,21 +1,5 @@
 import React, { createContext, useState, ReactNode, useMemo } from 'react';
-
-// Date until which SummerSoul is active (July 21, 2025, 00:00 local time)
-const SUMMER_SOUL_END = new Date('2025-07-21T00:00:00');
-
-export type LocationTag = 'Home' | 'Internship' | 'On Campus' | 'Travelling' | 'Somewhere else' | '';
-export type ActivityLabel = string;
-export type CurrentEmotion = string; // Bound to existing mood system
-
-interface SummerSoulContextType {
-  isSummerSoulActive: boolean;
-  locationTag: LocationTag;
-  setLocationTag: (tag: LocationTag) => void;
-  activityLabel: ActivityLabel;
-  setActivityLabel: (label: ActivityLabel) => void;
-  currentEmotion: CurrentEmotion;
-  setCurrentEmotion: (emotion: CurrentEmotion) => void;
-}
+import { LocationTag, ActivityLabel, CurrentEmotion, SummerSoulContextType, SUMMER_SOUL_END } from './SummerSoulContext.helpers';
 
 export const SummerSoulContext = createContext<SummerSoulContextType | undefined>(undefined);
 

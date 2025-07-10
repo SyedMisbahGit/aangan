@@ -1,14 +1,16 @@
 {
   "name": "shhh-backend",
-  "version": "1.0.0",
+  "version": "1.6.3",
   "description": "Shhh - WhisperVerse Backend API and Admin Dashboard",
   "main": "app.js",
   "type": "module",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon server.js",
+    "dev": "NODE_ENV=development node ../backend/scripts/seed-demo-whispers.ts && nodemon app.js",
     "build": "echo \"No build step required\"",
-    "test": "echo \"No tests specified\""
+    "test": "echo \"No tests specified\"",
+    "migrate": "knex migrate:latest --knexfile backend/knexfile.js",
+    "seed": "knex seed:run --knexfile backend/knexfile.js"
   },
   "dependencies": {
     "axios": "^1.10.0",
@@ -21,7 +23,10 @@
     "firebase-admin": "^13.4.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
+    "knex": "^2.5.1",
     "nodemailer": "^7.0.4",
+    "pg": "^8.11.3",
+    "postgres": "^3.4.3",
     "qrcode": "^1.5.4",
     "socket.io": "^4.8.1",
     "sqlite": "^5.1.1",

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MoreHorizontal, Calendar, Compass, Star, MessageCircle, Package } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { MoreHorizontal, Calendar, Compass, Star, MessageCircle, Package, ChevronLeft } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -82,6 +82,7 @@ export const AanganHeader: React.FC<AanganHeaderProps> = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const [currentSubtitle, setCurrentSubtitle] = useState("");
   const [courtyardMood, setCourtyardMood] = useState("hopeful");
 
@@ -139,6 +140,18 @@ export const AanganHeader: React.FC<AanganHeaderProps> = ({
       className={cn("aangan-header flex items-center justify-between px-4 py-3 bg-aangan-surface backdrop-blur-sm border-b border-aangan-border", className)}
     >
       <div className="flex items-center gap-3">
+        {/* Back chevron for non-root pages */}
+        {location.pathname !== "/" && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="mr-1 h-10 w-10 rounded-full hover:bg-aangan-border/50 active:bg-aangan-border transition-colors"
+            aria-label="Go back"
+          >
+            <ChevronLeft className="w-6 h-6 text-aangan-text-secondary" />
+          </Button>
+        )}
         {showIcon && (
           <motion.div
             initial={{ scale: 0 }}

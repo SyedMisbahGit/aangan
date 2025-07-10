@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
+// For local dev, set VITE_API_URL=http://localhost:3001/api in your .env file
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "/api" : "https://aangan-production.up.railway.app/api");
+  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:3001/api" : "https://aangan-production.up.railway.app/api");
 
 // Types
 export interface Whisper {

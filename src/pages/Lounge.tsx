@@ -10,8 +10,12 @@ import {
   Cloud,
   Sun,
   Leaf,
-  Compass
+  Compass,
+  X
 } from 'lucide-react';
+import { useIsMobile } from '../hooks/use-mobile';
+import SoftBack from '../components/shared/SoftBack';
+import { useNavigate } from 'react-router-dom';
 
 interface AmbientWhisper {
   id: string;
@@ -86,6 +90,10 @@ const Listen: React.FC = () => {
     growth: 'text-emerald-300'
   };
 
+  const isMobile = useIsMobile();
+  const nav = useNavigate();
+  const showSoftBack = window.history.length > 1;
+
   useEffect(() => {
     if (!isActive) return;
 
@@ -145,6 +153,28 @@ const Listen: React.FC = () => {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isActive]);
 
+  // Swipe-down to dismiss (mobile)
+  useEffect(() => {
+    if (!isActive || !isMobile) return;
+    let startY = 0;
+    let endY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      startY = e.touches[0].clientY;
+    };
+    const handleTouchEnd = (e: TouchEvent) => {
+      endY = e.changedTouches[0].clientY;
+      if (endY - startY > 120) {
+        setIsActive(false);
+      }
+    };
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchend', handleTouchEnd);
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isActive, isMobile]);
+
   if (!isActive) {
     return (
       <DreamLayout>
@@ -189,6 +219,7 @@ const Listen: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 flex items-center justify-center p-4 overflow-hidden">
+      {showSoftBack && <SoftBack />}
       {/* Candle flicker effect */}
       <motion.div
         className="absolute top-4 right-4 w-2 h-8 bg-gradient-to-b from-yellow-400 to-orange-600 rounded-full"
@@ -207,6 +238,15 @@ const Listen: React.FC = () => {
           ease: "easeInOut"
         }}
       />
+
+      {/* Top-right X icon for exit */}
+      <button
+        onClick={() => nav(-1)}
+        className="absolute top-4 right-4 z-50 bg-white/80 hover:bg-white text-neutral-800 rounded-full p-2 shadow focus:outline-none"
+        aria-label="Exit Listen"
+      >
+        <X className="w-6 h-6" />
+      </button>
 
       {currentWhisper && (
         <motion.div
@@ -296,15 +336,17 @@ const Listen: React.FC = () => {
           </motion.div>
         )}
 
-      {/* Gentle instruction */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 3, duration: 1 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/40 text-sm"
-      >
-        Press ESC to return
-      </motion.div>
+      {/* Gentle instruction (hidden, but Esc still works) */}
+      {/* { !isMobile && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 3, duration: 1 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/40 text-sm"
+        >
+          Press ESC to return
+        </motion.div>
+      )} */}
     </div>
   );
 };

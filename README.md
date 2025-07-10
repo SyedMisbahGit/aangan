@@ -273,3 +273,13 @@ npx artillery run scripts/artillery.yml
 ---
 
 *"In the quiet corners of Aangan, every whisper finds its home"*
+
+---
+
+## ⚡ UX Shortcuts
+
+- **Bench Composer**: The whisper composer is always visible as a soft bench at the bottom of the Whispers page. No floating + button—just tap the bench to start writing. The composer uses high-contrast, accessible styles for clarity.
+- **SoftBack Button**: On any deep route (when history allows), a soft, fixed '← Back' button appears in the top-left. Tap to gently return to the previous screen—no need to refresh or lose your place.
+- **Listen Swipe-to-Dismiss**: On mobile, swipe down anywhere in the Listen (Lounge) view to exit and return to the main app. The 'Press ESC to return' hint only appears on desktop.
+
+---

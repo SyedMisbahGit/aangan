@@ -1,25 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { User, AuthContextType, AuthProviderProps } from './AuthContext.helpers';
 // import { useAuth } from "./use-auth";
-
-interface User {
-  id: string;
-  email?: string;
-  isGuest?: boolean;
-}
-
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  signInWithMagicLink: (email: string) => Promise<{ error: string | null }>;
-  signOut: () => void;
-  setOnboardingComplete: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-interface AuthProviderProps {
-  children: ReactNode;
-}
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
