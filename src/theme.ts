@@ -1,43 +1,58 @@
-// Aangan v1.6 "Theme Rebirth" - Courtyard Aesthetic
-// Cozy, layered, poetic design that feels like a courtyard ("aangan"), not a tech product
+// Aangan v2.0 "Poetic Places" - Digital Courtyard Theme
+// Soft, calm, poetic, and slow. A place, not a product.
 
 export const aanganTheme = {
-  // Courtyard Background Palette
-  background: '#fefbf6', // parchment beige - main courtyard
-  surface: '#fdf9f3',    // softer parchment
-  card: '#fffdf8',       // brightest parchment
-  paper: '#faf6f0',      // aged paper texture
+  // Backgrounds: soft sand, leaf green, dusk lavender, muted white
+  "aangan-ground": "#F5F1E8", // soft sand
+  "aangan-leaf": "#E8F5E9",   // leaf green
+  "aangan-dusk": "#E8EAF6",   // dusk lavender
+  "aangan-paper": "#FDFDFD",  // muted white
   
-  // Warm Text Colors
-  textPrimary: '#2e1f12',   // warm dark brown - main text
-  textSecondary: '#6c4e3c', // secondary brown
-  textMuted: '#8b7355',     // muted brown
-  textAccent: '#d97706',    // turmeric accent
+  // Primary Accents: flickering amber, terracotta orange, night blue
+  "amber-flicker": "#FFC107", // flickering amber
+  "terracotta-orange": "#E67E22", // terracotta orange
+  "night-blue": "#2C3E50",     // night blue
   
-  // Courtyard Borders & Shadows
-  border: '#e6d7c3',     // soft clay border
-  shadow: '#f3e8d2',     // warm shadow glow
+  // Text: Poetic and readable
+  "text-poetic": "#4A4A4A", // Softer than black
+  "text-whisper": "#6B6B6B",
+  "text-metaphor": "#8E8E8E",
   
-  // Emotional Accent Colors (muted, natural)
-  joy: '#f59e0b',        // turmeric joy
-  calm: '#10b981',       // sage green calm
-  nostalgia: '#ec4899',  // rose nostalgia
-  hope: '#06b6d4',       // sky blue hope
-  anxiety: '#ef4444',    // coral anxiety
-  loneliness: '#8b5cf6', // lavender loneliness
+  // Shadows: Ambient and soft
+  "shadow-ambient": "rgba(0, 0, 0, 0.05)",
   
-  // Courtyard Accents
-  primary: '#d97706',    // turmeric primary
-  secondary: '#059669',  // forest green
-  accent: '#7c3aed',     // indigo accent
-  highlight: '#fbbf24',  // golden highlight
+  // Legacy colors for graceful transition
+  background: '#F5F1E8',
+  surface: '#FDFDFD',
+  card: '#FFFFFF',
+
+  textPrimary: '#4A4A4A',
+  textSecondary: '#6B6B6B',
+  textMuted: '#8E8E8E',
+  textAccent: '#E67E22',
+
+  border: '#E0E0E0',
+  shadow: 'rgba(0, 0, 0, 0.05)',
+
+  primary: '#E67E22',
+  secondary: '#2C3E50',
+  accent: '#FFC107',
+  highlight: '#FFD54F',
+
+  // Emotional Tones (retained for logic, can be re-mapped)
+  joy: '#FFC107',
+  calm: '#E8F5E9',
+  nostalgia: '#E8EAF6',
+  hope: '#AED6F1',
+  anxiety: '#F5B7B1',
+  loneliness: '#D7BDE2',
 };
 
-// Typography - Handwritten meets readable
+// Typography: Poetic handwritten headers, warm gentle sans body
 export const typography = {
-  primary: "'Inter', 'Cabin', -apple-system, BlinkMacSystemFont, sans-serif",
-  serif: "'DM Serif Display', 'Playfair Display', serif",
-  display: "'DM Serif Display', 'Playfair Display', serif",
+  primary: "'Inter', 'Work Sans', sans-serif",
+  serif: "'Garamond', 'Dancing Script', serif",
+  display: "'Garamond', 'Dancing Script', serif",
   mono: "'JetBrains Mono', 'Fira Code', monospace",
   weights: {
     light: 300,

@@ -12,45 +12,28 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // Aangan v1.6 Courtyard Color System
+      // Aangan v2.0 Poetic Places Color System
       colors: {
-        // Main courtyard colors
-        aangan: {
-          // Background colors
-          background: aanganTheme.background,
-          surface: aanganTheme.surface,
-          card: aanganTheme.card,
-          paper: aanganTheme.paper,
-          
-          // Border and shadow
-          border: aanganTheme.border,
-          shadow: aanganTheme.shadow,
-          
-          // Text colors
-          "text-primary": aanganTheme.textPrimary,
-          "text-secondary": aanganTheme.textSecondary,
-          "text-muted": aanganTheme.textMuted,
-          "text-accent": aanganTheme.textAccent,
-          
-          // Accent colors
-          primary: aanganTheme.primary,
-          secondary: aanganTheme.secondary,
-          accent: aanganTheme.accent,
-          highlight: aanganTheme.highlight,
-          
-          // Emotional tones
-          joy: aanganTheme.joy,
-          calm: aanganTheme.calm,
-          nostalgia: aanganTheme.nostalgia,
-          hope: aanganTheme.hope,
-          anxiety: aanganTheme.anxiety,
-          loneliness: aanganTheme.loneliness,
-        },
+        ...aanganTheme, // Spread all the new theme colors
         
-        // Emotion interface colors
+        // Semantic naming for better context
+        "aangan-ground": aanganTheme["aangan-ground"],
+        "aangan-leaf": aanganTheme["aangan-leaf"],
+        "aangan-dusk": aanganTheme["aangan-dusk"],
+        "aangan-paper": aanganTheme["aangan-paper"],
+
+        "amber-flicker": aanganTheme["amber-flicker"],
+        "terracotta-orange": aanganTheme["terracotta-orange"],
+        "night-blue": aanganTheme["night-blue"],
+
+        "text-poetic": aanganTheme["text-poetic"],
+        "text-whisper": aanganTheme["text-whisper"],
+        "text-metaphor": aanganTheme["text-metaphor"],
+        
+        "shadow-ambient": aanganTheme["shadow-ambient"],
+
+        // Emotion and Zone colors remain for now
         emotion: emotionColors,
-        
-        // Zone theme colors
         zone: Object.fromEntries(
           Object.entries(zoneThemes).map(([key, theme]) => [
             key,
@@ -63,25 +46,16 @@ const config: Config = {
             }
           ])
         ),
-        
-        // Legacy colors for backward compatibility
-        background: aanganTheme.background,
-        card: aanganTheme.card,
-        accent: aanganTheme.primary,
-        highlight: aanganTheme.highlight,
-        text: {
-          primary: aanganTheme.textPrimary,
-          secondary: aanganTheme.textSecondary,
-        },
-        border: aanganTheme.border,
       },
       
-      // Typography - Handwritten meets readable
+      // Typography - Poetic handwritten headers, warm gentle sans body
       fontFamily: {
-        sans: [typography.primary],
-        serif: [typography.serif],
-        display: [typography.display],
-        mono: [typography.mono],
+        sans: typography.primary.split(', '),
+        serif: typography.serif.split(', '),
+        display: typography.display.split(', '),
+        mono: typography.mono.split(', '),
+        poetic: typography.serif.split(', '), // Alias for serif
+        gentle: typography.primary.split(', '), // Alias for sans
       },
       
       // Spacing - comfortable courtyard breathing room

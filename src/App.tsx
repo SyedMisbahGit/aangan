@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ConfettiEffect } from "./components/shared/ConfettiEffect";
+import { ParticleFlow } from "./components/ambient/ParticleFlow";
 import { DreamNavigation } from "./components/shared/DreamNavigation";
 import { AanganThemeProvider } from "./contexts/DreamThemeContext";
 import { ShhhNarratorProvider } from "./contexts/ShhhNarratorContext";
@@ -107,15 +107,17 @@ const AppContent: React.FC = () => {
     });
   }, []);
 
+  const location = useLocation();
   return (
     <>
       {showPrivacyBanner && <PrivacyBanner onAccept={() => setShowPrivacyBanner(false)} />}
-      <ConfettiEffect />
+      <ParticleFlow />
       <GlobalWhisperComposer />
       
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<Index />} />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          {/* Public routes */}
+          <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/about" element={<About />} />
@@ -240,7 +242,8 @@ const AppContent: React.FC = () => {
         
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
-      </Routes>
+        </Routes>
+      </AnimatePresence>
       
       {!isMobile && <DreamNavigation />}
     </>

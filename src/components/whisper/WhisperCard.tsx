@@ -1,272 +1,101 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Clock, Sparkles, Wind, Eye } from 'lucide-react';
+import { Clock, Sparkles } from 'lucide-react';
 import { emotionColors } from '@/theme';
+import { cn } from '@/lib/utils';
 
 interface Whisper {
   id: string;
   content: string;
   emotion: string;
   timestamp: string;
-  location: string;
-  likes: number;
-  comments: number;
-  isAnonymous: boolean;
-  author?: string;
-  isAIGenerated?: boolean;
-  echoLabel?: string;
-  reactions?: Record<string, number>;
-  isEphemeral?: boolean;
-  isDiary?: boolean;
+  isReply?: boolean; // For indented, folded paper replies
 }
 
-interface SoftWhisperCardProps {
+interface WhisperCardProps {
   whisper: Whisper;
   isAI?: boolean;
-  delay?: number;
   onTap?: () => void;
-  onLongPress?: () => void;
-  onSwipeLeft?: () => void;
-  onHeart?: () => void;
 }
 
-// Add formatTimestamp helper
+// Simplified timestamp for poetic feel
 function formatTimestamp(timestamp: string) {
-  // If timestamp is already formatted (like "2m ago"), return it as is
-  if (timestamp.includes('ago') || timestamp.includes('now')) {
-    return timestamp;
-  }
-  
-  // Otherwise, treat it as a date and format it
   const date = new Date(timestamp);
   const now = new Date();
-  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-  if (diffInMinutes < 1) return 'Just now';
-  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-  if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
-  return `${Math.floor(diffInMinutes / 1440)}d ago`;
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return 'a moment ago';
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+  return new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric' }).format(date);
 }
 
-export const SoftWhisperCard: React.FC<SoftWhisperCardProps> = ({ 
-  whisper, 
-  isAI = false, 
-  delay = 0,
-  onTap,
-  onLongPress,
-  onSwipeLeft,
-  onHeart
-}) => {
-  const [showAI, setShowAI] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isBurning, setIsBurning] = useState(false);
-  const [isSeen, setIsSeen] = useState(false);
-  const [isPressed, setIsPressed] = useState(false);
-  const [showEmotionTooltip, setShowEmotionTooltip] = useState(false);
-
+export const WhisperCard: React.FC<WhisperCardProps> = ({ whisper, isAI = false, onTap }) => {
+  const [isHovered, setIsHovered] = useState(false);
   const emotionColor = emotionColors[whisper.emotion as keyof typeof emotionColors] || emotionColors.calm;
 
-  // Get first line as diary title
-  const firstLine = whisper.content.split('\n')[0];
-  const remainingContent = whisper.content.split('\n').slice(1).join('\n');
-
-  useEffect(() => {
-    if (isAI) {
-      const timer = setTimeout(() => {
-        setShowAI(true);
-      }, delay * 1000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isAI, delay]);
-
-  const handleTap = () => {
-    if (onTap) onTap();
+  const cardVariants = {
+    initial: { opacity: 0, y: 30, scale: 0.95 },
+    in: { opacity: 1, y: 0, scale: 1 },
+    hover: { scale: 1.02, boxShadow: '0px 10px 30px -5px rgba(0,0,0,0.08)' },
   };
-
-  const handleLongPress = () => {
-    if (onLongPress) onLongPress();
-  };
-
-  const handleHeart = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onHeart) onHeart();
-  };
-
-  if (isAI && !showAI) {
-    return null;
-  }
-
-  if (isBurning) {
-    return (
-      <motion.div
-        initial={{ opacity: 1, scale: 1 }}
-        animate={{ opacity: 0, scale: 0.8 }}
-        transition={{ duration: 1.5, ease: "easeInOut" }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-50/80 to-orange-50/80 backdrop-blur-md border border-rose-200/30 p-6"
-      >
-        <div className="text-center py-8">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="text-4xl mb-4"
-          >
-            🔥
-          </motion.div>
-          <p className="text-sm italic text-neutral-600">
-            "burned after reading..."
-          </p>
-        </div>
-      </motion.div>
-    );
-  }
 
   return (
-    <AnimatePresence>
+    <motion.div
+      variants={cardVariants}
+      initial="initial"
+      animate="in"
+      whileHover="hover"
+      transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+      className={cn(
+        "relative bg-aangan-paper rounded-lg shadow-ambient p-6 border border-transparent",
+        "font-gentle text-text-whisper leading-relaxed",
+        whisper.isReply && "ml-6 mt-4 border-l-2 border-aangan-dusk",
+        isAI && "border-dashed border-terracotta-orange/50"
+      )}
+      onTap={onTap}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+    >
+      {/* Parchment-style background effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-aangan-paper to-aangan-ground opacity-50 rounded-lg" />
+
+      {/* Folded paper effect for replies */}
+      {whisper.isReply && (
+        <div className="absolute -top-2 -right-2 w-8 h-8 bg-aangan-dusk/50" style={{ clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
+      )}
+
+      {/* Floating Emotion Dot */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ 
-          duration: 0.8, 
-          ease: "easeOut",
-          delay: isAI ? 0.5 : 0 
+        className="absolute top-3 right-3 w-4 h-4 rounded-full"
+        style={{ backgroundColor: emotionColor.glow }}
+        animate={{
+          scale: isHovered ? [1, 1.5, 1.2] : [1, 1.2, 1],
+          opacity: isHovered ? [0.8, 1, 0.9] : [0.6, 0.9, 0.6],
         }}
-        className={`relative overflow-hidden rounded-2xl bg-white/40 backdrop-blur-lg border border-white/30 shadow-sm hover:shadow-md transition-all duration-300 ${
-          isAI ? 'border-blue-200/50' : ''
-        }`}
-        onMouseEnter={() => setIsSeen(true)}
-        onMouseDown={() => setIsPressed(true)}
-        onMouseUp={() => setIsPressed(false)}
-        onTouchStart={() => setIsPressed(true)}
-        onTouchEnd={() => setIsPressed(false)}
-        onClick={handleTap}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          handleLongPress();
-        }}
-      >
-        {/* Soft emotion background wash */}
-        <div 
-          className="absolute inset-0 opacity-5 pointer-events-none"
-          style={{
-            background: `radial-gradient(circle at 30% 20%, ${emotionColor.glow}40, transparent 50%)`
-          }}
-        />
+        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+      />
 
-        {/* Floating emotion dot */}
-        <div className="absolute top-4 right-4">
-          <motion.div
-            className="relative"
-            onMouseEnter={() => setShowEmotionTooltip(true)}
-            onMouseLeave={() => setShowEmotionTooltip(false)}
-          >
-            <motion.div
-              className="w-3 h-3 rounded-full cursor-pointer"
-              style={{ backgroundColor: emotionColor.border }}
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.7, 1, 0.7]
-              }}
-              transition={{ 
-                duration: 3, 
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-            
-            {/* Emotion tooltip */}
-            <AnimatePresence>
-              {showEmotionTooltip && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="absolute -top-8 right-0 bg-neutral-800/90 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap z-10"
-                >
-                  {whisper.emotion}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
+      {/* AI Generated Badge */}
+      {isAI && (
+        <div className="absolute top-3 left-3 flex items-center gap-1.5 text-xs text-terracotta-orange">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span className="font-serif italic">An echo from the courtyard</span>
         </div>
+      )}
 
-        {/* Emotion Badge for testing */}
-        <div 
-          data-testid="emotion-badge" 
-          className="absolute top-4 left-4 px-2 py-1 bg-neutral-800/90 text-white text-xs rounded-md"
-          style={{ display: 'none' }} // Hidden but accessible for tests
-        >
-          {whisper.emotion}
+      {/* Whisper Content */}
+      <div className="relative z-10 pt-4">
+        <p className="font-serif text-lg text-text-poetic mb-4">{whisper.content}</p>
+
+        {/* Subtle Timestamp */}
+        <div className="flex items-center justify-end gap-1.5 text-xs text-text-metaphor mt-4">
+          <Clock className="w-3 h-3" />
+          <span>{formatTimestamp(whisper.timestamp)}</span>
         </div>
-
-        {/* AI Echo Badge */}
-        {isAI && (
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.8, duration: 0.4 }}
-            className="absolute top-4 left-4 flex items-center gap-1 px-2 py-1 bg-blue-100/80 text-blue-700 text-xs rounded-full border border-blue-200/50 backdrop-blur-sm"
-          >
-            <Sparkles className="w-3 h-3" />
-            <span className="font-medium">Aangan's Echo</span>
-          </motion.div>
-        )}
-
-        {/* Whisper Content */}
-        <div className="p-6 pt-8">
-          {/* Diary title (first line) */}
-          <h3 className="text-lg font-semibold text-neutral-800 mb-3 leading-relaxed">
-            {firstLine}
-          </h3>
-          
-          {/* Remaining content */}
-          {remainingContent && (
-            <p className="text-neutral-700 leading-relaxed mb-4">
-              {remainingContent}
-            </p>
-          )}
-
-          {/* Soft action bar */}
-          <div className="flex items-center justify-between pt-4 border-t border-white/30">
-            <div className="flex items-center gap-4">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleHeart}
-                className="flex items-center gap-1 text-neutral-600 hover:text-rose-500 transition-colors"
-              >
-                <Heart className="w-4 h-4" />
-                <span className="text-sm">Heart</span>
-              </motion.button>
-              
-              {whisper.comments > 0 && (
-                <div className="flex items-center gap-1 text-neutral-500">
-                  <MessageCircle className="w-4 h-4" />
-                  <span className="text-sm">{whisper.comments}</span>
-                </div>
-              )}
-        </div>
-
-            <div className="flex items-center gap-1 text-neutral-400 text-xs">
-              <Clock className="w-3 h-3" />
-              <span data-testid="whisper-timestamp">
-                {formatTimestamp(whisper.timestamp)}
-              </span>
-          </div>
-          </div>
-        </div>
-
-        {/* Press animation */}
-          <motion.div
-          animate={{ 
-            scale: isPressed ? 0.98 : 1,
-            opacity: isPressed ? 0.8 : 1
-          }}
-          transition={{ duration: 0.1 }}
-          className="absolute inset-0 pointer-events-none"
-        />
-      </motion.div>
-    </AnimatePresence>
+      </div>
+    </motion.div>
   );
 };
 
-export default SoftWhisperCard; 
+export default WhisperCard;

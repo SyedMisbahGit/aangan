@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Cabin:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Garamond:wght@400;700&family=Inter:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Aangan v1.6 "Theme Rebirth" - Courtyard Aesthetic */
+/* Aangan v2.0 "Poetic Places" - Digital Courtyard Theme */
 
 /* Base Styles */
 html {
@@ -11,44 +11,35 @@ html {
 }
 
 body {
-  font-family: 'Inter', 'Cabin', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', 'Work Sans', sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #fefbf6;
-  color: #2e1f12;
+  background-color: #F5F1E8; /* bg-aangan-ground */
+  color: #4A4A4A; /* text-poetic */
   font-size: 16px;
 }
 
-/* Aangan Courtyard Theme Variables */
+/* Aangan v2.0 Poetic Places Theme Variables */
 :root {
-  /* Courtyard Background Palette */
-  --aangan-bg: #fefbf6;
-  --aangan-surface: #fdf9f3;
-  --aangan-card: #fffdf8;
-  --aangan-paper: #faf6f0;
-  --aangan-border: #e6d7c3;
-  --aangan-shadow: #f3e8d2;
-  
-  /* Warm Text Colors */
-  --aangan-text-primary: #2e1f12;
-  --aangan-text-secondary: #6c4e3c;
-  --aangan-text-muted: #8b7355;
-  --aangan-text-accent: #d97706;
-  
-  /* Courtyard Accents */
-  --aangan-primary: #d97706;
-  --aangan-secondary: #059669;
-  --aangan-accent: #7c3aed;
-  --aangan-highlight: #fbbf24;
-  
-  /* Emotional Tones */
-  --aangan-joy: #f59e0b;
-  --aangan-calm: #10b981;
-  --aangan-nostalgia: #ec4899;
-  --aangan-hope: #06b6d4;
-  --aangan-anxiety: #ef4444;
-  --aangan-loneliness: #8b5cf6;
+  /* Backgrounds */
+  --aangan-ground: #F5F1E8;
+  --aangan-leaf: #E8F5E9;
+  --aangan-dusk: #E8EAF6;
+  --aangan-paper: #FDFDFD;
+
+  /* Primary Accents */
+  --amber-flicker: #FFC107;
+  --terracotta-orange: #E67E22;
+  --night-blue: #2C3E50;
+
+  /* Text */
+  --text-poetic: #4A4A4A;
+  --text-whisper: #6B6B6B;
+  --text-metaphor: #8E8E8E;
+
+  /* Shadows */
+  --shadow-ambient: rgba(0, 0, 0, 0.05);
 }
 
 /* Courtyard Card Styles */
