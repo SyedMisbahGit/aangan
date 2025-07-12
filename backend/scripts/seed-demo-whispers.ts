@@ -1,7 +1,7 @@
-import db from "../db";
+import { db } from "../db.js";
 
 async function seedDemoWhispers() {
-  await db.whisper.createMany([
+  await db('whispers').insert([
     { content: "फिक्रें हवा हैं आज...", emotion: "Calm", zone: "Tapri" },
     { content: "Library की ख़ामोशी दिल धड़का रही थी", emotion: "Anxious", zone: "Library" },
   ]);
@@ -9,4 +9,4 @@ async function seedDemoWhispers() {
   process.exit();
 }
 
-seedDemoWhispers(); 
+seedDemoWhispers();

@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "module": "nodenext",
+    "module": "CommonJS",
     "target": "ES2020",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "outDir": "./",
+    "outDir": "./dist",
     "allowJs": true,
     "strict": true
   },
-  "include": ["db.ts"]
-} 
+  "include": ["**/*.ts"]
+}
