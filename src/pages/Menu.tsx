@@ -29,6 +29,24 @@ const MyCorner: React.FC = () => {
   const guestId = localStorage.getItem('guestId');
   const [sitInSilence, setSitInSilence] = useState(false);
   const [silenceWhispers, setSilenceWhispers] = useState<string[]>([]);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackText, setFeedbackText] = useState("");
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+
+  const handleFeedbackSubmit = () => {
+    if (!feedbackText.trim()) return;
+    // Save to localStorage or send to backend
+    localStorage.setItem('userFeedback', JSON.stringify({
+      text: feedbackText,
+      timestamp: new Date().toISOString()
+    }));
+    setFeedbackText("");
+    setFeedbackSubmitted(true);
+    setTimeout(() => {
+      setFeedbackOpen(false);
+      setFeedbackSubmitted(false);
+    }, 2000);
+  };
 
   const cornerItems = [
     {
@@ -310,6 +328,48 @@ const MyCorner: React.FC = () => {
                 </motion.div>
               );
             })}
+          </motion.div>
+
+          {/* Send Feedback */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <Dialog open={feedbackOpen} onOpenChange={setFeedbackOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full bg-white/60 backdrop-blur-sm border-white/40 hover:bg-white/80"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Send Feedback
+                </Button>
+              </DialogTrigger>
+              <DialogContent showBack>
+                <DialogHeader>
+                  <DialogTitle>Share Your Thoughts</DialogTitle>
+                </DialogHeader>
+                {feedbackSubmitted ? (
+                  <div className="text-center py-8">
+                    <h3 className="text-lg font-medium text-green-600">Thank you!</h3>
+                    <p className="text-neutral-600">Your feedback helps us grow.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <Textarea
+                      placeholder="What would you like to share?"
+                      value={feedbackText}
+                      onChange={(e) => setFeedbackText(e.target.value)}
+                      className="min-h-[120px]"
+                    />
+                    <Button onClick={handleFeedbackSubmit} className="w-full">
+                      Submit
+                    </Button>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
           </motion.div>
 
           {/* Admin Items (hidden from regular users) */}

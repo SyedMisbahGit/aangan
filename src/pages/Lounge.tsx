@@ -336,17 +336,15 @@ const Listen: React.FC = () => {
           </motion.div>
         )}
 
-      {/* Gentle instruction (hidden, but Esc still works) */}
-      {/* { !isMobile && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 3, duration: 1 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/40 text-sm"
-        >
-          Press ESC to return
-        </motion.div>
-      )} */}
+      {/* Gentle instruction */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 3, duration: 1 }}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/40 text-sm"
+      >
+        {isMobile ? 'Tap anywhere to exit' : 'Press ESC to exit'}
+      </motion.div>
     </div>
   );
 };

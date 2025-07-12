@@ -481,7 +481,7 @@ const Shrines: React.FC = () => {
 
             {/* Hotspot Detail Modal */}
             <Dialog open={!!selectedHotspot} onOpenChange={() => setSelectedHotspot(null)}>
-              <DialogContent className="bg-paper-light border-inkwell/10 max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogContent showBack className="bg-paper-light border-inkwell/10 max-w-2xl max-h-[80vh] overflow-y-auto">
                 {selectedHotspot && (
                   <>
                     <DialogHeader>

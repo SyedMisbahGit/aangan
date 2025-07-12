@@ -379,7 +379,7 @@ const Diary: React.FC = () => {
                               Get Prompt
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="bg-paper-light border-inkwell/10">
+                          <DialogContent showBack className="bg-paper-light border-inkwell/10">
                             <DialogHeader>
                               <DialogTitle className="text-inkwell">Writing Prompts</DialogTitle>
                             </DialogHeader>

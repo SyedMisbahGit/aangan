@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.7.1] - UI Fixes and Improvements
+- Replaced floating whisper button with an embedded composer at the bottom of the feed.
+- Fixed composer font visibility with a light translucent background and dark text.
+- Implemented optimistic UI for whisper posting, showing it in the feed immediately with a soft pulse animation.
+- Fixed "ESC to Exit" instruction on the Listen view to be conditional based on screen size.
+- Added back navigation support with a soft "< Back" button in modals and proper browser history handling.
+- Added a "Send Feedback" option in MyCorner (formerly Menu) with a modal for submission.
+
 ## [v1.6.3] - Reviewer-Happiness Patch
 - Remove FloatingActionButton, embed Bench Composer at bottom of Whispers
 - Improve composer font/contrast
@@ -8,7 +16,7 @@
 - Seed demo whispers in dev
 - Lint/test safety, docs update
 
-## [v1.7] - Memory & Map Upgrade (in progress)
+## [v.1.7] - Memory & Map Upgrade (in progress)
 - See PR: feat/v1.7-memory-map
 - Major: PostgreSQL, Chroma vector memory, LangChain AI, D3 ZoneMap, Capacitor shell, rate-limits, and more.
 

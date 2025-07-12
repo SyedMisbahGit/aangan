@@ -128,6 +128,8 @@ const Whispers: React.FC = () => {
   };
 
   const presenceCount = getPresenceCount();
+  const [newlyAddedWhisperId, setNewlyAddedWhisperId] = useState<string | null>(null);
+
 
   const handleWhisperCreate = async (content: string, emotion: string, useAI: boolean) => {
     const newWhisper: Whisper = {
@@ -139,10 +141,17 @@ const Whispers: React.FC = () => {
       likes: 0,
       comments: 0,
       isAnonymous: true,
-      isAIGenerated: useAI
+      isAIGenerated: useAI,
     };
 
+    // Optimistically add to the feed
     setWhispers(prev => [newWhisper, ...prev]);
+    setNewlyAddedWhisperId(newWhisper.id);
+
+    // Simulate backend confirmation and remove glow after animation
+    setTimeout(() => {
+      setNewlyAddedWhisperId(null);
+    }, 2000); // Pulse duration
   };
 
   const handleWhisperTap = (whisper: Whisper) => {
@@ -222,23 +231,21 @@ const Whispers: React.FC = () => {
                     onLongPress={() => handleWhisperLongPress(whisper)}
                     onSwipeLeft={() => handleWhisperSwipeLeft(whisper)}
                     onHeart={() => handleWhisperHeart(whisper)}
+                    className={whisper.id === newlyAddedWhisperId ? 'animate-pulse-glow' : ''}
                   />
                 </motion.div>
               ))
             )}
           </motion.div>
-
-          {/* Embedded Bench Composer */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <EmbeddedBenchComposer
-              onWhisperCreate={handleWhisperCreate}
-              className="bg-white text-neutral-900 placeholder:text-neutral-500 border border-neutral-200 rounded-xl"
-            />
-          </motion.div>
+        </div>
+      </div>
+      {/* Embedded Bench Composer */}
+      <div className="sticky bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white via-white/80 to-transparent">
+        <div className="max-w-2xl mx-auto">
+          <EmbeddedBenchComposer
+            onWhisperCreate={handleWhisperCreate}
+            className="bg-white/80 backdrop-blur-lg shadow-lg rounded-xl border border-stone-200/50"
+          />
         </div>
       </div>
     </DreamLayout>

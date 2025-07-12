@@ -36,6 +36,16 @@ module.exports = {
         'poetic': ['"EB Garamond"', 'serif'],
         'sans': ['Inter', 'ui-sans-serif', 'system-ui'],
       },
+      animation: {
+        'pulse-glow': 'pulse-glow 2s ease-out forwards',
+      },
+      keyframes: {
+        'pulse-glow': {
+          '0%': { boxShadow: '0 0 0 0 rgba(148, 216, 190, 0.7)' },
+          '70%': { boxShadow: '0 0 0 10px rgba(148, 216, 190, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(148, 216, 190, 0)' },
+        }
+      }
     },
   },
   plugins: [
