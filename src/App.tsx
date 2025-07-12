@@ -16,7 +16,6 @@ import { getToken, onMessage } from "firebase/messaging";
 import Admin from "./pages/Admin";
 import AdminInsights from "./pages/AdminInsights";
 import NotFound from "./pages/NotFound";
-import GlobalWhisperComposer from "./components/shared/GlobalWhisperComposer";
 import Onboarding from "./pages/Onboarding";
 import { SummerPulseProvider } from "./contexts/SummerPulseContext";
 import { WhispersProvider } from "./contexts/WhispersContext";
@@ -111,7 +110,6 @@ const AppContent: React.FC = () => {
     <>
       {showPrivacyBanner && <PrivacyBanner onAccept={() => setShowPrivacyBanner(false)} />}
       <ConfettiEffect />
-      <GlobalWhisperComposer />
       
       <Routes>
         {/* Public routes */}

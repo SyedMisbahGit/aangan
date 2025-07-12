@@ -354,6 +354,14 @@ const Profile: React.FC = () => {
             >
               About Aangan
             </a>
+            <a
+              href="https://forms.gle/your-feedback-form"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-blue-600 hover:text-blue-700 underline transition-colors"
+            >
+              Tell us something quietly...
+            </a>
           </div>
         </motion.div>
       </div>

@@ -71,20 +71,20 @@ export const EmbeddedBenchComposer: React.FC<EmbeddedBenchComposerProps> = ({
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={`relative ${className}`}
     >
-      <div className="bg-white/60 backdrop-blur-lg border border-white/40 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-aangan-surface/60 backdrop-blur-lg border border-aangan-border/40 rounded-2xl shadow-sm overflow-hidden">
         {!isExpanded ? (
           // Collapsed state - bench invitation
         <motion.div
             onClick={handleExpand}
-            className="p-6 cursor-pointer hover:bg-white/20 transition-colors"
+            className="p-6 cursor-pointer hover:bg-aangan-surface/20 transition-colors"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
             <div className="flex items-center justify-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-rose-100 to-blue-100 rounded-full flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-neutral-600" />
+                <Sparkles className="w-4 h-4 text-aangan-text-muted" />
               </div>
-              <span className="text-neutral-600 font-medium italic">
+              <span className="text-aangan-text-muted font-medium italic">
                 Sit for a while… What's on your heart today?
               </span>
             </div>
@@ -146,11 +146,11 @@ export const EmbeddedBenchComposer: React.FC<EmbeddedBenchComposerProps> = ({
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Share what's in your heart..."
-                className="bg-white text-neutral-900 placeholder:text-neutral-500 border border-neutral-200 rounded-xl min-h-[100px] resize-none p-4 shadow-sm"
+                placeholder="Sit for a while… what's on your heart today?"
+                className="bg-aangan-background text-aangan-text-primary placeholder:text-aangan-text-muted border border-aangan-border rounded-xl min-h-[100px] resize-none p-4 shadow-sm"
                 maxLength={500}
               />
-              <div className="flex items-center justify-between text-xs text-neutral-500">
+              <div className="flex items-center justify-between text-xs text-aangan-text-muted">
                 <span>{content.length}/500</span>
                 <div className="flex items-center gap-2">
                   <span>Let AI help me whisper</span>
