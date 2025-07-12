@@ -13,16 +13,29 @@ import {
   Moon,
   Sun,
   Cloud,
-  Leaf
+  Leaf,
+  Map
 } from 'lucide-react';
 import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
+import WhisperMap from '../components/cuj/WhisperMap';
 
-const Wander: React.FC = () => {
+const Explore: React.FC = () => {
   const { nearbyHotspots, emotionClusters } = useCUJHotspots();
   const [selectedSpace, setSelectedSpace] = useState<string | null>(null);
 
   // Organic tile sections
   const wanderSpaces = [
+    {
+      id: 'campus-map',
+      title: '🗺️ Campus Map',
+      subtitle: 'A poetic view of the campus',
+      description: 'Explore the campus and see where whispers are born.',
+      icon: Map,
+      color: 'from-blue-400 to-cyan-500',
+      bgColor: 'from-blue-50 to-cyan-50',
+      borderColor: 'border-blue-200',
+      content: []
+    },
     {
       id: 'near-me',
       title: '🏡 Near Me',
@@ -102,7 +115,7 @@ const Wander: React.FC = () => {
     <DreamLayout>
       <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-blue-50">
         <DreamHeader 
-          title="Wander"
+          title="Explore"
           subtitle="Discover spaces, emotions, and whispers across the courtyard"
         />
 
@@ -182,6 +195,10 @@ const Wander: React.FC = () => {
                 <Card className="bg-white/60 backdrop-blur-lg border border-white/40">
                   <CardContent className="p-6">
                     {(() => {
+                      if (selectedSpace === 'campus-map') {
+                        return <WhisperMap />;
+                      }
+
                       const space = wanderSpaces.find(s => s.id === selectedSpace);
                       if (!space) return null;
 
@@ -259,4 +276,4 @@ const Wander: React.FC = () => {
   );
 };
 
-export default Wander; 
+export default Explore;

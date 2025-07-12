@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { CUJHotspot, EmotionCluster, CUJHotspotContextType, CUJHotspotProviderProps } from './CUJHotspotContext.helpers';
 import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
-import { AanganLoadingScreen } from '../App';
+import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
+
+export const CUJHotspotContext = createContext<CUJHotspotContextType | undefined>(undefined);
 
 export const CUJHotspotLoadingFallback = () => (
   <AanganLoadingScreen 
@@ -250,9 +252,6 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
     </CUJHotspotContext.Provider>
   );
 };
-
-export type { CUJHotspotContextType };
-export { CUJHotspotContext };
 
 export const useCUJHotspots = () => {
   const ctx = React.useContext(CUJHotspotContext);
