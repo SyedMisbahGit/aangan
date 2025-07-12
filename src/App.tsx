@@ -16,7 +16,7 @@ import { getToken, onMessage } from "firebase/messaging";
 import Admin from "./pages/Admin";
 import AdminInsights from "./pages/AdminInsights";
 import NotFound from "./pages/NotFound";
-import Onboarding from "./pages/Onboarding";
+import NewOnboarding from "./pages/NewOnboarding";
 import { SummerPulseProvider } from "./contexts/SummerPulseContext";
 import { WhispersProvider } from "./contexts/WhispersContext";
 import { useIsMobile } from './hooks/use-mobile';
@@ -86,6 +86,7 @@ function PrivateRoute({ children, adminOnly }: { children: React.ReactNode, admi
 const AppContent: React.FC = () => {
   const isMobile = useIsMobile();
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(true);
+  const [onboardingComplete, setOnboardingComplete] = useState(localStorage.getItem('aangan_onboarding_complete') === 'true');
 
   useEffect(() => {
     // Firebase messaging setup
@@ -106,6 +107,10 @@ const AppContent: React.FC = () => {
     });
   }, []);
 
+  if (!onboardingComplete) {
+    return <NewOnboarding />;
+  }
+
   return (
     <>
       {showPrivacyBanner && <PrivacyBanner onAccept={() => setShowPrivacyBanner(false)} />}
@@ -115,7 +120,6 @@ const AppContent: React.FC = () => {
         {/* Public routes */}
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/about" element={<About />} />
         
         {/* Protected routes */}
