@@ -37,7 +37,7 @@ describe('WhisperMap', () => {
     });
   });
 
-  it('displays whisper details when a hotspot is clicked', async () => {
+  it('displays whisper details and poetic one-liner when a hotspot is clicked', async () => {
     (api.useWhispers as jest.Mock).mockReturnValue({
       data: mockWhispers,
       isLoading: false,
@@ -61,6 +61,7 @@ describe('WhisperMap', () => {
 
     await waitFor(() => {
       expect(screen.getByText('This is a test whisper')).toBeInTheDocument();
+      expect(screen.getByText('Where steam rises from cups and stories are born.')).toBeInTheDocument();
     });
   });
 

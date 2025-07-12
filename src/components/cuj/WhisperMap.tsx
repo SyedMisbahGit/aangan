@@ -58,11 +58,12 @@ const WhisperMap: React.FC = () => {
           ))}
         </svg>
       </div>
-      <div className="w-1/4 h-full bg-gray-900 p-4 overflow-y-auto">
+      <div className={`w-1/4 h-full p-4 overflow-y-auto ${selectedHotspot?.backgroundTexture || 'bg-gray-900'}`}>
         <h3 className="text-xl font-bold mb-4">Hotspot Details</h3>
         {selectedHotspot ? (
           <div>
             <h4 className="text-lg font-bold">{selectedHotspot.name}</h4>
+            <p className="text-sm italic text-gray-600 mb-2">{selectedHotspot.oneLiner}</p>
             <p className="text-sm text-gray-400 mb-2">{selectedHotspot.description}</p>
             <p className="text-sm">
               <span className="font-bold">Mood:</span> {selectedHotspot.dominantMood}
