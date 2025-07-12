@@ -7,6 +7,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cujHotspots } from '../constants/cujHotspots';
+import WaterTheCourtyard from '../components/onboarding/WaterTheCourtyard';
 
 const steps = [
   {
@@ -36,7 +37,18 @@ const NewOnboarding: React.FC = () => {
   const [whisperName, setWhisperName] = useState('');
   const [location, setLocation] = useState('');
   const [locationStatus, setLocationStatus] = useState<'idle' | 'detecting' | 'success' | 'error'>('idle');
+  const [showAnimation, setShowAnimation] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (showAnimation) {
+      const timer = setTimeout(() => {
+        localStorage.setItem('aangan_onboarding_complete', 'true');
+        navigate('/whispers');
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showAnimation, navigate]);
 
   const handleLocationDetect = () => {
     setLocationStatus('detecting');
@@ -58,10 +70,13 @@ const NewOnboarding: React.FC = () => {
     if (step < steps.length - 1) {
       setStep(s => s + 1);
     } else {
-      localStorage.setItem('aangan_onboarding_complete', 'true');
-      navigate('/whispers');
+      setShowAnimation(true);
     }
   };
+
+  if (showAnimation) {
+    return <WaterTheCourtyard />;
+  }
 
   return (
     <DreamLayout>
