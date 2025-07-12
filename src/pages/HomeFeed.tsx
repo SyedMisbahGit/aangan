@@ -13,6 +13,7 @@ import { EmbeddedBenchComposer } from '../components/whisper/PostCreator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import SoftBack from "@/components/shared/SoftBack";
 import { X } from "lucide-react";
+import { updateEmotionStreak } from "../lib/streaks";
 
 interface Whisper {
   id: string;
@@ -149,6 +150,7 @@ const Whispers: React.FC = () => {
 
     // Optimistically add the whisper to the UI
     setWhispers(prev => [newWhisper, ...prev]);
+    updateEmotionStreak(emotion);
 
     // Simulate network request
     const promise = new Promise((resolve, reject) => {
