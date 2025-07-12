@@ -18,6 +18,10 @@ const steps = [
     subtitle: 'This is how you\'ll be known. It can be anything you like.',
   },
   {
+    title: 'Finding your location...',
+    subtitle: 'We can try to detect your location to connect you with whispers nearby.',
+  },
+  {
     title: 'Where are you right now?',
     subtitle: 'This helps us connect you with whispers nearby.',
   },
@@ -31,7 +35,24 @@ const NewOnboarding: React.FC = () => {
   const [step, setStep] = useState(0);
   const [whisperName, setWhisperName] = useState('');
   const [location, setLocation] = useState('');
+  const [locationStatus, setLocationStatus] = useState<'idle' | 'detecting' | 'success' | 'error'>('idle');
   const navigate = useNavigate();
+
+  const handleLocationDetect = () => {
+    setLocationStatus('detecting');
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // Here you would typically use the position to find the nearest hotspot.
+        // For this example, we'll just simulate a successful detection.
+        setLocationStatus('success');
+        setTimeout(() => handleNext(), 1000);
+      },
+      (error) => {
+        setLocationStatus('error');
+        setTimeout(() => handleNext(), 1000);
+      }
+    );
+  };
 
   const handleNext = () => {
     if (step < steps.length - 1) {
@@ -67,15 +88,45 @@ const NewOnboarding: React.FC = () => {
             )}
 
             {step === 2 && (
-              <div className="mt-4 grid grid-cols-2 gap-4">
-                {cujHotspots.map((hotspot) => (
-                  <Button
-                    key={hotspot.id}
-                    variant={location === hotspot.id ? 'default' : 'outline'}
-                    onClick={() => setLocation(hotspot.id)}
-                  >
-                    {hotspot.name}
-                  </Button>
+              <div className="mt-4">
+                <Button onClick={handleLocationDetect} disabled={locationStatus === 'detecting'}>
+                  {locationStatus === 'detecting' ? 'Detecting...' : 'Detect my location'}
+                </Button>
+                {locationStatus === 'error' && (
+                  <p className="text-sm text-red-500 mt-2">
+                    Could not detect your location. Please select a zone manually.
+                  </p>
+                )}
+                {locationStatus === 'success' && (
+                  <p className="text-sm text-green-500 mt-2">
+                    Location detected successfully!
+                  </p>
+                )}
+                {locationStatus === 'idle' && (
+                  <p className="text-sm text-gray-500 mt-2">
+                    We'll ask for permission to use your location. We only use it to find whispers near you and never store it.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="mt-4 space-y-4">
+                {Object.entries(Object.groupBy(cujHotspots, ({ group }) => group)).map(([group, hotspots]) => (
+                  <div key={group}>
+                    <h3 className="text-lg font-semibold mb-2">{group}</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      {hotspots.map((hotspot) => (
+                        <Button
+                          key={hotspot.id}
+                          variant={location === hotspot.id ? 'default' : 'outline'}
+                          onClick={() => setLocation(hotspot.id)}
+                        >
+                          {hotspot.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
