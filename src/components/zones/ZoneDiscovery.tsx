@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Sparkles, MapPin, Heart, MessageCircle } from 'lucide-react';
 import { zoneThemes } from '@/theme';
+import { useRealtime } from '@/contexts/use-realtime';
 
 interface Zone {
   id: string;
@@ -86,6 +87,18 @@ export const ZoneDiscovery: React.FC<ZoneDiscoveryProps> = ({
 }) => {
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
   const [hoveredZone, setHoveredZone] = useState<string | null>(null);
+  const [pulsingZones, setPulsingZones] = useState<string[]>([]);
+  const { lastWhisper } = useRealtime();
+
+  useEffect(() => {
+    if (lastWhisper) {
+      setPulsingZones(prev => [...prev, lastWhisper.location]);
+      const timer = setTimeout(() => {
+        setPulsingZones(prev => prev.filter(zoneId => zoneId !== lastWhisper.location));
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [lastWhisper]);
 
   const handleZoneClick = (zoneId: string) => {
     setSelectedZone(zoneId);
@@ -130,12 +143,28 @@ export const ZoneDiscovery: React.FC<ZoneDiscoveryProps> = ({
           const theme = getZoneTheme(zone.id);
           const isSelected = selectedZone === zone.id;
           const isHovered = hoveredZone === zone.id;
+          const isPulsing = pulsingZones.includes(zone.id);
+
+          const pulseVariants = {
+            initial: { boxShadow: '0 0 0 0 rgba(255, 255, 255, 0)' },
+            pulse: {
+              boxShadow: `0 0 0 10px ${theme.color}30`,
+              transition: {
+                duration: 1,
+                repeat: 1,
+                repeatType: "reverse",
+                ease: "easeInOut",
+              },
+            },
+            normal: { boxShadow: '0 0 0 0 rgba(255, 255, 255, 0)' },
+          };
 
           return (
             <motion.div
               key={zone.id}
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={isPulsing ? 'pulse' : 'normal'}
+              variants={pulseVariants}
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -4 }}
               className={`aangan-card relative overflow-hidden cursor-pointer transition-all duration-400 ${
