@@ -20,6 +20,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { useSummerPulse } from '../../contexts/SummerPulseContext';
+import ModalSoftBack from "../shared/ModalSoftBack";
 
 interface DreamComposerProps {
   onSubmit: (content: string, emotion: string) => void;
@@ -63,6 +64,22 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
       setCurrentPrompt(writingPrompts[Math.floor(Math.random() * writingPrompts.length)]);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose?.();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (isSummerPulseActive) {
@@ -128,6 +145,7 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
           className="aangan-card w-full max-w-md p-6 shadow-aangan-2xl relative"
           onClick={(e) => e.stopPropagation()}
         >
+          {onClose && <ModalSoftBack onClick={onClose} />}
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
