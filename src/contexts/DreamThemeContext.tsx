@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState, ReactNode } from 'react';
 import { Theme, AanganThemeContextType, AanganThemeProviderProps } from './DreamThemeContext.helpers';
-import { AanganLoadingScreen } from '../components/shared/AanganLoadingScreen';
+import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
 
 const AanganThemeContext = createContext<AanganThemeContextType | undefined>(undefined);
 

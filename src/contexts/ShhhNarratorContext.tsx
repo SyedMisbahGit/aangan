@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { NarratorState, EmotionalMemory, MoodArc, PoeticLine, ShhhNarratorContextType } from './ShhhNarratorContext.helpers';
 import { useCUJHotspots } from './use-cuj-hotspots';
-import { AanganLoadingScreen } from '../App';
+import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
 
 export interface NarratorState {
   currentZone: string;

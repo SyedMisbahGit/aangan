@@ -15,6 +15,9 @@ export interface CUJHotspot {
   lastActivity: string;
   dominantMood: string;
   proximity: number; // distance from user in meters
+  poeticPersonality?: string;
+  oneLiner?: string;
+  backgroundTexture?: string;
 }
 
 export interface EmotionCluster {

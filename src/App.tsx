@@ -26,10 +26,14 @@ import { AuthProvider } from './contexts/AuthContext';
 import { RealtimeProvider } from './contexts/RealtimeContext';
 import AdminLogin from './pages/AdminLogin';
 import PrivacyBanner from './components/PrivacyBanner';
+<<<<<<< HEAD
 import RouteObserver from './components/shared/RouteObserver';
 import GentleOnboarding from './components/onboarding/GentleOnboarding';
 import { AnimatePresence } from "framer-motion";
 import ConfettiEffect from './components/ConfettiEffect';
+=======
+import AanganLoadingScreen from './components/shared/AanganLoadingScreen';
+>>>>>>> origin/feature/cuj-whisper-map
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,13 +66,6 @@ const Menu = lazy(() => import("./pages/Menu"));
 
 // Utility function for generating random IDs
 const getRandomId = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
-// Loading component
-const LoadingSpinner = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-500"></div>
-  </div>
-);
 
 // PrivateRoute wrapper
 function PrivateRoute({ children, adminOnly }: { children: React.ReactNode, adminOnly?: boolean }) {
@@ -133,7 +130,7 @@ const AppContent: React.FC = () => {
         {/* Protected routes */}
         <Route path="/whispers" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Whispers />
             </Suspense>
           </PrivateRoute>
@@ -141,7 +138,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/create" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <CreateWhisper />
             </Suspense>
           </PrivateRoute>
@@ -149,7 +146,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/explore" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Explore />
             </Suspense>
           </PrivateRoute>
@@ -157,7 +154,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/lounge" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Lounge />
             </Suspense>
           </PrivateRoute>
@@ -165,7 +162,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/profile" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Profile />
             </Suspense>
           </PrivateRoute>
@@ -173,7 +170,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/compass" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Compass />
             </Suspense>
           </PrivateRoute>
@@ -181,7 +178,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/constellation" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Constellation />
             </Suspense>
           </PrivateRoute>
@@ -189,7 +186,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/capsules" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Capsules />
             </Suspense>
           </PrivateRoute>
@@ -197,7 +194,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/shrines" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Shrines />
             </Suspense>
           </PrivateRoute>
@@ -205,7 +202,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/memories" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Memories />
             </Suspense>
           </PrivateRoute>
@@ -213,7 +210,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/murmurs" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Murmurs />
             </Suspense>
           </PrivateRoute>
@@ -221,7 +218,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/diary" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Diary />
             </Suspense>
           </PrivateRoute>
@@ -229,7 +226,7 @@ const AppContent: React.FC = () => {
         
         <Route path="/menu" element={
           <PrivateRoute>
-            <Suspense fallback={<LoadingSpinner />}>
+            <Suspense fallback={<AanganLoadingScreen />}>
               <Menu />
             </Suspense>
           </PrivateRoute>

@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { CUJHotspot, EmotionCluster, CUJHotspotContextType, CUJHotspotProviderProps } from './CUJHotspotContext.helpers';
 import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
-import { AanganLoadingScreen } from '../App';
+import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
+
+export const CUJHotspotContext = createContext<CUJHotspotContextType | undefined>(undefined);
 
 export const CUJHotspotLoadingFallback = () => (
   <AanganLoadingScreen 
@@ -26,7 +28,10 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
       tags: ['chai', 'conversations', 'nostalgia', 'social'],
       lastActivity: '2 minutes ago',
       dominantMood: 'warm',
-      proximity: 50
+      proximity: 50,
+      poeticPersonality: 'The Old Storyteller',
+      oneLiner: 'Where steam rises from cups and stories are born.',
+      backgroundTexture: 'bg-gradient-to-br from-amber-100 to-orange-200'
     },
     {
       id: 'dde',
@@ -40,7 +45,10 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
       tags: ['study', 'academic', 'focus', 'learning'],
       lastActivity: '5 minutes ago',
       dominantMood: 'determined',
-      proximity: 120
+      proximity: 120,
+      poeticPersonality: 'The Silent Scholar',
+      oneLiner: 'In the quiet hum of knowledge, futures are written.',
+      backgroundTexture: 'bg-gradient-to-br from-blue-100 to-indigo-200'
     },
     {
       id: 'baba-surgal',
@@ -54,7 +62,10 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
       tags: ['spiritual', 'peace', 'reflection', 'quiet'],
       lastActivity: '10 minutes ago',
       dominantMood: 'serene',
-      proximity: 200
+      proximity: 200,
+      poeticPersonality: 'The Gentle Guru',
+      oneLiner: 'Listen to the wind, it whispers the secrets of the soul.',
+      backgroundTexture: 'bg-gradient-to-br from-green-100 to-teal-200'
     },
     {
       id: 'isro',
@@ -68,7 +79,10 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
       tags: ['research', 'innovation', 'curiosity', 'science'],
       lastActivity: '3 minutes ago',
       dominantMood: 'inspired',
-      proximity: 180
+      proximity: 180,
+      poeticPersonality: 'The Star Gazer',
+      oneLiner: 'The universe in a classroom, the future in a glance.',
+      backgroundTexture: 'bg-gradient-to-br from-purple-100 to-pink-200'
     },
     {
       id: 'library',
@@ -82,7 +96,10 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
       tags: ['study', 'quiet', 'concentration', 'knowledge'],
       lastActivity: '1 minute ago',
       dominantMood: 'focused',
-      proximity: 90
+      proximity: 90,
+      poeticPersonality: 'The Keeper of Whispers',
+      oneLiner: 'Every book holds a universe, every whisper a world.',
+      backgroundTexture: 'bg-gradient-to-br from-gray-100 to-gray-200'
     },
     {
       id: 'quad',
@@ -96,7 +113,10 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
       tags: ['social', 'joy', 'vibrant', 'community'],
       lastActivity: '30 seconds ago',
       dominantMood: 'energetic',
-      proximity: 30
+      proximity: 30,
+      poeticPersonality: 'The Heartbeat of the Campus',
+      oneLiner: 'Where paths cross and stories begin.',
+      backgroundTexture: 'bg-gradient-to-br from-yellow-100 to-lime-200'
     }
   ]);
 
@@ -250,9 +270,6 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
     </CUJHotspotContext.Provider>
   );
 };
-
-export type { CUJHotspotContextType };
-export { CUJHotspotContext };
 
 export const useCUJHotspots = () => {
   const ctx = React.useContext(CUJHotspotContext);
