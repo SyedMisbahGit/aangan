@@ -19,7 +19,7 @@ export const getEmotionStreak = (): { emotion: string; streak: number } => {
 
     const lastLog = logs[logs.length - 1];
     let streak = 0;
-    let currentEmotion = lastLog.emotion;
+    const currentEmotion = lastLog.emotion;
 
     for (let i = logs.length - 1; i >= 0; i--) {
       const log = logs[i];
