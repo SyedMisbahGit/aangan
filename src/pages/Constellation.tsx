@@ -27,7 +27,7 @@ import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCUJHotspots } from "@/contexts/CUJHotspotContext";
 import { ShhhLine } from '@/components/ShhhLine';
-import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
+import { cujHotspots } from '../constants/cujHotspots';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectLabel, SelectGroup } from "@/components/ui/select";
 
 const Constellation: React.FC = () => {
@@ -113,8 +113,8 @@ const Constellation: React.FC = () => {
     { from: 1, to: 5, strength: 0.8 }
   ]);
 
-  const inCampus = CUJ_HOTSPOTS.slice(0, 29);
-  const outsideCampus = CUJ_HOTSPOTS.slice(29);
+  const inCampus = cujHotspots.slice(0, 29);
+  const outsideCampus = cujHotspots.slice(29);
 
   const getStarColor = (type: string) => {
     switch (type) {
