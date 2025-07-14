@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.8.0] - Roots of Connection (in progress)
+### ✨ Features
+- **Personal Emotional Streaks**: Track and visualize your emotional consistency over time.
+
+## [v1.7.0] - Memory & Map Upgrade
+- See PR: feat/v1.7-memory-map
+- Major: PostgreSQL, Chroma vector memory, LangChain AI, D3 ZoneMap, Capacitor shell, rate-limits, and more.
+
 ## [v1.6.3] - Reviewer-Happiness Patch
 - Remove FloatingActionButton, embed Bench Composer at bottom of Whispers
 - Improve composer font/contrast
@@ -7,10 +15,6 @@
 - Add SoftBack button and swipe-down to dismiss in Listen
 - Seed demo whispers in dev
 - Lint/test safety, docs update
-
-## [v1.7] - Memory & Map Upgrade (in progress)
-- See PR: feat/v1.7-memory-map
-- Major: PostgreSQL, Chroma vector memory, LangChain AI, D3 ZoneMap, Capacitor shell, rate-limits, and more.
 
 All notable changes to this project will be documented in this file.
 

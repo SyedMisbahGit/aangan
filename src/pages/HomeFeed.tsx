@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { DreamLayout } from "../components/shared/DreamLayout";
 import { DreamHeader } from "../components/shared/DreamHeader";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +10,10 @@ import { PoeticEmotionBanner } from '../components/shared/EmotionPulseBanner';
 import { GentlePresenceRibbon } from '../components/shared/PresenceRibbon';
 import { SoftWhisperCard } from '../components/whisper/WhisperCard';
 import { EmbeddedBenchComposer } from '../components/whisper/PostCreator';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import SoftBack from "@/components/shared/SoftBack";
+import { X } from "lucide-react";
+import { updateEmotionStreak } from "../lib/streaks";
 
 interface Whisper {
   id: string;
@@ -32,6 +37,7 @@ const Whispers: React.FC = () => {
   const { nearbyHotspots, emotionClusters, systemTime, campusActivity } = useCUJHotspots();
   const { narratorState } = useShhhNarrator();
   const { whispers, setWhispers } = useWhispers();
+  const [selectedWhisper, setSelectedWhisper] = useState<Whisper | null>(null);
   
   // Real-time context integration
   const isNightTime = systemTime.hour < 6 || systemTime.hour > 22;
@@ -156,12 +162,37 @@ const Whispers: React.FC = () => {
       isAIGenerated: useAI
     };
 
+    // Optimistically add the whisper to the UI
     setWhispers(prev => [newWhisper, ...prev]);
+    updateEmotionStreak(emotion);
+
+    // Simulate network request
+    const promise = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        // Simulate a 20% chance of failure
+        if (Math.random() > 0.8) {
+          reject("Failed to post whisper.");
+        } else {
+          resolve("Whisper posted successfully!");
+        }
+      }, 1000);
+    });
+
+    toast.promise(promise, {
+      loading: 'Posting whisper...',
+      success: (message) => {
+        return message as string;
+      },
+      error: (error) => {
+        // Revert the UI if the request fails
+        setWhispers(prev => prev.filter(w => w.id !== newWhisper.id));
+        return error;
+      },
+    });
   };
 
   const handleWhisperTap = (whisper: Whisper) => {
-    // Open modal diary view
-    console.log('Opening diary view for whisper:', whisper.id);
+    setSelectedWhisper(whisper);
   };
 
   const handleWhisperLongPress = (whisper: Whisper) => {
@@ -247,14 +278,31 @@ const Whispers: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
+            className="sticky bottom-0 pb-4"
           >
             <EmbeddedBenchComposer
               onWhisperCreate={handleWhisperCreate}
-              className="bg-white text-neutral-900 placeholder:text-neutral-500 border border-neutral-200 rounded-xl"
             />
           </motion.div>
         </div>
       </div>
+      {selectedWhisper && (
+        <Dialog open={!!selectedWhisper} onOpenChange={() => setSelectedWhisper(null)}>
+          <DialogContent className="bg-aangan-background text-aangan-text-primary">
+            <DialogHeader>
+              <DialogTitle>{selectedWhisper.emotion}</DialogTitle>
+              <button onClick={() => setSelectedWhisper(null)} className="absolute top-4 right-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                <X className="h-4 w-4" />
+                <span className="sr-only">Close</span>
+              </button>
+            </DialogHeader>
+            <div className="p-4">
+              <p>{selectedWhisper.content}</p>
+            </div>
+            <SoftBack />
+          </DialogContent>
+        </Dialog>
+      )}
     </DreamLayout>
   );
 };

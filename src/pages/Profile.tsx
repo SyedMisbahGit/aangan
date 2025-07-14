@@ -23,6 +23,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { PrivacyPromise } from "../components/shared/PrivacyPromise";
+import EmotionStreak from "../components/emotion/EmotionStreak";
+import { getEmotionStreak } from "../lib/streaks";
 
 const Profile: React.FC = () => {
   const [showPrivacyPromise, setShowPrivacyPromise] = useState(false);
@@ -94,6 +96,8 @@ const Profile: React.FC = () => {
     communityRole: "Listener"
   });
 
+  const { emotion, streak } = getEmotionStreak();
+
   const getAvatarInitials = () => {
     return "DW"; // Dream Whisperer
   };
@@ -146,6 +150,8 @@ const Profile: React.FC = () => {
             </CardContent>
           </Card>
         </motion.div>
+
+        <EmotionStreak emotion={emotion} streak={streak} />
 
         {/* Stats Grid */}
         <motion.div
@@ -353,6 +359,14 @@ const Profile: React.FC = () => {
               className="text-xs text-green-600 hover:text-green-700 underline transition-colors"
             >
               About Aangan
+            </a>
+            <a
+              href="https://forms.gle/your-feedback-form"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-blue-600 hover:text-blue-700 underline transition-colors"
+            >
+              Tell us something quietly...
             </a>
           </div>
         </motion.div>

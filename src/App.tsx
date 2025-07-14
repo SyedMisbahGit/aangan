@@ -16,8 +16,7 @@ import { getToken, onMessage } from "firebase/messaging";
 import Admin from "./pages/Admin";
 import AdminInsights from "./pages/AdminInsights";
 import NotFound from "./pages/NotFound";
-import GlobalWhisperComposer from "./components/shared/GlobalWhisperComposer";
-import Onboarding from "./pages/Onboarding";
+import NewOnboarding from "./pages/NewOnboarding";
 import { SummerPulseProvider } from "./contexts/SummerPulseContext";
 import { WhispersProvider } from "./contexts/WhispersContext";
 import { useIsMobile } from './hooks/use-mobile';
@@ -30,6 +29,7 @@ import PrivacyBanner from './components/PrivacyBanner';
 import RouteObserver from './components/shared/RouteObserver';
 import GentleOnboarding from './components/onboarding/GentleOnboarding';
 import { AnimatePresence } from "framer-motion";
+import ConfettiEffect from './components/ConfettiEffect';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -90,7 +90,9 @@ function PrivateRoute({ children, adminOnly }: { children: React.ReactNode, admi
 const AppContent: React.FC = () => {
   const isMobile = useIsMobile();
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(true);
+  const [onboardingComplete, setOnboardingComplete] = useState(localStorage.getItem('aangan_onboarding_complete') === 'true');
   const lastVisitedPath = localStorage.getItem('lastVisitedPath');
+  const location = useLocation();
 
   useEffect(() => {
     // Firebase messaging setup
@@ -111,21 +113,21 @@ const AppContent: React.FC = () => {
     });
   }, []);
 
-  const location = useLocation();
+  if (!onboardingComplete) {
+    return <NewOnboarding />;
+  }
+
   return (
     <>
       <RouteObserver />
       <GentleOnboarding />
       {showPrivacyBanner && <PrivacyBanner onAccept={() => setShowPrivacyBanner(false)} />}
-      <ParticleFlow />
-      <GlobalWhisperComposer />
-      
+      <ConfettiEffect />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           {/* Public routes */}
           <Route path="/" element={lastVisitedPath ? <Navigate to={lastVisitedPath} /> : <Index />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/about" element={<About />} />
         
         {/* Protected routes */}

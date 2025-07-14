@@ -67,23 +67,20 @@ export const EmbeddedBenchComposer: React.FC<EmbeddedBenchComposerProps> = ({
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={cn("fixed bottom-0 inset-x-0 p-4 z-50", className)}
     >
-      <motion.div
-        animate={isExpanded ? "expanded" : "collapsed"}
-        variants={benchVariants}
-        className="relative bg-aangan-paper/80 backdrop-blur-xl border border-aangan-dusk rounded-2xl shadow-ambient overflow-hidden"
-      >
+      <div className="bg-aangan-surface/60 backdrop-blur-lg border border-aangan-border/40 rounded-2xl shadow-sm overflow-hidden">
         {!isExpanded ? (
           <motion.div
             onClick={handleExpand}
-            className="p-5 cursor-pointer flex items-center justify-center gap-3 text-center"
-            whileHover={{ backgroundColor: 'rgba(232, 234, 246, 0.5)' }}
+            className="p-6 cursor-pointer hover:bg-aangan-surface/20 transition-colors"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
             <div className="flex items-center justify-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-rose-100 to-blue-100 rounded-full flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-neutral-600" />
+                <Sparkles className="w-4 h-4 text-aangan-text-muted" />
               </div>
-              <span className="text-neutral-800 font-medium italic">
-                Write your whisper...
+              <span className="text-aangan-text-muted font-medium italic">
+                Sit for a while… What's on your heart today?
               </span>
             </div>
           </motion.div>
@@ -121,10 +118,21 @@ export const EmbeddedBenchComposer: React.FC<EmbeddedBenchComposerProps> = ({
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Write your whisper..."
-                className="bg-white text-neutral-800 placeholder:text-neutral-600 border border-neutral-200 rounded-xl min-h-[100px] resize-none p-4 shadow-sm"
+                placeholder="Sit for a while… what's on your heart today?"
+                className="bg-aangan-background text-aangan-text-primary placeholder:text-aangan-text-muted border border-aangan-border rounded-xl min-h-[100px] resize-none p-4 shadow-sm"
                 maxLength={500}
               />
+              <div className="flex items-center justify-between text-xs text-aangan-text-muted">
+                <span>{content.length}/500</span>
+                <div className="flex items-center gap-2">
+                  <span>Let AI help me whisper</span>
+                  <Switch
+                    checked={useAI}
+                    onCheckedChange={setUseAI}
+                    className="scale-75"
+                  />
+                </div>
+              </div>
             </motion.div>
 
             {/* Actions */}
@@ -149,7 +157,7 @@ export const EmbeddedBenchComposer: React.FC<EmbeddedBenchComposerProps> = ({
             </motion.div>
           </motion.div>
         )}
-      </motion.div>
+      </div>
     </motion.div>
   );
 };

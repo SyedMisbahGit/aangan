@@ -37,6 +37,8 @@ import type { Whisper } from '../contexts/WhispersContext';
 import { CustomSkeletonCard } from "@/components/ui/skeleton";
 import { DiaryStreakCounter } from "../components/shared/DiaryStreakCounter";
 import SoftBack from '../components/shared/SoftBack';
+import EmotionStreak from '../components/emotion/EmotionStreak';
+import { getEmotionStreak } from '../lib/streaks';
 
 const Diary: React.FC = () => {
   const { whispers: entries, setWhispers: setEntries } = useWhispers();
@@ -212,6 +214,8 @@ const Diary: React.FC = () => {
 
   const moodStats = getMoodStats();
 
+  const { emotion, streak } = getEmotionStreak();
+
   const showSoftBack = window.history.length > 1;
 
   return (
@@ -238,6 +242,10 @@ const Diary: React.FC = () => {
           }
           subtitle="Your private universe. Only you can see these entries."
         />
+
+        <div className="max-w-2xl mx-auto px-4">
+          <EmotionStreak emotion={emotion} streak={streak} />
+        </div>
 
         {loading ? (
           <div className="space-y-6 max-w-2xl mx-auto px-4 py-6">
