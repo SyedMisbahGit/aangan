@@ -29,7 +29,7 @@ import PrivacyBanner from './components/PrivacyBanner';
 import RouteObserver from './components/shared/RouteObserver';
 import GentleOnboarding from './components/onboarding/GentleOnboarding';
 import { AnimatePresence } from "framer-motion";
-import ConfettiEffect from './components/shared/ConfettiEffect';
+import { ConfettiEffect } from './components/shared/ConfettiEffect';
 import AanganLoadingScreen from './components/shared/AanganLoadingScreen';
 
 const queryClient = new QueryClient({
