@@ -9,6 +9,7 @@ College Whisper (Aangan) is a real-time, AI-augmented campus social platform. It
 - Each whisper is now associated with a user/guest via a `guestId` (anonymous ID), enabling personal whisper history ("My Whispers") even for anonymous users.
 - Contributors should ensure guestId is handled in backend, frontend, and tests for any whisper-related changes.
 - The Lounge/Listen view now includes ambient presence avatars, a poetic presence line, and always preloads real whispers or shows a poetic fallback. Whisper cards display an AI reply footer for user feedback. Contributors should maintain these UX/QA standards in future features.
+- Whisper cards now include a report feature (3-dot menu) for moderation. Contributors should ensure the report flow is maintained, tested, and documented in future changes.
 
 ---
 

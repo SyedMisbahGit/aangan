@@ -319,6 +319,13 @@ const commentLimiter = rateLimit({
   }
 });
 
+const reportLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 5, // limit each IP to 5 reports per 10 min
+  message: "Too many reports, please wait a while.",
+  keyGenerator: (req) => req.ip || req.connection.remoteAddress || 'unknown',
+});
+
 // Helper: get admin user and last password change
 async function getAdminUser(username) {
   return await db.get(
@@ -458,12 +465,13 @@ app.post("/api/health/heartbeat", async (req, res) => {
 // Whisper routes
 app.get("/api/whispers", async (req, res) => {
   try {
-    const { zone, emotion, limit = 50, offset = 0 } = req.query;
+    const { zone, emotion, guestId, limit = 50, offset = 0 } = req.query;
     let query = db("whispers").where(function() {
       this.whereNull("expires_at").orWhere("expires_at", ">", db.fn.now());
     });
     if (zone) query = query.andWhere("zone", zone);
     if (emotion) query = query.andWhere("emotion", emotion);
+    if (guestId) query = query.andWhere("guest_id", guestId);
     const whispers = await query.orderBy("created_at", "desc").limit(limit).offset(offset);
     const formattedWhispers = whispers.map((whisper) => ({
       ...whisper,
@@ -478,7 +486,7 @@ app.get("/api/whispers", async (req, res) => {
 
 app.post("/api/whispers", whisperLimiter, async (req, res) => {
   try {
-    const { content, emotion, zone, expiresAt, embedding } = req.body;
+    const { content, emotion, zone, expiresAt, embedding, guest_id } = req.body;
     if (!content || !emotion || !zone) {
       return res.status(400).json({ error: "Content, emotion, and zone are required" });
     }
@@ -493,7 +501,7 @@ app.post("/api/whispers", whisperLimiter, async (req, res) => {
       expiryDate.setHours(expiryDate.getHours() + 24);
       expiryValue = expiryDate.toISOString();
     }
-    await db("whispers").insert({ id, content, emotion, zone, expires_at: expiryValue });
+    await db("whispers").insert({ id, content, emotion, zone, expires_at: expiryValue, guest_id });
     // Embedding table (skip for SQLite)
     if (db.client.config.client === "pg" && process.env.OPENAI_KEY) {
       try {
@@ -539,10 +547,28 @@ app.post("/api/whispers", whisperLimiter, async (req, res) => {
   }
 });
 
+app.post("/api/whispers/:id/report", reportLimiter, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason, guest_id } = req.body;
+    if (!reason || typeof reason !== 'string' || reason.length < 3) {
+      return res.status(400).json({ error: "A valid reason is required." });
+    }
+    // Check whisper exists
+    const whisper = await db("whispers").where({ id }).first();
+    if (!whisper) return res.status(404).json({ error: "Whisper not found" });
+    await db("whisper_reports").insert({ whisper_id: id, reason, guest_id });
+    res.json({ success: true, message: "Whisper reported." });
+  } catch (error) {
+    console.error("Error reporting whisper:", error);
+    res.status(500).json({ error: "Failed to report whisper" });
+  }
+});
+
 // AI Whisper Generation Endpoint
 app.post("/api/ai/generate-whisper", async (req, res) => {
   try {
-    const { zone, emotion, context } = req.body;
+    const { zone, emotion, context, guest_id } = req.body;
     
     // Validate inputs
     if (!zone || !emotion) {
@@ -612,10 +638,17 @@ app.post("/api/ai/generate-whisper", async (req, res) => {
     const content = modifier + baseContent.toLowerCase();
 
     const id = uuidv4();
-    await db.run(
-      "INSERT INTO whispers (id, content, emotion, zone, is_ai_generated) VALUES (?, ?, ?, ?, ?)",
-      [id, content, emotion, zone, 1],
-    );
+    if (guest_id) {
+      await db.run(
+        "INSERT INTO whispers (id, content, emotion, zone, is_ai_generated, guest_id) VALUES (?, ?, ?, ?, ?, ?)",
+        [id, content, emotion, zone, 1, guest_id],
+      );
+    } else {
+      await db.run(
+        "INSERT INTO whispers (id, content, emotion, zone, is_ai_generated) VALUES (?, ?, ?, ?, ?)",
+        [id, content, emotion, zone, 1],
+      );
+    }
 
     const whisper = await db.get("SELECT * FROM whispers WHERE id = ?", [id]);
     whisper.timestamp = formatTimestamp(whisper.created_at);

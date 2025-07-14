@@ -25,6 +25,7 @@ export interface CreateWhisperData {
   emotion: "joy" | "nostalgia" | "calm" | "anxiety" | "hope" | "love";
   zone: string;
   expiresAt?: string;
+  guestId?: string;
 }
 
 export interface AnalyticsData {
@@ -68,12 +69,14 @@ export const fetchWhispers = async (params?: {
   emotion?: string;
   limit?: number;
   offset?: number;
+  guestId?: string;
 }): Promise<Whisper[]> => {
   const searchParams = new URLSearchParams();
   if (params?.zone) searchParams.append("zone", params.zone);
   if (params?.emotion) searchParams.append("emotion", params.emotion);
   if (params?.limit) searchParams.append("limit", params.limit.toString());
   if (params?.offset) searchParams.append("offset", params.offset.toString());
+  if (params?.guestId) searchParams.append("guestId", params.guestId);
 
   const endpoint = `/whispers${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
   return apiRequest(endpoint);
@@ -94,12 +97,14 @@ export const createWhisperWithExpiry = async (
   emotion: string,
   zone: string,
   expiresAt?: boolean,
+  guestId?: string,
 ): Promise<Whisper> => {
   const data: CreateWhisperData = {
     content,
     emotion: emotion as "joy" | "nostalgia" | "calm" | "anxiety" | "hope" | "love",
     zone,
-    ...(expiresAt && { expiresAt: new Date().toISOString() })
+    ...(expiresAt && { expiresAt: new Date().toISOString() }),
+    ...(guestId && { guestId }),
   };
   
   return createWhisper(data);
@@ -176,6 +181,7 @@ export const useWhispers = (params?: {
   emotion?: string;
   limit?: number;
   offset?: number;
+  guestId?: string;
 }) => {
   return useQuery({
     queryKey: ["whispers", params],
@@ -329,5 +335,16 @@ export const useReactToWhisper = () => {
       // Invalidate reactions for this whisper
       queryClient.invalidateQueries({ queryKey: ["whisper-reactions", data.whisperId] });
     },
+  });
+};
+
+export const reportWhisper = async (
+  whisperId: string,
+  reason: string,
+  guestId?: string
+): Promise<{ success: boolean; message: string }> => {
+  return apiRequest(`/whispers/${whisperId}/report`, {
+    method: "POST",
+    body: JSON.stringify({ reason, guest_id: guestId }),
   });
 };

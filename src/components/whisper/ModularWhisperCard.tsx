@@ -12,10 +12,13 @@ import {
   Sparkles,
   BookOpen,
   Lock,
-  Unlock
+  Unlock,
+  MoreHorizontal
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCUJHotspots } from '../../contexts/CUJHotspotContext';
+import { reportWhisper } from '../../services/api';
+import { toast } from 'sonner';
 
 interface WhisperCardProps {
   whisper: {
@@ -48,6 +51,8 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
   aiReplyState = 'none', // NEW
 }) => {
   const [isHearted, setIsHearted] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
   const { getHotspotById } = useCUJHotspots();
   
   const hotspot = whisper.hotspot ? getHotspotById(whisper.hotspot) : null;
@@ -73,6 +78,17 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
   const handleHeart = () => {
     setIsHearted(!isHearted);
     onHeart?.(whisper.id);
+  };
+
+  const handleReport = async () => {
+    setShowReportDialog(false);
+    try {
+      const guestId = localStorage.getItem('aangan_guest_id') || undefined;
+      await reportWhisper(whisper.id, 'Inappropriate or harmful', guestId);
+      toast.success('Thank you. This whisper has been reported.');
+    } catch (err) {
+      toast.error('Failed to report whisper. Please try again later.');
+    }
   };
 
   const formatTime = (timestamp: string) => {
@@ -284,6 +300,52 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
       >
         <span style={{fontSize: '1.5rem', lineHeight: 1}}>&larr;</span> Back
       </button>
+      {/* 3-dot menu */}
+      <div className="absolute top-2 right-2 z-10">
+        <button
+          aria-label="More options"
+          className="p-1 rounded-full hover:bg-gray-100 focus:outline-none"
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          <MoreHorizontal className="w-5 h-5 text-gray-500" />
+        </button>
+        {menuOpen && (
+          <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-20">
+            <button
+              className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+              onClick={() => {
+                setMenuOpen(false);
+                setShowReportDialog(true);
+              }}
+            >
+              Report
+            </button>
+          </div>
+        )}
+      </div>
+      {/* Report confirmation dialog */}
+      {showReportDialog && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full">
+            <h3 className="text-lg font-semibold mb-2">Report Whisper?</h3>
+            <p className="mb-4 text-sm text-gray-600">Are you sure you want to report this whisper as inappropriate or harmful?</p>
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700"
+                onClick={() => setShowReportDialog(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white"
+                onClick={handleReport}
+              >
+                Report
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {variant === 'compact' ? renderCompact() : renderDefault()}
     </div>
   );

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Sparkles } from 'lucide-react';
+import { Clock, Sparkles, MoreHorizontal } from 'lucide-react';
 import { emotionColors } from '@/theme';
 import { cn } from '@/lib/utils';
+import { reportWhisper } from '../../services/api';
+import { toast } from 'sonner';
 
 interface Whisper {
   id: string;
@@ -32,12 +34,25 @@ function formatTimestamp(timestamp: string) {
 
 export const WhisperCard: React.FC<WhisperCardProps> = ({ whisper, isAI = false, onTap }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
   const emotionColor = emotionColors[whisper.emotion as keyof typeof emotionColors] || emotionColors.calm;
 
   const cardVariants = {
     initial: { opacity: 0, y: 30, scale: 0.95 },
     in: { opacity: 1, y: 0, scale: 1 },
     hover: { scale: 1.02, boxShadow: '0px 10px 30px -5px rgba(0,0,0,0.08)' },
+  };
+
+  const handleReport = async () => {
+    setShowReportDialog(false);
+    try {
+      const guestId = localStorage.getItem('aangan_guest_id') || undefined;
+      await reportWhisper(whisper.id, 'Inappropriate or harmful', guestId);
+      toast.success('Thank you. This whisper has been reported.');
+    } catch (err) {
+      toast.error('Failed to report whisper. Please try again later.');
+    }
   };
 
   return (
@@ -94,6 +109,53 @@ export const WhisperCard: React.FC<WhisperCardProps> = ({ whisper, isAI = false,
           <span>{formatTimestamp(whisper.timestamp)}</span>
         </div>
       </div>
+
+      {/* 3-dot menu */}
+      <div className="absolute top-2 right-2 z-10">
+        <button
+          aria-label="More options"
+          className="p-1 rounded-full hover:bg-gray-100 focus:outline-none"
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          <MoreHorizontal className="w-5 h-5 text-gray-500" />
+        </button>
+        {menuOpen && (
+          <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-20">
+            <button
+              className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+              onClick={() => {
+                setMenuOpen(false);
+                setShowReportDialog(true);
+              }}
+            >
+              Report
+            </button>
+          </div>
+        )}
+      </div>
+      {/* Report confirmation dialog */}
+      {showReportDialog && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full">
+            <h3 className="text-lg font-semibold mb-2">Report Whisper?</h3>
+            <p className="mb-4 text-sm text-gray-600">Are you sure you want to report this whisper as inappropriate or harmful?</p>
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700"
+                onClick={() => setShowReportDialog(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white"
+                onClick={handleReport}
+              >
+                Report
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };

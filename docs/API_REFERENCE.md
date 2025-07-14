@@ -60,6 +60,27 @@ This document summarizes the main backend API endpoints for College Whisper (Aan
   - Content moderation is enforced.
   - If guestId is provided, the whisper will be associated with that user/guest and appear in their history.
 
+#### `POST /api/whispers/:id/report`
+- **Description:** Report a whisper as inappropriate or harmful.
+- **Body:**
+```json
+{
+  "reason": "Inappropriate or harmful", // required, string
+  "guest_id": "..." // optional, for user association
+}
+```
+- **Response:**
+```json
+{
+  "success": true,
+  "message": "Whisper reported."
+}
+```
+- **Notes:**
+  - Rate limited: 5 reports per 10 minutes per IP.
+  - Reports are stored for moderation review.
+  - Does not immediately remove the whisper; admins review reports.
+
 ---
 
 ### 2. Zones

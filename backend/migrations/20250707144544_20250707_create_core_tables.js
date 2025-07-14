@@ -12,6 +12,7 @@ export async function up(knex) {
     tbl.boolean("is_ai_generated").defaultTo(false);
     tbl.timestamp("expires_at");
     tbl.timestamp("created_at").defaultTo(knex.fn.now());
+    tbl.string("guest_id", 64); // NEW: guest_id for user association
   });
 
   // Reactions (existing)
@@ -29,6 +30,15 @@ export async function up(knex) {
     tbl.specificType("embedding", "vector(1536)"); // → pgvector on Railway
     tbl.index(["embedding"], "whisper_embedding_ivfflat", "ivfflat"); // only for Postgres
   });
+
+  // Reports (NEW)
+  await knex.schema.createTable("whisper_reports", tbl => {
+    tbl.increments("id").primary();
+    tbl.integer("whisper_id").references("id").inTable("whispers").onDelete("CASCADE");
+    tbl.text("reason");
+    tbl.string("guest_id", 64);
+    tbl.timestamp("created_at").defaultTo(knex.fn.now());
+  });
 }
 
 /**
@@ -38,5 +48,16 @@ export async function up(knex) {
 export async function down(knex) {
   await knex.schema.dropTableIfExists("whisper_embeddings");
   await knex.schema.dropTableIfExists("whisper_reactions");
+  await knex.schema.dropTableIfExists("whisper_reports");
+  // Remove guest_id column if it exists (for rollback)
+  const hasWhispers = await knex.schema.hasTable("whispers");
+  if (hasWhispers) {
+    const hasGuestId = await knex.schema.hasColumn("whispers", "guest_id");
+    if (hasGuestId) {
+      await knex.schema.table("whispers", tbl => {
+        tbl.dropColumn("guest_id");
+      });
+    }
+  }
   await knex.schema.dropTableIfExists("whispers");
 }

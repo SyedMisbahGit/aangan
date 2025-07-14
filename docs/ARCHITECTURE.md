@@ -68,6 +68,15 @@ College Whisper is a real-time, AI-augmented social platform designed for campus
 
 ---
 
+## Moderation & Reporting (v1.6+)
+
+- Users can now report inappropriate or harmful whispers via the UI (3-dot menu on each card).
+- Reports are sent to the backend and stored in the `whisper_reports` table, including the whisper ID, reason, guest ID (if available), and timestamp.
+- Admins can review reported whispers for moderation action.
+- API: `POST /api/whispers/:id/report` (see API_REFERENCE.md)
+
+---
+
 ## Key Technologies
 - **Frontend**: React, Vite, Tailwind CSS
 - **Backend**: Node.js, Express, Socket.IO, Knex.js
