@@ -26,14 +26,11 @@ import { AuthProvider } from './contexts/AuthContext';
 import { RealtimeProvider } from './contexts/RealtimeContext';
 import AdminLogin from './pages/AdminLogin';
 import PrivacyBanner from './components/PrivacyBanner';
-<<<<<<< HEAD
 import RouteObserver from './components/shared/RouteObserver';
 import GentleOnboarding from './components/onboarding/GentleOnboarding';
 import { AnimatePresence } from "framer-motion";
 import ConfettiEffect from './components/ConfettiEffect';
-=======
 import AanganLoadingScreen from './components/shared/AanganLoadingScreen';
->>>>>>> origin/feature/cuj-whisper-map
 
 const queryClient = new QueryClient({
   defaultOptions: {
