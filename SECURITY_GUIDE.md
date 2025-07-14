@@ -40,6 +40,247 @@ This document outlines the security measures implemented in the Aangan platform 
 - **Message Rate Limiting**: Per-IP limits on socket messages
 - **Connection Validation**: Proper connection state management
 
+## 📖 Open Design
+
+### Core Principle
+**"No security through obscurity."**
+
+The system's security should not rely on secrecy of its design or code. The only secret should be the cryptographic keys or passwords, not the algorithms or structure.
+
+### Implementation in Aangan
+
+#### 1. **Transparent Security Architecture**
+All security mechanisms are open and auditable:
+
+```javascript
+// ✅ CORRECT: Open, standard algorithms
+const hashedPassword = await bcrypt.hash(password, 10);
+const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' });
+
+// ✅ CORRECT: Well-documented security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+    },
+  },
+}));
+```
+
+#### 2. **Standard Cryptographic Libraries**
+- **bcrypt**: Industry-standard password hashing (no custom algorithms)
+- **jsonwebtoken**: Standard JWT implementation
+- **Helmet.js**: Well-documented security headers
+- **express-rate-limit**: Standard rate limiting
+
+#### 3. **Public Security Documentation**
+- All security measures documented in this guide
+- No hidden or obfuscated security mechanisms
+- Security relies on cryptographic strength, not secrecy
+
+#### 4. **Auditable Code**
+- All security-related code is in version control
+- No minified or obfuscated security logic
+- Security decisions are explicit and documented
+
+### Open Design Checklist
+- [x] No obfuscated algorithms or hidden security mechanisms
+- [x] Uses standard, well-documented cryptographic libraries
+- [x] Security relies on cryptographic keys, not design secrecy
+- [x] All security measures are transparent and auditable
+- [x] Security architecture is publicly documented
+- [x] No "security by obscurity" practices
+
+### Example: Transparent Authentication Flow
+```javascript
+// 1. Password hashing (open algorithm)
+const hashedPassword = await bcrypt.hash(password, 10);
+
+// 2. JWT generation (open standard)
+const token = jwt.sign(
+  { username, role, id },
+  JWT_SECRET,
+  { expiresIn: '15m' }
+);
+
+// 3. Token verification (open process)
+const payload = jwt.verify(token, JWT_SECRET);
+
+// 4. Rate limiting (open configuration)
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests"
+});
+```
+
+### Security Through Transparency Benefits
+1. **Community Review**: Open design allows security experts to audit
+2. **Standard Compliance**: Uses proven, tested algorithms
+3. **Maintainability**: Clear, documented security code
+4. **Trust**: Users can verify security measures
+5. **Continuous Improvement**: Community can suggest enhancements
+
+## 🔐 Separation of Privilege
+
+### Core Principle
+**"It should take more than one key to open the vault."**
+
+Require multiple conditions to grant access. Prevents single-point failures and strengthens control.
+
+### Implementation in Aangan
+
+#### 1. **Multi-Factor Admin Authentication**
+Admin actions require multiple verification steps:
+
+```javascript
+// ✅ CORRECT: Multiple conditions for admin access
+const authenticateAdminJWT = async (req, res, next) => {
+  // Condition 1: Valid JWT token
+  const token = req.headers["authorization"]?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "Access token required" });
+  
+  // Condition 2: Token not revoked (password change check)
+  const payload = jwt.verify(token, JWT_SECRET);
+  const lastPasswordChange = await getLastPasswordChange(payload.username);
+  if (lastPasswordChange && payload.iat * 1000 < lastPasswordChange.getTime()) {
+    return res.status(403).json({ error: "Token revoked due to password change" });
+  }
+  
+  // Condition 3: Valid admin role
+  if (payload.role !== "admin") {
+    return res.status(403).json({ error: "Admin access required" });
+  }
+  
+  req.user = payload;
+  next();
+};
+```
+
+#### 2. **Sensitive Action Confirmation**
+Critical admin actions require additional verification:
+
+```javascript
+// ✅ CORRECT: Multiple conditions for sensitive actions
+app.post("/api/admin/change-password", authenticateAdminJWT, async (req, res) => {
+  const { currentPassword, newPassword, confirmationCode } = req.body;
+  
+  // Condition 1: Valid admin JWT (already verified by middleware)
+  // Condition 2: Current password verification
+  const adminUser = await getAdminUser(req.user.username);
+  const isValidCurrent = await bcrypt.compare(currentPassword, adminUser.password_hash);
+  if (!isValidCurrent) {
+    return res.status(401).json({ error: "Current password incorrect" });
+  }
+  
+  // Condition 3: Confirmation code verification
+  if (confirmationCode !== generateConfirmationCode(req.user.username)) {
+    return res.status(401).json({ error: "Invalid confirmation code" });
+  }
+  
+  // All conditions met - proceed with password change
+  const newHash = await bcrypt.hash(newPassword, 10);
+  await updateAdminPassword(req.user.username, newHash);
+  
+  res.json({ message: "Password updated successfully" });
+});
+```
+
+#### 3. **WebSocket Re-Authentication**
+Real-time connections require periodic re-verification:
+
+```javascript
+// ✅ CORRECT: Multiple authentication layers for WebSocket
+io.use((socket, next) => {
+  // Condition 1: Valid client key
+  const key = socket.handshake.auth?.clientKey;
+  if (key !== SOCKET_SHARED_KEY) {
+    return next(new Error("unauthorized"));
+  }
+  next();
+});
+
+// Condition 2: Periodic re-authentication
+setInterval(() => {
+  socket.emit('reauthenticate');
+}, 10 * 60 * 1000);
+
+socket.on('auth', async ({ token }) => {
+  try {
+    // Condition 3: Valid JWT token
+    const payload = jwt.verify(token, JWT_SECRET);
+    
+    // Condition 4: Token not revoked
+    const lastPasswordChange = await getLastPasswordChange(payload.username);
+    if (lastPasswordChange && payload.iat * 1000 < lastPasswordChange.getTime()) {
+      socket.disconnect(true);
+      return;
+    }
+  } catch (err) {
+    socket.disconnect(true);
+  }
+});
+```
+
+#### 4. **Feature Toggle Security**
+Feature changes require multiple approvals:
+
+```javascript
+// ✅ CORRECT: Multiple conditions for feature changes
+app.post("/api/features/toggles", authenticateAdminJWT, async (req, res) => {
+  const { feature, enabled, adminPassword, approvalCode } = req.body;
+  
+  // Condition 1: Valid admin JWT (middleware)
+  // Condition 2: Admin password verification
+  const adminUser = await getAdminUser(req.user.username);
+  const isValidPassword = await bcrypt.compare(adminPassword, adminUser.password_hash);
+  if (!isValidPassword) {
+    return res.status(401).json({ error: "Admin password required" });
+  }
+  
+  // Condition 3: Approval code verification
+  if (approvalCode !== await getApprovalCode(feature)) {
+    return res.status(401).json({ error: "Invalid approval code" });
+  }
+  
+  // All conditions met - update feature
+  await updateFeatureToggle(feature, enabled);
+  res.json({ message: "Feature updated successfully" });
+});
+```
+
+### Separation of Privilege Checklist
+- [x] Admin authentication requires JWT + password verification
+- [x] Sensitive actions require additional confirmation codes
+- [x] WebSocket connections require client key + periodic re-auth
+- [x] Feature changes require multiple approval conditions
+- [x] Password changes require current password + confirmation code
+- [x] Token revocation based on password change timestamps
+
+### Benefits of Separation of Privilege
+1. **Reduced Single Points of Failure**: Multiple conditions must be met
+2. **Enhanced Security**: Compromising one factor doesn't grant access
+3. **Audit Trail**: Multiple verification points create better logging
+4. **Defense in Depth**: Layered security approach
+5. **Compliance**: Meets security standards requiring multi-factor access
+
+### Example: Admin Dashboard Access
+```javascript
+// Multiple conditions for admin dashboard access:
+// 1. Valid JWT token (authentication)
+// 2. Admin role verification (authorization)
+// 3. Token not revoked (freshness check)
+// 4. IP address validation (location check)
+// 5. Session timeout check (time-based security)
+
+const adminAccess = await verifyAdminAccess(token, ipAddress);
+if (!adminAccess.isValid) {
+  return res.status(403).json({ error: adminAccess.reason });
+}
+```
+
 ## 🚫 Fail-Safe Defaults
 
 ### Core Principle
