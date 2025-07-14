@@ -8,7 +8,7 @@ import { useShhhNarrator } from '../contexts/use-shhh-narrator';
 import { useWhispers } from '../contexts/use-whispers';
 import { PoeticEmotionBanner } from '../components/shared/EmotionPulseBanner';
 import { GentlePresenceRibbon } from '../components/shared/PresenceRibbon';
-import { SoftWhisperCard } from '../components/whisper/WhisperCard';
+import { WhisperCard } from '../components/whisper/WhisperCard';
 import { EmbeddedBenchComposer } from '../components/whisper/PostCreator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import SoftBack from "@/components/shared/SoftBack";
@@ -259,7 +259,7 @@ const Whispers: React.FC = () => {
                     ease: "easeOut"
                   }}
                 >
-                  <SoftWhisperCard
+                  <WhisperCard
                     whisper={whisper as WhisperWithAI}
                     isAI={(whisper as WhisperWithAI).isAIGenerated ?? (whisper as WhisperWithAI).is_ai_generated}
                     delay={index * 0.2}
