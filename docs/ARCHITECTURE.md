@@ -59,6 +59,15 @@ College Whisper is a real-time, AI-augmented social platform designed for campus
 
 ---
 
+## Ambient Presence & Listen View Experience (v1.6+)
+
+- **Ambient Presence Avatars:** The Lounge/Listen view now displays a row of animated, anonymous avatars ("soft echoes") at the top, representing recent listeners or hearts. This creates a sense of warm, ambient community presence without revealing identities.
+- **Poetic Presence Line:** Below the avatars, a poetic line (e.g., "12 hearts are listening quietly tonight") dynamically reflects the number of active users or hearts, making the space feel alive and welcoming.
+- **Listen View Fallback:** The Lounge always preloads 2–3 real whispers from the backend if available. If loading, a shimmer animation is shown. If no whispers are available, a poetic fallback message is displayed, ensuring the view is never blank or cold.
+- **AI Reply Footer:** Whisper cards now show a footer indicating AI reply status: "The Courtyard is listening..." (pending), "AI may whisper back soon" (possible), or nothing if delivered/none. This provides clear feedback and reduces user confusion.
+
+---
+
 ## Key Technologies
 - **Frontend**: React, Vite, Tailwind CSS
 - **Backend**: Node.js, Express, Socket.IO, Knex.js

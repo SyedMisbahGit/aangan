@@ -297,12 +297,29 @@ const RealtimeWhisperFeed: React.FC<RealtimeWhisperFeedProps> = ({
                       <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                     </motion.div>
                   )}
-                  <ModularWhisperCard
-                    whisper={completeWhisper}
-                    variant={index === 0 ? "featured" : "default"}
-                    showHotspot={true}
-                    showEmotionTag={true}
-                  />
+                  {/* AI Reply Footer Logic */}
+                  {(() => {
+                    const now = Date.now();
+                    const created = new Date(whisper.timestamp).getTime();
+                    const ageSeconds = (now - created) / 1000;
+                    let aiReplyState: 'pending' | 'possible' | 'delivered' | 'none' = 'none';
+                    if (whisper.isAIGenerated) {
+                      aiReplyState = 'delivered';
+                    } else if (ageSeconds < 10) {
+                      aiReplyState = 'pending';
+                    } else if (ageSeconds < 60) {
+                      aiReplyState = 'possible';
+                    }
+                    return (
+                      <ModularWhisperCard
+                        whisper={completeWhisper}
+                        variant={index === 0 ? "featured" : "default"}
+                        showHotspot={true}
+                        showEmotionTag={true}
+                        aiReplyState={aiReplyState}
+                      />
+                    );
+                  })()}
                 </motion.div>
               );
             })}

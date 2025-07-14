@@ -34,6 +34,8 @@ interface WhisperCardProps {
   onHeart?: (id: number) => void;
   onReply?: (id: number) => void;
   onView?: (id: number) => void;
+  onClose?: () => void; // Added for modal/deep view
+  aiReplyState?: 'pending' | 'possible' | 'delivered' | 'none'; // NEW
 }
 
 const ModularWhisperCard: React.FC<WhisperCardProps> = ({
@@ -41,7 +43,9 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
   variant = 'default',
   onHeart,
   onReply,
-  onView
+  onView,
+  onClose, // Added for modal/deep view
+  aiReplyState = 'none', // NEW
 }) => {
   const [isHearted, setIsHearted] = useState(false);
   const { getHotspotById } = useCUJHotspots();
@@ -148,6 +152,12 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
           </div>
         </div>
       </CardContent>
+      {/* AI Reply Footer */}
+      {(aiReplyState === 'pending' || aiReplyState === 'possible') && (
+        <div className="mt-2 pt-1 border-t border-dashed border-aangan-highlight/30 text-center text-xs text-aangan-highlight animate-pulse">
+          {aiReplyState === 'pending' ? 'The Courtyard is listening...' : 'AI may whisper back soon'}
+        </div>
+      )}
     </Card>
   );
 
@@ -248,15 +258,35 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
             View
           </Button>
         </div>
+        {/* AI Reply Footer */}
+        {(aiReplyState === 'pending' || aiReplyState === 'possible') && (
+          <div className="mt-4 pt-2 border-t border-dashed border-aangan-highlight/30 text-center text-xs text-aangan-highlight animate-pulse">
+            {aiReplyState === 'pending' ? 'The Courtyard is listening...' : 'AI may whisper back soon'}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
 
-  if (variant === 'compact') {
-    return renderCompact();
-  }
-
-  return renderDefault();
+  return (
+    <div className="relative">
+      {/* Back Button */}
+      <button
+        onClick={() => {
+          if (window.history.length > 1) {
+            window.history.back();
+          } else if (typeof onClose === 'function') {
+            onClose();
+          }
+        }}
+        className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 hover:bg-white text-aangan-primary font-medium shadow"
+        aria-label="Back"
+      >
+        <span style={{fontSize: '1.5rem', lineHeight: 1}}>&larr;</span> Back
+      </button>
+      {variant === 'compact' ? renderCompact() : renderDefault()}
+    </div>
+  );
 };
 
 export default ModularWhisperCard; 

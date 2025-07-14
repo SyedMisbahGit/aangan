@@ -71,4 +71,14 @@ The AI listener enhances the campus experience by generating poetic, context-awa
 
 ---
 
+## User Feedback: AI Reply Status in the UI (v1.6+)
+
+- When a user submits a whisper, the UI now displays a footer on the whisper card:
+  - "The Courtyard is listening..." if an AI reply is being processed (pending)
+  - "AI may whisper back soon" if a reply is possible (probabilistic)
+  - No footer if the AI has replied or will not reply
+- This ensures users always feel acknowledged, even if the AI does not reply immediately, and reduces confusion or feelings of being ignored.
+
+---
+
 For more on system integration, see [ARCHITECTURE.md]. For API usage, see [API_REFERENCE.md]. 

@@ -8,6 +8,7 @@ Welcome! This guide will help you get started with development, understand our s
 College Whisper (Aangan) is a real-time, AI-augmented campus social platform. It features Dreamy Courtyard UX, zone-based emotional engagement, and AI whispering. The codebase is modular, with a React frontend and Node.js/Express backend.
 - Each whisper is now associated with a user/guest via a `guestId` (anonymous ID), enabling personal whisper history ("My Whispers") even for anonymous users.
 - Contributors should ensure guestId is handled in backend, frontend, and tests for any whisper-related changes.
+- The Lounge/Listen view now includes ambient presence avatars, a poetic presence line, and always preloads real whispers or shows a poetic fallback. Whisper cards display an AI reply footer for user feedback. Contributors should maintain these UX/QA standards in future features.
 
 ---
 
