@@ -160,6 +160,22 @@ const Murmurs: React.FC = () => {
         likes: 0
       },
       {
+        id: "7",
+        content: "Summer internship is a grind, but I'm learning a lot. #summerSoul25",
+        emotion: "focus",
+        visibility: "public",
+        hotspot: "internship",
+        timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+        hearts: 10,
+        replies: 1,
+        author: "Anonymous",
+        proximity: 5000,
+        vibeMatch: 0.2,
+        groupSize: 1,
+        tags: ["#summerSoul25"],
+        likes: 0
+      },
+      {
         id: "6",
         content: "The energy in the DDE building today is electric. Everyone's working on their final projects, and you can feel the collective determination in the air.",
         emotion: "excitement",

@@ -26,7 +26,9 @@
     "maintenance:update": "node scripts/maintenance.js --update",
     "analyze": "npm run build && npx vite-bundle-analyzer dist",
     "clean": "rm -rf dist dev-dist coverage .vite node_modules/.cache",
-    "clean:deep": "rm -rf dist dev-dist coverage .vite node_modules backend/node_modules && npm install"
+    "clean:deep": "rm -rf dist dev-dist coverage .vite node_modules backend/node_modules && npm install",
+    "dev:backend": "cd backend && npm install && npm run dev",
+    "start-all": "cd backend && npm install && npm run dev & cd .. && npm run dev"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -116,6 +118,7 @@
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
     "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1",
