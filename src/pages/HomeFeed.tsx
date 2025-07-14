@@ -48,7 +48,7 @@ const Whispers: React.FC = () => {
 
   // Generate sample whispers with real-time context
   useEffect(() => {
-    const generateWhispers = () => {
+    if (whispers.length === 0) {
       const sampleWhispers: Whisper[] = [
         {
           id: '1',
@@ -85,17 +85,31 @@ const Whispers: React.FC = () => {
           likes: Math.floor(Math.random() * 25) + 8,
           comments: Math.floor(Math.random() * 12) + 3,
           isAnonymous: true
+        },
+        {
+          id: '4',
+          content: "Sometimes I wonder if anyone else feels this way. A little lost, a little hopeful.",
+          emotion: 'reflection',
+          timestamp: new Date(Date.now() - Math.random() * 7200000).toISOString(),
+          location: 'hostel',
+          likes: Math.floor(Math.random() * 30) + 10,
+          comments: Math.floor(Math.random() * 15) + 5,
+          isAnonymous: true
+        },
+        {
+          id: '5',
+          content: "Just saw the sunset from the hilltop. It was breathtaking. A moment of pure calm.",
+          emotion: 'peace',
+          timestamp: new Date(Date.now() - Math.random() * 86400000).toISOString(),
+          location: 'hilltop',
+          likes: Math.floor(Math.random() * 40) + 15,
+          comments: Math.floor(Math.random() * 20) + 8,
+          isAnonymous: true
         }
       ];
       setWhispers(sampleWhispers);
-    };
-
-    generateWhispers();
-    
-    // Update whispers every 5 minutes with new real-time context
-    const interval = setInterval(generateWhispers, 300000);
-    return () => clearInterval(interval);
-  }, [isNightTime, campusActivity, isWeekend, setWhispers]);
+    }
+  }, [isNightTime, campusActivity, isWeekend, setWhispers, whispers.length]);
 
   // Get dominant emotion from recent whispers
   const getDominantEmotion = () => {

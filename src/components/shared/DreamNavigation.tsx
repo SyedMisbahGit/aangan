@@ -2,21 +2,25 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-const NavIcon = ({ children }: { children: React.ReactNode }) => (
-  <span className="text-2xl transition-transform duration-300 group-hover:scale-110">
-    {children}
-  </span>
-);
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Feather, BookOpenText, Compass, Headphones, Sprout } from "lucide-react";
 
 export const DreamNavigation = () => {
   const navigationItems = [
-    { path: "/", icon: "🪶", label: "Whispers" },
-    { path: "/diary", icon: "📖", label: "Diary" },
-    { path: "/explore", icon: "🧭", label: "Wander" },
-    { path: "/lounge", icon: "🎧", label: "Listen" },
-    { path: "/menu", icon: "🌿", label: "My Corner" },
+    { path: "/", icon: Feather, label: "Whispers", tooltip: "Whispers from the courtyard" },
+    { path: "/diary", icon: BookOpenText, label: "Diary", tooltip: "Your personal thoughts" },
+    { path: "/explore", icon: Compass, label: "Wander", tooltip: "Explore nearby feelings" },
+    { path: "/lounge", icon: Headphones, label: "Listen", tooltip: "Let whispers drift in" },
+    { path: "/menu", icon: Sprout, label: "My Corner", tooltip: "Your sanctuary" },
   ];
+
+  const handleNavClick = (path: string) => {
+    // Optionally handle navigation click events
+  };
 
   return (
     <nav className={cn(
@@ -25,33 +29,35 @@ export const DreamNavigation = () => {
       "flex justify-around items-center shadow-ambient"
     )}>
       {navigationItems.map((item) => (
-        <NavLink
-          key={item.path}
-          to={item.path}
-          className={({ isActive }) =>
-            cn(
-              "relative flex flex-col items-center justify-center h-full w-full group",
-              "text-text-metaphor hover:text-text-poetic transition-colors duration-300",
-              isActive && "text-night-blue"
-            )
-          }
-        >
-          {({ isActive }) => (
-            <>
-              <NavIcon>{item.icon}</NavIcon>
-              <span className="font-serif text-xs tracking-wide">{item.label}</span>
-              {isActive && (
-                <motion.div
-                  layoutId="active-nav-indicator"
-                  className="absolute bottom-0 h-0.5 w-8 bg-terracotta-orange rounded-full"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                />
+        <Tooltip key={item.path}>
+          <TooltipTrigger asChild>
+            <NavLink
+              to={item.path}
+              onClick={() => handleNavClick(item.path)}
+              className={({ isActive }) =>
+                cn(
+                  "flex flex-col items-center gap-0.5 text-xs transition-all duration-200",
+                  isActive ? "text-green-600 font-medium" : "text-neutral-500"
+                )
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <item.icon className="w-12 h-12" strokeWidth={1.7} />
+                  <span className={cn(
+                    "text-[12px] tracking-wide transition-all duration-200",
+                    isActive ? "font-medium" : "font-normal"
+                  )}>
+                    {item.label}
+                  </span>
+                </>
               )}
-            </>
-          )}
-        </NavLink>
+            </NavLink>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{item.tooltip}</p>
+          </TooltipContent>
+        </Tooltip>
       ))}
     </nav>
   );

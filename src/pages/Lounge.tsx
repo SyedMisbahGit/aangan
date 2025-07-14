@@ -48,17 +48,43 @@ const Listen: React.FC = () => {
             transition={{ duration: 2.5, ease: 'easeInOut' }}
           >
             <WhisperCard whisper={ambientWhispers[currentWhisperIndex]} />
+
+            {/* Ambient particles */}
+            <div className="absolute inset-0 pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 bg-white/20 rounded-full"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                  }}
+                  animate={{
+                    y: [-20, -100],
+                    opacity: [0, 1, 0],
+                    scale: [0, 1, 0]
+                  }}
+                  transition={{
+                    duration: 8 + Math.random() * 4,
+                    repeat: Infinity,
+                    delay: Math.random() * 5,
+                    ease: "easeOut"
+                  }}
+                />
+              ))}
+            </div>
           </motion.div>
         </AnimatePresence>
       </div>
-      <motion.p
+      {/* Gentle instruction (hidden, but Esc still works) */}
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 2 }}
-        className="absolute bottom-8 text-center text-text-metaphor font-serif italic text-sm"
+        transition={{ delay: 3, duration: 1 }}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/40 text-sm"
       >
-        A gentle space for listening.
-      </motion.p>
+        Return to Courtyard
+      </motion.div>
     </div>
   );
 };

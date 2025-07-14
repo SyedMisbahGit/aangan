@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import "./App.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -27,6 +27,9 @@ import { AuthProvider } from './contexts/AuthContext';
 import { RealtimeProvider } from './contexts/RealtimeContext';
 import AdminLogin from './pages/AdminLogin';
 import PrivacyBanner from './components/PrivacyBanner';
+import RouteObserver from './components/shared/RouteObserver';
+import GentleOnboarding from './components/onboarding/GentleOnboarding';
+import { AnimatePresence } from "framer-motion";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -87,6 +90,7 @@ function PrivateRoute({ children, adminOnly }: { children: React.ReactNode, admi
 const AppContent: React.FC = () => {
   const isMobile = useIsMobile();
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(true);
+  const lastVisitedPath = localStorage.getItem('lastVisitedPath');
 
   useEffect(() => {
     // Firebase messaging setup
@@ -110,6 +114,8 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   return (
     <>
+      <RouteObserver />
+      <GentleOnboarding />
       {showPrivacyBanner && <PrivacyBanner onAccept={() => setShowPrivacyBanner(false)} />}
       <ParticleFlow />
       <GlobalWhisperComposer />
@@ -117,7 +123,7 @@ const AppContent: React.FC = () => {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           {/* Public routes */}
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={lastVisitedPath ? <Navigate to={lastVisitedPath} /> : <Index />} />
         <Route path="/login" element={<Login />} />
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/about" element={<About />} />

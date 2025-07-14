@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Feather, X } from 'lucide-react';
+import { Send, Feather, X, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { emotionColors } from '@/theme';
@@ -78,10 +78,14 @@ export const EmbeddedBenchComposer: React.FC<EmbeddedBenchComposerProps> = ({
             className="p-5 cursor-pointer flex items-center justify-center gap-3 text-center"
             whileHover={{ backgroundColor: 'rgba(232, 234, 246, 0.5)' }}
           >
-            <Feather className="w-5 h-5 text-text-metaphor" />
-            <span className="font-serif italic text-text-poetic">
-              Sit for a while… what’s on your heart today?
-            </span>
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-rose-100 to-blue-100 rounded-full flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-neutral-600" />
+              </div>
+              <span className="text-neutral-800 font-medium italic">
+                Write your whisper...
+              </span>
+            </div>
           </motion.div>
         ) : (
           <motion.div
@@ -116,8 +120,9 @@ export const EmbeddedBenchComposer: React.FC<EmbeddedBenchComposerProps> = ({
                 ref={textareaRef}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="Let your thoughts drift here..."
-                className="bg-aangan-ground/50 border-aangan-dusk rounded-lg min-h-[90px] resize-none text-text-whisper placeholder:text-text-metaphor font-gentle"
+                onKeyDown={handleKeyDown}
+                placeholder="Write your whisper..."
+                className="bg-white text-neutral-800 placeholder:text-neutral-600 border border-neutral-200 rounded-xl min-h-[100px] resize-none p-4 shadow-sm"
                 maxLength={500}
               />
             </motion.div>
