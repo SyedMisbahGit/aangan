@@ -283,6 +283,32 @@ const SidebarTrigger = React.forwardRef<
 });
 SidebarTrigger.displayName = "SidebarTrigger";
 
+const SidebarClose = React.forwardRef<
+  React.ElementRef<typeof Button>,
+  React.ComponentProps<typeof Button>
+>(({ className, onClick, ...props }, ref) => {
+  const { setOpenMobile } = useSidebar();
+
+  return (
+    <Button
+      ref={ref}
+      data-sidebar="close"
+      variant="ghost"
+      size="icon"
+      className={cn("h-7 w-7", className)}
+      onClick={(event) => {
+        onClick?.(event);
+        setOpenMobile(false);
+      }}
+      {...props}
+    >
+      <PanelLeft />
+      <span className="sr-only">Close Sidebar</span>
+    </Button>
+  );
+});
+SidebarClose.displayName = "SidebarClose";
+
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button">
@@ -735,6 +761,7 @@ SidebarMenuSubButton.displayName = "SidebarMenuSubButton";
 
 export {
   Sidebar,
+  SidebarClose,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
