@@ -24,7 +24,7 @@ import {
 import { motion } from "framer-motion";
 import { useCUJHotspots } from "@/contexts/CUJHotspotContext";
 import { ShhhLine } from '@/components/ShhhLine';
-import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
+import { cujHotspots } from '../constants/cujHotspots';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectLabel, SelectGroup } from "@/components/ui/select";
 
 const Compass: React.FC = () => {
@@ -105,8 +105,8 @@ const Compass: React.FC = () => {
     ]
   });
 
-  const inCampus = CUJ_HOTSPOTS.slice(0, 29);
-  const outsideCampus = CUJ_HOTSPOTS.slice(29);
+  const inCampus = cujHotspots.slice(0, 29);
+  const outsideCampus = cujHotspots.slice(29);
 
   const getMoodIcon = (mood: string) => {
     switch (mood) {
