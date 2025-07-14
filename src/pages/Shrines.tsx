@@ -34,7 +34,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCUJHotspots } from "../contexts/CUJHotspotContext";
 import ModularWhisperCard from "../components/whisper/ModularWhisperCard";
 import { ShhhLine } from '@/components/ShhhLine';
-import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
+import { cujHotspots } from '../constants/cujHotspots';
 import { useSummerPulse } from '../contexts/use-summer-pulse';
 import { CustomSkeletonCard } from "@/components/ui/skeleton";
 
@@ -48,8 +48,8 @@ const Shrines: React.FC = () => {
   const { hotspots, nearbyHotspots, emotionClusters, getEmotionTrends } = useCUJHotspots();
   const { isSummerPulseActive, getSummerNarratorLine } = useSummerPulse();
 
-  const inCampus = CUJ_HOTSPOTS.slice(0, 29);
-  const outsideCampus = CUJ_HOTSPOTS.slice(29);
+  const inCampus = cujHotspots.slice(0, 29);
+  const outsideCampus = cujHotspots.slice(29);
 
   const emotions = [
     { value: "joy", label: "Joy", icon: "✨", color: "bg-yellow-50 text-yellow-700 border-yellow-200" },

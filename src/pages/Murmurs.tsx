@@ -31,7 +31,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
 import { ShhhLine } from '@/components/ShhhLine';
-import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
+import { cujHotspots } from '../constants/cujHotspots';
 import { DreamWhisperCard } from '../components/whisper/DreamWhisperCard';
 import { useSummerSoul } from '../contexts/use-summer-soul';
 import type { DreamWhisper } from '../components/whisper/ModularWhisperCard';
@@ -73,8 +73,8 @@ const Murmurs: React.FC = () => {
     { value: "curiosity", label: "Curiosity", icon: "🔍", color: "bg-teal-50 text-teal-700 border-teal-200" }
   ];
 
-  const inCampus = CUJ_HOTSPOTS.slice(0, 29);
-  const outsideCampus = CUJ_HOTSPOTS.slice(29);
+  const inCampus = cujHotspots.slice(0, 29);
+  const outsideCampus = cujHotspots.slice(29);
 
   // Sample whispers with proximity and vibe data
   useEffect(() => {
