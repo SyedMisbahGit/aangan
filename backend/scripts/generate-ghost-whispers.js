@@ -1,5 +1,5 @@
 // Script: generate-ghost-whispers.js
-// Auto-generates 1–2 AI-like whispers per day per zone
+// Improved: Distributes ghosts across the day, avoids overlap, uses structured prompts, enhanced logging
 
 const db = require('../db');
 const { v4: uuidv4 } = require('uuid');
@@ -15,59 +15,32 @@ const ZONES = [
 
 const EMOTIONS = ['calm', 'joy', 'nostalgia', 'hope', 'anxiety', 'love'];
 
-const whisperTemplates = {
-  calm: [
-    'The courtyard is quiet, but my heart is softer still.',
-    'A gentle hush settles over the morning.',
-    'Peace drifts in like sunlight through leaves.',
-    'I am learning to breathe with the world.',
-    'Stillness is a kind of music.'
-  ],
-  joy: [
-    'Laughter echoes between the walls today.',
-    'Sunlight dances on the benches.',
-    'A secret smile I carry with me.',
-    'Joy is a small rebellion against the ordinary.',
-    'Today, even the birds seem to sing for me.'
-  ],
-  nostalgia: [
-    'Old memories linger in the corners.',
-    'I walk paths I once knew by heart.',
-    'The past feels close enough to touch.',
-    'A familiar scent brings me home.',
-    'Some days, I miss who I used to be.'
-  ],
-  hope: [
-    'Tomorrow holds possibilities I can’t even imagine yet.',
-    'Every challenge is just a stepping stone to something better.',
-    'The light at the end of the tunnel is getting brighter.',
-    'I believe in the person I’m becoming.',
-    'Small victories add up to big changes.'
-  ],
-  anxiety: [
-    'My thoughts race, but the world moves slow.',
-    'Uncertainty sits beside me today.',
-    'I wonder if anyone else feels this way.',
-    'The future is a fog I’m learning to walk through.',
-    'Some days, breathing is an act of courage.'
-  ],
-  love: [
-    'The connections we make here last a lifetime.',
-    'Love comes in many forms – friendship, passion, self-discovery.',
-    'This place has taught me what it means to care deeply.',
-    'The heart finds its way, even in the most unexpected places.',
-    'Love grows in the spaces between words and glances.'
-  ]
-};
+// Structured prompt definitions
+const promptTemplates = [
+  { zone: 'tapri', emotion: 'calm', promptTemplate: 'Over chai and conversation, the courtyard is quiet, but my heart is softer still.' },
+  { zone: 'tapri', emotion: 'joy', promptTemplate: 'Over chai and conversation, laughter echoes between the walls today.' },
+  { zone: 'tapri', emotion: 'nostalgia', promptTemplate: 'Over chai and conversation, old memories linger in the corners.' },
+  { zone: 'tapri', emotion: 'hope', promptTemplate: 'Over chai and conversation, tomorrow holds possibilities I can’t even imagine yet.' },
+  { zone: 'tapri', emotion: 'anxiety', promptTemplate: 'Over chai and conversation, my thoughts race, but the world moves slow.' },
+  { zone: 'tapri', emotion: 'love', promptTemplate: 'Over chai and conversation, the connections we make here last a lifetime.' },
+  // ...repeat for each zone/emotion combo, or use a function to generate
+];
 
-const zoneModifiers = {
-  tapri: 'Over chai and conversation, ',
-  library: 'Between the pages and silence, ',
-  hostel: 'In the comfort of shared spaces, ',
-  canteen: 'Amidst the clatter of plates and laughter, ',
-  auditorium: 'Under the weight of dreams and aspirations, ',
-  quad: 'In the open air of possibility, '
-};
+// Fallback: if no specific template, use this
+function getPrompt(zone, emotion) {
+  const found = promptTemplates.find(t => t.zone === zone && t.emotion === emotion);
+  if (found) return found.promptTemplate;
+  // Fallback to generic
+  const generic = {
+    calm: 'You feel a gentle calm in the air.',
+    joy: 'Joy bubbles up in unexpected places.',
+    nostalgia: 'Memories drift by like clouds.',
+    hope: 'Hope glimmers quietly today.',
+    anxiety: 'A nervous energy lingers.',
+    love: 'Love is present, even if unspoken.'
+  };
+  return (zone ? `${zone}: ` : '') + (generic[emotion] || generic.calm);
+}
 
 function getTodayDateString() {
   const now = new Date();
@@ -89,22 +62,50 @@ function randomFrom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function randomTimeToday() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 6, 0, 0); // 6am
+  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 0, 0); // 11pm
+  const rand = start.getTime() + Math.random() * (end.getTime() - start.getTime());
+  return new Date(rand);
+}
+
+async function hasRealWhisperNearby(zone, targetTime) {
+  // Check for any real (non-AI) whisper in this zone within ±30 min of targetTime
+  const before = new Date(targetTime.getTime() - 30 * 60 * 1000).toISOString();
+  const after = new Date(targetTime.getTime() + 30 * 60 * 1000).toISOString();
+  const found = await db('whispers')
+    .where('zone', zone)
+    .andWhere('is_ai_generated', false)
+    .andWhere('created_at', '>=', before)
+    .andWhere('created_at', '<=', after)
+    .first();
+  return !!found;
+}
+
 async function generateGhostWhisper(zone) {
   const emotion = randomFrom(EMOTIONS);
-  const templates = whisperTemplates[emotion] || whisperTemplates.calm;
-  const baseContent = randomFrom(templates);
-  const modifier = zoneModifiers[zone] || '';
-  const content = modifier + baseContent.toLowerCase();
+  const content = getPrompt(zone, emotion);
   const id = uuidv4();
+  const language = 'en';
+  const scheduledTime = randomTimeToday();
+  // Check for overlap with real whispers
+  const overlap = await hasRealWhisperNearby(zone, scheduledTime);
+  if (overlap) {
+    console.log(`[SKIP] Zone ${zone} at ${scheduledTime.toISOString()}: real whisper exists nearby.`);
+    return false;
+  }
   await db('whispers').insert({
     id,
     content,
     emotion,
     zone,
     is_ai_generated: true,
-    created_at: new Date().toISOString(),
+    created_at: scheduledTime.toISOString(),
+    language,
   });
-  console.log(`Ghost whisper created for zone ${zone}: ${content}`);
+  console.log(`[GHOST] Zone: ${zone}, Emotion: ${emotion}, Time: ${scheduledTime.toISOString()}, Content: "${content}"`);
+  return true;
 }
 
 async function main() {
@@ -116,10 +117,16 @@ async function main() {
       continue;
     }
     const toCreate = needed - existing;
-    for (let i = 0; i < toCreate; i++) {
-      // Optionally, stagger creation with a delay
-      await generateGhostWhisper(zone);
-      await new Promise(res => setTimeout(res, 1000 + Math.random() * 2000));
+    let created = 0;
+    let attempts = 0;
+    while (created < toCreate && attempts < 5) {
+      const ok = await generateGhostWhisper(zone);
+      if (ok) created++;
+      attempts++;
+      await new Promise(res => setTimeout(res, 500 + Math.random() * 1000));
+    }
+    if (created < toCreate) {
+      console.log(`Zone ${zone}: only created ${created} ghost whispers (target ${toCreate}) due to overlap.`);
     }
   }
   process.exit(0);

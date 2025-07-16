@@ -16,6 +16,7 @@ import fetch from "node-fetch";
 import { db } from "./db.js";
 import dayjs from "dayjs";
 import adminRoutes from "./routes/admin.js";
+import aiReplyJobQueue from './aiReplyJobQueue';
 
 // Load environment variables
 dotenv.config();
@@ -543,7 +544,7 @@ app.post("/api/whispers", whisperLimiter, async (req, res) => {
     lastWhisperTime = new Date();
     if (!isAmbientSystemActive) startAmbientWhisperSystem();
 
-    // --- AI Reply Scheduling Logic ---
+    // --- AI Reply Scheduling Logic (refactored to job queue) ---
     if (!is_ai_generated) {
       if (Math.random() < 0.5) {
         // Shorter delay for long or emotional whispers
@@ -558,25 +559,16 @@ app.post("/api/whispers", whisperLimiter, async (req, res) => {
           // 2–15 minutes
           delayMs = (2 + Math.random() * 13) * 60 * 1000;
         }
-        setTimeout(async () => {
-          try {
-            const EMOTIONS = ['calm', 'joy', 'nostalgia', 'hope', 'anxiety', 'love'];
-            const aiEmotion = EMOTIONS[Math.floor(Math.random() * EMOTIONS.length)];
-            const aiRes = await fetch(`${process.env.API_BASE_URL || 'http://localhost:3001'}/api/ai/generate-whisper`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ zone, emotion: aiEmotion, context: 'reply', guest_id: null })
-            });
-            if (aiRes.ok) {
-              const aiWhisper = await aiRes.json();
-              console.log(`🤖 AI reply generated for whisper ${id} in zone ${zone} after delay (${Math.round(delayMs/1000)} sec)`);
-            } else {
-              console.error('Failed to generate AI reply:', await aiRes.text());
-            }
-          } catch (err) {
-            console.error('Error in scheduled AI reply:', err);
-          }
-        }, delayMs);
+        // Enqueue AI reply job instead of setTimeout
+        const EMOTIONS = ['calm', 'joy', 'nostalgia', 'hope', 'anxiety', 'love'];
+        const aiEmotion = EMOTIONS[Math.floor(Math.random() * EMOTIONS.length)];
+        aiReplyJobQueue.enqueueJob({
+          whisperId: id,
+          zone,
+          emotion: aiEmotion,
+          delayMs
+        });
+        console.log(`[AIReply] Enqueued AI reply job for whisper ${id} in zone ${zone} (delay ${Math.round(delayMs/1000)}s)`);
       }
     }
     // --- End AI Reply Scheduling ---
@@ -613,78 +605,41 @@ app.post("/api/whispers/:id/report", reportLimiter, async (req, res) => {
   }
 });
 
+// --- AI Prompt Templates (shared) ---
+const promptTemplates = [
+  { zone: 'tapri', emotion: 'calm', promptTemplate: 'Over chai and conversation, the courtyard is quiet, but my heart is softer still.' },
+  { zone: 'tapri', emotion: 'joy', promptTemplate: 'Over chai and conversation, laughter echoes between the walls today.' },
+  { zone: 'tapri', emotion: 'nostalgia', promptTemplate: 'Over chai and conversation, old memories linger in the corners.' },
+  { zone: 'tapri', emotion: 'hope', promptTemplate: 'Over chai and conversation, tomorrow holds possibilities I can’t even imagine yet.' },
+  { zone: 'tapri', emotion: 'anxiety', promptTemplate: 'Over chai and conversation, my thoughts race, but the world moves slow.' },
+  { zone: 'tapri', emotion: 'love', promptTemplate: 'Over chai and conversation, the connections we make here last a lifetime.' },
+  // ...repeat for each zone/emotion combo, or use a function to generate
+];
+function getPrompt(zone, emotion) {
+  const found = promptTemplates.find(t => t.zone === zone && t.emotion === emotion);
+  if (found) return found.promptTemplate;
+  // Fallback to generic
+  const generic = {
+    calm: 'You feel a gentle calm in the air.',
+    joy: 'Joy bubbles up in unexpected places.',
+    nostalgia: 'Memories drift by like clouds.',
+    hope: 'Hope glimmers quietly today.',
+    anxiety: 'A nervous energy lingers.',
+    love: 'Love is present, even if unspoken.'
+  };
+  return (zone ? `${zone}: ` : '') + (generic[emotion] || generic.calm);
+}
+
 // AI Whisper Generation Endpoint
 app.post("/api/ai/generate-whisper", async (req, res) => {
   try {
     const { zone, emotion, context, guest_id } = req.body;
-    
     // Validate inputs
     if (!zone || !emotion) {
       return res.status(400).json({ error: "Zone and emotion are required" });
     }
-
-    // AI-generated whisper content based on emotion and zone
-    const whisperTemplates = {
-      joy: [
-        "The courtyard feels alive today. Every step brings a new discovery.",
-        "Laughter echoes through the campus, and it's contagious.",
-        "There's something magical about finding joy in the smallest moments.",
-        "The energy here is electric - can you feel it too?",
-        "Today feels like everything is falling into place."
-      ],
-      nostalgia: [
-        "Walking these paths brings back memories I didn't know I had.",
-        "The old buildings hold stories of generations past.",
-        "Sometimes I miss the way things used to be, simpler times.",
-        "The courtyard has seen so many dreams come and go.",
-        "There's comfort in the familiar corners of this place."
-      ],
-      calm: [
-        "The quiet moments here are my favorite. Everything slows down.",
-        "There's peace in the rhythm of campus life.",
-        "The gentle breeze carries away all the noise.",
-        "In this space, I find my center again.",
-        "The world feels softer here, more manageable."
-      ],
-      anxiety: [
-        "The weight of expectations feels heavy today.",
-        "Sometimes I wonder if I'm doing enough, being enough.",
-        "The future feels uncertain, but maybe that's okay.",
-        "There's comfort in knowing others feel this way too.",
-        "One breath at a time, one step at a time."
-      ],
-      hope: [
-        "Tomorrow holds possibilities I can't even imagine yet.",
-        "Every challenge is just a stepping stone to something better.",
-        "The light at the end of the tunnel is getting brighter.",
-        "I believe in the person I'm becoming.",
-        "Small victories add up to big changes."
-      ],
-      love: [
-        "The connections we make here last a lifetime.",
-        "Love comes in many forms - friendship, passion, self-discovery.",
-        "This place has taught me what it means to care deeply.",
-        "The heart finds its way, even in the most unexpected places.",
-        "Love grows in the spaces between words and glances."
-      ]
-    };
-
-    // Zone-specific modifiers
-    const zoneModifiers = {
-      tapri: "Over chai and conversation, ",
-      library: "Between the pages and silence, ",
-      hostel: "In the comfort of shared spaces, ",
-      canteen: "Amidst the clatter of plates and laughter, ",
-      auditorium: "Under the weight of dreams and aspirations, ",
-      quad: "In the open air of possibility, "
-    };
-
-    const templates = whisperTemplates[emotion] || whisperTemplates.calm;
-    const baseContent = templates[Math.floor(Math.random() * templates.length)];
-    const modifier = zoneModifiers[zone] || "";
-    
-    const content = modifier + baseContent.toLowerCase();
-
+    // Use shared prompt structure
+    const content = getPrompt(zone, emotion);
     const id = uuidv4();
     if (guest_id) {
       await db.run(
@@ -697,10 +652,8 @@ app.post("/api/ai/generate-whisper", async (req, res) => {
         [id, content, emotion, zone, 1],
       );
     }
-
     const whisper = await db.get("SELECT * FROM whispers WHERE id = ?", [id]);
     whisper.timestamp = formatTimestamp(whisper.created_at);
-
     // Emit real-time whisper event with AI indicator
     io.emit('new-whisper', {
       ...whisper,
@@ -709,7 +662,6 @@ app.post("/api/ai/generate-whisper", async (req, res) => {
       isAIGenerated: true,
       echoLabel: "echo from the courtyard"
     });
-
     // Emit zone-specific whisper event
     io.to(`zone-${zone}`).emit('zone-whisper', {
       ...whisper,
@@ -718,9 +670,7 @@ app.post("/api/ai/generate-whisper", async (req, res) => {
       isAIGenerated: true,
       echoLabel: "echo from the courtyard"
     });
-
     console.log(`🤖 AI whisper generated: ${id} in zone ${zone} with emotion ${emotion}`);
-
     res.status(201).json({
       ...whisper,
       isAIGenerated: true,
@@ -994,16 +944,17 @@ app.post("/api/search/related", async (req, res) => {
     }
 
     // 2. Query Chroma for similar vectors
-    const results = await (await whispersCollection).query({
-      queryEmbeddings: [embedding],
-      nResults: topK,
-    });
+    // const results = await (await whispersCollection).query({
+    //   queryEmbeddings: [embedding],
+    //   nResults: topK,
+    // });
 
     // 3. Fetch full whisper data for the results
-    const ids = results.ids[0];
-    const whispers = await db("whispers").whereIn("id", ids);
+    // const ids = results.ids[0];
+    // const whispers = await db("whispers").whereIn("id", ids);
 
-    res.json({ matches: whispers });
+    // res.json({ matches: whispers });
+    res.status(501).json({ error: "ChromaDB integration not implemented yet" }); // Placeholder
   } catch (err) {
     console.error("Error in /api/search/related:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -1026,20 +977,25 @@ app.post("/api/whispers/:id/check-ai-reply", async (req, res) => {
     if (aiReply && new Date(aiReply.created_at) - new Date(original.created_at) < 60 * 60 * 1000) {
       return res.json({ aiReply });
     }
-    // If not, trigger AI reply immediately
-    const EMOTIONS = ['calm', 'joy', 'nostalgia', 'hope', 'anxiety', 'love'];
-    const aiEmotion = EMOTIONS[Math.floor(Math.random() * EMOTIONS.length)];
-    const aiRes = await fetch(`${process.env.API_BASE_URL || 'http://localhost:3001'}/api/ai/generate-whisper`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ zone: original.zone, emotion: aiEmotion, context: 'reply', guest_id: null })
-    });
-    if (aiRes.ok) {
-      const aiWhisper = await aiRes.json();
-      return res.json({ aiReply: aiWhisper });
+    // If not, check if a job is already queued for this whisper
+    const job = await db('ai_reply_jobs').where({ whisper_id: id }).andWhere(function() {
+      this.where('status', 'pending').orWhere('status', 'running');
+    }).first();
+    if (!job) {
+      // Enqueue a job with a short delay (30s)
+      const EMOTIONS = ['calm', 'joy', 'nostalgia', 'hope', 'anxiety', 'love'];
+      const aiEmotion = EMOTIONS[Math.floor(Math.random() * EMOTIONS.length)];
+      await aiReplyJobQueue.enqueueJob({
+        whisperId: id,
+        zone: original.zone,
+        emotion: aiEmotion,
+        delayMs: 30 * 1000
+      });
+      console.log(`[AIReply] Manual pull: enqueued AI reply job for whisper ${id} in zone ${original.zone}`);
     } else {
-      return res.status(500).json({ error: 'Failed to generate AI reply' });
+      console.log(`[AIReply] Manual pull: job already queued for whisper ${id}`);
     }
+    return res.json({ status: 'pending' });
   } catch (err) {
     console.error('Error in manual AI reply pull:', err);
     res.status(500).json({ error: 'Failed to check or trigger AI reply' });
@@ -1529,5 +1485,8 @@ app.delete("/api/whisper_reports/:id", requireAdminJWT, async (req, res) => {
     res.status(500).json({ error: "Failed to delete report" });
   }
 });
+
+// After all other app setup, start the AI reply worker
+aiReplyJobQueue.startWorker();
 
 startServer();

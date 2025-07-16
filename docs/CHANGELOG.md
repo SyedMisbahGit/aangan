@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.8 (Unreleased)
+- AI reply flow refactored to async job queue (background-safe, non-blocking)
+- Ghost whisper generator: idempotent, time-of-day distribution, overlap avoidance
+- Standardized prompt templates (zone+emotion) for all AI/ghost/ambient replies
+- Enhanced logging, fallback, and retry logic for AI jobs
+- Manual AI pull endpoint is async and returns pending/cached
+- Unit tests for AI reply job queue
+- Documentation updated for all above changes
+
 ## v1.7 (Unreleased)
 - API documentation and architecture docs added for developer onboarding
 - Improved test coverage and CI reliability

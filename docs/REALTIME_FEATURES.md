@@ -4,9 +4,9 @@
 
 This document outlines the comprehensive real-time and AI-driven features implemented in the Aangan platform, transforming it from a static whisper app into a living, breathing social experience.
 
-## 🧩 Implemented Features
+## 🧑‍💻 Implemented Features
 
-### 1. Real-Time WebSocket Infrastructure ⭐️⭐️⭐️⭐️⭐️
+### 1. Real-Time WebSocket Infrastructure ⭐⭐⭐⭐⭐
 
 **Backend (Railway)**
 - **Socket.IO Integration**: Full WebSocket support with automatic reconnection
@@ -21,14 +21,18 @@ This document outlines the comprehensive real-time and AI-driven features implem
 - **Auto-reconnection**: Seamless connection recovery on network issues
 - **Event-driven Updates**: Real-time UI updates without page refreshes
 
-### 2. AI Echo Bot (The Listener) ⭐️⭐️⭐️⭐️
+### 2. AI Echo Bot (The Listener) ⭐⭐⭐⭐⭐
 
 **Features**
 - **Emotional Response Generation**: AI responds to whispers with contextually appropriate messages
 - **Response Types**: Comfort, Celebration, Reflection, Connection
-- **Smart Triggering**: 30% chance to respond, with 30-second cooldown
-- **Real-time Processing**: 2-5 second AI processing simulation
-- **Toast Notifications**: User notifications when AI responds
+- **Smart Triggering**: 30-50% chance to respond, with delay (2–15 min, or 30–90s for long/emotional whispers)
+- **Async Job Queue**: AI replies are scheduled as background jobs (never inline), ensuring user requests are never blocked
+- **Job Status**: Each AI reply job is tracked as `pending`, `running`, `done`, or `error` (with up to 3 retries)
+- **Shared Prompt Structure**: All AI/ghost/ambient replies use a single, structured prompt template (zone + emotion)
+- **Ghost Whispers**: Generated daily, distributed across the day, and avoid overlap with real whispers
+- **Manual AI Pull**: `/api/whispers/:id/check-ai-reply` returns cached reply or triggers async job (returns `{ status: 'pending' }`)
+- **Logging & Fallback**: All AI jobs are logged; errors are retried up to 3 times, then marked as error
 
 **Response Categories**
 - **Comfort**: For anxiety/sadness whispers
