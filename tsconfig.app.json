@@ -22,8 +22,10 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["frontend/src/*"],
+      "@lib/*": ["frontend/lib/*"],
+      "@theme": ["frontend/theme/theme.ts"]
     }
   },
-  "include": ["src"]
+  "include": ["frontend/src"]
 }

@@ -39,6 +39,22 @@ export async function up(knex) {
     tbl.string("guest_id", 64);
     tbl.timestamp("created_at").defaultTo(knex.fn.now());
   });
+
+  // Whisper Replies (NEW for v1.9)
+  await knex.schema.createTable("whisper_replies", tbl => {
+    tbl.increments("id").primary();
+    tbl.integer("whisper_id").references("id").inTable("whispers").onDelete("CASCADE");
+    tbl.text("content").notNullable();
+    tbl.string("guest_id", 64);
+    tbl.timestamp("created_at").defaultTo(knex.fn.now());
+  });
+
+  // Banned Users (for moderation)
+  await knex.schema.createTable("banned_users", tbl => {
+    tbl.string("guest_id", 64).primary();
+    tbl.timestamp("banned_at").defaultTo(knex.fn.now());
+    tbl.text("reason");
+  });
 }
 
 /**
@@ -49,6 +65,8 @@ export async function down(knex) {
   await knex.schema.dropTableIfExists("whisper_embeddings");
   await knex.schema.dropTableIfExists("whisper_reactions");
   await knex.schema.dropTableIfExists("whisper_reports");
+  await knex.schema.dropTableIfExists("whisper_replies");
+  await knex.schema.dropTableIfExists("banned_users");
   // Remove guest_id column if it exists (for rollback)
   const hasWhispers = await knex.schema.hasTable("whispers");
   if (hasWhispers) {

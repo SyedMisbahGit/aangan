@@ -1,12 +1,13 @@
 {
-  "files": ["src/setupTests.ts"],
   "references": [
     { "path": "./tsconfig.app.json" }
   ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["frontend/src/*"],
+      "@lib/*": ["frontend/lib/*"],
+      "@theme": ["frontend/theme/theme.ts"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,

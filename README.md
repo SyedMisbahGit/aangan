@@ -1,285 +1,78 @@
-# 🌸 Aangan - Dreamy Courtyard of Whispers  
-**An emotionally intelligent, poetic anonymous social platform with a quiet, reflective atmosphere**
+# Aangan Project
 
-[![React](https://img.shields.io/badge/React-18.0-blue.svg)](https://reactjs.org/)  
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)  
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0-38B2AC.svg)](https://tailwindcss.com/)  
-[![Vite](https://img.shields.io/badge/Vite-5.0-646CFF.svg)](https://vitejs.dev/)  
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
----
-
-## 🌙 What is Aangan?
-
-**Aangan** (आंगन) is a **dreamy, poetic courtyard** where hearts find their voice in whispers. It's an emotionally intelligent anonymous social platform designed for **Central University of Jammu (CUJ)** students, creating a **quiet, reflective space** for gentle self-expression and connection.
-
-*"Your Aangan keeps your silences safe"*
-
----
-
-## 🌐 Production URLs
-
-- **Frontend (Vercel):** [https://college-whisper.vercel.app/](https://college-whisper.vercel.app/)
-- **Backend (Railway):** [https://aangan-production.up.railway.app/api](https://aangan-production.up.railway.app/api)
-
----
-
-## ✨ Version 1.6 - Dreamy Courtyard Redesign
-
-### 🌸 New Experience
-- **Whispers** - Soft-scrollable whispers in light glass containers with floating emotion dots
-- **Gentle Interactions** - Tap to open modal diary view, long-press to "Echo," swipe left to "Fade"
-- **Poetic Presence** - Time-based poetic narration replacing emotion banners
-- **Embedded Bench** - Composer as a bench at the bottom with "Sit for a while… What's on your heart today?"
-- **Radial Bloom** - Emotion picker with optional AI whisper assistance
-
-### 🏡 Navigation Transformation
-- **Feed** → **Whispers** - The main courtyard experience
-- **Explore** → **Wander** - Organic tiles: "🏡 Near Me," "✨ Under the Stars," "💭 What's Being Felt"
-- **Lounge** → **Listen** - Velvet gradient background with whispers fading in like breath
-- **Menu** → **My Corner** - Soft list with "Sit in Silence" toggle for candle-lit meditation
-
-### 🕯️ New Features
-- **Gentle Presence Ribbon** - Poetic presence text like "9 hearts sat here quietly today 🫧"
-- **Sit in Silence** - Dims UI and lets whispers drift in every 15-20 seconds with candle flicker
-- **Hidden Scrollbars** - Clean, minimal interface
-- **No Counters** - Heart with ripple animation but no numbers
-- **Auto-fading Elements** - Like incense smoke, gentle and ephemeral
-
----
-
-## 🚚 Migration: Render → Railway + Vercel (v2.0.0)
-
-- Migrated backend from Render to Railway (free tier)
-- Removed Redis dependency, replaced with in-memory alternatives
-- Switched SQLite to persistent volume on Railway
-- Created new server entry point (`app.js`)
-- Improved health checks and error handling
-- Migrated frontend authentication from Supabase to custom AuthContext
-- Updated all API endpoints to use new Railway backend
-- Deployed frontend to Vercel for global CDN and PWA support
+Aangan is a full-stack, real-time, AI-powered campus platform built with Node.js/Express (backend), React + Vite (frontend), PostgreSQL, and Socket.IO.
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js v18+
-- npm or yarn
-- Modern browser (ES6+)
+1. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+2. **Run the backend:**
+   ```sh
+   cd backend
+   npm start
+   ```
+3. **Run the frontend:**
+   ```sh
+   cd frontend
+   npm run dev
+   ```
+4. **Run tests:**
+   ```sh
+   npx vitest run --config vitest.config.ts
+   ```
 
-### Installation (Development)
+---
 
-```bash
-git clone https://github.com/SyedMisbahGit/college-whisper.git
-cd college-whisper
-npm install
-npm run dev
+## 🗂️ Project Structure (2025)
+
 ```
-
-### Testing
-```bash
-# Run tests
-npm test
-
-# Run tests with coverage
-npm test -- --coverage
-
-# Run tests in watch mode
-npm test -- --watch
-```
-
-## 🤝 Contributing
-
-### Development Setup
-
-1. **Fork and clone** the repository
-2. **Install dependencies**: `npm install`
-3. **Set up environment**: Copy `backend/env.example` to `backend/.env`
-4. **Start development server**: `npm run dev`
-
-### Code Quality Standards
-
-- **Linting**: `npm run lint` (must pass with zero warnings)
-- **Testing**: `npm test` (must maintain 80% coverage)
-- **Type Safety**: All TypeScript errors must be resolved
-- **Commit Messages**: Use conventional commits format
-
-### Pre-commit Hooks
-
-The project uses Husky to enforce code quality:
-
-```bash
-# Install Husky (if not already installed)
-npx husky-init && npm install
-
-# Pre-commit hook will run:
-# - npm run lint
-# - npm test
-```
-
-### Pull Request Process
-
-1. Create a feature branch: `git checkout -b feature/your-feature`
-2. Make your changes following the code standards
-3. Run tests: `npm test -- --coverage`
-4. Run lint: `npm run lint -- --max-warnings=0`
-5. Commit with conventional format: `feat: add new feature`
-6. Push and create a PR
-
-### CI/CD Pipeline
-
-The GitHub Actions CI will:
-- ✅ Run linting with zero warnings allowed
-- ✅ Execute tests with 80% coverage threshold
-- ✅ Build the project successfully
-- ✅ Deploy to staging/production on merge to main
-
-### Environment Variables
-
-For local development, create a `.env` file:
-```
-VITE_API_URL=https://aangan-production.up.railway.app/api
-TEST=false  # Set to true for shorter rate limits during testing
-```
-
-### Security & Backup
-
-#### Environment Variables (Backend)
-```bash
-# Required for production
-SOCKET_SHARED_KEY=your-secret-socket-key
-ADMIN_PASS_HASH=$2a$10$your-bcrypt-hash-here
-JWT_SECRET=your-super-secret-jwt-key
-```
-
-#### Database Backups
-- **Automated**: Nightly backups via GitHub Actions (3 AM IST)
-- **Manual**: Run `node scripts/backup-db.js` to create compressed backup
-- **Location**: `backups/whispers-{timestamp}.gz`
-
-#### Security Features
-- **Socket.IO Authentication**: All real-time connections require `clientKey`
-- **Rate Limiting**: Per-IP limits on whispers and socket messages
-- **Content Moderation**: Pre-filter for inappropriate content
-- **Admin Password Hashing**: bcrypt-encrypted admin passwords
-- **Trust Proxy**: Proper IP detection for rate limiting
-
-#### Stress Testing
-```bash
-# Install Artillery
-npm install -g artillery
-
-# Run stress test (25 virtual users for 2 minutes)
-npx artillery run scripts/artillery.yml
+/ (root)
+  backend/           # Node.js/Express backend, migrations, seeds, backend scripts
+    src/             # Main backend source (app.js, db.js, routes/, etc.)
+    scripts/         # Backend-only scripts
+    migrations/      # DB migrations
+    seeds/           # DB seeders
+    config/          # Backend config (knexfile.js, env.example, etc.)
+  frontend/          # React + Vite frontend, components, pages, lib, theme
+    src/             # Main frontend source (components/, pages/, hooks/, etc.)
+    lib/             # Frontend helpers (aiWorker.ts, utils.ts, etc.)
+    public/          # Static assets (favicon, icons, manifest, etc.)
+    theme/           # Theme files (theme.ts, tailwind config, etc.)
+  shared/            # (empty, for future shared code)
+  scripts/           # Project-level scripts (maintenance, test, etc.)
+  docs/              # All markdown documentation
+  config/            # Project-level config (eslint, vite, postcss, etc.)
+  .env, .gitignore, README.md, etc.
 ```
 
 ---
 
-## 🌸 Aangan Experience
-
-### 🏡 The Courtyard
-- **Whispers** - Soft glass containers with gentle interactions
-- **Floating Emotion Dots** - Mood indicators with poetic tooltips
-- **Nested Replies** - Styled like folded paper, intimate and personal
-- **Poetic Presence** - Time-based narration that speaks to the heart
-
-### 🧘 Mindful Interactions
-- **Tap** - Open modal diary view for deeper reflection
-- **Long-press** - "Echo" a whisper, creating gentle ripples
-- **Swipe Left** - "Fade" whispers away like morning mist
-- **Heart** - Ripple animation without counters, pure emotion
-
-### 🎨 Design Philosophy
-- **Glassmorphism** - Light, blurred containers that feel ethereal
-- **Gentle Animations** - Smooth transitions that don't startle
-- **Poetic Language** - Every element speaks with intention
-- **Minimal Interface** - Hidden scrollbars, clean lines
-- **Candle-lit Moments** - "Sit in Silence" for meditation
+## 🔗 Aliases
+- `@` → `frontend/src`
+- `@lib` → `frontend/lib`
+- `@theme` → `frontend/theme/theme.ts`
 
 ---
 
-## 🔑 Key Features
-
-### Core Platform
-- 🕵️ **Anonymous Whispering** – Share without fear  
-- 🔄 **Real-time Feed** – Campus pulse in your hands  
-- 🤖 **Emotional Intelligence** – AI-powered mood detection  
-- 🛡️ **Smart Moderation** – Community-led filtering  
-- 🔐 **Privacy-First Design** – Secrets stay secrets
-
-### CUJ-Specific
-- 🧭 **CUJ Campus Pulse** – Live zones & activities  
-- 🗣️ **Dogri-Hinglish Prompts** – Local language integration  
-- 🏅 **Badge System** – Earn recognition  
-- 🎉 **Campus Rituals** – Traditional & modern  
-- 🌍 **Local Culture** – Jammu-specific flavor
-
-### 🌸 New v1.6 Features
-- 🏡 **Dreamy Courtyard** - Whispers in soft glass containers
-- 🧘 **Mindful Interactions** - Tap, long-press, swipe with intention
-- 🕯️ **Sit in Silence** - Meditation mode with candle flicker
-- 🌸 **Poetic Presence** - Time-based emotional narration
-- 🎨 **Gentle Design** - Auto-fading elements like incense smoke
+## 🧪 Testing
+- Uses [Vitest](https://vitest.dev/) for unit/integration tests
+- Test files use `.test.tsx`/`.test.ts` extensions and import from `vitest`
+- Test environment: `jsdom` (set in Vite config)
+- Test setup file: `frontend/src/setupTests.ts`
+- All tests pass as of July 2025
 
 ---
 
-## 🎨 Design System
-
-- 🎭 **Mood-Pulse Hybrid Themes**: Dormlight, InkBloom, Void  
-- 🌫️ **Glassmorphism** - Light, blurred, ethereal containers
-- 🎥 **Gentle Animations** - Smooth, non-startling transitions
-- 🌑 **Dark Mode** with candle-lit moments
-- 🎯 **Responsive Design** with perspective tilt
-- 🕯️ **Meditation Mode** - Dimmed UI with drifting whispers
+## 🤖 Automation
+- Barrel files (`index.ts`) auto-generated for components and lib
+- Codemod used to update all import paths
+- ESLint boundaries enforced
 
 ---
 
-## 🧠 Cultural Intelligence
-
-- 🌐 **Dogri Integration**  
-- 🏛️ **CUJ Context & Community Focus**  
-- 🤝 **Cultural Sensitivity in UX**
-- 🌸 **Poetic Language** - Every interaction speaks to the heart
-- 🏡 **Courtyard Metaphor** - Safe, intimate, communal space
-
----
-
-## 📱 Navigation Guide
-
-### 🌸 Whispers (Home)
-- Soft-scrollable feed of whispers
-- Floating emotion dots with tooltips
-- Embedded bench composer at bottom
-- Gentle interactions: tap, long-press, swipe
-
-### 🏡 Wander (Explore)
-- **Near Me** - Local whispers and activities
-- **Under the Stars** - Trending and popular content
-- **What's Being Felt** - Emotional pulse of campus
-
-### 🎧 Listen (Lounge)
-- Velvet gradient background
-- Whispers fade in slowly like breath
-- No buttons or controls, pure listening
-- Hidden scrollbars for clean experience
-
-### 🏠 My Corner (Menu)
-- **Diary** - Personal reflection space
-- **Settings** - App configuration
-- **About** - Platform information
-- **Sit in Silence** - Meditation toggle with candle flicker
-
----
-
-*"In the quiet corners of Aangan, every whisper finds its home"*
-
----
-
-## ⚡ UX Shortcuts
-
-- **Bench Composer**: The whisper composer is always visible as a soft bench at the bottom of the Whispers page. No floating + button—just tap the bench to start writing. The composer uses high-contrast, accessible styles for clarity.
-- **SoftBack Button**: On any deep route (when history allows), a soft, fixed '← Back' button appears in the top-left. Tap to gently return to the previous screen—no need to refresh or lose your place.
-- **Listen Swipe-to-Dismiss**: On mobile, swipe down anywhere in the Listen (Lounge) view to exit and return to the main app. The 'Press ESC to return' hint only appears on desktop.
-
----
+## 📚 Documentation
+- See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) for more details. 
