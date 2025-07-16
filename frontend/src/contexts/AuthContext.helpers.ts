@@ -1,17 +1,4 @@
-export interface User {
-  id: string;
-  email?: string;
-  isGuest?: boolean;
-}
+import { createContext } from 'react';
+import { AuthContextType } from './AuthContext.helpers';
 
-export interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  signInWithMagicLink: (email: string) => Promise<{ error: string | null }>;
-  signOut: () => void;
-  setOnboardingComplete: () => void;
-}
-
-export interface AuthProviderProps {
-  children: React.ReactNode;
-} 
+export const AuthContext = createContext<AuthContextType | undefined>(undefined); 

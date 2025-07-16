@@ -1,0 +1,31 @@
+name: Release & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v4
+      # Set up Node.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Install dependencies
+      - run: npm install
+      # Run release-please to automate changelog, version, and GitHub Release
+      - id: release
+        uses: google-github-actions/release-please-action@v4
+        with:
+          release-type: node
+          package-name: college-whisper
+      # Deploy to Railway if a release was created
+      - name: Deploy to Railway
+        if: ${{ steps.release.outputs.release_created == 'true' }}
+        run: npx railway up
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} 

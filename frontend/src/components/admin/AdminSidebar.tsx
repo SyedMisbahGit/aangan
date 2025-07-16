@@ -1,12 +1,13 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Shield, FileText, Ban, MessageCircle, Users, Settings, BarChart3 } from "lucide-react";
+import { Shield, FileText, Ban, MessageCircle, Users, Settings, BarChart3, Brain } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", icon: <BarChart3 size={18} />, to: "/admin/dashboard" },
   { label: "Reports", icon: <FileText size={18} />, to: "/admin/reports" },
   { label: "Bans", icon: <Ban size={18} />, to: "/admin/bans" },
   { label: "Whispers", icon: <MessageCircle size={18} />, to: "/admin/whispers" },
+  { label: "AI Jobs", icon: <Brain size={18} />, to: "/admin/ai-jobs" },
   { label: "Users", icon: <Users size={18} />, to: "/admin/users" },
   { label: "Settings", icon: <Settings size={18} />, to: "/admin/settings" },
 ];

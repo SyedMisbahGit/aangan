@@ -13,6 +13,11 @@ export async function up(knex) {
     tbl.timestamp("expires_at");
     tbl.timestamp("created_at").defaultTo(knex.fn.now());
     tbl.string("guest_id", 64); // NEW: guest_id for user association
+    // v1.10 additions:
+    tbl.string("emotional_tone", 32); // e.g., sadness, gratitude, etc.
+    tbl.string("whisper_type", 32); // e.g., vent, question, poetic, gratitude
+    tbl.string("soft_title", 64); // e.g., "Quiet Seeker"
+    tbl.string("ai_reply_status", 16); // queued, processing, done, failed
   });
 
   // Reactions (existing)
@@ -55,6 +60,17 @@ export async function up(knex) {
     tbl.timestamp("banned_at").defaultTo(knex.fn.now());
     tbl.text("reason");
   });
+
+  // v1.10: AI job logging table
+  await knex.schema.createTable("whisper_ai_logs", tbl => {
+    tbl.increments("id").primary();
+    tbl.integer("whisper_id").references("id").inTable("whispers").onDelete("CASCADE");
+    tbl.string("job_type", 32); // reply, title, etc.
+    tbl.string("status", 16); // queued, processing, done, failed
+    tbl.text("error");
+    tbl.timestamp("created_at").defaultTo(knex.fn.now());
+    tbl.timestamp("updated_at").defaultTo(knex.fn.now());
+  });
 }
 
 /**
@@ -67,9 +83,20 @@ export async function down(knex) {
   await knex.schema.dropTableIfExists("whisper_reports");
   await knex.schema.dropTableIfExists("whisper_replies");
   await knex.schema.dropTableIfExists("banned_users");
+  await knex.schema.dropTableIfExists("whisper_ai_logs");
   // Remove guest_id column if it exists (for rollback)
   const hasWhispers = await knex.schema.hasTable("whispers");
   if (hasWhispers) {
+    // Remove v1.10 columns if they exist
+    const columns = ["emotional_tone", "whisper_type", "soft_title", "ai_reply_status"];
+    for (const col of columns) {
+      const hasCol = await knex.schema.hasColumn("whispers", col);
+      if (hasCol) {
+        await knex.schema.table("whispers", tbl => {
+          tbl.dropColumn(col);
+        });
+      }
+    }
     const hasGuestId = await knex.schema.hasColumn("whispers", "guest_id");
     if (hasGuestId) {
       await knex.schema.table("whispers", tbl => {

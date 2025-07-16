@@ -1,7 +1,6 @@
-import React, { createContext, useState, ReactNode } from "react";
+import React, { useState, ReactNode } from "react";
 import { Whisper, WhispersContextType } from './WhispersContext.helpers';
-
-export const WhispersContext = React.createContext<WhispersContextType | undefined>(undefined);
+import { WhispersContext } from './WhispersContext.context';
 
 export const WhispersProvider = ({ children }: { children: ReactNode }) => {
   const [whispers, setWhispers] = useState<Whisper[]>([]);

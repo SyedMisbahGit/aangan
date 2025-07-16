@@ -75,4 +75,5 @@ Aangan is a full-stack, real-time, AI-powered campus platform built with Node.js
 ---
 
 ## 📚 Documentation
-- See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) for more details. 
+- See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) for more details.
+- **React Contexts:** All React context/provider files now follow the best-practice split: `XContext.context.ts` (context object) and `XContext.tsx` (provider/hook). See ARCHITECTURE.md for details. 

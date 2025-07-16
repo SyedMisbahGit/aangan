@@ -18,6 +18,7 @@ This document provides an overview of the main structure and components of the `
 - **src/**: Main frontend source code.
   - `components/`: React components, organized by feature/domain.
   - `constants/`, `contexts/`, `hooks/`, `lib/`, `services/`: App logic, state, and utilities.
+    - `contexts/`: Each context is split into `XContext.context.ts` (context object) and `XContext.tsx` (provider/hook) for Fast Refresh compliance.
   - `pages/`: Top-level pages/routes for the app.
   - `data/`: Static data files.
 - **test-*.js**: Test scripts for endpoints and features.

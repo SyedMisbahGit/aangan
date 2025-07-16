@@ -1,7 +1,6 @@
-import React, { createContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { SummerPulseContextType, SUMMER_PROMPTS, SUMMER_NARRATOR_LINES, SUMMER_TAGS, SUMMER_LABEL, SUMMER_END_DATE } from './SummerPulseContext.helpers';
-
-export const SummerPulseContext = createContext<SummerPulseContextType | undefined>(undefined);
+import { SummerPulseContext } from './SummerPulseContext.context';
 
 function getTimeIndex(): number {
   const hour = new Date().getHours();

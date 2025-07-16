@@ -1,9 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { useContext, useState, useEffect, ReactNode } from 'react';
 import { CUJHotspot, EmotionCluster, CUJHotspotContextType, CUJHotspotProviderProps } from './CUJHotspotContext.helpers';
+import { CUJHotspotContext } from './CUJHotspotContext.context';
 import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
 import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
-
-export const CUJHotspotContext = createContext<CUJHotspotContextType | undefined>(undefined);
 
 export const CUJHotspotLoadingFallback = () => (
   <AanganLoadingScreen 

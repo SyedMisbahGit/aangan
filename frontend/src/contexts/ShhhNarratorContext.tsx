@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { useContext, useState, useEffect, ReactNode } from 'react';
 import { NarratorState, EmotionalMemory, MoodArc, PoeticLine, ShhhNarratorContextType } from './ShhhNarratorContext.helpers';
+import { ShhhNarratorContext } from './ShhhNarratorContext.context';
 import { useCUJHotspots } from './use-cuj-hotspots';
 import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
 

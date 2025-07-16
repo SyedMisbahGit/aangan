@@ -38,3 +38,21 @@
 - Barrel files (`index.ts`) auto-generated for components and lib
 - Codemod used to update all import paths
 - ESLint boundaries enforced 
+
+## React Context & Provider Structure (Best Practice)
+
+- Each React context is now split into two files for optimal Fast Refresh and code clarity:
+  - `XContext.context.ts`: Exports only the context object (created with `createContext`).
+  - `XContext.tsx`: Exports the provider component and any hooks, importing the context from the `.context.ts` file.
+- This ensures that provider files only export components, which is required for React Fast Refresh to work optimally and avoids hot-reload issues.
+- Example usage:
+  ```ts
+  // src/contexts/AuthContext.context.ts
+  export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+  // src/contexts/AuthContext.tsx
+  import { AuthContext } from './AuthContext.context';
+  export const AuthProvider = ({ children }) => { ... }
+  export const useAuth = () => useContext(AuthContext);
+  ```
+- All major contexts (Auth, Realtime, Whispers, DreamTheme, SummerPulse, SummerSoul, CUJHotspot, ShhhNarrator) now follow this pattern. 

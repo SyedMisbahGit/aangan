@@ -1,8 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthContextType, AuthProviderProps } from './AuthContext.helpers';
+import { AuthContext } from './AuthContext.helpers';
 // import { useAuth } from "./use-auth";
-
-export const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);

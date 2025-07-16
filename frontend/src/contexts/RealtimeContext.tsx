@@ -1,13 +1,12 @@
-import React, { createContext, useEffect, useState, ReactNode } from 'react';
+import React, { useEffect, useState, ReactNode } from 'react';
 import { RealtimeContextType, RealtimeProviderProps } from './RealtimeContext.helpers';
+import { RealtimeContext } from './RealtimeContext.context';
 import realtimeService, { 
   RealtimeWhisper, 
   ZoneActivity, 
   EmotionPulse, 
   RealtimeActivity 
 } from '../services/realtime';
-
-const RealtimeContext = createContext<RealtimeContextType | undefined>(undefined);
 
 export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);

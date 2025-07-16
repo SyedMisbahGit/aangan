@@ -15,8 +15,8 @@ import { Server } from "socket.io";
 import fetch from "node-fetch";
 import { db } from "./db.js";
 import dayjs from "dayjs";
-import adminRoutes from "./routes/admin.js";
-import aiReplyJobQueue from './aiReplyJobQueue';
+import adminRoutes from "../routes/admin.js";
+import aiReplyJobQueue from "./aiReplyJobQueue.js";
 
 // Load environment variables
 dotenv.config();
@@ -487,6 +487,49 @@ app.get("/api/whispers", async (req, res) => {
   }
 });
 
+// --- Whisper Classifier Helper ---
+function classifyWhisper(content) {
+  // Emotional tone keywords
+  const toneMap = [
+    { tone: 'sadness', keywords: ['miss', 'alone', 'cry', 'waiting', 'empty', 'lost', 'silence', 'never comes', 'lonely'] },
+    { tone: 'gratitude', keywords: ['thank', 'grateful', 'appreciate', 'gratitude'] },
+    { tone: 'anxiety', keywords: ['worry', 'anxious', 'nervous', 'scared', 'afraid', 'panic'] },
+    { tone: 'hope', keywords: ['hope', 'wish', 'someday', 'maybe', 'dream'] },
+    { tone: 'joy', keywords: ['happy', 'joy', 'smile', 'laugh', 'excited', 'delight'] },
+    { tone: 'love', keywords: ['love', 'heart', 'dear', 'beloved', 'crush'] },
+    { tone: 'nostalgia', keywords: ['remember', 'memory', 'nostalgia', 'past', 'old days', 'used to'] },
+    { tone: 'calm', keywords: ['calm', 'peace', 'quiet', 'serene', 'still', 'gentle'] },
+  ];
+  let emotional_tone = 'neutral';
+  const lc = content.toLowerCase();
+  for (const { tone, keywords } of toneMap) {
+    if (keywords.some(k => lc.includes(k))) {
+      emotional_tone = tone;
+      break;
+    }
+  }
+  // Whisper type
+  let whisper_type = 'other';
+  if (lc.endsWith('?') || lc.startsWith('why') || lc.startsWith('how') || lc.startsWith('what') || lc.startsWith('when')) {
+    whisper_type = 'question';
+  } else if (lc.includes('thank') || lc.includes('grateful') || lc.includes('appreciate')) {
+    whisper_type = 'gratitude';
+  } else if (lc.includes('vent') || lc.includes('frustrated') || lc.includes('angry') || lc.includes('upset')) {
+    whisper_type = 'vent';
+  } else if (lc.split(' ').length > 10 && (lc.match(/[.,;:!?]/g) || []).length > 2) {
+    whisper_type = 'poetic';
+  }
+  return { emotional_tone, whisper_type };
+}
+
+// --- TEMPORARY: Whisper Classifier Test Endpoint ---
+app.post("/api/classify-whisper", (req, res) => {
+  const { content } = req.body;
+  if (!content) return res.status(400).json({ error: "Content is required" });
+  const result = classifyWhisper(content);
+  res.json(result);
+});
+
 app.post("/api/whispers", whisperLimiter, async (req, res) => {
   try {
     const { content, emotion, zone, expiresAt, embedding, guest_id, is_ai_generated } = req.body;
@@ -504,7 +547,27 @@ app.post("/api/whispers", whisperLimiter, async (req, res) => {
       expiryDate.setHours(expiryDate.getHours() + 24);
       expiryValue = expiryDate.toISOString();
     }
-    await db("whispers").insert({ id, content, emotion, zone, expires_at: expiryValue, guest_id });
+    // --- Classify whisper ---
+    const { emotional_tone, whisper_type } = classifyWhisper(content);
+    await db("whispers").insert({ id, content, emotion, zone, expires_at: expiryValue, guest_id, emotional_tone, whisper_type });
+    // --- Soft Title Generator ---
+    if (guest_id) {
+      const count = await db("whispers").where({ guest_id }).count("id as c");
+      const n = count[0]?.c || 0;
+      if (n >= 3 && n % 3 === 0) {
+        const recent = await db("whispers").where({ guest_id }).orderBy("created_at", "desc").limit(3);
+        // Simple ruleset for demo
+        const tones = recent.map(w => w.emotional_tone);
+        let soft_title = null;
+        if (tones.filter(t => t === 'sadness').length >= 2) soft_title = "Night Owl";
+        else if (tones.filter(t => t === 'gratitude').length >= 2) soft_title = "Kind Mirror";
+        else if (recent.some(w => w.whisper_type === 'question')) soft_title = "Quiet Seeker";
+        else if (recent.some(w => w.zone === 'courtyard')) soft_title = "Garden Dweller";
+        else if (recent.some(w => w.zone === 'corridor')) soft_title = "Corridor Thinker";
+        else soft_title = "Gentle Soul";
+        await db("whispers").where({ id }).update({ soft_title });
+      }
+    }
     // Embedding table (skip for SQLite)
     if (db.client.config.client === "pg" && process.env.OPENAI_KEY) {
       try {
@@ -610,7 +673,7 @@ const promptTemplates = [
   { zone: 'tapri', emotion: 'calm', promptTemplate: 'Over chai and conversation, the courtyard is quiet, but my heart is softer still.' },
   { zone: 'tapri', emotion: 'joy', promptTemplate: 'Over chai and conversation, laughter echoes between the walls today.' },
   { zone: 'tapri', emotion: 'nostalgia', promptTemplate: 'Over chai and conversation, old memories linger in the corners.' },
-  { zone: 'tapri', emotion: 'hope', promptTemplate: 'Over chai and conversation, tomorrow holds possibilities I can’t even imagine yet.' },
+  { zone: 'tapri', emotion: 'hope', promptTemplate: 'Over chai and conversation, tomorrow holds possibilities I can\'t even imagine yet.' },
   { zone: 'tapri', emotion: 'anxiety', promptTemplate: 'Over chai and conversation, my thoughts race, but the world moves slow.' },
   { zone: 'tapri', emotion: 'love', promptTemplate: 'Over chai and conversation, the connections we make here last a lifetime.' },
   // ...repeat for each zone/emotion combo, or use a function to generate
@@ -633,28 +696,34 @@ function getPrompt(zone, emotion) {
 // AI Whisper Generation Endpoint
 app.post("/api/ai/generate-whisper", async (req, res) => {
   try {
-    const { zone, emotion, context, guest_id } = req.body;
+    const { zone, emotion, context, guest_id, content, emotional_tone, whisper_type } = req.body;
     // Validate inputs
     if (!zone || !emotion) {
       return res.status(400).json({ error: "Zone and emotion are required" });
     }
-    // Use shared prompt structure
-    const content = getPrompt(zone, emotion);
-    const id = uuidv4();
-    if (guest_id) {
-      await db.run(
-        "INSERT INTO whispers (id, content, emotion, zone, is_ai_generated, guest_id) VALUES (?, ?, ?, ?, ?, ?)",
-        [id, content, emotion, zone, 1, guest_id],
-      );
-    } else {
-      await db.run(
-        "INSERT INTO whispers (id, content, emotion, zone, is_ai_generated) VALUES (?, ?, ?, ?, ?)",
-        [id, content, emotion, zone, 1],
-      );
+    // Use new prompt structure
+    let aiReply = `In this quiet moment, your feelings are heard.`;
+    if (content) {
+      aiReply = `Given this anonymous post from a user in a quiet emotional space, generate a gentle, poetic response that matches its tone. Avoid advice. Just emotionally sit with the whisper.\n\nWhisper: "${content}"\n\nRespond in under 30 words.`;
+      // For demo, just echo a poetic line based on tone/type
+      if (whisper_type === 'question') aiReply = "Sometimes, the night holds more questions than answers, but you are not alone in the wondering.";
+      else if (emotional_tone === 'sadness') aiReply = "Your longing is felt in the hush of the night.";
+      else if (emotional_tone === 'gratitude') aiReply = "Gratitude glimmers softly, even in silence.";
+      else if (emotional_tone === 'anxiety') aiReply = "May gentle breaths find you in the quiet.";
+      else if (emotional_tone === 'hope') aiReply = "Hope lingers, quietly, just beyond the silence.";
+      else if (emotional_tone === 'joy') aiReply = "A small joy stirs, waiting to be noticed.";
+      else if (emotional_tone === 'love') aiReply = "Love echoes softly, even when unspoken.";
+      else if (emotional_tone === 'nostalgia') aiReply = "Memories drift gently, never truly gone.";
+      else if (emotional_tone === 'calm') aiReply = "There is peace in simply being here.";
     }
+    // Simulate AI reply (replace with real model call in production)
+    const id = uuidv4();
+    await db.run(
+      "INSERT INTO whispers (id, content, emotion, zone, is_ai_generated, guest_id) VALUES (?, ?, ?, ?, ?, ?)",
+      [id, aiReply, emotion, zone, 1, guest_id],
+    );
     const whisper = await db.get("SELECT * FROM whispers WHERE id = ?", [id]);
     whisper.timestamp = formatTimestamp(whisper.created_at);
-    // Emit real-time whisper event with AI indicator
     io.emit('new-whisper', {
       ...whisper,
       timestamp: formatTimestamp(whisper.created_at),
@@ -662,7 +731,6 @@ app.post("/api/ai/generate-whisper", async (req, res) => {
       isAIGenerated: true,
       echoLabel: "echo from the courtyard"
     });
-    // Emit zone-specific whisper event
     io.to(`zone-${zone}`).emit('zone-whisper', {
       ...whisper,
       timestamp: formatTimestamp(whisper.created_at),
