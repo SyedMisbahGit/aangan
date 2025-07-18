@@ -312,3 +312,18 @@ See `docs/UX_V2_ALIVE_AND_REAL.md` for a detailed breakdown.
 - Remove unsupported props from object literals and component calls (e.g., title/description in toast).
 
 ---
+
+# Aangan Platform (vNext)
+
+## Key Standards
+- All pages/components use Suspense and error boundaries with animated skeletons and universal error pages.
+- Analytics and error logging include session, route, and breadcrumbs.
+- User feedback modal is required on all error pages.
+- Storybook and MSW are used for all fallback UIs and network simulation.
+- E2E, accessibility, and visual regression tests are required for all skeletons and error states.
+- Offline banner and retry/report actions are required for robust UX.
+
+## Docs
+- See [DEVELOPMENT_CHECKLIST.md](./DEVELOPMENT_CHECKLIST.md), [UX_V2_ALIVE_AND_REAL.md](./UX_V2_ALIVE_AND_REAL.md), [ARCHITECTURE.md](./ARCHITECTURE.md)
+
+---

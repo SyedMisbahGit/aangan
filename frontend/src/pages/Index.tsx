@@ -23,6 +23,10 @@ import { UserProfile } from "../components/UserProfile";
 import { HelpCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { WelcomeOnboarding } from '../components/onboarding/WelcomeOnboarding';
+import ErrorBoundary from "../components/shared/ErrorBoundary";
+import { getErrorMessage } from "../lib/errorUtils";
+import { Button } from "../components/ui/button";
+import { useRef } from "react";
 
 // Sample data for demonstration
 const sampleDiaryEntries = [
@@ -128,6 +132,13 @@ const IndexPage: React.FC = () => {
     localStorage.setItem('aangan_intro_seen', '1');
   };
 
+  const mainRef = useRef<HTMLMainElement>(null);
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.focus();
+    }
+  }, []);
+
   const tabComponents: Record<string, React.ReactNode> = {
     aangan: (
       <div className="aangan-orb emotion-aura-joy p-8 mt-8">
@@ -175,7 +186,7 @@ const IndexPage: React.FC = () => {
           </h2>
           <FloatingDiaryOrbs
             entries={sampleDiaryEntries}
-            onOrbClick={(entry) => console.log("Clicked diary orb:", entry)}
+            onOrbClick={() => {}}
           />
         </div>
         {/* Whisper Constellation */}
@@ -185,7 +196,7 @@ const IndexPage: React.FC = () => {
           </h2>
           <WhisperConstellation
             whispers={sampleWhispers}
-            onWhisperClick={(whisper) => console.log("Clicked whisper:", whisper)}
+            onWhisperClick={() => {}}
           />
         </div>
         <MetamorphosisTracker />
@@ -202,7 +213,7 @@ const IndexPage: React.FC = () => {
     ),
     whispers: (
       <div className="aangan-orb emotion-aura-joy p-8 mt-8">
-        <WhisperConstellation whispers={sampleWhispers} onWhisperClick={(whisper) => console.log("Clicked whisper:", whisper)} />
+        <WhisperConstellation whispers={sampleWhispers} onWhisperClick={() => {}} />
       </div>
     ),
     compass: (
@@ -223,90 +234,99 @@ const IndexPage: React.FC = () => {
   };
 
   return (
-    <div className="aangan min-h-screen relative flex flex-col items-center justify-start overflow-x-hidden">
-      {/* Onboarding Modal (from Help) */}
-      <WelcomeOnboarding
-        isOpen={showOnboarding}
-        onComplete={() => setShowOnboarding(false)}
-        onSkip={() => setShowOnboarding(false)}
-      />
-      {/* Poetic Intro Modal */}
-      {showIntro && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-auto text-center animate-fade-in">
-            <h2 className="text-2xl font-serif font-bold mb-4 text-aangan-primary">Welcome to Aangan</h2>
-            <p className="text-lg text-gray-700 mb-6 italic">A courtyard of quiet voices.<br/>Sit for a while. Whisper what you carry.</p>
-            <button
-              onClick={handleCloseIntro}
-              className="mt-2 px-6 py-2 rounded-lg bg-aangan-primary text-white font-semibold shadow hover:bg-aangan-primary/90 transition"
-            >
-              Enter the Courtyard
-            </button>
+    <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the courtyard.">
+      <div className="aangan min-h-screen relative flex flex-col items-center justify-start overflow-x-hidden">
+        {/* Onboarding Modal (from Help) */}
+        <WelcomeOnboarding
+          isOpen={showOnboarding}
+          onComplete={() => setShowOnboarding(false)}
+          onSkip={() => setShowOnboarding(false)}
+        />
+        {/* Poetic Intro Modal */}
+        {showIntro && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-auto text-center animate-fade-in">
+              <h2 className="text-2xl font-serif font-bold mb-4 text-aangan-primary">Welcome to Aangan</h2>
+              <p className="text-lg text-gray-700 mb-6 italic">A courtyard of quiet voices.<br/>Sit for a while. Whisper what you carry.</p>
+              <Button
+                onClick={handleCloseIntro}
+                className="mt-2 px-6 py-2 rounded-lg bg-aangan-primary text-white font-semibold shadow hover:bg-aangan-primary/90 transition"
+              >
+                Enter the Courtyard
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
-      {/* Floating Help Icon */}
-      <button
-        className="fixed bottom-24 right-6 z-50 bg-aangan-primary text-white rounded-full p-3 shadow-lg hover:bg-aangan-primary/90 transition"
-        aria-label="Help"
-        onClick={() => setShowHelp(true)}
-      >
-        <HelpCircle className="w-6 h-6" />
-      </button>
-      {/* Help Modal */}
-      {showHelp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowHelp(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-auto text-center animate-fade-in" onClick={e => e.stopPropagation()}>
-            <h2 className="text-xl font-bold mb-4 text-aangan-primary">Need Help?</h2>
-            <p className="text-base text-gray-700 mb-6">Tap a tab below to explore. Use the composer to share a whisper. Your journey is anonymous and safe. If you feel lost, just start with "I feel something" or "Wander".</p>
-            <button
-              onClick={() => setShowOnboarding(true)}
-              className="mb-4 px-6 py-2 rounded-lg bg-indigo-100 text-indigo-700 font-semibold shadow hover:bg-indigo-200 transition"
-            >
-              Show Onboarding Guide
-            </button>
-            <button
-              onClick={() => setShowWhy(true)}
-              className="mb-4 px-6 py-2 rounded-lg bg-orange-100 text-orange-700 font-semibold shadow hover:bg-orange-200 transition"
-            >
-              Why this exists
-            </button>
-            <button
-              onClick={() => setShowHelp(false)}
-              className="px-6 py-2 rounded-lg bg-aangan-primary text-white font-semibold shadow hover:bg-aangan-primary/90 transition"
-            >
-              Close
-            </button>
+        )}
+        {/* Floating Help Icon */}
+        <Button
+          className="fixed bottom-24 right-6 z-50 bg-aangan-primary text-white rounded-full p-3 shadow-lg hover:bg-aangan-primary/90 transition"
+          aria-label="Help"
+          onClick={() => setShowHelp(true)}
+        >
+          <HelpCircle className="w-6 h-6" />
+        </Button>
+        {/* Help Modal */}
+        {showHelp && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowHelp(false)}>
+            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-auto text-center animate-fade-in" onClick={e => e.stopPropagation()}>
+              <h2 className="text-xl font-bold mb-4 text-aangan-primary">Need Help?</h2>
+              <p className="text-base text-gray-700 mb-6">Tap a tab below to explore. Use the composer to share a whisper. Your journey is anonymous and safe. If you feel lost, just start with "I feel something" or "Wander".</p>
+              <Button
+                onClick={() => setShowOnboarding(true)}
+                className="mb-4 px-6 py-2 rounded-lg bg-indigo-100 text-indigo-700 font-semibold shadow hover:bg-indigo-200 transition"
+              >
+                Show Onboarding Guide
+              </Button>
+              <Button
+                onClick={() => setShowWhy(true)}
+                className="mb-4 px-6 py-2 rounded-lg bg-orange-100 text-orange-700 font-semibold shadow hover:bg-orange-200 transition"
+              >
+                Why this exists
+              </Button>
+              <Button
+                onClick={() => setShowHelp(false)}
+                className="px-6 py-2 rounded-lg bg-aangan-primary text-white font-semibold shadow hover:bg-aangan-primary/90 transition"
+              >
+                Close
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
-      {/* Why This Exists Modal */}
-      {showWhy && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowWhy(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-auto text-center animate-fade-in" onClick={e => e.stopPropagation()}>
-            <h2 className="text-2xl font-bold mb-4 text-orange-600">🧡 Why does Aangan exist?</h2>
-            <p className="text-lg text-gray-700 mb-6">Aangan is your emotional space — post anonymously, whisper what’s on your mind, and feel less alone.<br/><br/>We believe everyone deserves a gentle place to be heard, without judgment or pressure. This is why Aangan exists.</p>
-            <button
-              onClick={() => setShowWhy(false)}
-              className="px-6 py-2 rounded-lg bg-orange-500 text-white font-semibold shadow hover:bg-orange-600 transition"
-            >
-              Close
-            </button>
+        )}
+        {/* Why This Exists Modal */}
+        {showWhy && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowWhy(false)}>
+            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-auto text-center animate-fade-in" onClick={e => e.stopPropagation()}>
+              <h2 className="text-2xl font-bold mb-4 text-orange-600">🧡 Why does Aangan exist?</h2>
+              <p className="text-lg text-gray-700 mb-6">Aangan is your emotional space — post anonymously, whisper what’s on your mind, and feel less alone.<br/><br/>We believe everyone deserves a gentle place to be heard, without judgment or pressure. This is why Aangan exists.</p>
+              <Button
+                onClick={() => setShowWhy(false)}
+                className="px-6 py-2 rounded-lg bg-orange-500 text-white font-semibold shadow hover:bg-orange-600 transition"
+              >
+                Close
+              </Button>
+            </div>
           </div>
+        )}
+        <ParticleBackground />
+        {/* Navigation */}
+        <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl">
+          <AanganNav activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
-      )}
-      <ParticleBackground />
-      {/* Navigation */}
-      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl">
-        <AanganNav activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Main Content Area */}
+        <main
+          role="main"
+          aria-labelledby="page-title"
+          tabIndex={-1}
+          ref={mainRef}
+          className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center pt-48 pb-16 px-4"
+        >
+          <h1 id="page-title" className="sr-only">Aangan Home</h1>
+          {tabComponents[activeTab]}
+        </main>
+        <PWAInstallPrompt />
+        <WhisperMurmurs />
       </div>
-      {/* Main Content Area */}
-      <main className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center pt-48 pb-16 px-4">
-        {tabComponents[activeTab]}
-      </main>
-      <PWAInstallPrompt />
-      <WhisperMurmurs />
-    </div>
+    </ErrorBoundary>
   );
 };
 

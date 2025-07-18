@@ -5,6 +5,8 @@ import { DreamHeader } from '../components/shared/DreamHeader';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { useNavigate } from 'react-router-dom';
+import ErrorBoundary from "../components/shared/ErrorBoundary";
+import { getErrorMessage } from "../lib/errorUtils";
 
 const poeticSuccessLines = [
   "A whisper key has been sent to your inbox.",
@@ -28,11 +30,11 @@ const Login: React.FC = () => {
   const emailInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [magicLinkError, setMagicLinkError] = useState<string | null>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Auto-focus email input
-    if (emailInputRef.current) {
-      emailInputRef.current.focus();
+    if (mainRef.current) {
+      mainRef.current.focus();
     }
     // Magic-link callback handling
     const params = new URLSearchParams(window.location.search);
@@ -71,71 +73,80 @@ const Login: React.FC = () => {
   };
 
   return (
-    <DreamLayout>
-      <div className="min-h-screen flex flex-col items-center justify-center bg-cream-100 transition-colors duration-500">
-        <DreamHeader
-          title="Welcome to Aangan"
-          subtitle="A poetic, anonymous campus sanctuary"
-          className="mb-2"
-        />
-        <div className="w-full max-w-md bg-paper-light rounded-2xl shadow-soft p-8 mt-6 border border-cream-200 transition-colors duration-500">
-          {magicLinkError ? (
-            <div className="text-center text-2xl text-aangan-accent font-poetic py-12">
-              {magicLinkError}
-              <br />
-              <Button className="mt-6" onClick={() => { setMagicLinkError(null); window.history.replaceState({}, document.title, '/login'); }}>
-                Request New Link
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="text-center mb-4 font-poetic text-lg text-inkwell-80 italic">
-                Every journey begins with a single whisper.
-              </div>
-                              <label className="block text-inkwell font-medium mb-2" htmlFor="email">
-                CUJ Email Address
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="yourid@cujammu.ac.in"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                disabled={sent || loading}
-                                  className="mb-2 bg-aangan-paper text-aangan-text-primary border border-aangan-border focus:ring-aangan-primary"
-                autoComplete="email"
-                ref={emailInputRef}
-              />
-              {errorLine && (
-                <div className="text-red-600 text-sm mb-2 italic">{errorLine}</div>
-              )}
-              {sent ? (
-                <div className="text-green-700 text-center font-medium animate-fade-in italic">
-                  {successLine}
-                  <br />
-                  <span className="text-green-800 text-sm">Check your email to continue.</span>
-                </div>
-              ) : (
-                <Button
-                  type="submit"
-                  className="w-full bg-aangan-primary hover:bg-aangan-accent text-white font-semibold py-2 px-4 rounded-xl shadow-aangan-md transition focus:outline-none focus:ring-2 focus:ring-aangan-accent focus:ring-offset-2 disabled:opacity-50"
-                  disabled={loading}
-                >
-                  {loading ? 'Sending...' : 'Send Magic Link'}
+    <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in login.">
+      <DreamLayout>
+        <main
+          role="main"
+          aria-labelledby="page-title"
+          tabIndex={-1}
+          ref={mainRef}
+          className="min-h-screen flex flex-col items-center justify-center bg-cream-100 transition-colors duration-500"
+        >
+          <h1 id="page-title" className="sr-only">Login</h1>
+          <DreamHeader
+            title="Welcome to Aangan"
+            subtitle="A poetic, anonymous campus sanctuary"
+            className="mb-2"
+          />
+          <div className="w-full max-w-md bg-paper-light rounded-2xl shadow-soft p-8 mt-6 border border-cream-200 transition-colors duration-500">
+            {magicLinkError ? (
+              <div className="text-center text-2xl text-aangan-accent font-poetic py-12">
+                {magicLinkError}
+                <br />
+                <Button className="mt-6" onClick={() => { setMagicLinkError(null); window.history.replaceState({}, document.title, '/login'); }}>
+                  Request New Link
                 </Button>
-              )}
-            </form>
-          )}
-          <button
-            onClick={handleGuestLogin}
-            className="w-full bg-aangan-primary hover:bg-aangan-accent text-white font-semibold py-2 px-4 rounded-xl shadow-aangan-md transition focus:outline-none focus:ring-2 focus:ring-aangan-accent focus:ring-offset-2 mt-4"
-          >
-            Continue as Guest
-          </button>
-        </div>
-      </div>
-    </DreamLayout>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="text-center mb-4 font-poetic text-lg text-inkwell-80 italic">
+                  Every journey begins with a single whisper.
+                </div>
+                <label className="block text-inkwell font-medium mb-2" htmlFor="email">
+                  CUJ Email Address
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="yourid@cujammu.ac.in"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                  disabled={sent || loading}
+                  className="mb-2 bg-aangan-paper text-aangan-text-primary border border-aangan-border focus:ring-aangan-primary"
+                  autoComplete="email"
+                  ref={emailInputRef}
+                />
+                {errorLine && (
+                  <div className="text-red-600 text-sm mb-2 italic">{errorLine}</div>
+                )}
+                {sent ? (
+                  <div className="text-green-700 text-center font-medium animate-fade-in italic">
+                    {successLine}
+                    <br />
+                    <span className="text-green-800 text-sm">Check your email to continue.</span>
+                  </div>
+                ) : (
+                  <Button
+                    type="submit"
+                    className="w-full bg-aangan-primary hover:bg-aangan-accent text-white font-semibold py-2 px-4 rounded-xl shadow-aangan-md transition focus:outline-none focus:ring-2 focus:ring-aangan-accent focus:ring-offset-2 disabled:opacity-50"
+                    disabled={loading}
+                  >
+                    {loading ? 'Sending...' : 'Send Magic Link'}
+                  </Button>
+                )}
+              </form>
+            )}
+            <button
+              onClick={handleGuestLogin}
+              className="w-full bg-aangan-primary hover:bg-aangan-accent text-white font-semibold py-2 px-4 rounded-xl shadow-aangan-md transition focus:outline-none focus:ring-2 focus:ring-aangan-accent focus:ring-offset-2 mt-4"
+            >
+              Continue as Guest
+            </button>
+          </div>
+        </main>
+      </DreamLayout>
+    </ErrorBoundary>
   );
 };
 

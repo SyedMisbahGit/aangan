@@ -15,7 +15,6 @@ export const AanganThemeProvider: React.FC<AanganThemeProviderProps> = ({ childr
     const initialTheme = savedTheme || systemTheme;
     setThemeState(initialTheme);
     setIsInitialized(true);
-    console.log('AanganThemeContext ready:', { theme: initialTheme });
   }, []);
 
   // Apply theme to document and ensure proper z-index stacking

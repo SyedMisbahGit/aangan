@@ -16,9 +16,18 @@ import { Link } from 'react-router-dom';
 import { SilenceMode } from '../components/ambient/SilenceMode';
 import { cn } from '@/lib/utils';
 import NotificationFeed from '../components/notifications/NotificationFeed';
+import ErrorBoundary from "../components/shared/ErrorBoundary";
+import { getErrorMessage } from "../lib/errorUtils";
+import { useRef } from "react";
 
 const MyCorner: React.FC = () => {
   const [isSilenceMode, setIsSilenceMode] = useState(false);
+  const mainRef = useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.focus();
+    }
+  }, []);
 
   const cornerItems = [
     {
@@ -62,62 +71,70 @@ const MyCorner: React.FC = () => {
 
   return (
     <>
-      <DreamLayout>
-        <div className="bg-aangan-ground min-h-screen">
-          <DreamHeader
-            title="My Corner"
-            subtitle="A quiet space for reflection and self-care."
-          />
-
-          <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-            {/* Notification Feed */}
-            <NotificationFeed />
-            {/* Sit in Silence Toggle */}
-            <motion.div variants={cardVariants} initial="hidden" animate="visible" custom={0}>
-              <Card className="bg-aangan-paper/80 backdrop-blur-lg border border-aangan-dusk">
-                <CardContent className="p-5 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Moon className="w-6 h-6 text-night-blue" />
-                    <div>
-                      <h3 className="font-serif text-text-poetic">Sit in Silence</h3>
-                      <p className="text-sm text-text-metaphor">
-                        Dim the courtyard and let whispers drift by.
-                      </p>
+      <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in your corner.">
+        <DreamLayout>
+          <div className="bg-aangan-ground min-h-screen">
+            <DreamHeader
+              title="My Corner"
+              subtitle="A quiet space for reflection and self-care."
+            />
+            <main
+              role="main"
+              aria-labelledby="page-title"
+              tabIndex={-1}
+              ref={mainRef}
+              className="max-w-2xl mx-auto px-4 py-6 space-y-4"
+            >
+              <h1 id="page-title" className="sr-only">My Corner</h1>
+              {/* Notification Feed */}
+              <NotificationFeed />
+              {/* Sit in Silence Toggle */}
+              <motion.div variants={cardVariants} initial="hidden" animate="visible" custom={0}>
+                <Card className="bg-aangan-paper/80 backdrop-blur-lg border border-aangan-dusk">
+                  <CardContent className="p-5 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <Moon className="w-6 h-6 text-night-blue" />
+                      <div>
+                        <h3 className="font-serif text-text-poetic">Sit in Silence</h3>
+                        <p className="text-sm text-text-metaphor">
+                          Dim the courtyard and let whispers drift by.
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <Switch
-                    checked={isSilenceMode}
-                    onCheckedChange={setIsSilenceMode}
-                  />
-                </CardContent>
-              </Card>
-            </motion.div>
+                    <Switch
+                      checked={isSilenceMode}
+                      onCheckedChange={setIsSilenceMode}
+                    />
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-            {/* Corner Items */}
-            {cornerItems.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <motion.div key={item.title} variants={cardVariants} initial="hidden" animate="visible" custom={index + 1}>
-                  <Link to={item.href}>
-                    <Card className="bg-aangan-paper/80 backdrop-blur-lg border border-aangan-dusk hover:border-terracotta-orange/50 transition-colors">
-                      <CardContent className="p-5 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <Icon className="w-6 h-6 text-night-blue" />
-                          <div>
-                            <h3 className="font-serif text-text-poetic">{item.title}</h3>
-                            <p className="text-sm text-text-metaphor">{item.description}</p>
+              {/* Corner Items */}
+              {cornerItems.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div key={item.title} variants={cardVariants} initial="hidden" animate="visible" custom={index + 1}>
+                    <Link to={item.href}>
+                      <Card className="bg-aangan-paper/80 backdrop-blur-lg border border-aangan-dusk hover:border-terracotta-orange/50 transition-colors">
+                        <CardContent className="p-5 flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <Icon className="w-6 h-6 text-night-blue" />
+                            <div>
+                              <h3 className="font-serif text-text-poetic">{item.title}</h3>
+                              <p className="text-sm text-text-metaphor">{item.description}</p>
+                            </div>
                           </div>
-                        </div>
-                        <ArrowRight className="w-5 h-5 text-text-metaphor" />
-                      </CardContent>
-                    </Card>
-                  </Link>
-                </motion.div>
-              );
-            })}
+                          <ArrowRight className="w-5 h-5 text-text-metaphor" />
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </main>
           </div>
-        </div>
-      </DreamLayout>
+        </DreamLayout>
+      </ErrorBoundary>
       <SilenceMode isEnabled={isSilenceMode} />
     </>
   );

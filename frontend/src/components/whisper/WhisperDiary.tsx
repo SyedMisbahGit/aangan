@@ -113,9 +113,7 @@ const WhisperDiary: React.FC = () => {
   };
 
   const handlePost = (content: string, zone: string) => {
-    // TODO: Integrate with backend or state for new post
     // For now, just log
-    console.log("New Whisper:", { content, zone });
   };
 
   if (isLocked) {
@@ -160,7 +158,6 @@ const WhisperDiary: React.FC = () => {
       <Suspense fallback={<div className="bg-white/10 rounded-lg p-8 animate-pulse h-32 mb-4" />}>
         <PostCreator onPost={handlePost} />
       </Suspense>
-      {/* TODO: Render diary entries as floating orbs */}
     </div>
   );
 };

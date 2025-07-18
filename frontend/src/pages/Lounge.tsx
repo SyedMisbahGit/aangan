@@ -5,6 +5,9 @@ import { CandleFlicker } from '../components/ambient/CandleFlicker';
 // import WhisperCard from '../components/whisper/WhisperCard';
 const WhisperCard = lazy(() => import('../components/whisper/WhisperCard'));
 import { useWhispers } from '../services/api';
+import ErrorBoundary from "../components/shared/ErrorBoundary";
+import { getErrorMessage } from "../lib/errorUtils";
+import { useRef } from "react";
 
 const Listen: React.FC = () => {
   const [currentWhisperIndex, setCurrentWhisperIndex] = useState(0);
@@ -46,10 +49,23 @@ const Listen: React.FC = () => {
     return () => clearInterval(whisperCycle);
   }, [whispersToShow.length]);
 
+  const mainRef = useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.focus();
+    }
+  }, []);
+
   return (
-    <div className="fixed inset-0 bg-aangan-dusk flex items-center justify-center p-4 overflow-hidden">
-      <CandleFlicker />
-      <div className="w-full max-w-md mx-auto relative">
+    <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the lounge.">
+      <main
+        role="main"
+        aria-labelledby="page-title"
+        tabIndex={-1}
+        ref={mainRef}
+        className="fixed inset-0 bg-aangan-dusk flex items-center justify-center p-4 overflow-hidden"
+      >
+        <h1 id="page-title" className="sr-only">Lounge</h1>
         {/* Ambient Presence Avatars & Poetic Line */}
         <div className="flex flex-col items-center mb-6">
           <div className="flex -space-x-2 mb-2">
@@ -140,7 +156,7 @@ const Listen: React.FC = () => {
             )}
           </AnimatePresence>
         )}
-      </div>
+      </main>
       {/* Gentle instruction (hidden, but Esc still works) */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -150,7 +166,7 @@ const Listen: React.FC = () => {
       >
         Return to Courtyard
       </motion.div>
-    </div>
+    </ErrorBoundary>
   );
 };
 

@@ -257,7 +257,6 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
     // Simulate async initialization (replace with real async if needed)
     setTimeout(() => {
       setLoading(false);
-      console.log('CUJHotspotContext ready');
     }, 300); // Simulate a short delay
   }, []);
 

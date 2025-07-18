@@ -8,6 +8,9 @@ import { Input } from '../components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cujHotspots } from '../constants/cujHotspots';
 import WaterTheCourtyard from '../components/onboarding/WaterTheCourtyard';
+import ErrorBoundary from "../components/shared/ErrorBoundary";
+import { getErrorMessage } from "../lib/errorUtils";
+import { useRef } from "react";
 
 const steps = [
   {
@@ -39,6 +42,13 @@ const NewOnboarding: React.FC = () => {
   const [locationStatus, setLocationStatus] = useState<'idle' | 'detecting' | 'success' | 'error'>('idle');
   const [showAnimation, setShowAnimation] = useState(false);
   const navigate = useNavigate();
+  const mainRef = useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     if (showAnimation) {
@@ -77,83 +87,87 @@ const NewOnboarding: React.FC = () => {
   if (showAnimation) {
     return <WaterTheCourtyard />;
   }
-
   return (
-    <DreamLayout>
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-rose-50 via-white to-blue-50 p-4">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-            className="w-full max-w-md text-center"
-          >
-            <DreamHeader title={steps[step].title} subtitle={steps[step].subtitle} />
-
-            {step === 1 && (
-              <Input
-                type="text"
-                placeholder="e.g. Midnight Dreamer"
-                aria-label="Enter your whisper name"
-                value={whisperName}
-                onChange={(e) => setWhisperName(e.target.value)}
-                className="mt-4 text-white placeholder:text-gray-200 bg-black/40 shadow-xl backdrop-blur-lg focus:ring-2 focus:ring-aangan-primary/80 focus:border-aangan-primary border-white/30 border-2"
-              />
-            )}
-
-            {step === 2 && (
-              <div className="mt-4">
-                <Button onClick={handleLocationDetect} disabled={locationStatus === 'detecting'}>
-                  {locationStatus === 'detecting' ? 'Detecting...' : 'Detect my location'}
-                </Button>
-                {locationStatus === 'error' && (
-                  <p className="text-sm text-red-500 mt-2">
-                    Could not detect your location. Please select a zone manually.
-                  </p>
-                )}
-                {locationStatus === 'success' && (
-                  <p className="text-sm text-green-500 mt-2">
-                    Location detected successfully!
-                  </p>
-                )}
-                {locationStatus === 'idle' && (
-                  <p className="text-sm text-gray-500 mt-2">
-                    We'll ask for permission to use your location. We only use it to find whispers near you and never store it.
-                  </p>
-                )}
-              </div>
-            )}
-
-            {step === 3 && (
-              <div className="mt-4 space-y-4">
-                {Object.entries(Object.groupBy(cujHotspots, ({ group }) => group)).map(([group, hotspots]) => (
-                  <div key={group}>
-                    <h3 className="text-lg font-semibold mb-2">{group}</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      {hotspots.map((hotspot) => (
-                        <Button
-                          key={hotspot.id}
-                          variant={location === hotspot.id ? 'default' : 'outline'}
-                          onClick={() => setLocation(hotspot.id)}
-                        >
-                          {hotspot.name}
-                        </Button>
-                      ))}
+    <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in onboarding.">
+      <DreamLayout>
+        <main
+          role="main"
+          aria-labelledby="page-title"
+          tabIndex={-1}
+          ref={mainRef}
+          className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-rose-50 via-white to-blue-50 p-4"
+        >
+          <h1 id="page-title" className="sr-only">New Onboarding</h1>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="w-full max-w-md text-center"
+            >
+              <DreamHeader title={steps[step].title} subtitle={steps[step].subtitle} />
+              {step === 1 && (
+                <Input
+                  type="text"
+                  placeholder="e.g. Midnight Dreamer"
+                  aria-label="Enter your whisper name"
+                  value={whisperName}
+                  onChange={(e) => setWhisperName(e.target.value)}
+                  className="mt-4 text-white placeholder:text-gray-200 bg-black/40 shadow-xl backdrop-blur-lg focus:ring-2 focus:ring-aangan-primary/80 focus:border-aangan-primary border-white/30 border-2"
+                />
+              )}
+              {step === 2 && (
+                <div className="mt-4">
+                  <Button onClick={handleLocationDetect} disabled={locationStatus === 'detecting'}>
+                    {locationStatus === 'detecting' ? 'Detecting...' : 'Detect my location'}
+                  </Button>
+                  {locationStatus === 'error' && (
+                    <p className="text-sm text-red-500 mt-2">
+                      Could not detect your location. Please select a zone manually.
+                    </p>
+                  )}
+                  {locationStatus === 'success' && (
+                    <p className="text-sm text-green-500 mt-2">
+                      Location detected successfully!
+                    </p>
+                  )}
+                  {locationStatus === 'idle' && (
+                    <p className="text-sm text-gray-500 mt-2">
+                      We'll ask for permission to use your location. We only use it to find whispers near you and never store it.
+                    </p>
+                  )}
+                </div>
+              )}
+              {step === 3 && (
+                <div className="mt-4 space-y-4">
+                  {Object.entries(Object.groupBy(cujHotspots, ({ group }) => group)).map(([group, hotspots]) => (
+                    <div key={group}>
+                      <h3 className="text-lg font-semibold mb-2">{group}</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        {hotspots.map((hotspot) => (
+                          <Button
+                            key={hotspot.id}
+                            variant={location === hotspot.id ? 'default' : 'outline'}
+                            onClick={() => setLocation(hotspot.id)}
+                          >
+                            {hotspot.name}
+                          </Button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <Button onClick={handleNext} className="mt-8">
-              {step === steps.length - 1 ? 'Enter the Courtyard' : 'Continue'}
-            </Button>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-    </DreamLayout>
+                  ))}
+                </div>
+              )}
+              <Button onClick={handleNext} className="mt-8">
+                {step === steps.length - 1 ? 'Enter the Courtyard' : 'Continue'}
+              </Button>
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </DreamLayout>
+    </ErrorBoundary>
   );
 };
 

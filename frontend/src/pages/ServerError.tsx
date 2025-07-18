@@ -47,7 +47,7 @@ const ServerError = () => {
             500
           </div>
         </motion.div>
-        <p className="text-muted text-xl text-gray-700 dark:text-gray-200 mb-6" tabIndex={0}>
+        <p className="text-muted text-xl dark:text-gray-200 mb-6" tabIndex={0}>
           Oops! A server error occurred. Please try again later or contact support.
         </p>
         <nav aria-label="Helpful links" className="mb-6 flex flex-col gap-2 items-center">

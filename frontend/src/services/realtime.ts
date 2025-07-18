@@ -71,7 +71,6 @@ class RealtimeService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('🔌 Connected to realtime server');
       this.isConnected = true;
       this.reconnectAttempts = 0;
       this.emit('connection-established');
@@ -81,7 +80,6 @@ class RealtimeService {
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log('🔌 Disconnected from realtime server:', reason);
       this.isConnected = false;
       this.emit('connection-lost', reason);
       
@@ -89,7 +87,6 @@ class RealtimeService {
       if (reason === 'io server disconnect' || reason === 'transport close') {
         setTimeout(() => {
           if (!this.isConnected) {
-            console.log('🔄 Attempting reconnection...');
             this.connect();
           }
         }, 1000);
@@ -106,7 +103,6 @@ class RealtimeService {
         const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
         setTimeout(() => {
           if (!this.isConnected) {
-            console.log(`🔄 Reconnection attempt ${this.reconnectAttempts + 1}/${this.maxReconnectAttempts}`);
             this.connect();
           }
         }, delay);
@@ -114,7 +110,6 @@ class RealtimeService {
     });
 
     this.socket.on('reconnect', (attemptNumber) => {
-      console.log(`🔌 Reconnected after ${attemptNumber} attempts`);
       this.isConnected = true;
       this.reconnectAttempts = 0;
       this.emit('reconnected', attemptNumber);
@@ -126,14 +121,12 @@ class RealtimeService {
     });
 
     this.socket.on('reconnect_attempt', (attemptNumber) => {
-      console.log(`🔄 Reconnection attempt ${attemptNumber}`);
       this.emit('reconnect-attempt', attemptNumber);
     });
 
     // Whisper events with error handling
     this.socket.on('new-whisper', (whisper: RealtimeWhisper) => {
       try {
-        console.log('📝 New whisper received:', whisper);
         this.emit('new-whisper', whisper);
       } catch (error) {
         console.error('Error handling new whisper:', error);
@@ -142,7 +135,6 @@ class RealtimeService {
 
     this.socket.on('zone-whisper', (whisper: RealtimeWhisper) => {
       try {
-        console.log('📍 Zone whisper received:', whisper);
         this.emit('zone-whisper', whisper);
       } catch (error) {
         console.error('Error handling zone whisper:', error);
@@ -162,7 +154,6 @@ class RealtimeService {
           return;
         }
         
-        console.log('📍 Zone activity update:', data);
         this.emit('zone-activity-update', data);
       } catch (error) {
         console.error('Error handling zone activity update:', error);
@@ -182,7 +173,6 @@ class RealtimeService {
           return;
         }
         
-        console.log('💓 Emotion pulse update:', data);
         this.emit('emotion-pulse-update', data);
       } catch (error) {
         console.error('Error handling emotion pulse update:', error);
@@ -192,7 +182,6 @@ class RealtimeService {
     // Real-time report events for admin moderation inbox
     this.socket.on('new-report', (report: { whisper_id: string; reason: string; guest_id: string; created_at: string }) => {
       try {
-        console.log('🚨 New report received:', report);
         this.emit('new-report', report);
       } catch (error) {
         console.error('Error handling new report:', error);
@@ -244,14 +233,12 @@ class RealtimeService {
   joinZone(zone: string) {
     if (this.socket && this.isConnected) {
       this.socket.emit('join-zone', zone);
-      console.log(`📍 Joining zone: ${zone}`);
     }
   }
 
   leaveZone(zone: string) {
     if (this.socket && this.isConnected) {
       this.socket.emit('leave-zone', zone);
-      console.log(`📍 Leaving zone: ${zone}`);
     }
   }
 
@@ -259,7 +246,6 @@ class RealtimeService {
   sendEmotionPulse(emotion: string) {
     if (this.socket && this.isConnected) {
       this.socket.emit('emotion-pulse', emotion);
-      console.log(`💓 Sending emotion pulse: ${emotion}`);
     }
   }
 
@@ -267,7 +253,6 @@ class RealtimeService {
   broadcastWhisper(whisper: RealtimeWhisper) {
     if (this.socket && this.isConnected) {
       this.socket.emit('whisper-created', whisper);
-      console.log(`📝 Broadcasting whisper: ${whisper.id}`);
     }
   }
 

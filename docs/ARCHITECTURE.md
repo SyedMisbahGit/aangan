@@ -1,58 +1,30 @@
-# Updated Project Architecture (July 2025)
+# Aangan Architecture (vNext)
 
-## Folder Structure
+## Error Boundaries & Suspense
+- All routes and major components are wrapped in `<Suspense>` and a page-specific error boundary.
+- The universal `<ErrorPage />` is used for all error boundaries, with narrator lines and feedback/report actions.
 
-```
-/ (root)
-  backend/           # Node.js/Express backend, migrations, seeds, backend scripts
-    src/             # Main backend source (app.js, db.js, routes/, etc.)
-    scripts/         # Backend-only scripts
-    migrations/      # DB migrations
-    seeds/           # DB seeders
-    config/          # Backend config (knexfile.js, env.example, etc.)
-  frontend/          # React + Vite frontend, components, pages, lib, theme
-    src/             # Main frontend source (components/, pages/, hooks/, etc.)
-    lib/             # Frontend helpers (aiWorker.ts, utils.ts, etc.)
-    public/          # Static assets (favicon, icons, manifest, etc.)
-    theme/           # Theme files (theme.ts, tailwind config, etc.)
-  shared/            # (empty, for future shared code)
-  scripts/           # Project-level scripts (maintenance, test, etc.)
-  docs/              # All markdown documentation
-  config/            # Project-level config (eslint, vite, postcss, etc.)
-  .env, .gitignore, README.md, etc.
-```
+## Analytics & Error Logging
+- All errors (render and async) are logged to `/api/logs/error` with route, session, and breadcrumbs.
+- User feedback is POSTed to `/api/logs/feedback` from the error page modal.
 
-## Aliases
-- `@` → `frontend/src`
-- `@lib` → `frontend/lib`
-- `@theme` → `frontend/theme/theme.ts`
+## Skeletons & Fallbacks
+- All loading states use animated shimmer skeletons (`WhisperSkeleton`, `CustomSkeletonCard`).
+- Skeletons are used as Suspense fallbacks and for network loading states.
 
-## Test Setup
-- Uses [Vitest](https://vitest.dev/) for unit/integration tests
-- Test files use `.test.tsx`/`.test.ts` extensions and import from `vitest`
-- Test environment: `jsdom` (set in Vite config)
-- Test setup file: `frontend/src/setupTests.ts`
-- All tests pass as of July 2025
+## Offline & Network Handling
+- A global offline banner is shown using the `navigator.onLine` API and event listeners.
+- All network-dependent features show skeletons and network status indicators.
 
-## Automation
-- Barrel files (`index.ts`) auto-generated for components and lib
-- Codemod used to update all import paths
-- ESLint boundaries enforced 
+## Storybook & MSW
+- Storybook is used for all skeletons, error boundaries, and fallback states.
+- MSW is used to mock API endpoints for local dev, Storybook, and tests.
+- Handlers simulate success, slow, and error responses for `/api/whispers`, `/api/logs/error`, and `/api/logs/feedback`.
 
-## React Context & Provider Structure (Best Practice)
+## Testing
+- Unit, accessibility, visual regression, and E2E tests are required for all fallback UIs.
+- Playwright and axe-core are used for E2E and a11y testing.
 
-- Each React context is now split into two files for optimal Fast Refresh and code clarity:
-  - `XContext.context.ts`: Exports only the context object (created with `createContext`).
-  - `XContext.tsx`: Exports the provider component and any hooks, importing the context from the `.context.ts` file.
-- This ensures that provider files only export components, which is required for React Fast Refresh to work optimally and avoids hot-reload issues.
-- Example usage:
-  ```ts
-  // src/contexts/AuthContext.context.ts
-  export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+---
 
-  // src/contexts/AuthContext.tsx
-  import { AuthContext } from './AuthContext.context';
-  export const AuthProvider = ({ children }) => { ... }
-  export const useAuth = () => useContext(AuthContext);
-  ```
-- All major contexts (Auth, Realtime, Whispers, DreamTheme, SummerPulse, SummerSoul, CUJHotspot, ShhhNarrator) now follow this pattern. 
+_See also: docs/DEVELOPMENT_CHECKLIST.md, docs/UX_V2_ALIVE_AND_REAL.md_ 

@@ -97,7 +97,6 @@ export const WhisperRituals: React.FC<WhisperRitualsProps> = ({
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + duration);
     } catch (error) {
-      console.log('Audio not supported');
     }
   }, [isMuted]);
 

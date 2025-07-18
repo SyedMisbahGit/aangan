@@ -212,7 +212,6 @@ const DogriHinglishPrompts: React.FC = () => {
 
   const toggleFavorite = (promptId: string) => {
     // In a real app, this would update the backend
-    console.log("Toggle favorite:", promptId);
   };
 
   return (

@@ -80,6 +80,42 @@ function PrivateRoute({ children, adminOnly }: { children: React.ReactNode, admi
   }
 }
 
+// Route observer for breadcrumbs
+function RouteObserver() {
+  const location = useLocation();
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const crumbs = JSON.parse(localStorage.getItem('aangan_breadcrumbs') || '[]');
+      crumbs.push({ path: location.pathname, timestamp: new Date().toISOString() });
+      localStorage.setItem('aangan_breadcrumbs', JSON.stringify(crumbs.slice(-10)));
+    }
+  }, [location]);
+  return null;
+}
+
+// Global offline banner
+function OfflineBanner() {
+  const [offline, setOffline] = useState(typeof navigator !== 'undefined' && !navigator.onLine);
+  useEffect(() => {
+    function updateStatus() {
+      setOffline(!navigator.onLine);
+    }
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+    return () => {
+      window.removeEventListener('online', updateStatus);
+      window.removeEventListener('offline', updateStatus);
+    };
+  }, []);
+  if (!offline) return null;
+  return (
+    <div className="fixed top-0 left-0 w-full z-50 flex items-center justify-center bg-yellow-100 text-yellow-800 text-sm py-2 shadow animate-fade-in">
+      <span role="img" aria-label="offline" className="mr-2">📴</span>
+      You’re offline. Some features may be unavailable.
+    </div>
+  );
+}
+
 // Main app content
 const AppContent: React.FC = () => {
   const isMobile = useIsMobile();
@@ -94,15 +130,12 @@ const AppContent: React.FC = () => {
       getToken(messaging, { vapidKey: "your-vapid-key" })
         .then((currentToken) => {
           if (currentToken) {
-            console.log("FCM Token:", currentToken);
           }
         })
         .catch((err) => {
-          console.log("FCM Token Error:", err);
         });
 
       onMessage(messaging, (payload) => {
-        console.log("Message received:", payload);
       });
     });
   }, []);
@@ -268,6 +301,8 @@ const App: React.FC = () => {
                       <Sonner />
                       <SummerSoulProvider>
                         <BrowserRouter>
+                          <OfflineBanner />
+                          <RouteObserver />
                           <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the courtyard.">
                             <AppContent />
                           </ErrorBoundary>

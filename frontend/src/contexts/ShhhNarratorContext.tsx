@@ -472,7 +472,7 @@ export const ShhhNarratorProvider: React.FC<ShhhNarratorProviderProps> = ({ chil
       try {
         setEmotionalMemory(JSON.parse(savedMemory));
       } catch (error) {
-        console.log('Could not load emotional memory');
+        //
       }
     }
 
@@ -481,7 +481,7 @@ export const ShhhNarratorProvider: React.FC<ShhhNarratorProviderProps> = ({ chil
       try {
         setMoodArc(JSON.parse(savedMoodArc));
       } catch (error) {
-        console.log('Could not load mood arc');
+        //
       }
     }
   }, []);
@@ -826,7 +826,6 @@ export const ShhhNarratorProvider: React.FC<ShhhNarratorProviderProps> = ({ chil
     // Simulate async initialization (replace with real async if needed)
     setTimeout(() => {
       setLoading(false);
-      console.log('ShhhNarratorContext ready');
     }, 300); // Simulate a short delay
   }, []);
 

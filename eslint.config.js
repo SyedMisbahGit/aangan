@@ -40,6 +40,12 @@ export default tseslint.config(
       ],
       "@typescript-eslint/no-unused-vars": "off",
       "react-hooks/exhaustive-deps": "warn", // Allow warnings for complex dependencies
+      'no-console': 'error',
+      '@typescript-eslint/no-explicit-any': 'error',
+      'no-warning-comments': [
+        'error',
+        { terms: ['todo', 'fixme'], location: 'anywhere' }
+      ],
     },
   },
 );

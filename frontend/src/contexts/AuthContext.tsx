@@ -20,7 +20,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // For now, just simulate the magic link process
       // In a real implementation, you'd call your Railway backend
-      console.log('Magic link requested for:', email);
       
       // Simulate success (you can replace this with actual API call)
       return { error: null };

@@ -1,222 +1,43 @@
-# 📋 Development Checklist - Aangan Platform
+# Aangan Development Checklist (vNext)
 
-## 🎯 Core Principles
-- **Simple**: Keep code clean, readable, and maintainable
-- **Secure**: Follow security best practices at all times
-- **Sustainable**: Build for long-term maintainability and performance
+## Error Boundaries & Suspense
+- All major pages/components must be wrapped in `<Suspense fallback={<Skeleton />}>` and a page-specific error boundary.
+- Use the universal `<ErrorPage />` for error boundaries, with narrator lines and feedback/report actions.
 
-## 🚀 Before Starting Development
+## Skeletons & Loading States
+- Use `<WhisperSkeleton />` and `<CustomSkeletonCard />` for realistic, animated loading states.
+- All skeletons must use shimmer animation and match the app’s color palette and spacing.
+- Show a 'Reload' button if loading takes longer than 8 seconds.
 
-### Environment Setup
-- [ ] Node.js v18+ installed
-- [ ] All dependencies installed (`npm install`)
-- [ ] Environment variables configured (`backend/.env`)
-- [ ] Database migrations run (`npm run migrate`)
-- [ ] Development server starts without errors (`npm run dev`)
+## Analytics & Error Logging
+- Use `useErrorBoundaryLogger` to log all async/background errors with route, session, and breadcrumbs.
+- All error boundaries log to `/api/logs/error` with full context.
+- User feedback modal is required on all error pages.
 
-### Code Quality Tools
-- [ ] ESLint configured and passing (`npm run lint`)
-- [ ] TypeScript compilation successful (`npm run typecheck`)
-- [ ] Pre-commit hooks installed (`npm run prepare`)
+## Testing
+- All error and skeleton states must have:
+  - Unit tests (Vitest/React Testing Library)
+  - Accessibility tests (axe-core)
+  - Visual regression tests (Playwright)
+  - E2E tests for network/offline/error edge cases (Playwright)
 
-## 🔧 During Development
+## Linting & Type Safety
+- ESLint must block `console.log`, `any` types, and `TODO`/`FIXME` comments in production code.
+- TypeScript strict mode is required.
 
-### Code Standards
-- [ ] Follow existing code style and patterns
-- [ ] Use TypeScript for all new code
-- [ ] Write meaningful commit messages (conventional commits)
-- [ ] Keep functions small and focused
-- [ ] Add JSDoc comments for complex functions
+## Offline & Network UX
+- Show a global offline banner when offline.
+- All network-dependent features must show skeletons and network status indicators.
+- Retry/report actions must be accessible and visible on all error/skeleton states.
 
-### Security Practices
-- [ ] Validate and sanitize all user inputs
-- [ ] Use parameterized queries (no SQL injection)
-- [ ] Implement proper authentication/authorization
-- [ ] Follow principle of least privilege
-- [ ] Never commit secrets or sensitive data
+## Storybook & MSW
+- All skeletons, error boundaries, and fallback states must have Storybook stories.
+- Use MSW to simulate network errors, slow responses, and offline states in Storybook and tests.
 
-### Performance Considerations
-- [ ] Lazy load components when possible
-- [ ] Optimize images and assets
-- [ ] Minimize bundle size
-- [ ] Use React.memo for expensive components
-- [ ] Implement proper caching strategies
-
-## 🧪 Before Committing
-
-### Code Quality Checks
-- [ ] All linting errors fixed (`npm run lint:fix`)
-- [ ] TypeScript compilation successful (`npm run typecheck`)
-- [ ] All tests passing (`npm test`)
-- [ ] Test coverage maintained (80%+)
-- [ ] No console.log statements in production code
-
-### Security Checks
-- [ ] No hardcoded secrets or API keys
-- [ ] Input validation implemented
-- [ ] Authentication/authorization working
-- [ ] Rate limiting configured
-- [ ] CORS settings appropriate
-
-### Performance Checks
-- [ ] Bundle size within limits
-- [ ] No memory leaks
-- [ ] Responsive design working
-- [ ] Loading states implemented
-- [ ] Error boundaries in place
-
-## 🚀 Before Deployment
-
-### Pre-deployment Checklist
-- [ ] All tests passing in CI/CD
-- [ ] Security audit clean (`npm run test:security`)
-- [ ] Performance audit passing (`npm run test:performance`)
-- [ ] Environment variables configured
-- [ ] Database migrations applied
-- [ ] SSL certificates valid
-- [ ] Monitoring and logging configured
-
-### Production Readiness
-- [ ] Error handling implemented
-- [ ] Logging configured
-- [ ] Health checks working
-- [ ] Backup strategy in place
-- [ ] Rollback plan prepared
-- [ ] Documentation updated
-
-## 🔄 Regular Maintenance
-
-### Weekly Tasks
-- [ ] Run security audit (`npm run maintenance:security`)
-- [ ] Check for dependency updates (`npm run maintenance:update`)
-- [ ] Review error logs
-- [ ] Monitor performance metrics
-- [ ] Update documentation
-
-### Monthly Tasks
-- [ ] Full maintenance check (`npm run maintenance`)
-- [ ] Review and update dependencies
-- [ ] Security assessment
-- [ ] Performance optimization review
-- [ ] Code quality audit
-
-### Quarterly Tasks
-- [ ] Comprehensive security review
-- [ ] Performance benchmarking
-- [ ] Architecture review
-- [ ] Technical debt assessment
-- [ ] Team training and knowledge sharing
-
-## 🛠️ Useful Commands
-
-### Development
-```bash
-npm run dev                    # Start development server
-npm run build                  # Build for production
-npm run preview               # Preview production build
-npm run lint                  # Check code quality
-npm run lint:fix              # Fix linting issues
-npm run test                  # Run tests
-npm run test:coverage         # Run tests with coverage
-```
-
-### Maintenance
-```bash
-npm run maintenance           # Full maintenance check
-npm run maintenance:security  # Security checks only
-npm run maintenance:performance # Performance checks only
-npm run maintenance:quality   # Code quality checks only
-npm run maintenance:cleanup   # Clean build artifacts
-npm run maintenance:update    # Update dependencies
-```
-
-### Analysis
-```bash
-npm run analyze               # Analyze bundle size
-npm run typecheck             # TypeScript compilation check
-npm run test:security         # Security audit
-npm run test:performance      # Performance audit
-```
-
-## 🚨 Emergency Procedures
-
-### Security Incident
-1. **Immediate Actions**
-   - [ ] Disable affected endpoints
-   - [ ] Rotate all secrets
-   - [ ] Review logs for scope
-   - [ ] Notify stakeholders
-
-2. **Investigation**
-   - [ ] Analyze attack vectors
-   - [ ] Assess data exposure
-   - [ ] Document findings
-   - [ ] Plan remediation
-
-3. **Recovery**
-   - [ ] Patch vulnerabilities
-   - [ ] Restore from clean backup
-   - [ ] Implement additional security
-   - [ ] Monitor for recurrence
-
-### Performance Issues
-1. **Immediate Actions**
-   - [ ] Check server resources
-   - [ ] Review error logs
-   - [ ] Identify bottlenecks
-   - [ ] Implement quick fixes
-
-2. **Investigation**
-   - [ ] Analyze performance metrics
-   - [ ] Review recent changes
-   - [ ] Identify root cause
-   - [ ] Plan optimization
-
-3. **Recovery**
-   - [ ] Implement optimizations
-   - [ ] Monitor improvements
-   - [ ] Document lessons learned
-   - [ ] Update procedures
-
-## 📚 Resources
-
-### Documentation
-- [Security Guide](./SECURITY_GUIDE.md)
-- [Performance Guide](./PERFORMANCE_GUIDE.md)
-- [API Documentation](./README.md)
-- [Migration Guide](./MIGRATION_SUMMARY.md)
-
-### Tools
-- [Lighthouse](https://developers.google.com/web/tools/lighthouse) - Performance auditing
-- [ESLint](https://eslint.org/) - Code quality
-- [TypeScript](https://www.typescriptlang.org/) - Type safety
-- [Vitest](https://vitest.dev/) - Testing
-- [Vite](https://vitejs.dev/) - Build tool
-
-### Best Practices
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [React Best Practices](https://react.dev/learn)
-- [Web Performance](https://web.dev/performance/)
-- [Security Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers)
-
-## 🛠️ TypeScript Project Troubleshooting
-
-- If you see errors like `TS6307: File ... is not listed within the file list of project ...`, ensure your `tsconfig.json` and any referenced configs include all relevant directories (e.g., `"lib/**/*"`, `"frontend/lib/**/*"`).
-- After updating `tsconfig` files, always restart your IDE and/or TypeScript server to clear cache.
-- Avoid duplicate or conflicting `tsconfig` files in subdirectories.
-- Keep sample/mock data types in sync with your TypeScript interfaces (e.g., `id: number` vs `id: string`).
-- Use type guards or type assertions for optional/extended properties (e.g., `isGhost`).
-- Remove unsupported props from object literals and component calls (e.g., `title`/`description` in `toast`).
-
-## ♿ Accessibility & Error Handling
-
-- All main pages should use `<ErrorBoundary>` and accessible landmarks (e.g., `<main role="main">`).
-- Use ARIA attributes and focus management for modals/dialogs.
-- Prefer semantic HTML and design system components for consistency.
+## Dev Experience
+- All new UI states must be demoed in Storybook before merging.
+- Use MSW and Storybook for rapid iteration and design review.
 
 ---
 
-*Remember: Simple, Secure, Sustainable - Every line of code matters!*
-
-*Last updated: January 2025*
-*Maintained by: CUJ Community* 
+_See also: docs/UX_V2_ALIVE_AND_REAL.md, docs/SECURITY_GUIDE.md, docs/ARCHITECTURE.md_ 
