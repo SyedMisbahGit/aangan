@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DreamLayout } from "../components/shared/DreamLayout";
-import { DreamHeader } from "../components/shared/DreamHeader";
+import { DreamHeader, isUserFacingRoute } from "../components/shared/DreamHeader";
+import { useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -71,6 +72,7 @@ const Murmurs: React.FC = () => {
   
   const { nearbyHotspots, emotionClusters, getEmotionTrends } = useCUJHotspots();
   const { isSummerSoulActive } = useSummerSoul() as { isSummerSoulActive: boolean };
+  const location = useLocation();
 
   const filters = [
     { value: "all", label: "All Murmurs", icon: "💫" },
@@ -331,6 +333,12 @@ const Murmurs: React.FC = () => {
   return (
     <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the murmurs feed.">
       <DreamLayout>
+        {isUserFacingRoute(location.pathname) && (
+          <DreamHeader 
+            title="Murmurs"
+            subtitle="Anonymous campus conversations, drifting through the courtyard."
+          />
+        )}
         <main
           role="main"
           aria-labelledby="page-title"
@@ -350,28 +358,23 @@ const Murmurs: React.FC = () => {
               />
             </div>
             {/* Ambient Header */}
-            <DreamHeader 
-              title="Social Pulse"
-              subtitle="Feel the heartbeat of campus"
-            />
-            <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-              {/* Social Stats */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Card className="bg-gradient-to-br from-dawnlight/30 to-cloudmist/30 border-inkwell/10 shadow-soft">
-                  <CardContent className="p-6">
-                    <div className="text-center mb-6">
-                      <h2 className="text-2xl font-semibold text-inkwell mb-2">
-                        Campus Social Pulse
-                      </h2>
-                      <p className="text-inkwell/70">
-                        Feel the collective heartbeat of your campus community
-                      </p>
-                    </div>
-                  
+            {/* Social Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card className="bg-gradient-to-br from-dawnlight/30 to-cloudmist/30 border-inkwell/10 shadow-soft">
+                <CardContent className="p-6">
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-semibold text-inkwell mb-2">
+                      Campus Social Pulse
+                    </h2>
+                    <p className="text-inkwell/70">
+                      Feel the collective heartbeat of your campus community
+                    </p>
+                  </div>
+                
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div>
                       <div className="text-2xl font-bold text-inkwell">{stats.totalWhispers}</div>

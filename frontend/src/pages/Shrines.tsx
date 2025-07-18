@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DreamLayout } from "../components/shared/DreamLayout";
-import { DreamHeader } from "../components/shared/DreamHeader";
+import { DreamHeader, isUserFacingRoute } from "../components/shared/DreamHeader";
+import { useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -175,6 +176,8 @@ const Shrines: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const location = useLocation();
+
   return (
     <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the shrines feed.">
       <DreamLayout>
@@ -195,12 +198,13 @@ const Shrines: React.FC = () => {
               className="mb-6"
             />
           </div>
-
           {/* Ambient Header */}
-          <DreamHeader 
-            title="Zones of Aangan"
-            subtitle="Sacred spaces where emotions find their home"
-          />
+          {isUserFacingRoute(location.pathname) && (
+            <DreamHeader 
+              title="Shrines"
+              subtitle="Sacred spaces and stories across campus."
+            />
+          )}
 
           {loading ? (
             <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">

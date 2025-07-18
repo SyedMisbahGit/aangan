@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { DreamLayout } from '../components/shared/DreamLayout';
-import { DreamHeader } from '../components/shared/DreamHeader';
+import { DreamHeader, isUserFacingRoute } from '../components/shared/DreamHeader';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";
 
@@ -29,6 +29,7 @@ const Login: React.FC = () => {
   const [errorLine, setErrorLine] = useState('');
   const emailInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const [magicLinkError, setMagicLinkError] = useState<string | null>(null);
   const mainRef = useRef<HTMLDivElement>(null);
 
@@ -83,11 +84,13 @@ const Login: React.FC = () => {
           className="min-h-screen flex flex-col items-center justify-center bg-cream-100 transition-colors duration-500"
         >
           <h1 id="page-title" className="sr-only">Login</h1>
-          <DreamHeader
-            title="Welcome to Aangan"
-            subtitle="A poetic, anonymous campus sanctuary"
-            className="mb-2"
-          />
+          {isUserFacingRoute(location.pathname) && (
+            <DreamHeader
+              title="Welcome to Aangan"
+              subtitle="A poetic, anonymous campus sanctuary"
+              className="mb-2"
+            />
+          )}
           <div className="w-full max-w-md bg-paper-light rounded-2xl shadow-soft p-8 mt-6 border border-cream-200 transition-colors duration-500">
             {magicLinkError ? (
               <div className="text-center text-2xl text-aangan-accent font-poetic py-12">

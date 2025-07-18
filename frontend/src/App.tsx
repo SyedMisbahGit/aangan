@@ -31,6 +31,7 @@ import GentleOnboarding from './components/onboarding/GentleOnboarding';
 import { AnimatePresence } from "framer-motion";
 import { ConfettiEffect } from './components/shared/ConfettiEffect';
 import AanganLoadingScreen from './components/shared/AanganLoadingScreen';
+import { DreamHeader, isUserFacingRoute } from './components/shared/DreamHeader';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -148,7 +149,9 @@ const AppContent: React.FC = () => {
     <>
       <RouteObserver />
       <GentleOnboarding />
-      {showPrivacyBanner && <PrivacyBanner onAccept={() => setShowPrivacyBanner(false)} />}
+      {showPrivacyBanner && isUserFacingRoute(location.pathname) && (
+        <PrivacyBanner onAccept={() => setShowPrivacyBanner(false)} />
+      )}
       <ConfettiEffect />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>

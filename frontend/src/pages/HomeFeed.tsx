@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy, useCallback, useRef, memo } from "react";
 import { toast } from "sonner";
 import { DreamLayout } from "../components/shared/DreamLayout";
-import { DreamHeader } from "../components/shared/DreamHeader";
+import { DreamHeader, isUserFacingRoute } from "../components/shared/DreamHeader";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
 import { useShhhNarrator } from '../contexts/use-shhh-narrator';
@@ -26,6 +26,7 @@ const WhisperCard = lazy(() => import('../components/whisper/WhisperCard'));
 import { CustomSkeletonCard } from "../components/ui/skeleton";
 import { useErrorBoundaryLogger } from "../hooks/useErrorBoundaryLogger";
 import WhisperSkeleton from "../components/whisper/WhisperSkeleton";
+import { useLocation } from "react-router-dom";
 
 type Whisper = APIWhisper & {
   guest_id?: string;
@@ -403,14 +404,18 @@ const Whispers: React.FC = () => {
     }
   }, []);
 
+  const location = useLocation();
+
   // Render logic for main feed
   return (
     <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the courtyard.">
       <DreamLayout>
-        <DreamHeader 
-          title="Whispers"
-          subtitle="A living constellation of anonymous voices. Your whispers join the campus chorus."
-        />
+        {isUserFacingRoute(location.pathname) && (
+          <DreamHeader 
+            title="Whispers"
+            subtitle="A living constellation of anonymous voices. Your whispers join the campus chorus."
+          />
+        )}
         <NetworkStatus isFetching={isFetching} />
         <main
           role="main"

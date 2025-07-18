@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { DreamLayout } from '../components/shared/DreamLayout';
-import { DreamHeader } from '../components/shared/DreamHeader';
+import { DreamHeader, isUserFacingRoute } from '../components/shared/DreamHeader';
 import { DreamWhisperCard } from '../components/whisper/DreamWhisperCard';
 import { useWhispers } from '../contexts/use-whispers';
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";
 import { useRef } from "react";
+import { useLocation } from 'react-router-dom';
 
 const locationLabels: Record<string, string> = {
   'Home': 'Home 🏠',
@@ -56,6 +57,8 @@ export default function Memories() {
     [summerSoulWhispers, location, emotion]
   );
 
+  const location = useLocation();
+
   return (
     <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the memories feed.">
       <DreamLayout>
@@ -67,7 +70,9 @@ export default function Memories() {
           className="max-w-3xl mx-auto mt-8 mb-16"
         >
           <h1 id="page-title" className="sr-only">Memories</h1>
-          <DreamHeader title="SummerSoul Memories" subtitle="Whispers from the summer break, now part of our collective story." />
+          {isUserFacingRoute(location.pathname) && (
+            <DreamHeader title="SummerSoul Memories" subtitle="Whispers from the summer break, now part of our collective story." />
+          )}
           <div className="mb-8 p-4 bg-yellow-100/80 border border-yellow-300 rounded-lg text-yellow-900 text-center text-lg italic shadow">
             "A hush from the hills. A whisper from a metro. Even far apart, we were still writing."
           </div>

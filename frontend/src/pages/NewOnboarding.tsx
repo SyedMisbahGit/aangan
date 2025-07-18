@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { DreamLayout } from '../components/shared/DreamLayout';
-import { DreamHeader } from '../components/shared/DreamHeader';
+import { DreamHeader, isUserFacingRoute } from '../components/shared/DreamHeader';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,6 +11,7 @@ import WaterTheCourtyard from '../components/onboarding/WaterTheCourtyard';
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";
 import { useRef } from "react";
+import { useLocation } from 'react-router-dom';
 
 const steps = [
   {
@@ -43,6 +44,7 @@ const NewOnboarding: React.FC = () => {
   const [showAnimation, setShowAnimation] = useState(false);
   const navigate = useNavigate();
   const mainRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
 
   React.useEffect(() => {
     if (mainRef.current) {
@@ -107,7 +109,9 @@ const NewOnboarding: React.FC = () => {
               transition={{ duration: 0.5 }}
               className="w-full max-w-md text-center"
             >
-              <DreamHeader title={steps[step].title} subtitle={steps[step].subtitle} />
+              {isUserFacingRoute(location.pathname) && (
+                <DreamHeader title={steps[step].title} subtitle={steps[step].subtitle} />
+              )}
               {step === 1 && (
                 <Input
                   type="text"

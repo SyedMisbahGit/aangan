@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DreamLayout } from "../components/shared/DreamLayout";
-import { DreamHeader } from "../components/shared/DreamHeader";
+import { DreamHeader, isUserFacingRoute } from "../components/shared/DreamHeader";
+import { useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -54,6 +55,7 @@ const Diary: React.FC = () => {
   const { isSummerPulseActive, getSummerPrompt, label: summerLabel, summerTags } = useSummerPulse();
   const [loading, setLoading] = useState(true);
   const mainRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
 
   useEffect(() => {
     if (mainRef.current) {
@@ -244,15 +246,17 @@ const Diary: React.FC = () => {
           </div>
 
           {/* Ambient Header */}
-          <DreamHeader 
-            title={
-              <div className="flex items-center justify-between w-full">
-                <span className="flex items-center gap-2">My Aangan <span className="inline-flex items-center px-2 py-0.5 rounded bg-green-100 text-xs font-semibold text-green-700 ml-2"><Lock className="w-3 h-3 mr-1" />Private</span></span>
-                <DiaryStreakCounter />
-              </div>
-            }
-            subtitle="Your private universe. Only you can see these entries."
-          />
+          {isUserFacingRoute(location.pathname) && (
+            <DreamHeader 
+              title={
+                <div className="flex items-center justify-between w-full">
+                  <span className="flex items-center gap-2">My Aangan <span className="inline-flex items-center px-2 py-0.5 rounded bg-green-100 text-xs font-semibold text-green-700 ml-2"><Lock className="w-3 h-3 mr-1" />Private</span></span>
+                  <DiaryStreakCounter />
+                </div>
+              }
+              subtitle="Your private universe. Only you can see these entries."
+            />
+          )}
 
           <main
             role="main"

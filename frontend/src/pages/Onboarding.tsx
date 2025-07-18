@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { DreamLayout } from '../components/shared/DreamLayout';
-import { DreamHeader } from '../components/shared/DreamHeader';
+import { DreamHeader, isUserFacingRoute } from '../components/shared/DreamHeader';
+import { useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { ShhhLine } from '../components/ShhhLine';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,6 +30,7 @@ const Onboarding: React.FC = () => {
   const { setOnboardingComplete } = useAuth();
   const navigate = useNavigate();
   const mainRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
 
   useEffect(() => {
     if (mainRef.current) {
@@ -72,7 +74,9 @@ const Onboarding: React.FC = () => {
               />
             </div>
           </div>
-          <DreamHeader title={steps[step].title} subtitle={steps[step].body} />
+          {isUserFacingRoute(location.pathname) && (
+            <DreamHeader title={steps[step].title} subtitle={steps[step].body} />
+          )}
         </main>
       </DreamLayout>
     </ErrorBoundary>

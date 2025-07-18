@@ -30,6 +30,11 @@
 - All network-dependent features must show skeletons and network status indicators.
 - Retry/report actions must be accessible and visible on all error/skeleton states.
 
+## UI Contextualization
+- All global UI elements (headers, info bars, PrivacyBanner, feedback/CTA strips) must only be rendered on user-facing pages.
+- Use the shared `isUserFacingRoute` utility to conditionally render these elements.
+- Admin, login, and error pages must not show these UI fragments.
+
 ## Storybook & MSW
 - All skeletons, error boundaries, and fallback states must have Storybook stories.
 - Use MSW to simulate network errors, slow responses, and offline states in Storybook and tests.

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DreamLayout } from '../components/shared/DreamLayout';
-import { DreamHeader } from '../components/shared/DreamHeader';
+import { DreamHeader, isUserFacingRoute } from '../components/shared/DreamHeader';
+import { useLocation } from 'react-router-dom';
 import { Card, CardContent } from '../components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -31,6 +32,8 @@ const Explore: React.FC = () => {
       mainRef.current.focus();
     }
   }, []);
+
+  const location = useLocation();
 
   // Organic tile sections
   const wanderSpaces = [
@@ -131,10 +134,12 @@ const Explore: React.FC = () => {
           className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-blue-50"
         >
           <h1 id="page-title" className="sr-only">Explore</h1>
-          <DreamHeader 
-            title="Explore"
-            subtitle="Discover spaces, emotions, and whispers across the courtyard"
-          />
+          {isUserFacingRoute(location.pathname) && (
+            <DreamHeader 
+              title="Explore"
+              subtitle="Discover spaces, emotions, and whispers across the courtyard"
+            />
+          )}
 
           <div className="max-w-4xl mx-auto px-4 py-6">
             {/* Organic tiles instead of tabs */}

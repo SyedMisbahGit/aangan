@@ -25,6 +25,11 @@
 - Unit, accessibility, visual regression, and E2E tests are required for all fallback UIs.
 - Playwright and axe-core are used for E2E and a11y testing.
 
+## Contextual UI Rendering
+- All global UI elements (headers, info bars, PrivacyBanner, feedback/CTA strips) are rendered only on user-facing pages.
+- The `isUserFacingRoute` utility is used to determine if the current route should show these elements.
+- Admin, login, and error pages do not render these UI fragments.
+
 ---
 
 _See also: docs/DEVELOPMENT_CHECKLIST.md, docs/UX_V2_ALIVE_AND_REAL.md_ 

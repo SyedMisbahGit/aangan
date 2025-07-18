@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DreamLayout } from '../components/shared/DreamLayout';
-import { DreamHeader } from '../components/shared/DreamHeader';
+import { DreamHeader, isUserFacingRoute } from '../components/shared/DreamHeader';
 import { Card, CardContent } from '../components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
@@ -12,7 +12,7 @@ import {
   Moon,
   BookOpen,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { SilenceMode } from '../components/ambient/SilenceMode';
 import { cn } from '@/lib/utils';
 import NotificationFeed from '../components/notifications/NotificationFeed';
@@ -28,6 +28,8 @@ const MyCorner: React.FC = () => {
       mainRef.current.focus();
     }
   }, []);
+
+  const location = useLocation();
 
   const cornerItems = [
     {
@@ -74,10 +76,12 @@ const MyCorner: React.FC = () => {
       <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in your corner.">
         <DreamLayout>
           <div className="bg-aangan-ground min-h-screen">
-            <DreamHeader
-              title="My Corner"
-              subtitle="A quiet space for reflection and self-care."
-            />
+            {isUserFacingRoute(location.pathname) && (
+              <DreamHeader
+                title="My Corner"
+                subtitle="A quiet space for reflection and self-care."
+              />
+            )}
             <main
               role="main"
               aria-labelledby="page-title"

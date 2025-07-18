@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { DreamLayout } from "../components/shared/DreamLayout";
-import { DreamHeader } from "../components/shared/DreamHeader";
+import { DreamHeader, isUserFacingRoute } from "../components/shared/DreamHeader";
+import { useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Progress } from "../components/ui/progress";
@@ -129,11 +130,14 @@ const Profile: React.FC = () => {
   }, []);
 
   const logError = useErrorBoundaryLogger("Profile");
+  const location = useLocation();
 
   return (
     <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in your profile.">
       <DreamLayout>
-        <DreamHeader title="My Footprints in Aangan" />
+        {isUserFacingRoute(location.pathname) && (
+          <DreamHeader title="My Footprints in Aangan" />
+        )}
         <Suspense fallback={<CustomSkeletonCard className="my-12" />}> 
           <main
             role="main"

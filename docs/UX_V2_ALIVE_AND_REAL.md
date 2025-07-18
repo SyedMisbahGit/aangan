@@ -44,3 +44,10 @@ _See also: docs/DEVELOPMENT_CHECKLIST.md, docs/SECURITY_GUIDE.md_
 - See PERFORMANCE_GUIDE.md for technical best practices and audit-driven recommendations.
 
 This audit supports the v2.0 "Alive & Real" UX goals: emotional clarity, accessibility, and a seamless, real human presence throughout the app. 
+
+## Contextual Info Bars, Banners, and Feedback Strips (2025-07)
+- All global UI elements such as the main header/info bar, PrivacyBanner, and feedback/CTA strips are now rendered **only on user-facing pages**.
+- Admin, login, and error pages do **not** show these elements.
+- This is enforced using a shared utility (`isUserFacingRoute`) that checks the current route.
+- Example: The PrivacyBanner and DreamHeader are only rendered if the route is user-facing.
+- This ensures a clean, minimal, and purposeful layout, with no irrelevant banners on admin, 404, 500, or deep paths. 
