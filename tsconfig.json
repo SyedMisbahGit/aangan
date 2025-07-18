@@ -12,12 +12,24 @@
     "noImplicitAny": false,
     "noUnusedParameters": false,
     "skipLibCheck": true,
-    "allowJs": true,
+    "allowJs": false,
     "noUnusedLocals": false,
     "strictNullChecks": false,
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "types": ["@testing-library/jest-dom", "jest"],
-    "lib": ["ES2020", "DOM", "DOM.Iterable"]
-  }
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "outDir": "dist"
+  },
+  "include": [
+    "frontend/src/**/*",
+    "frontend/lib/**/*",
+    "backend/src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.js",
+    "**/*.d.ts"
+  ]
 }

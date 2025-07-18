@@ -301,3 +301,14 @@ Aangan v2.0 is a major experience update focused on emotional clarity, accessibi
 See `docs/UX_V2_ALIVE_AND_REAL.md` for a detailed breakdown.
 
 ---
+
+## 🛠️ TypeScript & Error Handling Improvements (2025)
+
+- All main pages now use <ErrorBoundary> and improved accessibility (ARIA, focus, semantic HTML).
+- TypeScript config updated: ensure all relevant directories (e.g., lib/) are included in tsconfig.json and tsconfig.app.json.
+- If you see TS6307 errors (file not listed in project), check your include patterns and restart your IDE/TypeScript server.
+- Keep sample/mock data types in sync with TypeScript interfaces (e.g., id: number vs id: string).
+- Use type guards or assertions for optional/extended properties (e.g., isGhost).
+- Remove unsupported props from object literals and component calls (e.g., title/description in toast).
+
+---

@@ -199,6 +199,21 @@ npm run test:performance      # Performance audit
 - [Web Performance](https://web.dev/performance/)
 - [Security Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers)
 
+## 🛠️ TypeScript Project Troubleshooting
+
+- If you see errors like `TS6307: File ... is not listed within the file list of project ...`, ensure your `tsconfig.json` and any referenced configs include all relevant directories (e.g., `"lib/**/*"`, `"frontend/lib/**/*"`).
+- After updating `tsconfig` files, always restart your IDE and/or TypeScript server to clear cache.
+- Avoid duplicate or conflicting `tsconfig` files in subdirectories.
+- Keep sample/mock data types in sync with your TypeScript interfaces (e.g., `id: number` vs `id: string`).
+- Use type guards or type assertions for optional/extended properties (e.g., `isGhost`).
+- Remove unsupported props from object literals and component calls (e.g., `title`/`description` in `toast`).
+
+## ♿ Accessibility & Error Handling
+
+- All main pages should use `<ErrorBoundary>` and accessible landmarks (e.g., `<main role="main">`).
+- Use ARIA attributes and focus management for modals/dialogs.
+- Prefer semantic HTML and design system components for consistency.
+
 ---
 
 *Remember: Simple, Secure, Sustainable - Every line of code matters!*
