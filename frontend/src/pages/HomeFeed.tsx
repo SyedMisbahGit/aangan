@@ -1,11 +1,11 @@
-import React, { useState, useEffect, Suspense, lazy } from "react";
+import React, { useState, useEffect, Suspense, lazy, useCallback } from "react";
 import { toast } from "sonner";
 import { DreamLayout } from "../components/shared/DreamLayout";
 import { DreamHeader } from "../components/shared/DreamHeader";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
 import { useShhhNarrator } from '../contexts/use-shhh-narrator';
-import { useWhispers } from '../contexts/use-whispers';
+import { useWhispers as useWhispersQuery } from '../services/api';
 import { PoeticEmotionBanner } from '../components/shared/EmotionPulseBanner';
 import { GentlePresenceRibbon } from '../components/shared/PresenceRibbon';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -14,8 +14,12 @@ import { X } from "lucide-react";
 import { updateEmotionStreak } from "../lib/streaks";
 import { Plus } from "lucide-react";
 import { HelpCircle } from 'lucide-react';
+import { Ghost } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Dialog } from '@headlessui/react';
+import { ConfettiEffect } from '../components/shared/ConfettiEffect';
+import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
+import React, { memo } from 'react';
 
 // Define a Whisper type for type safety
 interface Whisper {
@@ -30,12 +34,29 @@ interface Whisper {
 interface WhisperWithAI extends Whisper {
   isAIGenerated?: boolean;
   is_ai_generated?: boolean;
+  isGhost?: boolean;
 }
+
+// Pulse messages for 'What’s happening now'
+const pulseMessages = [
+  '✨ Someone just whispered under the Banyan Tree',
+  '🌿 A gentle echo drifted through the Library',
+  '💬 A reply just landed in the Quad',
+  '🌙 Someone found comfort in the Lounge tonight',
+  '🔥 A new whisper sparked in the Hostel',
+];
+const echoMessages = [
+  'Someone just echoed a whisper…',
+  'A gentle voice replied to a lonely thought…',
+  'A heart reacted to a campus secret…',
+  'A new echo rippled through the courtyard…',
+];
 
 const Whispers: React.FC = () => {
   const { nearbyHotspots, emotionClusters, systemTime, campusActivity } = useCUJHotspots();
   const { narratorState } = useShhhNarrator();
-  const { whispers, setWhispers } = useWhispers();
+  // Remove context-based whispers
+  // const { whispers, setWhispers } = useWhispers();
   const [selectedWhisper, setSelectedWhisper] = useState<Whisper | null>(null);
   const [composerExpanded, setComposerExpanded] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -43,74 +64,44 @@ const Whispers: React.FC = () => {
   const [showRepliesModal, setShowRepliesModal] = useState(false);
   const [activeReplies, setActiveReplies] = useState<unknown[]>([]);
   const [activeWhisper, setActiveWhisper] = useState<string | null>(null);
-  
-  // Real-time context integration
-  const isNightTime = systemTime.hour < 6 || systemTime.hour > 22;
-  const isWeekend = systemTime.isWeekend;
-  const currentActivity = narratorState.userActivity;
+  const [pulseIndex, setPulseIndex] = useState(0);
+  const [echoIndex, setEchoIndex] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
 
-  // Get time of day for poetic banner
-  const getTimeOfDay = () => {
-    if (systemTime.hour < 6) return 'night';
-    if (systemTime.hour < 12) return 'morning';
-    if (systemTime.hour < 18) return 'afternoon';
-    return 'evening';
-  };
+  // Pagination state
+  const PAGE_SIZE = 20;
+  const [offset, setOffset] = useState(0);
+  const [allWhispers, setAllWhispers] = useState<Whisper[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  // Generate sample whispers with real-time context
+  // Fetch whispers for current page
+  const { data: whispers = [], isLoading, error, refetch, isFetching } = useWhispersQuery({ limit: PAGE_SIZE, offset });
+
+  // On initial load or offset change, append new whispers
   useEffect(() => {
-    if (whispers.length === 0) {
-      const sampleWhispers: Whisper[] = [
-        {
-          id: '1',
-          content: isNightTime 
-            ? "The campus feels different at night. Quieter, more introspective. Like everyone's thoughts are floating in the air."
-            : "Just had the most amazing conversation at Tapri. Sometimes the best ideas come over chai.",
-          emotion: isNightTime ? 'reflection' : 'joy',
-          zone: 'tapri',
-          timestamp: new Date(Date.now() - Math.random() * 3600000).toISOString(),
-          isActive: true
-        },
-        {
-          id: '2',
-          content: campusActivity === 'peak' 
-            ? "The energy in the quad right now is electric! So many people, so many stories."
-            : "Found a quiet corner in the library. Perfect for getting lost in thoughts.",
-          emotion: campusActivity === 'peak' ? 'excitement' : 'focus',
-          zone: campusActivity === 'peak' ? 'quad' : 'library',
-          timestamp: new Date(Date.now() - Math.random() * 1800000).toISOString(),
-          isActive: true
-        },
-        {
-          id: '3',
-          content: isWeekend 
-            ? "Weekend vibes hit different. The campus feels more relaxed, more human."
-            : "Mid-semester stress is real, but we're all in this together.",
-          emotion: isWeekend ? 'peace' : 'anxiety',
-          zone: 'dde',
-          timestamp: new Date(Date.now() - Math.random() * 900000).toISOString(),
-          isActive: true
-        },
-        {
-          id: '4',
-          content: "Sometimes I wonder if anyone else feels this way. A little lost, a little hopeful.",
-          emotion: 'reflection',
-          zone: 'hostel',
-          timestamp: new Date(Date.now() - Math.random() * 7200000).toISOString(),
-          isActive: true
-        },
-        {
-          id: '5',
-          content: "Just saw the sunset from the hilltop. It was breathtaking. A moment of pure calm.",
-          emotion: 'peace',
-          zone: 'hilltop',
-          timestamp: new Date(Date.now() - Math.random() * 86400000).toISOString(),
-          isActive: true
-        }
-      ];
-      setWhispers(sampleWhispers);
+    if (whispers && whispers.length > 0) {
+      setAllWhispers(prev => {
+        // Avoid duplicates by id
+        const ids = new Set(prev.map(w => w.id));
+        const newOnes = whispers.filter(w => !ids.has(w.id));
+        return [...prev, ...newOnes];
+      });
+      setHasMore(whispers.length === PAGE_SIZE);
+    } else if (offset === 0 && whispers.length === 0) {
+      setAllWhispers([]);
+      setHasMore(false);
+    } else if (whispers.length < PAGE_SIZE) {
+      setHasMore(false);
     }
-  }, [isNightTime, campusActivity, isWeekend, setWhispers, whispers.length]);
+    setIsLoadingMore(false);
+  }, [whispers, offset]);
+
+  // Load more handler
+  const handleLoadMore = useCallback(() => {
+    setIsLoadingMore(true);
+    setOffset(prev => prev + PAGE_SIZE);
+  }, []);
 
   // Fetch 5 most recent whispers for 'Recently Whispered…' section
   useEffect(() => {
@@ -192,6 +183,19 @@ const Whispers: React.FC = () => {
 
   const presenceCount = getPresenceCount();
 
+  const logZoneUsage = (zone: string) => {
+    const usage = JSON.parse(localStorage.getItem('aangan_zone_usage') || '{}');
+    usage[zone] = (usage[zone] || 0) + 1;
+    localStorage.setItem('aangan_zone_usage', JSON.stringify(usage));
+    // TODO: Send to analytics endpoint if needed
+  };
+  const logAIReplyEvent = (type: 'success' | 'timeout') => {
+    const events = JSON.parse(localStorage.getItem('aangan_ai_reply_events') || '[]');
+    events.push({ type, timestamp: new Date().toISOString() });
+    localStorage.setItem('aangan_ai_reply_events', JSON.stringify(events));
+    // TODO: Send to analytics endpoint if needed
+  };
+
   const handleWhisperCreate = async (content: string, emotion: string, useAI: boolean) => {
     const newWhisper: Whisper = {
       id: Date.now().toString(),
@@ -219,10 +223,12 @@ const Whispers: React.FC = () => {
           description: `Soft title unlocked: “${unlockedTitle}” (just for you)`
         });
       }
+      // Analytics: log zone usage
+      logZoneUsage(newWhisper.zone);
     }
 
     // Optimistically add the whisper to the UI
-    setWhispers(prev => [newWhisper, ...prev]);
+    // setWhispers(prev => [newWhisper, ...prev]); // This line is removed as whispers are now fetched directly
     updateEmotionStreak(emotion);
 
     // Simulate network request
@@ -244,7 +250,7 @@ const Whispers: React.FC = () => {
       },
       error: (error) => {
         // Revert the UI if the request fails
-        setWhispers(prev => prev.filter(w => w.id !== newWhisper.id));
+        // setWhispers(prev => prev.filter(w => w.id !== newWhisper.id)); // This line is removed
         return error;
       },
     });
@@ -257,10 +263,12 @@ const Whispers: React.FC = () => {
   const handleWhisperLongPress = (whisper: Whisper) => {
     // Echo functionality
     console.log('Echoing whisper:', whisper.id);
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 3000); // Hide confetti after 3 seconds
   };
 
   const handleWhisperSwipeLeft = (whisper: Whisper) => {
-    setWhispers(prev => prev.filter(w => w.id !== whisper.id));
+    // setWhispers(prev => prev.filter(w => w.id !== whisper.id)); // This line is removed
     toast({
       title: 'Gone with the breeze 💨',
       description: 'Your whisper has drifted away.',
@@ -292,12 +300,22 @@ const Whispers: React.FC = () => {
     });
   }, [whispers, guestId]);
 
+  useEffect(() => {
+    const pulseInterval = setInterval(() => {
+      setPulseIndex((prev) => (prev + 1) % pulseMessages.length);
+      setEchoIndex((prev) => (prev + 1) % echoMessages.length);
+    }, 30000);
+    return () => clearInterval(pulseInterval);
+  }, []);
+
   function openRepliesModal(whisperId: string) {
     // Type guard: ensure replies are array of objects
     const replies = whisperReplies[whisperId];
     setActiveReplies(Array.isArray(replies) ? replies : []);
     setActiveWhisper(whisperId);
     setShowRepliesModal(true);
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 3000); // Hide confetti after 3 seconds
   }
   function closeRepliesModal() {
     setShowRepliesModal(false);
@@ -305,6 +323,81 @@ const Whispers: React.FC = () => {
     setActiveWhisper(null);
   }
 
+  // Helper to filter top 3 real whispers from last 12 hours
+  const getTopRealWhispers = (whispers: Whisper[]) => {
+    const twelveHoursAgo = Date.now() - 12 * 60 * 60 * 1000;
+    return whispers
+      .filter(w => !w.isAIGenerated && !w.is_ai_generated && !w.isGhost && new Date(w.timestamp).getTime() > twelveHoursAgo)
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, 3);
+  };
+
+  // Helper to check if a whisper is a ghost
+  const isGhostWhisper = (whisper: WhisperWithAI) => {
+    return whisper.isAIGenerated || whisper.is_ai_generated || whisper.isGhost;
+  };
+
+  const topRealWhispers = getTopRealWhispers(whispers);
+
+  // Helper to get whispers from the user's current or default zone
+  const getZoneWhispers = (whispers: Whisper[], zone: string) => {
+    return whispers.filter(w => w.zone === zone && !isGhostWhisper(w as WhisperWithAI));
+  };
+
+  // Example: get user's current zone from context or default to 'quad'
+  const userZone = (typeof window !== 'undefined' && localStorage.getItem('aangan_user_zone')) || 'quad';
+  const zoneWhispers = getZoneWhispers(whispers, userZone);
+
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Memoized WhisperCard row for react-window
+  const WhisperRow = memo(({ index, style, data }: ListChildComponentProps) => {
+    const whisper = data.whispers[index];
+    const ghost = data.isGhostWhisper(whisper);
+    const prefersReducedMotion = data.prefersReducedMotion;
+    const WhisperCard = data.WhisperCard;
+    return (
+      <div style={style}>
+        <Suspense fallback={<motion.div
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
+          animate={prefersReducedMotion ? false : { opacity: 1 }}
+          transition={{ duration: 0.7, ease: 'easeInOut', repeat: Infinity, repeatType: 'reverse' }}
+          className="bg-gray-200 rounded animate-pulse"
+          aria-label="Loading skeleton"
+        />}> 
+          {/* Show reply badge if user is author and there are replies */}
+          {whisper.guest_id === data.guestId && data.whisperReplies[whisper.id]?.length > 0 && (
+            <span
+              className="inline-block bg-green-500 text-white text-xs rounded px-2 py-0.5 mr-2 cursor-pointer"
+              onClick={() => data.openRepliesModal(whisper.id)}
+            >
+              Reply
+            </span>
+          )}
+          <div onClick={() => whisper.guest_id === data.guestId && data.whisperReplies[whisper.id]?.length > 0 ? data.openRepliesModal(whisper.id) : undefined}>
+            <div className="flex items-center gap-2 mb-1">
+              {ghost && (
+                <span className="flex items-center gap-1 text-xs text-gray-400">
+                  <Ghost className="w-4 h-4 text-indigo-400" /> from the breeze
+                </span>
+              )}
+            </div>
+            <WhisperCard
+              whisper={whisper}
+              isAI={whisper.isAIGenerated ?? whisper.is_ai_generated}
+              delay={index * 0.2}
+              onTap={() => data.handleWhisperTap(whisper)}
+              onLongPress={() => data.handleWhisperLongPress(whisper)}
+              onSwipeLeft={() => data.handleWhisperSwipeLeft(whisper)}
+              onHeart={() => data.handleWhisperHeart(whisper)}
+            />
+          </div>
+        </Suspense>
+      </div>
+    );
+  });
+
+  // Render logic for main feed
   return (
     <DreamLayout>
       <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-blue-50">
@@ -342,6 +435,76 @@ const Whispers: React.FC = () => {
           </div>
         )}
 
+        {/* Top 3 Real Whispers Section */}
+        <motion.div
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 30 }}
+          animate={prefersReducedMotion ? false : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeInOut' }}
+          className="mb-8 border-b border-gray-200 pb-6 shadow-sm"
+          aria-label="Top Whispers Section"
+        >
+          <div className="font-semibold text-green-700 mb-2 text-lg flex items-center gap-2">
+            <span>Top Whispers (last 12h)</span>
+            <span className="text-xs text-gray-400 font-normal">(real, anonymized)</span>
+          </div>
+          <div className="space-y-2">
+            {topRealWhispers.map((whisper) => (
+              <div key={whisper.id} className="bg-white/90 rounded-lg shadow p-3 flex flex-col gap-1 border border-green-50">
+                <div className="text-sm text-gray-800 line-clamp-2">{whisper.content}</div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-green-500">{whisper.emotion}</span>
+                  <span className="text-xs text-gray-400">· {timeAgo(whisper.timestamp)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Trending/Zone Section */}
+        <motion.div
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 30 }}
+          animate={prefersReducedMotion ? false : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: 'easeInOut' }}
+          className="mb-8 border-b border-gray-200 pb-6 shadow-sm"
+          aria-label="Trending/Zone Section"
+        >
+          <div className="font-semibold text-blue-700 mb-2 text-lg flex items-center gap-2">
+            <span>Whispers from your campus</span>
+            <span className="text-xs text-gray-400 font-normal">({userZone})</span>
+          </div>
+          <div className="space-y-2">
+            {zoneWhispers.slice(0, 3).map((whisper) => (
+              <div key={whisper.id} className="bg-blue-50/90 rounded-lg shadow p-3 flex flex-col gap-1 border border-blue-100">
+                <div className="text-sm text-blue-900 line-clamp-2">{whisper.content}</div>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-blue-500">{whisper.emotion}</span>
+                  <span className="text-xs text-gray-400">· {timeAgo(whisper.timestamp)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Live Pulse Section */}
+        <motion.div
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 30 }}
+          animate={prefersReducedMotion ? false : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4, ease: 'easeInOut' }}
+          className="mb-8"
+          aria-label="Live Pulse Section"
+        >
+          <div className="w-full flex flex-col items-center mb-4">
+            <div className="rounded-full bg-indigo-50/80 px-4 py-2 shadow text-indigo-700 font-medium text-base flex items-center gap-2 animate-pulse">
+              {pulseMessages[pulseIndex]}
+            </div>
+            <div className="mt-2 rounded-full bg-green-50/80 px-4 py-1 shadow text-green-700 text-sm flex items-center gap-2 animate-fade-in">
+              {echoMessages[echoIndex]}
+            </div>
+          </div>
+        </motion.div>
+        {/* Confetti on echo/reply */}
+        {showConfetti && <ConfettiEffect />}
+
         {/* Header */}
         <DreamHeader 
           title="Whispers"
@@ -356,7 +519,17 @@ const Whispers: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="space-y-6"
           >
-            {whispers.length === 0 ? (
+            {isLoading && offset === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-4xl mb-4 animate-pulse">🪶</div>
+                <p className="text-neutral-600 italic">Loading whispers...</p>
+              </div>
+            ) : error && offset === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-4xl mb-4">⚠️</div>
+                <p className="text-red-600 italic">Failed to load whispers. Please try again later.</p>
+              </div>
+            ) : allWhispers.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-4xl mb-4">🪶</div>
                 <p className="text-neutral-600 italic">
@@ -364,39 +537,42 @@ const Whispers: React.FC = () => {
                 </p>
               </div>
             ) : (
-              whispers.map((whisper, index) => (
-                <Suspense key={whisper.id} fallback={<div className="bg-white/10 rounded-lg p-8 animate-pulse h-32 mb-4" />}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
-                  >
-                    {/* Show reply badge if user is author and there are replies */}
-                    {whisper.guest_id === guestId && whisperReplies[whisper.id]?.length > 0 && (
-                      <span
-                        className="inline-block bg-green-500 text-white text-xs rounded px-2 py-0.5 mr-2 cursor-pointer"
-                        onClick={() => openRepliesModal(whisper.id)}
-                      >
-                        Reply
-                      </span>
-                    )}
-                    {/* Render the WhisperCard as usual, allow click to open replies if any */}
-                    <div onClick={() => whisper.guest_id === guestId && whisperReplies[whisper.id]?.length > 0 ? openRepliesModal(whisper.id) : undefined}>
-                      <WhisperCard
-                        whisper={whisper as WhisperWithAI}
-                        isAI={(whisper as WhisperWithAI).isAIGenerated ?? (whisper as WhisperWithAI).is_ai_generated}
-                        delay={index * 0.2}
-                        onTap={() => handleWhisperTap(whisper)}
-                        onLongPress={() => handleWhisperLongPress(whisper)}
-                        onSwipeLeft={() => handleWhisperSwipeLeft(whisper)}
-                        onHeart={() => handleWhisperHeart(whisper)}
-                      />
-                    </div>
-                  </motion.div>
-                </Suspense>
-              ))
+              <List
+                height={Math.min(600, allWhispers.length * 120)}
+                itemCount={allWhispers.length}
+                itemSize={120}
+                width={"100%"}
+                itemData={{
+                  whispers: allWhispers,
+                  isGhostWhisper,
+                  prefersReducedMotion,
+                  WhisperCard,
+                  guestId,
+                  whisperReplies,
+                  openRepliesModal,
+                  handleWhisperTap,
+                  handleWhisperLongPress,
+                  handleWhisperSwipeLeft,
+                  handleWhisperHeart,
+                }}
+                style={{ overflowX: 'hidden' }}
+              >
+                {WhisperRow}
+              </List>
             )}
           </motion.div>
+          {/* Load More button */}
+          {hasMore && !isLoading && !error && (
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={handleLoadMore}
+                disabled={isLoadingMore || isFetching}
+                className="px-6 py-2 rounded bg-indigo-600 text-white font-semibold shadow hover:bg-indigo-700 disabled:opacity-60"
+              >
+                {isLoadingMore || isFetching ? 'Loading...' : 'Load More'}
+              </button>
+            </div>
+          )}
 
           {/* Embedded Bench Composer */}
           <motion.div

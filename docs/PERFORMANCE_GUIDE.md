@@ -1,5 +1,17 @@
 # ⚡ Performance Guide - Aangan Platform
 
+## [2025-07] Audit-Driven Recommendations
+- **Subcomponent State Handling:** All major subcomponents (feeds, charts, modals) must handle loading, error, and empty states for async data.
+- **Virtualization:** Use virtualization (e.g., react-window) for any list or feed that may grow large (HomeFeed, admin analytics, etc.).
+- **Data Fetching:** Use React Query or SWR for all async data fetching, with caching and background refetching.
+- **Dark Mode:** All pages/components must be tested for dark mode compatibility.
+- **Accessibility:** All modals, popovers, and charts must be tested with screen readers and keyboard navigation.
+- **Error Pages:** Implement a custom /500 error page for server errors.
+- **Dead-end Links:** Remove or hide links to unimplemented pages (e.g., /settings) until they exist.
+- **API Integration:** Replace all demo/static data with real API calls in production.
+
+---
+
 ## Overview
 This document outlines performance optimization strategies implemented in the Aangan platform to ensure fast, responsive, and efficient user experience.
 
@@ -276,3 +288,53 @@ npm run test:bundlesize
 
 *Last updated: January 2025*
 *Maintained by: CUJ Community* 
+
+# Performance Guide: Whispers Page Optimization
+
+## Overview
+
+The `/whispers` page has been optimized for both backend and frontend performance. This guide documents the key strategies and best practices now in place, and provides recommendations for future improvements.
+
+---
+
+## 1. Real Data Fetching with React Query
+- The main whispers feed now fetches real data from the backend using the `useWhispers` React Query hook (`frontend/src/services/api.ts`).
+- This enables caching, background refetching, and robust loading/error state management.
+
+**Key file:** `frontend/src/pages/HomeFeed.tsx`
+
+---
+
+## 2. Pagination with "Load More"
+- Whispers are fetched in batches (default: 20 at a time) using `limit` and `offset` parameters.
+- A "Load More" button allows users to incrementally load more whispers, reducing initial load time and memory usage.
+- The button is disabled and shows a loading state while fetching.
+
+---
+
+## 3. List Virtualization with react-window
+- The main whispers list is virtualized using [`react-window`](https://react-window.vercel.app/), so only visible items are rendered in the DOM.
+- This enables smooth scrolling and low memory usage, even with hundreds or thousands of whispers loaded.
+- The `WhisperCard` component is memoized for further efficiency.
+
+---
+
+## 4. Best Practices for Future Contributors
+- **Always use pagination or infinite scroll for large lists.**
+- **Virtualize any list that could grow large.** Use `react-window` or similar libraries.
+- **Use React Query (or SWR) for all data fetching.**
+- **Memoize heavy components** (e.g., cards, rows) to avoid unnecessary re-renders.
+- **Show loading and error states** for all async data.
+- **Profile performance** with React Profiler if you notice slowdowns.
+- **Consider dynamic import/lazy loading** for heavy components if bundle size becomes an issue.
+
+---
+
+## 5. Further Reading
+- [React Query Documentation](https://tanstack.com/query/latest)
+- [react-window Documentation](https://react-window.vercel.app/)
+- [React Profiler](https://react.dev/reference/react/Profiler)
+
+---
+
+_Last updated: July 2025_ 

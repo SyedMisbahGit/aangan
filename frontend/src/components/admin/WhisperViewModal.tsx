@@ -7,8 +7,18 @@ interface Props {
   onClose: () => void;
 }
 
+interface WhisperDetails {
+  id: string;
+  content: string;
+  emotion: string;
+  zone: string;
+  created_at: string;
+  guest_id: string;
+  is_ai_generated?: boolean;
+}
+
 export const WhisperViewModal: React.FC<Props> = ({ whisperId, open, onClose }) => {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<WhisperDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const jwt = localStorage.getItem("admin_jwt");

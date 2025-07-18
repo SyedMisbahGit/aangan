@@ -25,9 +25,8 @@ export const ModerationInbox: React.FC = () => {
   const jwt = localStorage.getItem("admin_jwt");
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    const interval: NodeJS.Timeout = setInterval(() => setRefresh(r => r + 1), 10000);
     fetchReports();
-    interval = setInterval(() => setRefresh(r => r + 1), 10000);
     return () => clearInterval(interval);
     // eslint-disable-next-line
   }, []);
@@ -44,7 +43,9 @@ export const ModerationInbox: React.FC = () => {
         const audio = new Audio("/notification.mp3");
         audio.volume = 0.2;
         audio.play().catch(() => {});
-      } catch {}
+      } catch {
+        // intentionally empty: audio notification is optional
+      }
       setReports(prev => [{ ...report, id: Math.random(), isNew: true }, ...prev]);
       toast({
         title: "New Report",
@@ -71,6 +72,7 @@ export const ModerationInbox: React.FC = () => {
       });
       setReports(res.data);
     } catch {
+      // Intentionally empty: ignore errors for moderation inbox fetch
       setError("Failed to fetch moderation inbox");
     } finally {
       setLoading(false);

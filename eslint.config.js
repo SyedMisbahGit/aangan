@@ -5,19 +5,19 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { 
+  {
     ignores: [
-      "dist/**", 
-      "dev-dist/**", 
-      "coverage/**", 
-      "**/workbox-*.js", 
-      "**/node_modules/**",
-      "*.min.js",
-      ".env*",
-      "public/**"
+      '**/dist/**',
+      '**/dev-dist/**',
+      '**/coverage/**',
+      '**/node_modules/**',
+      '**/workbox-*.js',
+      '*.min.js',
+      '.env*',
+      '**/public/**',
     ],
     linterOptions: {
-      reportUnusedDisableDirectives: "error",
+      reportUnusedDisableDirectives: 'error',
       noInlineConfig: false,
     },
   },

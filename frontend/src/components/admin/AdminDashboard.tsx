@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+interface RecentActivity {
+  content: string;
+  zone: string;
+  emotion: string;
+  created_at: string;
+}
+
 interface Analytics {
   total: number;
   byEmotion: Record<string, number>;
   byZone: Record<string, number>;
-  recentActivity: any[];
+  recentActivity: RecentActivity[];
 }
 
 interface ZoneStat {

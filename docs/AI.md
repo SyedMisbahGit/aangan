@@ -117,6 +117,8 @@ The AI listener enhances the campus experience by generating poetic, context-awa
   - "AI may whisper back soon" if a reply is possible (probabilistic)
   - No footer if the AI has replied or will not reply
 - This ensures users always feel acknowledged, even if the AI does not reply immediately, and reduces confusion or feelings of being ignored.
+- **AI Reply Clarity (v2.0):** All AI replies are clearly marked in the UI, with “Whisper again” and “Did this help?” reactions, and animated emotional feedback.
+- **Analytics Hooks:** Local event tracking for AI reply success/timeout and user reactions.
 
 ---
 

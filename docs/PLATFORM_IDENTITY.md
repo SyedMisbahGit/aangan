@@ -56,11 +56,11 @@ Shhh – WhisperVerse is a **poetic, anonymous, and emotionally intelligent camp
 - **Social Space**: Anonymous feed with emotion tags, zones, and emoji reactions
 - **Seamless Transition**: Easy movement between private reflection and social sharing
 
-### ✅ **Onboarding Strategy Deployed**
-- **6-Step Interactive Guide**: Welcome, Diary Space, Social Space, AI Companion, Campus Awareness, Privacy
-- **Emotion-Aware Introduction**: Each step tailored to different emotional states
-- **Visual Space Indicators**: Clear distinction between private and social spaces
-- **Progressive Disclosure**: Features revealed contextually with poetic AI narration
+### ✅ Onboarding Strategy Deployed
+- **3-Step Visual Guide:** Welcome, How it Works, Demo Whispers. Clear, warm explanation and visuals. Skippable and accessible from Help overlay.
+- **Emotion-Aware Feedback:** Gentle affirmation after 3 whispers, private journal unlock after 5, and animated emotional feedback throughout.
+- **AI Reply Clarity:** All AI replies are clearly marked, with “Whisper again” and “Did this help?” reactions.
+- **Accessibility & Inclusivity:** All flows meet or exceed WCAG AA+ contrast, ARIA, and keyboard navigation standards. Prefers-reduced-motion supported.
 
 ---
 

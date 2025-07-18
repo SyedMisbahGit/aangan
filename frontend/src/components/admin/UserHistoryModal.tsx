@@ -7,9 +7,36 @@ interface Props {
   onClose: () => void;
 }
 
+interface WhisperHistory {
+  id: string;
+  content: string;
+  emotion: string;
+  zone: string;
+  created_at: string;
+}
+
+interface ReportHistory {
+  id: string;
+  reason: string;
+  created_at: string;
+}
+
+interface BanHistory {
+  id: string;
+  action: string;
+  reason: string;
+  created_at: string;
+}
+
+interface UserHistoryData {
+  whispers: WhisperHistory[];
+  reports: ReportHistory[];
+  bans: BanHistory[];
+}
+
 export const UserHistoryModal: React.FC<Props> = ({ guestId, open, onClose }) => {
   const [tab, setTab] = useState("whispers");
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<UserHistoryData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const jwt = localStorage.getItem("admin_jwt");
@@ -49,7 +76,7 @@ export const UserHistoryModal: React.FC<Props> = ({ guestId, open, onClose }) =>
               <table className="w-full mb-4">
                 <thead><tr><th>ID</th><th>Content</th><th>Emotion</th><th>Zone</th><th>Created</th></tr></thead>
                 <tbody>
-                  {data.whispers.map((w: any) => (
+                  {data.whispers.map((w) => (
                     <tr key={w.id} className="border-b"><td>{w.id}</td><td>{w.content}</td><td>{w.emotion}</td><td>{w.zone}</td><td>{new Date(w.created_at).toLocaleString()}</td></tr>
                   ))}
                 </tbody>
@@ -59,7 +86,7 @@ export const UserHistoryModal: React.FC<Props> = ({ guestId, open, onClose }) =>
               <table className="w-full mb-4">
                 <thead><tr><th>ID</th><th>Reason</th><th>Created</th></tr></thead>
                 <tbody>
-                  {data.reports.map((r: any) => (
+                  {data.reports.map((r) => (
                     <tr key={r.id} className="border-b"><td>{r.id}</td><td>{r.reason}</td><td>{new Date(r.created_at).toLocaleString()}</td></tr>
                   ))}
                 </tbody>
@@ -69,7 +96,7 @@ export const UserHistoryModal: React.FC<Props> = ({ guestId, open, onClose }) =>
               <table className="w-full mb-4">
                 <thead><tr><th>ID</th><th>Action</th><th>Reason</th><th>Time</th></tr></thead>
                 <tbody>
-                  {data.bans.map((b: any) => (
+                  {data.bans.map((b) => (
                     <tr key={b.id} className="border-b"><td>{b.id}</td><td>{b.action}</td><td>{b.reason}</td><td>{new Date(b.created_at).toLocaleString()}</td></tr>
                   ))}
                 </tbody>

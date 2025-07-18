@@ -2,6 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getErrorMessage } from "@/lib/errorUtils";
 
 interface Props {
   children: ReactNode;
@@ -23,7 +24,7 @@ class ErrorBoundary extends Component<Props & { navigate: (path: string) => void
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Uncaught error:", error, errorInfo);
+    console.error("Uncaught error:", getErrorMessage(error), errorInfo);
     
     // Log error to analytics/error tracking service
     if (typeof window !== "undefined") {
@@ -31,7 +32,7 @@ class ErrorBoundary extends Component<Props & { navigate: (path: string) => void
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          error: error.message,
+          error: getErrorMessage(error),
           stack: error.stack,
           componentStack: errorInfo.componentStack,
           url: window.location.href,
@@ -92,7 +93,7 @@ class ErrorBoundary extends Component<Props & { navigate: (path: string) => void
                   Technical details
                 </summary>
                 <pre className="mt-2 text-xs text-aangan-text-muted bg-aangan-surface p-3 rounded-lg overflow-auto max-h-32">
-                  {this.state.error.message}
+                  {getErrorMessage(this.state.error)}
                 </pre>
               </details>
             )}

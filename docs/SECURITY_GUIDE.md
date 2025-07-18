@@ -636,3 +636,4 @@ npm run test:auth
 - Notification permission requests are now always preceded by a custom, high-contrast modal explaining the purpose, ensuring users are not confused by native browser prompts over busy backgrounds.
 - Onboarding input fields (e.g., 'Enter Name') have been updated for high contrast and accessibility, meeting or exceeding WCAG AA standards.
 - All onboarding and notification flows are designed to be clear, accessible, and privacy-respecting. 
+- All onboarding and input flows now meet or exceed WCAG AA+ contrast and privacy standards, with ARIA labels and full keyboard accessibility. 

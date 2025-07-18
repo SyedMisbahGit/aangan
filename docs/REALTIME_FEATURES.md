@@ -33,6 +33,8 @@ This document outlines the comprehensive real-time and AI-driven features implem
 - **Ghost Whispers**: Generated daily, distributed across the day, and avoid overlap with real whispers
 - **Manual AI Pull**: `/api/whispers/:id/check-ai-reply` returns cached reply or triggers async job (returns `{ status: 'pending' }`)
 - **Logging & Fallback**: All AI jobs are logged; errors are retried up to 3 times, then marked as error
+- **AI Reply Clarity & Feedback (v2.0):** All AI replies are clearly marked, with “Whisper again” and “Did this help?” reactions, and animated emotional feedback.
+- **Analytics Hooks:** Local event tracking for onboarding, zone usage, and AI reply success/timeout.
 
 **Response Categories**
 - **Comfort**: For anxiety/sadness whispers

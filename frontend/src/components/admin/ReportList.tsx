@@ -37,7 +37,7 @@ export const ReportList: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const params: any = {};
+      const params: Record<string, unknown> = {};
       if (zone) params.zone = zone;
       if (status) params.status = status;
       const res = await axios.get("/api/admin/reports", {

@@ -283,3 +283,21 @@ npx artillery run scripts/artillery.yml
 - **Listen Swipe-to-Dismiss**: On mobile, swipe down anywhere in the Listen (Lounge) view to exit and return to the main app. The 'Press ESC to return' hint only appears on desktop.
 
 ---
+
+## 🌟 Aangan v2.0 – “Alive & Real” UX Update (2025-07)
+
+Aangan v2.0 is a major experience update focused on emotional clarity, accessibility, and real human presence:
+
+- **Onboarding:** New 3-step, visual, progressive onboarding with clear purpose, how-to, and demo whispers. Skippable and accessible from Help.
+- **Accessibility:** All inputs, modals, and flows now meet or exceed WCAG AA+ contrast, ARIA, and keyboard navigation standards. Focus-visible rings, animated error states, and prefers-reduced-motion support.
+- **Home Feed:** Top 3 real whispers, clear ghost/real distinction, trending/zone logic, and live pulse/echo stream with animated transitions and confetti.
+- **Composer:** Gentle feedback toast, reply ETA, fallback animation, and optional emotion tagging. Animated prompt, emotion/tag pickers, and send button.
+- **AI Replies:** Clearly marked “WhisperBot replied”, “Whisper again” button, and “Did this help?” reactions with animated feedback.
+- **Navigation:** Redesigned bottom nav with modern icons, tooltips, active highlight, and persistent floating Help overlay. All nav items are accessible.
+- **Emotional Layer:** Affirmation after 3 whispers, private journal unlock after 5, with animated banners and confetti.
+- **Analytics/Admin:** Local event tracking for onboarding, zone usage, and AI reply success/timeout, with animated analytics dashboard.
+- **Animation & Polish:** All major flows feature smooth, accessible animations, micro-interactions, and visual polish. Full support for prefers-reduced-motion.
+
+See `docs/UX_V2_ALIVE_AND_REAL.md` for a detailed breakdown.
+
+---

@@ -158,6 +158,7 @@ const CreateWhisper: React.FC = () => {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="e.g., library, canteen, hostel..."
+              aria-label="Location (optional)"
               className="aangan-input w-full"
             />
           </div>

@@ -69,6 +69,8 @@ const AdminInsights: React.FC = () => {
 
   const { isSummerPulseActive, label: summerLabel } = useSummerPulse();
 
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   return (
     <DreamLayout>
       <div className="min-h-screen bg-gradient-to-br from-paper-light to-paper-dark">
@@ -122,30 +124,42 @@ const AdminInsights: React.FC = () => {
             {insightsSections.map((section, index) => (
               <motion.div
                 key={section.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 30 }}
+                animate={prefersReducedMotion ? false : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeInOut' }}
                 className="space-y-6"
+                aria-label={section.title}
+                tabIndex={0}
               >
                 {/* Section Header */}
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-inkwell/10 to-inkwell/5 rounded-lg">
-                    {section.icon}
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-inkwell">
-                      {section.title}
-                    </h2>
-                    <p className="text-inkwell/70">
-                      {section.description}
-                    </p>
-                  </div>
+                <motion.div
+                  className="p-2 bg-gradient-to-br from-inkwell/10 to-inkwell/5 rounded-lg"
+                  initial={prefersReducedMotion ? false : { scale: 0.8, opacity: 0 }}
+                  animate={prefersReducedMotion ? false : { scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.4, ease: 'easeInOut' }}
+                  aria-hidden="true"
+                >
+                  {section.icon}
+                </motion.div>
+                <div>
+                  <h2 className="text-2xl font-bold text-inkwell">
+                    {section.title}
+                  </h2>
+                  <p className="text-inkwell/70">
+                    {section.description}
+                  </p>
                 </div>
-
                 {/* Section Content */}
-                <div className="bg-white/30 backdrop-blur-sm rounded-xl border border-inkwell/10 shadow-soft p-6">
+                <motion.div
+                  className="bg-white/30 backdrop-blur-sm rounded-xl border border-inkwell/10 shadow-soft p-6"
+                  initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+                  animate={prefersReducedMotion ? false : { opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2, ease: 'easeInOut' }}
+                  aria-label={`${section.title} content`}
+                  tabIndex={0}
+                >
                   {section.component}
-                </div>
+                </motion.div>
               </motion.div>
             ))}
           </div>
@@ -163,19 +177,40 @@ const AdminInsights: React.FC = () => {
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">✓</div>
+                  <motion.div
+                    className="text-2xl font-bold text-green-600"
+                    initial={prefersReducedMotion ? false : { scale: 0.9, opacity: 0 }}
+                    animate={prefersReducedMotion ? false : { scale: 1.1, opacity: 1 }}
+                    transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
+                    aria-label="Status icon"
+                  >
+                    ✓
+                  </motion.div>
                   <div className="text-inkwell/70">Emotion AI Active</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">✓</div>
+                  <motion.div
+                    className="text-2xl font-bold text-blue-600"
+                    initial={{ rotate: 10, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >✓</motion.div>
                   <div className="text-inkwell/70">ZoneFlow AI Active</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">✓</div>
+                  <motion.div className="text-2xl font-bold text-purple-600"
+                    initial={{ rotate: -5, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >✓</motion.div>
                   <div className="text-inkwell/70">Narrator Memory Active</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-emerald-600">✓</div>
+                  <motion.div className="text-2xl font-bold text-emerald-600"
+                    initial={{ rotate: 5, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >✓</motion.div>
                   <div className="text-inkwell/70">Analytics Live</div>
                 </div>
               </div>

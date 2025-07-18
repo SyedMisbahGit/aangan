@@ -19,10 +19,13 @@ import {
   Clock,
   MapPin,
   Check,
+  Ghost,
 } from "lucide-react";
 import { useSummerPulse } from '../../contexts/SummerPulseContext';
 import ModalSoftBack from "../shared/ModalSoftBack";
 import { useToast } from "@/hooks/use-toast";
+import { Typewriter } from '@/components/shared/Typewriter';
+import { cn } from "@/lib/utils";
 
 interface DreamComposerProps {
   onSubmit: (whisper: { content: string; emotion: string; tags: string[]; guestId?: string }) => void;
@@ -50,6 +53,10 @@ const writingPrompts = [
   "Describe a place that feels like home",
 ];
 
+const emotionTags = [
+  'Lonely', 'Overwhelmed', 'Grateful', 'Hopeful', 'Curious', 'Tired', 'Inspired', 'Anxious', 'Peaceful', 'Lost', 'Excited', 'Loved'
+];
+
 export const DreamComposer: React.FC<DreamComposerProps> = ({
   onSubmit,
   onClose,
@@ -61,6 +68,11 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
   const { isSummerPulseActive, getSummerPrompt, label: summerLabel, summerTags } = useSummerPulse();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const [showReplyEta, setShowReplyEta] = useState(false);
+  const [showNoReply, setShowNoReply] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [showSent, setShowSent] = useState(false);
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   useEffect(() => {
     if (isOpen) {
@@ -101,16 +113,23 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
       await onSubmit({
         content: content.trim(),
         emotion: selectedEmotion,
-        tags: isSummerPulseActive ? [...summerTags] : [],
+        tags: isSummerPulseActive ? [...summerTags, ...selectedTags] : [...selectedTags],
         guestId,
       });
       setIsSubmitting(false);
       setContent("");
       setSelectedEmotion("");
+      setSelectedTags([]);
       toast({
         title: "Whisper sent",
-        description: "Your whisper floats gently into the courtyard.",
+        description: "Your whisper floats in the courtyard…",
       });
+      setShowReplyEta(true);
+      setShowNoReply(false);
+      setTimeout(() => setShowReplyEta(false), 8000);
+      setTimeout(() => setShowNoReply(true), 60000);
+      setShowSent(true);
+      setTimeout(() => setShowSent(false), 3000);
     } catch (error) {
       setIsSubmitting(false);
       toast({
@@ -183,10 +202,61 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
 
           {/* Prompt */}
           <div className="mb-4 p-3 bg-aangan-surface/50 rounded-lg border border-aangan-border/30">
-            <p className="text-sm text-aangan-text-secondary italic">
-              💭 {currentPrompt}
-            </p>
+            <Typewriter text={currentPrompt} speed={30} aria-label="Writing prompt" />
           </div>
+
+          {/* Emotion picker */}
+          <div className="flex gap-2 mb-4" aria-label="Emotion picker">
+            {emotions.map((emotion) => (
+              <motion.button
+                key={emotion.id}
+                className={cn(
+                  'rounded-full border-2 px-3 py-1 font-medium text-sm flex items-center gap-1',
+                  selectedEmotion === emotion.id
+                    ? `${emotion.color} ring-2 ring-aangan-primary/80 scale-110`
+                    : 'bg-white/10 border-white/20 text-white/80 hover:bg-white/20',
+                )}
+                onClick={() => setSelectedEmotion(emotion.id)}
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.08 }}
+                aria-pressed={selectedEmotion === emotion.id}
+                aria-label={emotion.label}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
+                <emotion.icon className="w-4 h-4" /> {emotion.label}
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Tag selection */}
+          <div className="flex flex-wrap gap-2 mb-4" aria-label="Emotion tags">
+            {emotionTags.map((tag) => (
+              <motion.button
+                key={tag}
+                className={cn(
+                  'rounded-full border px-3 py-1 text-xs font-medium',
+                  selectedTags.includes(tag)
+                    ? 'bg-aangan-primary text-white border-aangan-primary scale-105'
+                    : 'bg-white/10 border-white/20 text-white/80 hover:bg-white/20',
+                )}
+                onClick={() => setSelectedTags((prev) => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.08 }}
+                aria-pressed={selectedTags.includes(tag)}
+                aria-label={tag}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
+                {tag}
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Summer Label */}
+          {isSummerPulseActive && (
+            <div className="mb-2 text-center text-green-700 font-medium animate-fade-in">
+              {summerLabel}
+            </div>
+          )}
 
           {/* Content Input */}
           <div className="mb-4">
@@ -233,78 +303,28 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
             />
             
             {/* Character Count */}
-            <div className={`text-xs mt-1 text-right ${
-              isOverLimit ? "text-aangan-anxiety" : isNearLimit ? "text-aangan-highlight" : "text-aangan-text-muted"
-            }`}>
+            <motion.div
+              className="text-xs mt-2 text-right"
+              animate={{ color: isOverLimit ? '#ef4444' : isNearLimit ? '#f59e42' : '#a1a1aa' }}
+              aria-live="polite"
+              aria-label={isOverLimit ? 'Character limit exceeded' : isNearLimit ? 'Near character limit' : 'Character count'}
+            >
               {characterCount}/{maxCharacters}
-            </div>
+            </motion.div>
           </div>
 
-          {/* Emotion Selection */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-aangan-text-primary mb-3">
-              How are you feeling?
-            </label>
-            <div className="grid grid-cols-2 gap-2 relative">
-              {emotions.map((emotion) => (
-                <button
-                  key={emotion.id}
-                  onClick={() => setSelectedEmotion(emotion.id)}
-                  className={`p-3 rounded-lg border transition-all duration-200 text-left relative ${
-                    selectedEmotion === emotion.id
-                      ? `${emotion.color} border-2 ring-2 ring-aangan-primary`
-                      : "bg-aangan-card border-aangan-border hover:border-aangan-primary/40"
-                  }`}
-                  aria-label={emotion.label}
-                >
-                  <div className="flex items-center gap-2">
-                    <emotion.icon className="w-4 h-4" />
-                    <span className="text-sm font-medium">{emotion.label}</span>
-                  </div>
-                  {selectedEmotion === emotion.id && (
-                    <span className="absolute top-2 right-2 bg-aangan-primary text-white rounded-full p-0.5">
-                      <Check className="w-3 h-3" />
-                    </span>
-                  )}
-                </button>
-              ))}
-              {/* Fallback close button */}
-              <button
-                onClick={onClose}
-                className="absolute -top-8 right-0 w-8 h-8 flex items-center justify-center rounded-full border border-aangan-primary bg-white text-aangan-primary hover:bg-aangan-primary hover:text-white transition-colors"
-                aria-label="Close emotion picker"
-                type="button"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Summer Label */}
-          {isSummerPulseActive && (
-            <div className="mb-2 text-center text-green-700 font-medium animate-fade-in">
-              {summerLabel}
-            </div>
-          )}
-
-          {/* Submit Button */}
-          <Button
+          {/* Send button */}
+          <motion.button
+            className="mt-4 w-full bg-aangan-primary text-white font-semibold py-3 rounded-xl shadow hover:bg-aangan-primary/90 transition focus:outline-none focus-visible:ring-4 focus-visible:ring-aangan-primary/60"
             onClick={handleSubmit}
-            disabled={!content.trim() || !selectedEmotion || isSubmitting || isOverLimit}
-            className="w-full bg-aangan-primary hover:bg-aangan-primary/90 text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            whileTap={prefersReducedMotion ? undefined : { scale: 0.97, boxShadow: '0 0 0 8px rgba(80,0,255,0.08)' }}
+            whileHover={prefersReducedMotion ? undefined : { scale: 1.03, boxShadow: '0 0 0 8px rgba(80,0,255,0.08)' }}
+            aria-label="Send whisper"
+            disabled={isSubmitting || !content.trim() || !selectedEmotion}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           >
-            {isSubmitting ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Sending...
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Send className="w-4 h-4" />
-                Send Whisper
-              </div>
-            )}
-          </Button>
+            {isSubmitting ? 'Sending…' : 'Send'}
+          </motion.button>
 
           {/* Tips */}
           <div className="mt-4 p-3 bg-aangan-surface/50 rounded-lg border border-aangan-border/30">
@@ -318,6 +338,40 @@ export const DreamComposer: React.FC<DreamComposerProps> = ({
               <li>• Share what's in your heart</li>
             </ul>
           </div>
+
+          {/* After the submit button, show reply ETA and fallback ripple/ghost */}
+          {showReplyEta && (
+            <div className="mt-4 flex flex-col items-center animate-fade-in">
+              <div className="rounded-full bg-green-50/80 px-4 py-2 shadow text-green-700 font-medium text-base flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-green-400 animate-pulse" />
+                A gentle voice may respond soon…
+              </div>
+            </div>
+          )}
+          {showNoReply && !showReplyEta && (
+            <div className="mt-4 flex flex-col items-center animate-fade-in">
+              <div className="relative w-24 h-24 flex items-center justify-center">
+                <span className="absolute w-20 h-20 rounded-full border-4 border-indigo-200 animate-ping" />
+                <span className="absolute w-16 h-16 rounded-full border-2 border-indigo-400 opacity-60 animate-pulse" />
+                <Ghost className="w-10 h-10 text-indigo-400 z-10" />
+              </div>
+              <div className="mt-2 text-indigo-700 text-sm font-medium flex items-center gap-2">
+                A ghost whisper drifts nearby…
+              </div>
+            </div>
+          )}
+          {/* Floating sent animation */}
+          {showSent && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: -40 }}
+              exit={{ opacity: 0, y: -60 }}
+              className="fixed bottom-32 left-1/2 -translate-x-1/2 z-50 text-aangan-primary text-lg font-bold drop-shadow animate-float"
+              aria-live="polite"
+            >
+              Whisper sent!
+            </motion.div>
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>

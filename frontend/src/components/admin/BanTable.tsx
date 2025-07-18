@@ -56,7 +56,9 @@ export const BanTable: React.FC = () => {
         headers: { Authorization: `Bearer ${jwt}` },
       });
       setHistory(res.data);
-    } catch {}
+    } catch {
+      // Intentionally empty: ignore errors for ban history fetch
+    }
   }
 
   async function handleBan(e: React.FormEvent) {

@@ -13,12 +13,14 @@ import {
   BookOpen,
   Lock,
   Unlock,
-  MoreHorizontal
+  MoreHorizontal,
+  Brain
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCUJHotspots } from '../../contexts/CUJHotspotContext';
 import { reportWhisper } from '../../services/api';
 import { toast } from 'sonner';
+import { cn } from '../../lib/utils';
 
 interface WhisperCardProps {
   whisper: {
@@ -201,41 +203,26 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
     </Card>
   );
 
+  const [aiReaction, setAiReaction] = useState<string | null>(null);
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const renderDefault = () => (
     <Card className={getCardClasses()}>
       <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="w-10 h-10">
-              <AvatarFallback className="bg-inkwell text-paper-light">
-                {whisper.author ? whisper.author.charAt(0).toUpperCase() : 'A'}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-inkwell">
-                  {whisper.visibility === 'anonymous' ? 'Anonymous' : (whisper.author || 'Anonymous')}
-                </span>
-                {whisper.visibility === 'private' && <Lock className="w-3 h-3 text-inkwell/40" />}
-                {whisper.visibility === 'anonymous' && <Unlock className="w-3 h-3 text-inkwell/40" />}
-              </div>
-              <div className="flex items-center gap-1 text-xs text-inkwell/60">
-                <Clock className="w-3 h-3" />
-                <span>{formatTime(whisper.timestamp)}</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            {whisper.isDiaryEntry && (
-              <Badge variant="outline" className="text-xs bg-white/50 border-inkwell/20">
-                <BookOpen className="w-3 h-3 mr-1" />
-                Diary
-              </Badge>
-            )}
-          </div>
-        </div>
-
+        {/* AI Reply Label */}
+        {whisper.isAIGenerated && (
+          <motion.div
+            initial={prefersReducedMotion ? false : { boxShadow: '0 0 0 0 #fff', background: '#fffbe6' }}
+            animate={prefersReducedMotion ? false : { boxShadow: '0 0 0 8px #fef3c7', background: '#fffbe6' }}
+            transition={{ duration: 0.7, ease: 'easeInOut' }}
+            className="flex items-center gap-2 mb-2 text-terracotta-orange font-semibold text-base rounded-lg"
+            aria-label="AI reply label"
+          >
+            <Brain className="w-5 h-5" />
+            <span>🧠 WhisperBot replied:</span>
+          </motion.div>
+        )}
+        {/* Whisper Content */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 flex-wrap">
             <Badge className={`${getEmotionStyle(whisper.emotion).bg} ${getEmotionStyle(whisper.emotion).text} ${getEmotionStyle(whisper.emotion).border} border`}>
@@ -248,11 +235,9 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
               </Badge>
             )}
           </div>
-          
           <p className="text-inkwell leading-relaxed">
             {whisper.content}
           </p>
-          
           {hotspot && (
             <div className="p-3 bg-gradient-to-r from-dawnlight/10 to-cloudmist/10 rounded-lg border border-inkwell/10">
               <div className="flex items-center justify-between text-sm">
@@ -268,7 +253,58 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
             </div>
           )}
         </div>
-
+        {/* AI Reply Actions */}
+        {whisper.isAIGenerated && (
+          <div className="mt-4 flex flex-col items-center gap-2 animate-fade-in">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+              onClick={() => {/* trigger AI reply again logic here */}}
+            >
+              Whisper again
+            </Button>
+            {/* Reaction buttons */}
+            <div className="flex gap-2 mt-2" aria-label="Did this help reactions">
+              {['❤️','🙁','🤔'].map((emoji, idx) => (
+                <motion.button
+                  key={emoji}
+                  onClick={() => setAiReaction(emoji)}
+                  className={cn('rounded-full px-3 py-1 text-lg font-bold border border-gray-200 bg-white/80 shadow hover:bg-gray-100', aiReaction === emoji && 'ring-2 ring-aangan-primary scale-110')}
+                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.1 }}
+                  aria-pressed={aiReaction === emoji}
+                  aria-label={`React ${emoji}`}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                >
+                  {emoji}
+                </motion.button>
+              ))}
+              <AnimatePresence>
+                {aiReaction && (
+                  <motion.div
+                    key="confetti"
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1.2 }}
+                    exit={{ opacity: 0, scale: 0.7 }}
+                    className="ml-2 text-2xl animate-bounce"
+                    aria-live="polite"
+                  >
+                    🎉
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            {aiReaction && (
+              <div className="text-xs text-gray-500 mt-1 animate-fade-in">
+                {aiReaction === 'love' && 'Glad it helped!'}
+                {aiReaction === 'sad' && 'Sorry to hear that.'}
+                {aiReaction === 'think' && 'We appreciate your feedback!'}
+              </div>
+            )}
+          </div>
+        )}
+        {/* ... rest of existing code ... */}
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-inkwell/10">
           <div className="flex items-center gap-4">
             <button

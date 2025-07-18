@@ -261,6 +261,7 @@ export const EmbeddedBenchComposer: React.FC<EmbeddedBenchComposerProps> = ({
                   onChange={(e) => setContent(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Sit for a while… what's on your heart today?"
+                  aria-label="Whisper composer"
                   className="bg-aangan-background text-aangan-text-primary placeholder:text-aangan-text-muted border border-aangan-border rounded-xl min-h-[100px] resize-none p-4 shadow-sm"
                   maxLength={500}
                   onFocus={() => {

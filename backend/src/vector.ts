@@ -7,16 +7,22 @@
 export async function upsertEmbedding(
   id: string,
   embedding: number[],
-  metadata: Record<string, any> = {}
-): Promise<{ success: boolean; id: string; embedding: number[]; metadata: Record<string, any> }> {
+  metadata: Record<string, unknown> = {}
+): Promise<{ success: boolean; id: string; embedding: number[]; metadata: Record<string, unknown> }> {
   // TODO: Implement upsert logic with Chroma or other vector DB
   return { success: true, id, embedding, metadata };
+}
+
+export interface EmbeddingResult {
+  id: string;
+  embedding: number[];
+  metadata: Record<string, unknown>;
 }
 
 export async function querySimilarEmbeddings(
   queryEmbedding: number[],
   topK: number = 5
-): Promise<any[]> {
+): Promise<EmbeddingResult[]> {
   // TODO: Implement vector search logic
   return [];
 } 

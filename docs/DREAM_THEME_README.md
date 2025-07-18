@@ -100,6 +100,36 @@ A complete redesign of the WhisperVerse interface as a cozy, dreamlike diary exp
 - Slower: 700ms
 - Slowest: 1000ms
 
+## 🌀 Animation & Micro-Interaction Patterns (v2.0)
+
+- All major flows (onboarding, composer, navigation, milestones) use smooth, accessible animations via Framer Motion.
+- Micro-interactions: hover/tap/keyboard feedback on all interactive elements.
+- Focus-visible rings and animated error/validation states for all inputs.
+- Prefers-reduced-motion is respected for all animations.
+
+### Example: Animated Onboarding Step
+```tsx
+<motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }} transition={{ duration: 0.6, ease: 'easeInOut' }}>
+  <Card>...</Card>
+</motion.div>
+```
+
+### Example: Animated Composer Button
+```tsx
+<motion.button whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.03 }} className="focus-visible:ring-4">Send</motion.button>
+```
+
+### Example: Animated Milestone Banner
+```tsx
+<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-green-50">You’ve whispered often… you’re not alone.</motion.div>
+```
+
+## 🎨 Accessibility & Contrast (v2.0)
+- All inputs, modals, and flows meet or exceed WCAG AA+ contrast.
+- ARIA labels and keyboard navigation for all interactive elements.
+- Focus-visible rings and animated error/validation states.
+- Prefers-reduced-motion supported for all animations.
+
 ## 🏗️ Architecture
 
 ### Theme System

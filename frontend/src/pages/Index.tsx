@@ -22,6 +22,7 @@ import WhisperMurmurs from "../components/whisper/WhisperMurmurs";
 import { UserProfile } from "../components/UserProfile";
 import { HelpCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { WelcomeOnboarding } from '../components/onboarding/WelcomeOnboarding';
 
 // Sample data for demonstration
 const sampleDiaryEntries = [
@@ -105,6 +106,7 @@ const IndexPage: React.FC = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [showWhy, setShowWhy] = useState(false);
   const [showEcho, setShowEcho] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !localStorage.getItem('aangan_intro_seen')) {
@@ -222,6 +224,12 @@ const IndexPage: React.FC = () => {
 
   return (
     <div className="aangan min-h-screen relative flex flex-col items-center justify-start overflow-x-hidden">
+      {/* Onboarding Modal (from Help) */}
+      <WelcomeOnboarding
+        isOpen={showOnboarding}
+        onComplete={() => setShowOnboarding(false)}
+        onSkip={() => setShowOnboarding(false)}
+      />
       {/* Poetic Intro Modal */}
       {showIntro && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -251,6 +259,12 @@ const IndexPage: React.FC = () => {
           <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-auto text-center animate-fade-in" onClick={e => e.stopPropagation()}>
             <h2 className="text-xl font-bold mb-4 text-aangan-primary">Need Help?</h2>
             <p className="text-base text-gray-700 mb-6">Tap a tab below to explore. Use the composer to share a whisper. Your journey is anonymous and safe. If you feel lost, just start with "I feel something" or "Wander".</p>
+            <button
+              onClick={() => setShowOnboarding(true)}
+              className="mb-4 px-6 py-2 rounded-lg bg-indigo-100 text-indigo-700 font-semibold shadow hover:bg-indigo-200 transition"
+            >
+              Show Onboarding Guide
+            </button>
             <button
               onClick={() => setShowWhy(true)}
               className="mb-4 px-6 py-2 rounded-lg bg-orange-100 text-orange-700 font-semibold shadow hover:bg-orange-200 transition"
