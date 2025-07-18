@@ -112,26 +112,26 @@ export const AanganHeader: React.FC<AanganHeaderProps> = ({
   };
 
   // Get active presence count for subtle visual weight
-  const getActivePresence = () => {
-    const hour = new Date().getHours();
-    if (hour >= 6 && hour <= 22) {
-      return Math.floor(Math.random() * 15) + 8; // 8-22 active users during day
-    } else {
-      return Math.floor(Math.random() * 8) + 3; // 3-10 active users at night
-    }
-  };
+  // const getActivePresence = () => {
+  //   const hour = new Date().getHours();
+  //   if (hour >= 6 && hour <= 22) {
+  //     return Math.floor(Math.random() * 15) + 8; // 8-22 active users during day
+  //   } else {
+  //     return Math.floor(Math.random() * 8) + 3; // 3-10 active users at night
+  //   }
+  // };
 
   // Get poetic presence text
-  const getPresenceText = () => {
-    const count = getActivePresence();
-    const texts = [
-      `${count} hearts murmured something here today`,
-      `${count} souls found solace in whispers`,
-      `${count} kindred spirits are present`,
-      `${count} voices echo through the courtyard`
-    ];
-    return texts[Math.floor(Math.random() * texts.length)];
-  };
+  // const getPresenceText = () => {
+  //   const count = getActivePresence();
+  //   const texts = [
+  //     `${count} hearts murmured something here today`,
+  //     `${count} souls found solace in whispers`,
+  //     `${count} kindred spirits are present`,
+  //     `${count} voices echo through the courtyard`
+  //   ];
+  //   return texts[Math.floor(Math.random() * texts.length)];
+  // };
 
   return (
     <motion.div
@@ -188,17 +188,7 @@ export const AanganHeader: React.FC<AanganHeaderProps> = ({
             )}
           </AnimatePresence>
           {/* Courtyard mood indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.4 }}
-            className="flex items-center gap-2 mt-1"
-          >
-            <div className="w-1.5 h-1.5 bg-aangan-primary rounded-full animate-pulse"></div>
-            <span className="text-xs text-aangan-text-muted">
-              {getPresenceText()}
-            </span>
-          </motion.div>
+          {/* Removed fake presence line. If real presence data is available, insert here. */}
         </div>
       </div>
       

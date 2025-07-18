@@ -13,8 +13,8 @@ interface ErrorPageProps {
 }
 
 const ErrorPage: React.FC<ErrorPageProps> = ({
-  title = "Something went adrift",
-  message = "The courtyard encountered an unexpected moment. Don't worry, your whispers are safe.",
+  title = "The winds have paused",
+  message = "A gentle hush has settled over the courtyard. Your whispers rest safely in the dusk. Try again, or let the silence hold you for a moment.",
   narratorLine,
   onRetry,
   showHome = true,

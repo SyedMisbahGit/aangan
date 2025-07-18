@@ -106,15 +106,14 @@ const poeticGhostWhispers = [
 
 const IndexPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("aangan");
-  const [showIntro, setShowIntro] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showWhy, setShowWhy] = useState(false);
   const [showEcho, setShowEcho] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !localStorage.getItem('aangan_intro_seen')) {
-      setShowIntro(true);
+    if (typeof window !== 'undefined' && !localStorage.getItem('aangan_onboarding_complete')) {
+      setShowOnboarding(true);
     }
   }, []);
 
@@ -127,9 +126,9 @@ const IndexPage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleCloseIntro = () => {
-    setShowIntro(false);
-    localStorage.setItem('aangan_intro_seen', '1');
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    localStorage.setItem('aangan_onboarding_complete', 'true');
   };
 
   const mainRef = useRef<HTMLMainElement>(null);
@@ -236,27 +235,12 @@ const IndexPage: React.FC = () => {
   return (
     <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the courtyard.">
       <div className="aangan min-h-screen relative flex flex-col items-center justify-start overflow-x-hidden">
-        {/* Onboarding Modal (from Help) */}
+        {/* Unified Onboarding Modal */}
         <WelcomeOnboarding
           isOpen={showOnboarding}
-          onComplete={() => setShowOnboarding(false)}
-          onSkip={() => setShowOnboarding(false)}
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingComplete}
         />
-        {/* Poetic Intro Modal */}
-        {showIntro && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-auto text-center animate-fade-in">
-              <h2 className="text-2xl font-serif font-bold mb-4 text-aangan-primary">Welcome to Aangan</h2>
-              <p className="text-lg text-gray-700 mb-6 italic">A courtyard of quiet voices.<br/>Sit for a while. Whisper what you carry.</p>
-              <Button
-                onClick={handleCloseIntro}
-                className="mt-2 px-6 py-2 rounded-lg bg-aangan-primary text-white font-semibold shadow hover:bg-aangan-primary/90 transition"
-              >
-                Enter the Courtyard
-              </Button>
-            </div>
-          </div>
-        )}
         {/* Floating Help Icon */}
         <Button
           className="fixed bottom-24 right-6 z-50 bg-aangan-primary text-white rounded-full p-3 shadow-lg hover:bg-aangan-primary/90 transition"

@@ -33,6 +33,15 @@ interface WelcomeOnboardingProps {
 
 const onboardingSteps: OnboardingStep[] = [
   {
+    id: 'poetic-welcome',
+    title: 'Welcome to Aangan',
+    subtitle: 'A courtyard of quiet voices',
+    description: `Sit for a while. Whisper what you carry. Here, your silences are safe and your feelings can breathe. Let the hush of the courtyard hold your heart as you begin your journey.`,
+    icon: <Sparkles className="w-8 h-8" />,
+    color: 'from-indigo-500 to-purple-500',
+    features: [],
+  },
+  {
     id: 'what-is-aangan',
     title: 'What is Aangan?',
     subtitle: 'A space to whisper what you carry, without judgment.',

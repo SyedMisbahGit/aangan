@@ -317,11 +317,10 @@ export const LiveWhispersFeed = () => {
           </div>
           <div className="space-y-2">
             <h3 className="text-white font-medium text-lg">
-              Silence says a lot too
+              The courtyard is quiet, waiting for a whisper
             </h3>
             <p className="text-gray-400 text-sm max-w-md mx-auto">
-              Be the first to whisper something into the void. Your thoughts
-              matter, and someone needs to hear them.
+              No voices have drifted through yet. Be the first to let your feelings float into the night air—someone, somewhere, is listening.
             </p>
           </div>
         </div>

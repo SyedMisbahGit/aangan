@@ -59,9 +59,9 @@ class ErrorBoundary extends Component<Props & { navigate: (path: string) => void
     if (this.state.hasError) {
       return (
         <ErrorPage
-          title="Oops! Something went adrift"
-          message={this.props.narratorLine || "The courtyard encountered an unexpected moment. Don't worry, your whispers are safe."}
-          narratorLine={this.props.narratorLine}
+          title="The winds have paused"
+          message={this.props.narratorLine || "A gentle hush has settled over the courtyard. Your whispers rest safely in the dusk. Try again, or let the silence hold you for a moment."}
+          narratorLine={this.props.narratorLine || "Even the stars sometimes lose their way. The courtyard is listening, softly."}
           onRetry={this.handleRetry}
           showHome={true}
           showReport={true}

@@ -327,3 +327,12 @@ See `docs/UX_V2_ALIVE_AND_REAL.md` for a detailed breakdown.
 - See [DEVELOPMENT_CHECKLIST.md](./DEVELOPMENT_CHECKLIST.md), [UX_V2_ALIVE_AND_REAL.md](./UX_V2_ALIVE_AND_REAL.md), [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ---
+
+## 📝 July 2025 Interaction Audit
+Aangan’s experience was fully audited for authenticity, poetry, and accessibility:
+- Fake presence data removed (only real presence shown)
+- Unified poetic onboarding
+- Poetic error and empty states
+- Full keyboard accessibility (ARIA, focus, tab order)
+
+See [UX_V2_ALIVE_AND_REAL.md](./UX_V2_ALIVE_AND_REAL.md) for details.

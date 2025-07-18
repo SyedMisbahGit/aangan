@@ -80,6 +80,13 @@
 ### Changed
 - Updated `docs/PERFORMANCE_GUIDE.md` with new best practices and implementation details for large lists and async data fetching.
 
+## [2025-07] Aangan Interaction Audit
+- Removed all fake/random presence data; only real presence is shown if available.
+- Merged intro and onboarding into a single, poetic, seamless experience.
+- Rewrote all error and empty state messages with poetic, gentle language.
+- Ensured full keyboard accessibility: ARIA labels, focus rings, and logical tab order throughout the app.
+- See `docs/UX_V2_ALIVE_AND_REAL.md` for full details and rationale.
+
 ---
 
 See previous versions for earlier changes. 

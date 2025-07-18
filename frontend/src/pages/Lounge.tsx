@@ -11,7 +11,7 @@ import { useRef } from "react";
 
 const Listen: React.FC = () => {
   const [currentWhisperIndex, setCurrentWhisperIndex] = useState(0);
-  const presenceCount = useMemo(() => Math.floor(Math.random() * 9) + 7, []); // 7-15 listeners
+  // Remove all UI that uses presenceCount (avatars and poetic line)
 
   // Fetch 2-3 real whispers from backend
   const { data: realWhispers, isLoading } = useWhispers({ limit: 3 });
@@ -67,25 +67,7 @@ const Listen: React.FC = () => {
       >
         <h1 id="page-title" className="sr-only">Lounge</h1>
         {/* Ambient Presence Avatars & Poetic Line */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="flex -space-x-2 mb-2">
-            {Array.from({ length: presenceCount }, (_, i) => (
-              <motion.div
-                key={i}
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: i * 0.05, duration: 0.4, type: 'spring' }}
-                className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400/60 to-indigo-500/60 border-2 border-white shadow-md flex items-center justify-center text-white text-lg font-bold"
-                style={{ zIndex: presenceCount - i }}
-              >
-                <span role="img" aria-label="listener">🫧</span>
-              </motion.div>
-            ))}
-          </div>
-          <div className="text-purple-100 text-xs italic animate-fade-in">
-            {presenceCount} hearts are listening quietly tonight
-          </div>
-        </div>
+        {/* Removed fake presence avatars and poetic line. If real presence data is available, insert here. */}
         {/* Shimmer while loading */}
         {isLoading ? (
           <div className="space-y-4">

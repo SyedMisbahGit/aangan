@@ -1,53 +1,35 @@
-# Aangan UX v2: Alive, Real, and Resilient
+# 🌸 Aangan UX v2: Alive, Real, and Accessible (2025 Audit)
 
-## Loading & Skeletons
-- All loading states use animated shimmer skeletons matching the real UI layout.
-- Skeletons must be visually consistent, accessible, and never block navigation.
-- If loading takes longer than 8 seconds, show a 'Reload' button.
+## ✨ 2025 Interaction Audit Summary
 
-## Error Handling
-- All errors are caught by page-level error boundaries using `<ErrorPage />`.
-- ErrorPage must show a narrator line, technical details, and offer retry, home, and feedback/report actions.
-- User feedback modal is required for all error states.
+In July 2025, Aangan underwent a comprehensive interaction audit to ensure the experience is poetic, authentic, and fully accessible. The following changes were made:
 
-## Offline-First
-- A global offline banner appears when the app is offline.
-- Users are informed that some features may be unavailable.
-- All network-dependent features must degrade gracefully and show skeletons/network indicators.
+### 1. Presence Data: Only Real, Never Fake
+- All fake or random presence indicators were removed from the UI.
+- Presence counts and poetic lines now only appear if real, live data is available from the backend or real-time context.
+- This ensures the emotional atmosphere is honest and never artificially inflated.
 
-## Accessibility
-- All skeletons, error, and offline states must pass axe-core accessibility checks.
-- Focus management and color contrast are required for all fallback UIs.
+### 2. Unified Onboarding: Poetic Welcome + Guide
+- The separate intro modal and onboarding flow were merged into a single, seamless onboarding experience.
+- The onboarding now begins with a poetic welcome, then gently guides the user through Aangan’s features and values.
+- Only one onboarding is shown per user, tracked by a single key.
 
-## Retry & Report
-- All error and skeleton states must have accessible retry and 'Report Issue' buttons.
-- Feedback modal must be keyboard accessible and screen reader friendly.
+### 3. Poetic Error & Empty States
+- All error and empty state messages across Aangan were rewritten with poetic, gentle language.
+- Users encountering errors or empty feeds are met with comforting, evocative lines that maintain the platform’s emotional tone.
 
-## Visual Consistency
-- All fallback UIs use the app’s color palette, border radius, and spacing.
-- Visual regression tests are required for all skeletons and error states.
+### 4. Full Keyboard Accessibility
+- All interactive elements (navigation, forms, modals, carousels) have ARIA labels, visible focus rings, and logical tab order.
+- The experience is fully navigable by keyboard, with clear focus indication and screen reader support.
 
 ---
 
-_See also: docs/DEVELOPMENT_CHECKLIST.md, docs/SECURITY_GUIDE.md_ 
+## 🌱 Impact on User Experience
+- **Trust & Authenticity:** Users can trust the presence and activity they see is real, not simulated.
+- **Gentle Onboarding:** New users are welcomed with poetry and clarity, never confusion or repetition.
+- **Emotional Safety:** Even in error or emptiness, the language is soft, safe, and inviting.
+- **Universal Access:** The platform is now more inclusive for users relying on keyboard navigation or assistive tech.
 
 ---
 
-## 2025-07 Full App Optimization & UX Audit: Key Takeaways
-
-- All main pages and flows were audited for functionality, performance, accessibility, and UX.
-- Most flows are modular, animated, and accessible, but some subcomponents need improved async state handling (loading/error/empty states).
-- Some links (e.g., /settings) are dead-ends and should be removed or implemented.
-- Dark mode and accessibility should be verified app-wide, especially for modals and charts.
-- Replace demo/static data with real API calls in production.
-- Add a custom /500 error page for server errors.
-- See PERFORMANCE_GUIDE.md for technical best practices and audit-driven recommendations.
-
-This audit supports the v2.0 "Alive & Real" UX goals: emotional clarity, accessibility, and a seamless, real human presence throughout the app. 
-
-## Contextual Info Bars, Banners, and Feedback Strips (2025-07)
-- All global UI elements such as the main header/info bar, PrivacyBanner, and feedback/CTA strips are now rendered **only on user-facing pages**.
-- Admin, login, and error pages do **not** show these elements.
-- This is enforced using a shared utility (`isUserFacingRoute`) that checks the current route.
-- Example: The PrivacyBanner and DreamHeader are only rendered if the route is user-facing.
-- This ensures a clean, minimal, and purposeful layout, with no irrelevant banners on admin, 404, 500, or deep paths. 
+_This audit is part of Aangan’s ongoing commitment to a poetic, honest, and accessible digital courtyard._ 

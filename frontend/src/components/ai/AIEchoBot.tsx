@@ -273,11 +273,11 @@ const AIEchoBot: React.FC<AIEchoBotProps> = ({
       {echoes.filter(e => e.isVisible).length === 0 && (
         <Card className="bg-gradient-to-r from-purple-900/10 to-indigo-900/10 backdrop-blur-lg border-purple-400/20 p-6 text-center">
           <Bot className="w-8 h-8 text-purple-400 mx-auto mb-3" />
-          <h3 className="text-white font-medium mb-2">The Listener is Quiet</h3>
+          <h3 className="text-white font-medium mb-2">The Listener sits in stillness</h3>
           <p className="text-sm text-gray-300">
             {isListening 
-              ? "Processing the latest whispers..." 
-              : "Waiting for whispers that need a gentle response..."
+              ? "The winds are carrying your words..." 
+              : "No one has whispered to the night yet. The Listener waits, gentle and patient."
             }
           </p>
         </Card>

@@ -1,3 +1,4 @@
+// This component should only be used with real presence data, not random or fake numbers.
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles } from 'lucide-react';

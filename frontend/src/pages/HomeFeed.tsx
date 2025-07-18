@@ -195,7 +195,7 @@ const Whispers: React.FC = () => {
     whispers.forEach(whisper => {
       if (whisper.guest_id) uniqueGuests.add(whisper.guest_id);
     });
-    return uniqueGuests.size || Math.floor(Math.random() * 15) + 5;
+    return uniqueGuests.size; // Removed fallback to random number
   };
 
   const presenceCount = getPresenceCount();
