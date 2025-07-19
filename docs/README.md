@@ -336,3 +336,18 @@ Aangan’s experience was fully audited for authenticity, poetry, and accessibil
 - Full keyboard accessibility (ARIA, focus, tab order)
 
 See [UX_V2_ALIVE_AND_REAL.md](./UX_V2_ALIVE_AND_REAL.md) for details.
+
+---
+
+## ✨ 2025 Feature Decisions & UI/UX Simplification
+
+- **ModularWhisperCard**: UI is now lighter, with reduced borders, padding, and softer typography for a more organic, emotionally gentle feel.
+- **ListeningCircle**: Feature fully removed from the platform and codebase.
+- **EchoBack**: Now a gentle icon/gesture on ModularWhisperCard—no reply box or expanded input.
+- **SharedSilence**: Hidden from all navigation and UI, but component remains in codebase for future use.
+- **PresenceToast**: Replaced with a subtle ambient indicator (e.g., soft pulse near top bar/footer) instead of toast notifications.
+- **WhisperPad**: Remains unchanged.
+- **Cross-platform**: All changes apply to both desktop and mobile views.
+- **Cleanup**: Related CSS, routes, and contexts have been updated/removed for consistency and maintainability.
+
+See the main `README.md` for technical details and implementation notes.

@@ -51,6 +51,21 @@ Aangan is a full-stack, real-time, AI-powered campus platform built with Node.js
 
 ---
 
+## ✨ 2025 Feature Decisions & UI/UX Simplification
+
+- **ModularWhisperCard**: Simplified UI—lighter borders, reduced padding, softer typography, more organic and emotionally lightweight feel.
+- **ListeningCircle**: Fully removed from codebase, routes, and UI.
+- **EchoBack**: Now a gentle icon/gesture on ModularWhisperCard (no reply box).
+- **SharedSilence**: Hidden from UI/navigation, but component remains in codebase.
+- **PresenceToast**: Replaced with a subtle ambient indicator (e.g., soft pulse near top bar/footer).
+- **WhisperPad**: Unchanged.
+- **Cross-platform**: All changes apply to both desktop and mobile views.
+- **Cleanup**: Related CSS, routes, and contexts have been updated/removed for consistency and maintainability.
+
+See `docs/README.md` for more details on the user experience and design philosophy.
+
+---
+
 ## 🔗 Aliases
 - `@` → `frontend/src`
 - `@lib` → `frontend/lib`
