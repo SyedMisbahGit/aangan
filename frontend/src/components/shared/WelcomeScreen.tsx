@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { Button } from '../ui/button';
 import { Heart, Shield, Sparkles, ArrowRight, Check } from 'lucide-react';
 
 interface WelcomeScreenProps {

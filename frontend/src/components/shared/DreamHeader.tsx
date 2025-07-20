@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MoreHorizontal, Calendar, Compass, Star, MessageCircle, Package, ChevronLeft } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { cn } from "../../../lib/utils";
 
 interface AanganHeaderProps {
   title?: React.ReactNode;

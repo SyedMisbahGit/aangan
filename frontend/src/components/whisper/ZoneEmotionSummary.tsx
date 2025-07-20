@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { useWhispers } from '@/services/api';
+import { Badge } from '../ui/badge';
+import { useWhispers } from '../../services/api';
 
 interface ZoneEmotionSummaryProps {
   zone: string;

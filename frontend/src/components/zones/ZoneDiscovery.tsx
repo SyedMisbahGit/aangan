@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Sparkles, MapPin, Heart, MessageCircle } from 'lucide-react';
 import { zoneThemes } from '@/theme';
-import { useRealtime } from '@/contexts/use-realtime';
+import { useRealtime } from '../../contexts/use-realtime';
 
 interface Zone {
   id: string;

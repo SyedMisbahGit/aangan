@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
 import { Heart, Eye, Waves, Coffee } from "lucide-react";
 
 interface AmbientPost {

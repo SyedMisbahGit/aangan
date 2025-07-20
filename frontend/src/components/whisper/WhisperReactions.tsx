@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { useReactToWhisper, useWhisperReactions } from '@/services/api';
-import { useRealtime } from '@/contexts/RealtimeContext';
+import { Button } from '../ui/button';
+import { useReactToWhisper, useWhisperReactions } from '../../services/api';
+import { useRealtime } from '../../contexts/RealtimeContext';
 
 interface WhisperReactionsProps {
   whisperId: string;

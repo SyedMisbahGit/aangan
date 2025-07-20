@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
+import { Badge } from '../ui/badge';
+import { useToast } from '../../hooks/use-toast';
 import { Sparkles, Trophy, Star, Heart } from 'lucide-react';
-import { ConfettiEffect } from '@/components/shared/ConfettiEffect';
+import { ConfettiEffect } from '../shared/ConfettiEffect';
 
 interface WhisperMilestone {
   id: string;

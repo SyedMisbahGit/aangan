@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Card } from '../ui/card';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 import { 
   Heart, 
   MessageCircle, 
@@ -16,10 +16,10 @@ import {
   Users
 } from 'lucide-react';
 import { useRealtime } from '@/contexts/RealtimeContext';
-import { useWhispers } from '@/services/api';
+import { useWhispers } from '../../services/api';
 import { useToast } from '@/hooks/use-toast';
 import { ModularWhisperCard } from '@/components/ModularWhisperCard';
-import type { Whisper } from '@/services/api';
+import type { Whisper } from '../../services/api';
 
 type WhisperWithRealtime = Whisper & { realTime?: boolean };
 

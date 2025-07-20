@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Feather, X, Sparkles, Check, UserIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '../ui/button';
+import { Textarea } from '../ui/textarea';
 import { emotionColors } from '@/theme';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import { useRealtime } from '../../contexts/RealtimeContext';
 
 interface EmbeddedBenchComposerProps {

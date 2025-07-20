@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { Badge } from "./ui/badge";
+import { Card } from "./ui/card";
 import { Sparkles, Leaf, Moon, Eye, Star } from "lucide-react";
-import { useWhispers } from "@/services/api";
+import { useWhispers } from "../services/api";
 
 interface UserTier {
   id: string;

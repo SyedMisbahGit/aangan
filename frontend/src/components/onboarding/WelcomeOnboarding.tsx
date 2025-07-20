@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '../ui/button';
+import { Card, CardContent } from '../ui/card';
 import { 
   Sparkles, 
   MessageCircle, 
@@ -13,7 +13,7 @@ import {
   ArrowRight,
   ArrowLeft
 } from 'lucide-react';
-import { ParticleBackground } from '@/components/shared/ParticleBackground';
+import { ParticleBackground } from '../shared/ParticleBackground';
 
 interface OnboardingStep {
   id: string;

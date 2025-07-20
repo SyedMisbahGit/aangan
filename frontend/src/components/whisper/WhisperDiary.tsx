@@ -1,12 +1,12 @@
 import React, { Suspense, lazy } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "../ui/card";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
+import { Badge } from "../ui/badge";
 import { BookOpen, Lock, Heart, Send, Sparkles } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "../../hooks/use-toast";
 
 interface DiaryEntry {
   id: string;

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 import { Sun, Moon, Sparkles, Palette } from "lucide-react";
 
 type Theme = "dormlight" | "inkbloom" | "void";

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
 import { Send, Wind, Feather, Sparkles } from "lucide-react";
 
 export const SendAndRelease = () => {

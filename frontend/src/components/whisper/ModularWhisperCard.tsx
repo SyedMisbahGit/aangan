@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent, CardHeader } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback } from '../ui/avatar';
@@ -111,95 +111,45 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
   };
 
   const getCardClasses = () => {
-    const baseClasses = 'bg-paper-light border-inkwell/10 shadow-soft hover:shadow-medium transition-all';
-    
-    if (variant === 'featured') {
-      return `${baseClasses} bg-gradient-to-br from-dawnlight/20 to-cloudmist/20 border-inkwell/20`;
-    }
-    
-    return baseClasses;
+    return 'bg-white/80 rounded-xl p-2 sm:p-4 transition-all';
   };
 
   const renderCompact = () => (
-    <Card className={getCardClasses()}>
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex-shrink-0">
-            <Avatar className="w-8 h-8">
-              <AvatarFallback className="bg-inkwell text-paper-light text-xs">
-                {whisper.author ? whisper.author.charAt(0).toUpperCase() : 'A'}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-          
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2">
-              <Badge className={`${getEmotionStyle(whisper.emotion).bg} ${getEmotionStyle(whisper.emotion).text} ${getEmotionStyle(whisper.emotion).border} border text-xs`}>
-                {getEmotionStyle(whisper.emotion).icon} {whisper.emotion}
+    <Card className="rounded-xl border-0 bg-white/70 shadow-sm hover:shadow-md transition-all duration-300">
+      <CardHeader className="pb-1 px-3 pt-3">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-2">
+            {whisper.emotion && (
+              <Badge variant="outline" className="text-xs font-light px-2 py-0.5 bg-transparent border-none text-gray-600">
+                {whisper.emotion}
               </Badge>
-              {hotspot && (
-                <Badge variant="outline" className="text-xs bg-white/50 border-inkwell/20">
-                  <MapPin className="w-2 h-2 mr-1" />
-                  {hotspot.name}
-                </Badge>
-              )}
-              {whisper.isDiaryEntry && (
-                <BookOpen className="w-3 h-3 text-inkwell/40" />
-              )}
-            </div>
-            
-            <p className="text-inkwell text-sm leading-relaxed mb-3 line-clamp-3">
-              {whisper.content}
-            </p>
-            
-            <div className="flex items-center justify-between text-xs text-inkwell/60">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handleHeart}
-                  className={`flex items-center gap-1 transition-colors min-h-[44px] min-w-[44px] px-3 py-2 ${
-                    isHearted ? 'text-red-500' : 'hover:text-red-500'
-                  }`}
-                >
-                  <Heart className={`w-3 h-3 ${isHearted ? 'fill-current' : ''}`} />
-                  <span>{whisper.hearts + (isHearted ? 1 : 0)}</span>
-                </button>
-                <button
-                  onClick={() => onReply?.(whisper.id)}
-                  className="flex items-center gap-1 hover:text-inkwell/80 min-h-[44px] min-w-[44px] px-3 py-2"
-                >
-                  <MessageCircle className="w-3 h-3" />
-                  <span>{whisper.replies}</span>
-                </button>
-              </div>
-              <span>{formatTime(whisper.timestamp)}</span>
-            </div>
+            )}
+            {hotspot && (
+              <Badge variant="secondary" className="text-xs font-light px-2 py-0.5 bg-transparent border-none text-gray-500">
+                <MapPin className="w-3 h-3 mr-1" />
+                {hotspot.name}
+              </Badge>
+            )}
           </div>
+          <div className="flex items-center gap-1 text-xs text-gray-400 font-light">
+            <Clock className="w-3 h-3" />
+            {formatTime(whisper.timestamp)}
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-1 pb-2 px-3">
+        <p className="text-base font-light text-gray-700 mb-2">{whisper.content}</p>
+        <div className="flex items-center justify-between mt-2">
+          <button
+            aria-label="Echo"
+            className="rounded-full p-2 hover:bg-indigo-50 transition"
+            onClick={handleHeart}
+          >
+            <Heart className={`w-5 h-5 ${isHearted ? 'text-pink-500' : 'text-gray-300'}`} />
+          </button>
+          <span className="text-xs text-gray-400 font-light">{whisper.hearts + (isHearted ? 1 : 0)} Echoes</span>
         </div>
       </CardContent>
-      {/* AI Reply Footer */}
-      {(aiReplyState === 'pending' || aiReplyState === 'possible') && (
-        <div className="mt-2 pt-1 border-t border-dashed border-aangan-highlight/30 text-center text-xs text-aangan-highlight animate-pulse">
-          {aiReplyState === 'pending' ? 'The Courtyard is listening...' : 'AI may whisper back soon'}
-        </div>
-      )}
-      {/* Gentle Connection Lines */}
-      <div className="mt-2 space-y-1">
-        {echoCount > 0 && (
-          <div className="text-xs italic text-indigo-300 animate-fade-slide-in">
-            {echoCount} others sat with this thought.
-          </div>
-        )}
-        {similarEmotionCount > 0 && (
-          <div className="text-xs italic text-blue-300 animate-fade-slide-in">
-            You’re not the only one…
-          </div>
-        )}
-        {aiReplyState === 'possible' && (
-          <div className="text-xs text-gray-400 animate-fade-slide-in">
-            💬 A kind reply may come soon…
-          </div>
-        )}
-      </div>
     </Card>
   );
 
@@ -208,155 +158,51 @@ const ModularWhisperCard: React.FC<WhisperCardProps> = ({
 
   const renderDefault = () => (
     <Card className={getCardClasses()}>
-      <CardContent className="p-6">
-        {/* AI Reply Label */}
-        {whisper.isAIGenerated && (
-          <motion.div
-            initial={prefersReducedMotion ? false : { boxShadow: '0 0 0 0 #fff', background: '#fffbe6' }}
-            animate={prefersReducedMotion ? false : { boxShadow: '0 0 0 8px #fef3c7', background: '#fffbe6' }}
-            transition={{ duration: 0.7, ease: 'easeInOut' }}
-            className="flex items-center gap-2 mb-2 text-terracotta-orange font-semibold text-base rounded-lg"
-            aria-label="AI reply label"
-          >
-            <Brain className="w-5 h-5" />
-            <span>🧠 WhisperBot replied:</span>
-          </motion.div>
+      <CardContent className="p-3 sm:p-4">
+        {/* EchoBack gentle icon/gesture */}
+        {whisper.echoLabel && (
+          <div className="flex items-center gap-1 mb-2 text-indigo-400 text-xs font-light">
+            <span className="animate-pulse">🔁</span>
+            <span>{whisper.echoLabel}</span>
+          </div>
         )}
         {/* Whisper Content */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge className={`${getEmotionStyle(whisper.emotion).bg} ${getEmotionStyle(whisper.emotion).text} ${getEmotionStyle(whisper.emotion).border} border`}>
-              {getEmotionStyle(whisper.emotion).icon} {whisper.emotion}
-            </Badge>
+            <Badge className={`bg-transparent border-none text-xs font-light text-gray-600`}>{getEmotionStyle(whisper.emotion).icon} {whisper.emotion}</Badge>
             {hotspot && (
-              <Badge variant="outline" className="bg-white/50 border-inkwell/20">
+              <Badge variant="secondary" className="bg-transparent border-none text-xs font-light text-gray-500">
                 <MapPin className="w-3 h-3 mr-1" />
                 {hotspot.name}
               </Badge>
             )}
           </div>
-          <p className="text-inkwell leading-relaxed">
-            {whisper.content}
-          </p>
-          {hotspot && (
-            <div className="p-3 bg-gradient-to-r from-dawnlight/10 to-cloudmist/10 rounded-lg border border-inkwell/10">
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-inkwell/60" />
-                  <span className="text-inkwell/70">Near {hotspot.name}</span>
-                </div>
-                <div className="flex items-center gap-1 text-inkwell/60">
-                  <Users className="w-3 h-3" />
-                  <span className="text-xs">{hotspot.activeUsers} active</span>
-                </div>
-              </div>
-            </div>
-          )}
+          <p className="text-base font-light text-gray-700 mb-1 whitespace-pre-line">{whisper.content}</p>
         </div>
-        {/* AI Reply Actions */}
-        {whisper.isAIGenerated && (
-          <div className="mt-4 flex flex-col items-center gap-2 animate-fade-in">
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-indigo-700 border-indigo-200 hover:bg-indigo-50"
-              onClick={() => {/* trigger AI reply again logic here */}}
-            >
-              Whisper again
-            </Button>
-            {/* Reaction buttons */}
-            <div className="flex gap-2 mt-2" aria-label="Did this help reactions">
-              {['❤️','🙁','🤔'].map((emoji, idx) => (
-                <motion.button
-                  key={emoji}
-                  onClick={() => setAiReaction(emoji)}
-                  className={cn('rounded-full px-3 py-1 text-lg font-bold border border-gray-200 bg-white/80 shadow hover:bg-gray-100', aiReaction === emoji && 'ring-2 ring-aangan-primary scale-110')}
-                  whileTap={{ scale: 0.9 }}
-                  whileHover={{ scale: 1.1 }}
-                  aria-pressed={aiReaction === emoji}
-                  aria-label={`React ${emoji}`}
-                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                >
-                  {emoji}
-                </motion.button>
-              ))}
-              <AnimatePresence>
-                {aiReaction && (
-                  <motion.div
-                    key="confetti"
-                    initial={{ opacity: 0, scale: 0.7 }}
-                    animate={{ opacity: 1, scale: 1.2 }}
-                    exit={{ opacity: 0, scale: 0.7 }}
-                    className="ml-2 text-2xl animate-bounce"
-                    aria-live="polite"
-                  >
-                    🎉
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-            {aiReaction && (
-              <div className="text-xs text-gray-500 mt-1 animate-fade-in">
-                {aiReaction === 'love' && 'Glad it helped!'}
-                {aiReaction === 'sad' && 'Sorry to hear that.'}
-                {aiReaction === 'think' && 'We appreciate your feedback!'}
-              </div>
-            )}
-          </div>
-        )}
-        {/* ... rest of existing code ... */}
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-inkwell/10">
-          <div className="flex items-center gap-4">
+        {/* Gentle Echo/Heart/Reply row */}
+        <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
+          <div className="flex items-center gap-3">
             <button
               onClick={handleHeart}
-              className={`flex items-center gap-2 transition-colors min-h-[44px] min-w-[44px] px-3 py-2 ${
-                isHearted ? 'text-red-500' : 'text-inkwell/60 hover:text-red-500'
-              }`}
+              className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-light ${isHearted ? 'text-pink-500 bg-pink-50' : 'text-gray-400 hover:text-pink-500 hover:bg-pink-50'}`}
+              aria-label="Echo"
             >
-              <Heart className={`w-4 h-4 ${isHearted ? 'fill-current' : ''}`} />
-              <span className="text-sm">{whisper.hearts + (isHearted ? 1 : 0)}</span>
+              <Heart className="w-4 h-4" />
+              {whisper.hearts + (isHearted ? 1 : 0)}
             </button>
+            <span className="text-xs text-indigo-300">·</span>
+            <span className="text-xs text-gray-400">{formatTime(whisper.timestamp)}</span>
+          </div>
+          <div className="flex items-center gap-2">
             <button
               onClick={() => onReply?.(whisper.id)}
-              className="flex items-center gap-2 text-inkwell/60 hover:text-inkwell/80 transition-colors"
+              className="flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-500"
+              aria-label="Reply"
             >
               <MessageCircle className="w-4 h-4" />
-              <span className="text-sm">{whisper.replies}</span>
+              {whisper.replies}
             </button>
           </div>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onView?.(whisper.id)}
-            className="text-inkwell/60 hover:text-inkwell"
-          >
-            View
-          </Button>
-        </div>
-        {/* AI Reply Footer */}
-        {(aiReplyState === 'pending' || aiReplyState === 'possible') && (
-          <div className="mt-4 pt-2 border-t border-dashed border-aangan-highlight/30 text-center text-xs text-aangan-highlight animate-pulse">
-            {aiReplyState === 'pending' ? 'The Courtyard is listening...' : 'AI may whisper back soon'}
-          </div>
-        )}
-        {/* Gentle Connection Lines */}
-        <div className="mt-2 space-y-1">
-          {echoCount > 0 && (
-            <div className="text-xs italic text-indigo-300 animate-fade-slide-in">
-              {echoCount} others sat with this thought.
-            </div>
-          )}
-          {similarEmotionCount > 0 && (
-            <div className="text-xs italic text-blue-300 animate-fade-slide-in">
-              You’re not the only one…
-            </div>
-          )}
-          {aiReplyState === 'possible' && (
-            <div className="text-xs text-gray-400 animate-fade-slide-in">
-              💬 A kind reply may come soon…
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "./ui/card";
+import { Badge } from "./ui/badge";
 import { Heart, Users, Cloud, Moon, Coffee, BookOpen } from "lucide-react";
 
 interface EmotionCluster {

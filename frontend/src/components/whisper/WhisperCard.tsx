@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, Sparkles, MoreHorizontal } from 'lucide-react';
-// NOTE: Use @theme alias for Vitest compatibility
-import { emotionColors } from '@theme';
-import { cn } from '@lib/utils';
+import { emotionColors } from '../../theme';
+import { cn } from '../../lib/utils';
 import { reportWhisper } from '../../services/api';
 import { toast } from 'sonner';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '../ui/dialog';
 
 interface Whisper {
   id: string;

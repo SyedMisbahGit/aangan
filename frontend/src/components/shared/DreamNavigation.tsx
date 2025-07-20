@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn } from "../../../lib/utils";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "../ui/tooltip";
 import { Home, MapPin, Pencil, User, HelpCircle } from 'lucide-react';
 
 export const DreamNavigation = () => {

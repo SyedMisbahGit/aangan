@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card } from "../ui/card";
 import { TrendingUp, Hash } from "lucide-react";
 
 export const TrendingTopics = () => {

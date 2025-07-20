@@ -12,7 +12,7 @@ import {
   Shield,
   Clock,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 interface AanganNavProps {
   activeTab: string;

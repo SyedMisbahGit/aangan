@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
 import { Heart, Sparkles, Send, Square } from "lucide-react";
 
 interface MirrorEntry {

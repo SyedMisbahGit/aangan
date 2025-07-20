@@ -2,7 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getErrorMessage } from "@/lib/errorUtils";
+import { getErrorMessage } from "../../../lib/errorUtils";
 import ErrorPage from "./ErrorPage";
 
 interface Props {

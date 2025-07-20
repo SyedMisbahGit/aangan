@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '../ui/button';
+import { Textarea } from '../ui/textarea';
 import { MessageCircle, Send, ChevronDown, ChevronUp, Heart, Clock } from 'lucide-react';
-import { useRealtime } from '@/contexts/RealtimeContext';
+import { useRealtime } from '../../contexts/RealtimeContext';
 
 interface Comment {
   id: string;

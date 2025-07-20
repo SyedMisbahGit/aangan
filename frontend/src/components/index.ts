@@ -54,7 +54,6 @@ export * from "./ai/AIWhisperEnhancer";
 export * from "./ambient/AmbientWhisperManager";
 export * from "./ambient/CandleFlicker";
 export * from "./ambient/ParticleFlow";
-export * from "./ambient/SilenceMode";
 export * from "./cuj/CUJBadgeSystem";
 export * from "./cuj/CUJCampusPulse";
 export * from "./cuj/CUJNarrativeTemplates";
