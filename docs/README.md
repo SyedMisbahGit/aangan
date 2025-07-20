@@ -68,9 +68,16 @@
 - npm or yarn
 - Modern browser (ES6+)
 
+### Project Structure (Vite Frontend)
+- The frontend React app is located in the `frontend/` directory.
+- The main Vite entry HTML is at `frontend/public/index.html`.
+- The Vite config is at `config/vite.config.ts` and sets the root to `frontend`.
+- All build/dev commands (`npm run dev`, `npm run build`) should be run from the project root.
+
 ### Installation (Development)
 
 ```bash
+# Clone and install dependencies
 git clone https://github.com/SyedMisbahGit/college-whisper.git
 cd college-whisper
 npm install

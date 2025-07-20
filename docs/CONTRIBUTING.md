@@ -4,6 +4,7 @@ Thank you for helping improve Aangan! Please follow these guidelines:
 
 ## Project Structure
 - See the root README and `docs/ARCHITECTURE.md` for the latest folder layout and alias conventions.
+- The Vite frontend root is `frontend/`, with main HTML at `frontend/public/index.html` and config at `config/vite.config.ts`.
 
 ## Setup
 - Install dependencies: `npm install`

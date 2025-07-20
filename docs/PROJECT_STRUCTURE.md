@@ -13,7 +13,10 @@ This document provides an overview of the main structure and components of the `
 - **backups/**: Database or data backup files.
 - **coverage/**: Code coverage reports and related assets.
 - **dev-dist/**: Development build output (e.g., service workers).
-- **public/**: Static assets (icons, manifest, HTML, etc.).
+- **frontend/**: Contains the Vite React app.
+  - `public/index.html`: Main Vite entry HTML (root div and script).
+  - `src/`: Main frontend source code (React, TypeScript, etc.).
+  - Vite config is at `config/vite.config.ts` (root set to `frontend`).
 - **scripts/**: Project maintenance, testing, and automation scripts.
 - **src/**: Main frontend source code.
   - `components/`: React components, organized by feature/domain.

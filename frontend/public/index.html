@@ -1,27 +1,48 @@
-<!-- Manifest & App Info -->
-<link rel="manifest" href="/manifest.json" />
-<meta name="theme-color" content="#0ea5e9" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="Shhh - WhisperVerse" />
-<meta name="mobile-web-app-capable" content="yes">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shhh - WhisperVerse</title>
+    <meta
+      name="description"
+      content="Anonymous, emotionally intelligent campus social platform with 3D immersive design"
+    />
+    <meta name="author" content="CUJ Community" />
 
-<!-- Icons -->
-<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
-<link rel="apple-touch-icon" href="/icons/icon-192.png" />
-<link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#9333ea" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Shhh" />
 
-<!-- SEO -->
-<meta
-  name="description"
-  content="Shhh is a poetic, anonymous student network to share whispers, feelings, and rituals within campus."
-/>
-<meta property="og:title" content="Shhh – WhisperVerse" />
-<meta property="og:image" content="/icons/icon-512.png" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://shhh-app.vercel.app" />
+    <!-- Open Graph -->
+    <meta property="og:title" content="Shhh - WhisperVerse" />
+    <meta
+      property="og:description"
+      content="Anonymous, emotionally intelligent campus social platform with 3D immersive design"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/icon-512.png" />
 
-<link rel="preconnect" href="https://kobkfbwfkxenepziozds.supabase.co" crossorigin>
-<link rel="dns-prefetch" href="https://kobkfbwfkxenepziozds.supabase.co">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Shhh - WhisperVerse" />
+    <meta
+      name="twitter:description"
+      content="Anonymous, emotionally intelligent campus social platform"
+    />
+    <meta name="twitter:image" content="/icon-512.png" />
 
-<link rel="preconnect" href="https://firebase.googleapis.com" crossorigin>
-<link rel="dns-prefetch" href="https://firebase.googleapis.com">
+    <!-- Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
