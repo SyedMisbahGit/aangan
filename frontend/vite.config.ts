@@ -1,15 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import path from "path";
+import path from "node:path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA, type ManifestOptions } from 'vite-plugin-pwa';
-import manifest from '../frontend/public/manifest.json';
+import manifest from './public/manifest.json';
 import viteCompression from 'vite-plugin-compression';
 import { createHtmlPlugin } from 'vite-plugin-html';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  root: path.resolve(__dirname, "../frontend"),
   server: {
     host: "::",
     port: 8080,
@@ -76,9 +75,9 @@ export default defineConfig(({ mode }) => ({
   ].filter(Boolean),
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "../frontend/src"),
-      "@lib": path.resolve(__dirname, "../frontend/lib"),
-      "@theme": path.resolve(__dirname, "../frontend/theme/theme.ts"),
+      "@": path.resolve(__dirname, "src"),
+      "@lib": path.resolve(__dirname, "lib"),
+      "@theme": path.resolve(__dirname, "theme/theme.ts"),
     },
   },
   test: {
