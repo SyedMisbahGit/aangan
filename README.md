@@ -2,7 +2,15 @@
 
 Aangan is a full-stack, real-time, AI-powered campus platform built with Node.js/Express (backend), React + Vite (frontend), PostgreSQL, and Socket.IO. The platform enables anonymous, emotional expression and connection through whispers, with features like real-time interactions, emotional mapping, and AI-powered responses.
 
-## ✨ Recent Updates (v1.9.2)
+## ✨ Recent Updates (v1.9.3)
+
+### Type Safety & Error Handling
+- Added centralized error handling with `errorUtils.ts`
+- Implemented robust error boundaries with proper typing
+- Fixed all remaining TypeScript errors across the codebase
+- Standardized error messages and logging patterns
+
+### v1.9.2 - Codebase Audit & Polish
 
 ### Code Quality & Type Safety
 - Replaced all console statements with a centralized logger utility

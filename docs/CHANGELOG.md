@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.9.3 (2025-07-26) - Type Safety & Error Handling
+- **TypeScript & Error Handling**
+  - Added centralized error handling with `errorUtils.ts`
+  - Implemented robust error boundaries with proper typing
+  - Fixed all remaining TypeScript errors across the codebase
+  - Standardized error messages and logging patterns
+
 ## v1.9.2 (2025-07-25) - Codebase Audit & Polish
 - **Code Quality & Type Safety**
   - Replaced all console statements with a centralized logger utility
