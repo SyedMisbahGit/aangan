@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "node:path";
-import { componentTagger } from "lovable-tagger";
 import { VitePWA, type ManifestOptions } from 'vite-plugin-pwa';
 import manifest from './public/manifest.json';
 import viteCompression from 'vite-plugin-compression';
@@ -33,7 +32,6 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === "development" && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: [

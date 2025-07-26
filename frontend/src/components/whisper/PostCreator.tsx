@@ -22,11 +22,22 @@ export const EmbeddedBenchComposer: React.FC<EmbeddedBenchComposerProps> = ({
   const [isComposing, setIsComposing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Get zone from URL or use default
+  const location = useLocation();
+  const getZoneFromPath = (path: string): string => {
+    // Extract zone from URL path (e.g., /zone/library -> 'library')
+    const match = path.match(/^\/zone\/([^/]+)/);
+    return match ? match[1] : 'library'; // Default to 'library' if no zone in path
+  };
+
   // Always call useRealtime at the top level
   const realtime = useRealtime();
   const zoneActivity = realtime?.zoneActivity ?? new Map();
-  // For now, assume a single zone or use a default
-  const currentZone = 'library'; // TODO: Replace with actual current zone if available
+  
+  // Get current zone from URL or use default
+  const currentZone = getZoneFromPath(location.pathname);
+  
+  // Get active user count for current zone
   let activeCount = 0;
   if (zoneActivity && zoneActivity.get) {
     const zoneData = zoneActivity.get(currentZone);

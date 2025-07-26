@@ -1,7 +1,8 @@
-import React, { useContext, useState, useEffect, ReactNode } from 'react';
-import { CUJHotspot, EmotionCluster, CUJHotspotContextType, CUJHotspotProviderProps } from './CUJHotspotContext.helpers';
+import React, { useContext, useState, useEffect } from 'react';
+import { CUJHotspot, EmotionCluster } from './CUJHotspotContext.helpers';
 import { CUJHotspotContext } from './CUJHotspotContext.context';
-import { CUJ_HOTSPOTS } from '../constants/cujHotspots';
+import { CUJHotspotContextType, CUJHotspotProviderProps } from './CUJHotspotContext.types';
+import { cujHotspots } from '../constants/cujHotspots';
 import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
 
 export const CUJHotspotLoadingFallback = () => (
@@ -121,14 +122,8 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
 
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedHotspot, setSelectedHotspot] = useState<CUJHotspot | null>(null);
-  const [systemTime, setSystemTime] = useState({
-    hour: new Date().getHours(),
-    minute: new Date().getMinutes(),
-    dayOfWeek: new Date().getDay(),
-    isWeekend: new Date().getDay() === 0 || new Date().getDay() === 6,
-    timestamp: new Date().toISOString()
-  });
-  const [campusActivity, setCampusActivity] = useState('moderate');
+  const [systemTime, setSystemTime] = useState<string>(new Date().toISOString());
+  const [campusActivity, setCampusActivity] = useState<number>(50); // Default to 50% activity
   const [emotionClusters, setEmotionClusters] = useState<EmotionCluster[]>([
     {
       emotion: 'nostalgia',
@@ -175,31 +170,25 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
     const updateSystemTime = () => {
       const now = new Date();
       const hour = now.getHours();
-      const minute = now.getMinutes();
-      const dayOfWeek = now.getDay();
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
       
-      // Determine campus activity level based on time
-      let newCampusActivity = 'moderate';
-      if (hour < 7 || hour > 22) newCampusActivity = 'quiet';
-      else if (hour >= 8 && hour <= 10) newCampusActivity = 'busy';
-      else if (hour >= 12 && hour <= 14) newCampusActivity = 'peak';
-      else if (hour >= 17 && hour <= 19) newCampusActivity = 'busy';
+      // Determine campus activity level based on time (0-100 scale)
+      let newCampusActivity = 50; // Default to 50%
+      
+      // Adjust activity based on time of day
+      if (hour < 6 || hour > 22) newCampusActivity = 20; // Late night/early morning
+      else if (hour >= 8 && hour <= 10) newCampusActivity = 80; // Morning classes
+      else if (hour >= 12 && hour <= 14) newCampusActivity = 90; // Lunch time
+      else if (hour >= 17 && hour <= 19) newCampusActivity = 85; // Evening activities
       
       // Weekend adjustments
+      const dayOfWeek = now.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
       if (isWeekend) {
-        if (hour < 10 || hour > 20) newCampusActivity = 'quiet';
-        else newCampusActivity = 'moderate';
+        if (hour < 10 || hour > 20) newCampusActivity = 15; // Very quiet on weekend nights
+        else newCampusActivity = 60; // Moderate activity during weekend days
       }
 
-      setSystemTime({
-        hour,
-        minute,
-        dayOfWeek,
-        isWeekend,
-        timestamp: now.toISOString()
-      });
-      
+      setSystemTime(now.toISOString());
       setCampusActivity(newCampusActivity);
     };
 

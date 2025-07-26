@@ -1,5 +1,5 @@
 import React, { useEffect, useState, ReactNode } from 'react';
-import { RealtimeContextType, RealtimeProviderProps } from './RealtimeContext.helpers';
+import type { RealtimeContextType, RealtimeProviderProps } from './RealtimeContext.types';
 import { RealtimeContext } from './RealtimeContext.context';
 import realtimeService, { 
   RealtimeWhisper, 

@@ -34,10 +34,10 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useCUJHotspots } from "../contexts/CUJHotspotContext";
 import ModularWhisperCard from "../components/whisper/ModularWhisperCard";
-import { ShhhLine } from '@/components/ShhhLine';
+import { ShhhLine } from '../components/ShhhLine';
 import { cujHotspots } from '../constants/cujHotspots';
 import { useSummerPulse } from '../contexts/use-summer-pulse';
-import { CustomSkeletonCard } from "@/components/ui/skeleton";
+import { CustomSkeletonCard } from "../components/ui/skeleton";
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";
 import { useRef } from "react";
@@ -325,11 +325,11 @@ const Shrines: React.FC = () => {
                           </SelectLabel>
                           {inCampus.map(zone => (
                             <SelectItem 
-                              key={zone} 
-                              value={zone}
+                              key={zone.id} 
+                              value={zone.id}
                               className="text-sm hover:bg-accent"
                             >
-                              {zone}
+                              {zone.name}
                             </SelectItem>
                           ))}
                         </SelectGroup>
@@ -340,11 +340,11 @@ const Shrines: React.FC = () => {
                           </SelectLabel>
                           {outsideCampus.map(zone => (
                             <SelectItem 
-                              key={zone} 
-                              value={zone}
+                              key={zone.id} 
+                              value={zone.id}
                               className="text-sm hover:bg-accent"
                             >
-                              {zone}
+                              {zone.name}
                             </SelectItem>
                           ))}
                         </SelectGroup>

@@ -22,10 +22,10 @@ import {
   Globe
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useCUJHotspots } from "@/contexts/CUJHotspotContext";
-import { ShhhLine } from '@/components/ShhhLine';
+import { useCUJHotspots } from "../contexts/CUJHotspotContext";
+import { ShhhLine } from '../components/ShhhLine';
 import { cujHotspots } from '../constants/cujHotspots';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectLabel, SelectGroup } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectLabel, SelectGroup } from "../components/ui/select";
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";
 import { useRef } from "react";
@@ -33,7 +33,7 @@ import { useRef } from "react";
 const Compass: React.FC = () => {
   const [currentMood, setCurrentMood] = useState("peaceful");
   const [selectedDirection, setSelectedDirection] = useState<string | null>(null);
-  const [selectedZone, setSelectedZone] = useState<string | null>(null);
+  const [selectedZone, setSelectedZone] = useState<string>('all');
 
   const [moodDirections] = useState([
     {
@@ -410,13 +410,13 @@ const Compass: React.FC = () => {
                         <SelectLabel className="text-xs font-semibold text-muted-foreground bg-muted/30">
                           🏫 In-Campus
                         </SelectLabel>
-                        {inCampus.map(zone => (
+                        {inCampus.map((zone) => (
                           <SelectItem 
-                            key={zone} 
-                            value={zone}
+                            key={zone.id} 
+                            value={zone.id}
                             className="text-sm hover:bg-accent"
                           >
-                            {zone}
+                            {zone.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -425,13 +425,13 @@ const Compass: React.FC = () => {
                         <SelectLabel className="text-xs font-semibold text-muted-foreground bg-muted/30">
                           🏠 Outside-Campus
                         </SelectLabel>
-                        {outsideCampus.map(zone => (
+                        {outsideCampus.map((zone) => (
                           <SelectItem 
-                            key={zone} 
-                            value={zone}
+                            key={zone.id} 
+                            value={zone.id}
                             className="text-sm hover:bg-accent"
                           >
-                            {zone}
+                            {zone.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>

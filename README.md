@@ -1,28 +1,100 @@
 # Aangan Project
 
-Aangan is a full-stack, real-time, AI-powered campus platform built with Node.js/Express (backend), React + Vite (frontend), PostgreSQL, and Socket.IO.
+Aangan is a full-stack, real-time, AI-powered campus platform built with Node.js/Express (backend), React + Vite (frontend), PostgreSQL, and Socket.IO. The platform enables anonymous, emotional expression and connection through whispers, with features like real-time interactions, emotional mapping, and AI-powered responses.
+
+## ✨ Recent Updates (v1.9.2)
+
+### Code Quality & Type Safety
+- Replaced all console statements with a centralized logger utility
+- Fixed TypeScript errors across frontend and backend
+- Implemented proper error handling with type checking
+- Standardized error handling patterns
+
+### Security Enhancements
+- Added comprehensive JWT verification middleware
+- Improved authentication flow with role-based access control
+- Enhanced service worker registration and security
+
+### Developer Experience
+- Added comprehensive test suite for vector database operations
+- Improved API documentation and type definitions
+- Standardized code style and naming conventions
+
+### Performance
+- Optimized real-time event handling
+- Improved error boundaries and fallback UIs
+- Enhanced logging for better debugging
+
+---
+
+## 🛡️ Security Features
+
+- **Rate Limiting**: Protect against brute force and DDoS attacks
+- **Input Validation**: Secure data handling and sanitization
+- **Authentication**: JWT-based with secure token handling
+- **Request Validation**: All API endpoints validate input data
+- **Security Headers**: CSP, HSTS, and other security headers
+- **Redis Integration**: For distributed rate limiting and caching
 
 ---
 
 ## 🚀 Getting Started
 
-1. **Install dependencies:**
+### Prerequisites
+
+- Node.js 16+
+- npm or yarn
+- PostgreSQL
+- Redis (for production)
+
+### Installation
+
+1. **Clone the repository**
    ```sh
+   git clone https://github.com/yourusername/college-whisper.git
+   cd college-whisper
+   ```
+
+2. **Install dependencies**
+   ```sh
+   # Install root dependencies
+   npm install
+   
+   # Install backend dependencies
+   cd backend
+   npm install
+   
+   # Install frontend dependencies
+   cd ../frontend
    npm install
    ```
-2. **Run the backend:**
+
+3. **Set up environment variables**
+   - Copy `.env.example` to `.env` in both root and backend directories
+   - Update with your configuration
+
+4. **Set up Redis** (optional for development, required for production)
+   - See [Redis Setup Guide](./docs/redis-setup.md) for detailed instructions
+
+5. **Start the development servers**
    ```sh
+   # Start backend
    cd backend
-   npm start
-   ```
-3. **Run the frontend:**
-   ```sh
+   npm run dev
+   
+   # In a new terminal, start frontend
    cd frontend
    npm run dev
    ```
-4. **Run tests:**
+
+6. **Run tests**
    ```sh
+   # Run all tests
    npx vitest run --config vitest.config.ts
+   
+   # Run backend tests
+   cd backend
+   npm test
    ```
 
 ---

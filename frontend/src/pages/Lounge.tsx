@@ -8,6 +8,8 @@ import { useWhispers } from '../services/api';
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";
 import { useRef } from "react";
+import { DreamHeader } from '../components/shared/DreamHeader';
+import { GentlePresenceRibbon } from '../components/shared/PresenceRibbon';
 
 const Listen: React.FC = () => {
   const [currentWhisperIndex, setCurrentWhisperIndex] = useState(0);
@@ -63,9 +65,13 @@ const Listen: React.FC = () => {
         aria-labelledby="page-title"
         tabIndex={-1}
         ref={mainRef}
-        className="fixed inset-0 bg-aangan-dusk flex items-center justify-center p-4 overflow-hidden"
+        className="fixed inset-0 bg-aangan-dusk flex flex-col items-center justify-start p-4 overflow-hidden"
       >
         <h1 id="page-title" className="sr-only">Lounge</h1>
+        {/* DreamHeader only in Lounge */}
+        <DreamHeader title="Lounge" subtitle="A quiet, real-time space for presence." />
+        {/* GentlePresenceRibbon only in Lounge */}
+        <GentlePresenceRibbon presenceCount={3} />
         {/* Ambient Presence Avatars & Poetic Line */}
         {/* Removed fake presence avatars and poetic line. If real presence data is available, insert here. */}
         {/* Shimmer while loading */}

@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import type { HTMLProps } from "react";
+
+type HTMLMainElement = HTMLElement;
 import AanganNav from "../components/whisper/WhisperVerseNav";
 import CampusPulse from "../components/CampusPulse";
 import WhisperDiary from "../components/whisper/WhisperDiary";
@@ -26,7 +29,6 @@ import { WelcomeOnboarding } from '../components/onboarding/WelcomeOnboarding';
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";
 import { Button } from "../components/ui/button";
-import { useRef } from "react";
 
 // Sample data for demonstration
 const sampleDiaryEntries = [
@@ -241,14 +243,16 @@ const IndexPage: React.FC = () => {
           onComplete={handleOnboardingComplete}
           onSkip={handleOnboardingComplete}
         />
-        {/* Floating Help Icon */}
-        <Button
-          className="fixed bottom-24 right-6 z-50 bg-aangan-primary text-white rounded-full p-3 shadow-lg hover:bg-aangan-primary/90 transition"
-          aria-label="Help"
-          onClick={() => setShowHelp(true)}
-        >
-          <HelpCircle className="w-6 h-6" />
-        </Button>
+        {/* Floating Help Icon - only show on home tab */}
+        {activeTab === "aangan" && (
+          <Button
+            className="fixed bottom-24 right-6 z-50 bg-aangan-primary text-white rounded-full p-3 shadow-lg hover:bg-aangan-primary/90 transition"
+            aria-label="Help"
+            onClick={() => setShowHelp(true)}
+          >
+            <HelpCircle className="w-6 h-6" />
+          </Button>
+        )}
         {/* Help Modal */}
         {showHelp && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowHelp(false)}>
@@ -292,10 +296,12 @@ const IndexPage: React.FC = () => {
           </div>
         )}
         <ParticleBackground />
-        {/* Navigation */}
-        <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl">
-          <AanganNav activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
+        {/* Navigation - only show on home tab */}
+        {activeTab === "aangan" && (
+          <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl">
+            <AanganNav activeTab={activeTab} onTabChange={setActiveTab} />
+          </div>
+        )}
         {/* Main Content Area */}
         <main
           role="main"

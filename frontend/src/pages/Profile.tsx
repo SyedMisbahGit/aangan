@@ -25,7 +25,7 @@ import {
 import { motion } from "framer-motion";
 import { PrivacyPromise } from "../components/shared/PrivacyPromise";
 import EmotionStreak from "../components/emotion/EmotionStreak";
-import { getEmotionStreak } from "../lib/streaks";
+import { getEmotionStreak } from "../../lib/streaks";
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";
 import { useRef } from "react";
@@ -399,7 +399,7 @@ const Profile: React.FC = () => {
             </motion.div>
           </main>
         </Suspense>
-
+      </DreamLayout>
       {/* Privacy Promise Modal */}
       <PrivacyPromise 
         isOpen={showPrivacyPromise} 

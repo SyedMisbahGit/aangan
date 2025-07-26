@@ -4,6 +4,7 @@ import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getErrorMessage } from "../../../lib/errorUtils";
 import ErrorPage from "./ErrorPage";
+import { logger } from "../../utils/logger";
 
 interface Props {
   children: ReactNode;
@@ -25,7 +26,13 @@ class ErrorBoundary extends Component<Props & { navigate: (path: string) => void
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Uncaught error:", getErrorMessage(error), errorInfo);
+    const errorMessage = getErrorMessage(error);
+    logger.error('Error boundary caught error', { 
+      error: errorMessage,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      url: typeof window !== 'undefined' ? window.location.href : 'server',
+    });
     
     // Log error to analytics/error tracking service
     if (typeof window !== "undefined") {
@@ -33,15 +40,15 @@ class ErrorBoundary extends Component<Props & { navigate: (path: string) => void
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          error: getErrorMessage(error),
+          error: errorMessage,
           stack: error.stack,
           componentStack: errorInfo.componentStack,
           url: window.location.href,
           userAgent: navigator.userAgent,
           timestamp: new Date().toISOString(),
         }),
-      }).catch(() => {
-        // Silently fail if error logging fails
+      }).catch((e) => {
+        logger.error('Failed to send error to server', { error: e.message });
       });
     }
   }

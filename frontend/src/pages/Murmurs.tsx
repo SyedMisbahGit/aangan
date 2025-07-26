@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
-import { ShhhLine } from '@/components/ShhhLine';
+import { ShhhLine } from '../components/ShhhLine';
 import { cujHotspots } from '../constants/cujHotspots';
 import DreamWhisper from '../components/whisper/ModularWhisperCard';
 import { useSummerSoul } from '../contexts/use-summer-soul';
@@ -271,9 +271,9 @@ const Murmurs: React.FC = () => {
     setTrendingTopics(sampleTrendingTopics);
   }, []);
 
-  const filteredWhispers = whispers.filter(whisper => {
-    if (selectedFilter === "proximity" && whisper.proximity > 100) return false;
-    if (selectedFilter === "vibe" && whisper.vibeMatch < 0.7) return false;
+  const filteredWhispers = whispers.filter((whisper: Whisper) => {
+    if (selectedFilter === "proximity" && (whisper.proximity ?? 0) > 100) return false;
+    if (selectedFilter === "vibe" && (whisper.vibeMatch ?? 0) < 0.7) return false;
     if (searchTerm && !whisper.content.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
   });
@@ -294,7 +294,8 @@ const Murmurs: React.FC = () => {
     }
   };
 
-  const getProximityText = (proximity: number) => {
+  const getProximityText = (proximity: number | undefined) => {
+    if (proximity === undefined) return 'Unknown';
     if (proximity <= 50) return "Very Close";
     if (proximity <= 100) return "Nearby";
     if (proximity <= 200) return "Close";
@@ -313,7 +314,15 @@ const Murmurs: React.FC = () => {
     const totalWhispers = whispers.length;
     const totalHearts = whispers.reduce((sum, w) => sum + w.hearts, 0);
     const totalReplies = whispers.reduce((sum, w) => sum + w.replies, 0);
-    const avgProximity = whispers.reduce((sum, w) => sum + w.proximity, 0) / whispers.length;
+    
+    // Handle case where proximity might be undefined
+    const validProximities = whispers
+      .map(w => w.proximity)
+      .filter((proximity): proximity is number => proximity !== undefined);
+      
+    const avgProximity = validProximities.length > 0 
+      ? validProximities.reduce((sum, p) => sum + p, 0) / validProximities.length 
+      : 0;
     
     return { totalWhispers, totalHearts, totalReplies, avgProximity };
   };
@@ -755,11 +764,10 @@ const Murmurs: React.FC = () => {
               </Tabs>
             </motion.div>
           </div>
-        </div>
-      </main>
-    </DreamLayout>
-  </ErrorBoundary>
-);
+        </main>
+      </DreamLayout>
+    </ErrorBoundary>
+  );
 };
 
 export default Murmurs;

@@ -1,4 +1,4 @@
 import { createContext } from 'react';
-import { SummerPulseContextType } from './SummerPulseContext.helpers';
+import type { SummerPulseContextType } from './SummerPulseContext.types';
 
-export const SummerPulseContext = createContext<SummerPulseContextType | undefined>(undefined); 
+export const SummerPulseContext = createContext<SummerPulseContextType | undefined>(undefined);

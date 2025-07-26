@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Suspense } from "react";
-import { CustomSkeletonCard, useErrorBoundaryLogger } from "../ui/skeleton";
+import { CustomSkeletonCard } from "../ui/skeleton";
+import { useErrorBoundaryLogger } from "../../hooks/useErrorBoundaryLogger";
 
 interface RecentActivity {
   content: string;

@@ -1,85 +1,15 @@
-import React, { useContext, useState, useEffect, ReactNode } from 'react';
-import { NarratorState, EmotionalMemory, MoodArc, PoeticLine, ShhhNarratorContextType } from './ShhhNarratorContext.helpers';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { ShhhNarratorContext } from './ShhhNarratorContext.context';
 import { useCUJHotspots } from './use-cuj-hotspots';
 import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
-
-export interface NarratorState {
-  currentZone: string;
-  currentMood: string;
-  currentTime: string;
-  userActivity: string;
-  lastWhisperTime: string | null;
-  whisperCount: number;
-  dominantEmotion: string;
-  isGenerating: boolean;
-  systemTime: {
-    hour: number;
-    minute: number;
-    dayOfWeek: number;
-    isWeekend: boolean;
-    timestamp: string;
-  };
-}
-
-export interface EmotionalMemory {
-  zone: string;
-  mood: string;
-  timestamp: string;
-  frequency: number;
-  lastVisit: string;
-  emotionalArc: string[];
-}
-
-export interface MoodArc {
-  startMood: string;
-  currentMood: string;
-  duration: number; // in minutes
-  transitions: Array<{
-    from: string;
-    to: string;
-    timestamp: string;
-    trigger?: string;
-  }>;
-  patterns: {
-    mostFrequent: string;
-    longestStreak: number;
-    recentTrend: 'improving' | 'stable' | 'declining';
-  };
-}
-
-export interface PoeticLine {
-  text: string;
-  context: {
-    zone?: string;
-    mood?: string;
-    time?: string;
-    activity?: string;
-    memory?: boolean;
-    arc?: boolean;
-  };
-  timestamp: string;
-  variant: string;
-}
-
-interface ShhhNarratorContextType {
-  narratorState: NarratorState;
-  currentLine: PoeticLine | null;
-  emotionalMemory: EmotionalMemory[];
-  moodArc: MoodArc | null;
-  generateLine: (zone?: string, mood?: string, time?: string, context?: 'memory' | 'arc' | 'general') => Promise<string>;
-  updateNarratorState: (updates: Partial<NarratorState>) => void;
-  getContextualLine: (zone?: string, mood?: string, time?: string, context?: 'memory' | 'arc' | 'general') => string;
-  addEmotionalMemory: (zone: string, mood: string) => void;
-  getPersonalizedLine: (zone?: string, mood?: string) => string;
-  isReady: boolean;
-}
-
-const ShhhNarratorContext = createContext<ShhhNarratorContextType | undefined>(undefined);
-
-interface ShhhNarratorProviderProps {
-  children: ReactNode;
-}
+import { 
+  NarratorState, 
+  EmotionalMemory, 
+  MoodArc, 
+  PoeticLine, 
+  ShhhNarratorContextType,
+  ShhhNarratorProviderProps 
+} from './ShhhNarratorContext.types';
 
 // Enhanced fallback lines with memory and arc awareness
 const fallbackLines = {
@@ -552,14 +482,18 @@ export const ShhhNarratorProvider: React.FC<ShhhNarratorProviderProps> = ({ chil
 
   // Update dominant emotion from CUJ hotspots
   useEffect(() => {
-    const trends = getEmotionTrends();
-    if (trends.length > 0) {
-      setNarratorState(prev => ({
-        ...prev,
-        dominantEmotion: trends[0].emotion
-      }));
+    // Get the first hotspot's ID to check emotion trends
+    const hotspotId = nearbyHotspots?.[0]?.id;
+    if (hotspotId) {
+      const trends = getEmotionTrends(hotspotId);
+      if (trends.length > 0) {
+        setNarratorState(prev => ({
+          ...prev,
+          dominantEmotion: trends[0].emotion
+        }));
+      }
     }
-  }, [getEmotionTrends]);
+  }, [getEmotionTrends, nearbyHotspots]);
 
   const getRandomLine = (lines: string[]): string => {
     return lines[Math.floor(Math.random() * lines.length)];

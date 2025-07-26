@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { DreamLayout } from '../components/shared/DreamLayout';
 import { DreamHeader, isUserFacingRoute } from '../components/shared/DreamHeader';
 import { Card, CardContent } from '../components/ui/card';
-import { Switch } from '@/components/ui/switch';
+import { Switch } from '../components/ui/switch';
 import { motion } from 'framer-motion';
 import { 
   Info, 
@@ -13,15 +13,13 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { SilenceMode } from '../components/ambient/SilenceMode';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import NotificationFeed from '../components/notifications/NotificationFeed';
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";
 import { useRef } from "react";
 
 const MyCorner: React.FC = () => {
-  const [isSilenceMode, setIsSilenceMode] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     if (mainRef.current) {
@@ -92,26 +90,6 @@ const MyCorner: React.FC = () => {
               <h1 id="page-title" className="sr-only">My Corner</h1>
               {/* Notification Feed */}
               <NotificationFeed />
-              {/* Sit in Silence Toggle */}
-              <motion.div variants={cardVariants} initial="hidden" animate="visible" custom={0}>
-                <Card className="bg-aangan-paper/80 backdrop-blur-lg border border-aangan-dusk">
-                  <CardContent className="p-5 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <Moon className="w-6 h-6 text-night-blue" />
-                      <div>
-                        <h3 className="font-serif text-text-poetic">Sit in Silence</h3>
-                        <p className="text-sm text-text-metaphor">
-                          Dim the courtyard and let whispers drift by.
-                        </p>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={isSilenceMode}
-                      onCheckedChange={setIsSilenceMode}
-                    />
-                  </CardContent>
-                </Card>
-              </motion.div>
 
               {/* Corner Items */}
               {cornerItems.map((item, index) => {
@@ -139,7 +117,6 @@ const MyCorner: React.FC = () => {
           </div>
         </DreamLayout>
       </ErrorBoundary>
-      <SilenceMode isEnabled={isSilenceMode} />
     </>
   );
 };

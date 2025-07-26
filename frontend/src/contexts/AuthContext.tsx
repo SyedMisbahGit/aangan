@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, ReactNode } from 'react';
-import { User, AuthContextType, AuthProviderProps } from './AuthContext.helpers';
+import { User, AuthContextType, AuthProviderProps } from './AuthContext.types';
 import { AuthContext } from './AuthContext.helpers';
 // import { useAuth } from "./use-auth";
 

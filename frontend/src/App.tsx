@@ -26,18 +26,19 @@ import { AuthProvider } from './contexts/AuthContext';
 import { RealtimeProvider } from './contexts/RealtimeContext';
 import AdminLogin from './pages/AdminLogin';
 import PrivacyBanner from './components/PrivacyBanner';
-import RouteObserver from './components/shared/RouteObserver';
+// RouteObserver is defined below
 import GentleOnboarding from './components/onboarding/GentleOnboarding';
 import { AnimatePresence } from "framer-motion";
 import { ConfettiEffect } from './components/shared/ConfettiEffect';
 import AanganLoadingScreen from './components/shared/AanganLoadingScreen';
 import { DreamHeader, isUserFacingRoute } from './components/shared/DreamHeader';
+import { logger } from './utils/logger';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 10 * 60 * 1000, // 10 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (replaced cacheTime with gcTime in newer versions)
       retry: 1,
       refetchOnWindowFocus: false,
     },
@@ -127,18 +128,46 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     // Firebase messaging setup
-    messagingPromise.then((messaging) => {
-      getToken(messaging, { vapidKey: "your-vapid-key" })
-        .then((currentToken) => {
-          if (currentToken) {
-          }
-        })
-        .catch((err) => {
+    const setupMessaging = async () => {
+      try {
+        const messaging = await messagingPromise;
+        if (!messaging) return;
+        
+        // Request notification permission and get token
+        const token = await messaging.requestNotificationPermission();
+        if (token) {
+          logger.info('FCM Token received');
+          // You can send this token to your backend here if needed
+        }
+        
+        // Handle incoming messages
+        messaging.onMessage((payload) => {
+          logger.debug('Message received', { type: payload.notification?.title });
+          // Handle the received message
         });
-
-      onMessage(messaging, (payload) => {
+      } catch (error) {
+        logger.error('Error setting up Firebase Messaging', { error });
+      }
+    };
+    
+    // Register service worker for PWA and Firebase Messaging
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        // This is the service worker registration for the PWA
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            logger.info('ServiceWorker registered', { scope: registration.scope });
+            
+            // Now that the main service worker is registered, set up Firebase Messaging
+            setupMessaging();
+          })
+          .catch(error => {
+            logger.error('ServiceWorker registration failed', { error });
+          });
       });
-    });
+    } else {
+      logger.warn('Service workers are not supported in this browser');
+    }
   }, []);
 
   if (!onboardingComplete) {
@@ -152,7 +181,7 @@ const AppContent: React.FC = () => {
       {showPrivacyBanner && isUserFacingRoute(location.pathname) && (
         <PrivacyBanner onAccept={() => setShowPrivacyBanner(false)} />
       )}
-      <ConfettiEffect />
+      <ConfettiEffect isActive={false} />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           {/* Public routes */}

@@ -73,6 +73,7 @@
 - The main Vite entry HTML is at `frontend/public/index.html`.
 - The Vite config is at `config/vite.config.ts` and sets the root to `frontend`.
 - All build/dev commands (`npm run dev`, `npm run build`) should be run from the project root.
+- **Development-only dependency:** The frontend uses [`lovable-tagger`](https://www.npmjs.com/package/lovable-tagger) (devDependency) for component tagging in development mode. If you encounter build errors about this package, run `npm install` in the `frontend/` directory.
 
 ### Installation (Development)
 

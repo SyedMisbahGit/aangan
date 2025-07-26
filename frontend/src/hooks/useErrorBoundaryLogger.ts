@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { logger } from "../utils/logger";
 
 // Helper to get breadcrumbs (last 5 route changes)
 function getBreadcrumbs() {
@@ -12,8 +13,11 @@ function getBreadcrumbs() {
  * Logs errors to the backend with context for async/background errors.
  * Usage: const logError = useErrorBoundaryLogger("RouteName"); logError(error, { context: "fetchData" });
  */
+// Define a type for the extra error context
+type ErrorContext = Record<string, unknown> | undefined;
+
 export function useErrorBoundaryLogger(routeName?: string) {
-  return useCallback((error: unknown, extra?: Record<string, any>) => {
+  return useCallback((error: unknown, extra?: ErrorContext) => {
     const message = error instanceof Error ? error.message : String(error);
     const stack = error instanceof Error ? error.stack : undefined;
     const payload = {
@@ -36,8 +40,7 @@ export function useErrorBoundaryLogger(routeName?: string) {
     }
     // Also log to console for dev
     if (process.env.NODE_ENV !== "production") {
-      // eslint-disable-next-line no-console
-      console.error("[useErrorBoundaryLogger]", payload);
+      logger.error("Error boundary triggered", { error: message, route: routeName, ...extra });
     }
   }, [routeName]);
 } 

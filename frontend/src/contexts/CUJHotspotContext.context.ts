@@ -1,4 +1,4 @@
 import { createContext } from 'react';
-import { CUJHotspotContextType } from './CUJHotspotContext.helpers';
+import { CUJHotspotContextType } from './CUJHotspotContext.types';
 
-export const CUJHotspotContext = createContext<CUJHotspotContextType | undefined>(undefined); 
+export const CUJHotspotContext = createContext<CUJHotspotContextType | undefined>(undefined);

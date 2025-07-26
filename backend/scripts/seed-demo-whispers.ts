@@ -1,4 +1,4 @@
-import { db } from "../db.js";
+import { db } from "../src/db";
 
 async function seedDemoWhispers() {
   await db('whispers').insert([

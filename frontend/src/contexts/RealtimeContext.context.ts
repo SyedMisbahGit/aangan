@@ -1,4 +1,4 @@
 import { createContext } from 'react';
-import { RealtimeContextType } from './RealtimeContext.helpers';
+import type { RealtimeContextType } from './RealtimeContext.types';
 
-export const RealtimeContext = createContext<RealtimeContextType | undefined>(undefined); 
+export const RealtimeContext = createContext<RealtimeContextType | undefined>(undefined);

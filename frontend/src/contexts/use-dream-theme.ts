@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AanganThemeContext } from './DreamThemeContext';
+import { AanganThemeContext } from './DreamThemeContext.context';
 
 export const useAanganTheme = () => {
   const context = useContext(AanganThemeContext);

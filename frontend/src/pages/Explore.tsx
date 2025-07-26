@@ -57,7 +57,7 @@ const Explore: React.FC = () => {
       color: 'from-green-400 to-emerald-500',
       bgColor: 'from-green-50 to-emerald-50',
       borderColor: 'border-green-200',
-      content: nearbyHotspots.map(hotspot => ({
+      content: nearbyHotspots.map((hotspot: { name: string; activeUsers: number; dominantMood: string }) => ({
         name: hotspot.name,
         activeUsers: hotspot.activeUsers,
         emotion: emotionClusters.find(e => e.emotion === hotspot.dominantMood)?.emotion || 'peace'
@@ -87,7 +87,7 @@ const Explore: React.FC = () => {
       color: 'from-rose-400 to-pink-500',
       bgColor: 'from-rose-50 to-pink-50',
       borderColor: 'border-rose-200',
-      content: emotionClusters.slice(0, 6).map(cluster => ({
+      content: emotionClusters.slice(0, 6).map((cluster: { emotion: string; count: number }) => ({
         name: cluster.emotion,
         activeUsers: cluster.count,
         emotion: cluster.emotion
@@ -179,7 +179,7 @@ const Explore: React.FC = () => {
 
                         {/* Preview of content */}
                         <div className="space-y-2">
-                          {space.content.slice(0, 3).map((item, idx) => {
+                          {space.content.slice(0, 3).map((item: { name: string; activeUsers: number; emotion: string }, idx: number) => {
                             const EmotionIcon = getEmotionIcon(item.emotion);
                             
                             return (
@@ -241,7 +241,7 @@ const Explore: React.FC = () => {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {space.content.map((item, idx) => {
+                              {space.content.map((item: { name: string; activeUsers: number; emotion: string }, idx: number) => {
                                 const EmotionIcon = getEmotionIcon(item.emotion);
                                 
                                 return (

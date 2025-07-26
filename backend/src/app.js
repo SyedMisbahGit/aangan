@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -37,6 +37,9 @@ const io = new Server(server, {
   cors: {
     origin: [
       process.env.FRONTEND_URL || "http://localhost:5173",
+      "https://college-whisper.vercel.app",
+      "https://college-whisper-git-main-syedmisbahgit.vercel.app",
+      "https://college-whisper-*.vercel.app",
       "http://localhost:8080",
       "http://localhost:8081",
       "http://localhost:8082",
@@ -47,6 +50,7 @@ const io = new Server(server, {
       "http://localhost:8087",
       "http://localhost:8088",
     ],
+    methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
   },
 });
@@ -214,7 +218,13 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'"],
         scriptSrc: ["'self'"],
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", "https://aangan-production.up.railway.app"],
+        connectSrc: [
+          "'self'",
+          "https://aangan-production.up.railway.app",
+          "https://college-whisper.vercel.app",
+          "https://college-whisper-*.vercel.app",
+          "wss://aangan-production.up.railway.app"
+        ],
         fontSrc: ["'self'", "data:"],
         objectSrc: ["'none'"],
         mediaSrc: ["'self'"],
@@ -238,6 +248,9 @@ app.use(
   cors({
     origin: [
       process.env.FRONTEND_URL || "http://localhost:5173",
+      "https://college-whisper.vercel.app",
+      "https://college-whisper-git-main-syedmisbahgit.vercel.app",
+      "https://college-whisper-*.vercel.app",
       "http://localhost:8080",
       "http://localhost:8081",
       "http://localhost:8082",
@@ -292,9 +305,7 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
   message: "Too many requests from this IP, please try again later.",
-  keyGenerator: (req) => {
-    return req.ip || req.connection.remoteAddress || 'unknown';
-  },
+  keyGenerator: ipKeyGenerator,
   skip: (req) => {
     // Skip rate limiting for health checks
     return req.path === '/api/health' || req.path === '/api/health/heartbeat';
@@ -307,9 +318,7 @@ const whisperLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 5, // limit each IP to 5 whispers per 10 min
   message: "Too many whispers, please wait a while.",
-  keyGenerator: (req) => {
-    return req.ip || req.connection.remoteAddress || 'unknown';
-  }
+  keyGenerator: ipKeyGenerator
 });
 
 // Comment rate-limit: 10 per minute per IP
@@ -317,16 +326,14 @@ const commentLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 10, // limit each IP to 10 comments per minute
   message: "Too many comments, please wait a while.",
-  keyGenerator: (req) => {
-    return req.ip || req.connection.remoteAddress || 'unknown';
-  }
+  keyGenerator: ipKeyGenerator
 });
 
 const reportLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 5, // limit each IP to 5 reports per 10 min
   message: "Too many reports, please wait a while.",
-  keyGenerator: (req) => req.ip || req.connection.remoteAddress || 'unknown',
+  keyGenerator: ipKeyGenerator,
 });
 
 // Helper: get admin user and last password change
@@ -1491,25 +1498,67 @@ function getActivityLevel(users) {
   return 'vibrant';
 }
 
-// --- JWT Auth Middleware for Admin API ---
-function extractUserFromJWT(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Access token required" });
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET || "your-secret-key");
-    req.user = payload;
-    next();
-  } catch (error) {
-    return res.status(403).json({ error: "Invalid or expired token" });
-  }
-}
+// --- JWT Auth Middleware ---
+const authenticateJWT = (roles = []) => {
+  return (req, res, next) => {
+    try {
+      // Get token from Authorization header
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'No token provided' });
+      }
+
+      const token = authHeader.split(' ')[1];
+      if (!token) {
+        return res.status(401).json({ error: 'No token provided' });
+      }
+
+      // Verify token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-very-secure-secret');
+      
+      // Check if token is expired
+      if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+        return res.status(401).json({ error: 'Token expired' });
+      }
+
+      // Check user role if roles are specified
+      if (roles.length && !roles.includes(decoded.role)) {
+        return res.status(403).json({ error: 'Insufficient permissions' });
+      }
+
+      // Attach user to request object
+      req.user = decoded;
+      next();
+    } catch (error) {
+      console.error('JWT Verification Error:', error);
+      
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ error: 'Token expired' });
+      }
+      
+      if (error.name === 'JsonWebTokenError') {
+        return res.status(401).json({ error: 'Invalid token' });
+      }
+      
+      return res.status(500).json({ error: 'Failed to authenticate' });
+    }
+  };
+};
+
+// Role-based access control
+const ROLES = {
+  ADMIN: 'admin',
+  MODERATOR: 'moderator',
+  USER: 'user'
+};
+
+// Middleware for admin routes (kept for backward compatibility)
+const extractUserFromJWT = authenticateJWT();
 
 // Mount modular admin routes
 app.use("/api/admin", extractUserFromJWT, adminRoutes);
 
 // --- Admin Moderation Endpoints ---
-
 // Middleware: require admin JWT
 function requireAdminJWT(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];

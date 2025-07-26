@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
+import { logger } from '../../utils/logger';
 import { 
   Sparkles, 
   MessageCircle, 
@@ -81,10 +82,34 @@ const onboardingSteps: OnboardingStep[] = [
 ];
 
 const logOnboardingEvent = (event: string) => {
+  const eventData = { event, timestamp: new Date().toISOString() };
+  
+  // Log to localStorage
   const events = JSON.parse(localStorage.getItem('aangan_onboarding_events') || '[]');
-  events.push({ event, timestamp: new Date().toISOString() });
+  events.push(eventData);
   localStorage.setItem('aangan_onboarding_events', JSON.stringify(events));
-  // TODO: Send to analytics endpoint if needed
+  
+  // Send to analytics via logger
+  logger.info('Onboarding event', {
+    event,
+    category: 'onboarding',
+    timestamp: new Date().toISOString(),
+    // Add any additional context if needed
+  });
+  
+  // For production, you might want to send to an analytics endpoint
+  if (process.env.NODE_ENV === 'production') {
+    // Example: Send to analytics endpoint
+    fetch('/api/analytics/onboarding', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(eventData),
+    }).catch(error => {
+      logger.error('Failed to send analytics event', { error: error.message, event });
+    });
+  }
 };
 
 export const WelcomeOnboarding: React.FC<WelcomeOnboardingProps> = ({

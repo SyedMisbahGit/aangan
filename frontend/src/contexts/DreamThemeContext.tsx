@@ -1,5 +1,5 @@
-import React, { useEffect, useState, ReactNode } from 'react';
-import { Theme, AanganThemeContextType, AanganThemeProviderProps } from './DreamThemeContext.helpers';
+import React, { useEffect, useState } from 'react';
+import type { Theme, AanganThemeContextType, AanganThemeProviderProps } from './DreamThemeContext.types';
 import { AanganThemeContext } from './DreamThemeContext.context';
 import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
 

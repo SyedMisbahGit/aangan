@@ -42,6 +42,8 @@
 ## Dev Experience
 - All new UI states must be demoed in Storybook before merging.
 - Use MSW and Storybook for rapid iteration and design review.
+- Ensure `lovable-tagger` is installed as a devDependency in `frontend/` for development builds (run `npm install` if missing).
+- If you see build errors about 'lovable-tagger', check that it is present in `frontend/package.json` and installed.
 
 ---
 

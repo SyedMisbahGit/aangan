@@ -44,7 +44,7 @@ const NewOnboarding: React.FC = () => {
   const [showAnimation, setShowAnimation] = useState(false);
   const navigate = useNavigate();
   const mainRef = useRef<HTMLDivElement>(null);
-  const location = useLocation();
+  const routerLocation = useLocation();
 
   React.useEffect(() => {
     if (mainRef.current) {
@@ -109,7 +109,7 @@ const NewOnboarding: React.FC = () => {
               transition={{ duration: 0.5 }}
               className="w-full max-w-md text-center"
             >
-              {isUserFacingRoute(location.pathname) && (
+              {isUserFacingRoute(routerLocation.pathname) && (
                 <DreamHeader title={steps[step].title} subtitle={steps[step].subtitle} />
               )}
               {step === 1 && (

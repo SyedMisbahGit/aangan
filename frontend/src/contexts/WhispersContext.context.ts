@@ -1,4 +1,4 @@
 import { createContext } from 'react';
-import { WhispersContextType } from './WhispersContext.helpers';
+import type { WhispersContextType } from './WhispersContext.types';
 
-export const WhispersContext = createContext<WhispersContextType | undefined>(undefined); 
+export const WhispersContext = createContext<WhispersContextType | undefined>(undefined);

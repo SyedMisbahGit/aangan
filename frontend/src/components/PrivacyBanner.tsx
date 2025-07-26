@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-const PrivacyBanner: React.FC = () => {
+interface PrivacyBannerProps {
+  onAccept: () => void;
+}
+
+const PrivacyBanner: React.FC<PrivacyBannerProps> = ({ onAccept }) => {
   const [hide, setHide] = useState(false);
 
   useEffect(() => {
@@ -14,6 +18,7 @@ const PrivacyBanner: React.FC = () => {
   const handleDismiss = () => {
     setHide(true);
     localStorage.setItem('privacy-banner-dismissed', 'true');
+    onAccept();
   };
 
   if (hide) return null;

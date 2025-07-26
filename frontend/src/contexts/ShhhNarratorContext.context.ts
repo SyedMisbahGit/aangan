@@ -1,4 +1,4 @@
 import { createContext } from 'react';
-import { ShhhNarratorContextType } from './ShhhNarratorContext.helpers';
+import { ShhhNarratorContextType } from './ShhhNarratorContext.types';
 
-export const ShhhNarratorContext = createContext<ShhhNarratorContextType | undefined>(undefined); 
+export const ShhhNarratorContext = createContext<ShhhNarratorContextType | undefined>(undefined);

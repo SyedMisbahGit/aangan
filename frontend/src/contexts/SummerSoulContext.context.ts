@@ -1,4 +1,4 @@
 import { createContext } from 'react';
-import { SummerSoulContextType } from './SummerSoulContext.helpers';
+import type { SummerSoulContextType } from './SummerSoulContext.types';
 
-export const SummerSoulContext = createContext<SummerSoulContextType | undefined>(undefined); 
+export const SummerSoulContext = createContext<SummerSoulContextType | undefined>(undefined);

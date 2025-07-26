@@ -30,16 +30,16 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
-import { ShhhLine } from '@/components/ShhhLine';
-import WhisperPrompt from '@/components/WhisperPrompt';
+import { ShhhLine } from '../components/ShhhLine';
+import WhisperPrompt from '../components/WhisperPrompt';
 import { useSummerPulse } from '../contexts/use-summer-pulse';
 import { useWhispers } from "../contexts/use-whispers";
-import type { Whisper } from '../contexts/WhispersContext';
-import { CustomSkeletonCard } from "@/components/ui/skeleton";
+import type { Whisper } from '../contexts/WhispersContext.helpers';
+import { CustomSkeletonCard } from "../components/ui/skeleton";
 import { DiaryStreakCounter } from "../components/shared/DiaryStreakCounter";
 import SoftBack from '../components/shared/SoftBack';
 import EmotionStreak from '../components/emotion/EmotionStreak';
-import { getEmotionStreak } from '../lib/streaks';
+import { getEmotionStreak } from '../../lib/streaks';
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";
 import { useRef } from "react";
@@ -157,13 +157,13 @@ const Diary: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getRandomPrompt = () => {
+  const getRandomPrompt = (): string => {
     const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
     setCurrentPrompt(randomPrompt);
     return randomPrompt;
   };
 
-  const handleSaveEntry = () => {
+  const handleSaveEntry = (): void => {
     if (currentEntry.trim()) {
       const newEntry: Whisper = {
         id: Date.now().toString(),
@@ -178,7 +178,7 @@ const Diary: React.FC = () => {
         prompt: currentPrompt,
         tags: isSummerPulseActive ? [...summerTags] : []
       };
-      setEntries(prev => [newEntry, ...prev]);
+      setEntries((prev: Whisper[]) => [newEntry, ...prev]);
       setCurrentEntry("");
       setCurrentMood("peaceful");
       setCurrentPrompt("");
@@ -195,8 +195,8 @@ const Diary: React.FC = () => {
   };
 
   const handleReleaseEntry = (entry: Whisper) => {
-    setEntries(prev => prev.map(e => 
-      e.id === entry.id ? { ...e, isPublic: true } : e
+    setEntries((prev: Whisper[]) => prev.map(e => 
+      e.id === entry.id ? { ...e, isPublic: true as const } : e
     ));
   };
 
@@ -214,13 +214,13 @@ const Diary: React.FC = () => {
   };
 
   const getMoodStats = () => {
-    const moodCounts = entries.reduce((acc, entry) => {
+    const moodCounts = entries.reduce((acc: Record<string, number>, entry: Whisper) => {
       acc[entry.emotion] = (acc[entry.emotion] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
     
     return Object.entries(moodCounts)
-      .map(([mood, count]) => ({ mood, count }))
+      .map(([mood, count]) => ({ mood, count: count as number }))
       .sort((a, b) => b.count - a.count);
   };
 
@@ -306,7 +306,7 @@ const Diary: React.FC = () => {
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-neutral-800">
-                        {entries.reduce((sum, e) => sum + e.likes, 0)}
+                        {entries.reduce((sum: number, e: Whisper) => sum + e.likes, 0)}
                       </div>
                       <div className="text-sm text-neutral-600">Hearts Received</div>
                     </div>

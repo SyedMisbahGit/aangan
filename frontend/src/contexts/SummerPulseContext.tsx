@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { SummerPulseContextType, SUMMER_PROMPTS, SUMMER_NARRATOR_LINES, SUMMER_TAGS, SUMMER_LABEL, SUMMER_END_DATE } from './SummerPulseContext.helpers';
+import type { SummerPulseContextType } from './SummerPulseContext.types';
+import { SUMMER_PROMPTS, SUMMER_NARRATOR_LINES, SUMMER_TAGS, SUMMER_LABEL, SUMMER_END_DATE } from './SummerPulseContext.types';
 import { SummerPulseContext } from './SummerPulseContext.context';
 
 function getTimeIndex(): number {

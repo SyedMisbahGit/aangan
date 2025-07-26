@@ -24,11 +24,11 @@ import {
   Globe
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useCUJHotspots } from "@/contexts/CUJHotspotContext";
-import { ShhhLine } from '@/components/ShhhLine';
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { useCUJHotspots } from "../contexts/CUJHotspotContext";
+import { ShhhLine } from "../components/ShhhLine";
 import { cujHotspots } from '../constants/cujHotspots';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectLabel, SelectGroup } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectLabel, SelectGroup } from "../components/ui/select";
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";
 import { useRef } from "react";
@@ -464,11 +464,11 @@ const Constellation: React.FC = () => {
                         </SelectLabel>
                         {inCampus.map(zone => (
                           <SelectItem 
-                            key={zone} 
-                            value={zone}
+                            key={zone.id} 
+                            value={zone.id}
                             className="text-sm hover:bg-accent"
                           >
-                            {zone}
+                            {zone.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -479,11 +479,11 @@ const Constellation: React.FC = () => {
                         </SelectLabel>
                         {outsideCampus.map(zone => (
                           <SelectItem 
-                            key={zone} 
-                            value={zone}
+                            key={zone.id} 
+                            value={zone.id}
                             className="text-sm hover:bg-accent"
                           >
-                            {zone}
+                            {zone.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>

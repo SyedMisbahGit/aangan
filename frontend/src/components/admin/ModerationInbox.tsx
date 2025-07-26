@@ -6,7 +6,7 @@ import { WhisperViewModal } from "./WhisperViewModal";
 import { UserHistoryModal } from "./UserHistoryModal";
 import { Suspense } from "react";
 import { CustomSkeletonCard } from "../ui/skeleton";
-import { useErrorBoundaryLogger } from "../ui/skeleton";
+import { useErrorBoundaryLogger } from "../../hooks/useErrorBoundaryLogger";
 
 interface Report {
   id?: number;

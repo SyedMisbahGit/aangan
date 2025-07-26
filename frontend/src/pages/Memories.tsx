@@ -45,19 +45,19 @@ export default function Memories() {
   }, []);
 
   const summerSoulWhispers = useMemo(() =>
-    whispers.filter(w => w.tags?.includes('#summerSoul25')),
+    whispers.filter((w: { tags?: string[] }) => w.tags?.includes('#summerSoul25')),
     [whispers]
   );
 
   const filtered = useMemo(() =>
-    summerSoulWhispers.filter(w =>
+    summerSoulWhispers.filter((w: { location: string; emotion: string }) =>
       (location ? w.location === location : true) &&
       (emotion ? w.emotion === emotion : true)
     ),
     [summerSoulWhispers, location, emotion]
   );
 
-  const location = useLocation();
+  const routerLocation = useLocation();
 
   return (
     <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the memories feed.">
@@ -70,7 +70,7 @@ export default function Memories() {
           className="max-w-3xl mx-auto mt-8 mb-16"
         >
           <h1 id="page-title" className="sr-only">Memories</h1>
-          {isUserFacingRoute(location.pathname) && (
+          {isUserFacingRoute(routerLocation.pathname) && (
             <DreamHeader title="SummerSoul Memories" subtitle="Whispers from the summer break, now part of our collective story." />
           )}
           <div className="mb-8 p-4 bg-yellow-100/80 border border-yellow-300 rounded-lg text-yellow-900 text-center text-lg italic shadow">
@@ -94,12 +94,13 @@ export default function Memories() {
             <div className="text-yellow-700 text-center italic">No memories found for this filter.</div>
           ) : (
             <div className="space-y-6">
-              {filtered.map((whisper, idx) => (
+              {filtered.map((whisper: { id: string; content: string; emotion: string; location: string; timestamp: string; tags?: string[] }, idx: number) => (
                 <DreamWhisperCard
                   key={whisper.id}
                   whisper={{
                     ...whisper,
-                    replies: whisper.comments,
+                    replies: 0, // Initialize with 0 replies if not provided
+                    likes: whisper.likes || 0, // Initialize with 0 likes if not provided
                     emotion: (allowedEmotions.includes(whisper.emotion) ? whisper.emotion : 'joy') as 'joy' | 'calm' | 'nostalgia' | 'hope' | 'anxiety' | 'loneliness',
                     timestamp: new Date(whisper.timestamp),
                   }}

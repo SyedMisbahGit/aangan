@@ -1,4 +1,4 @@
 import { createContext } from 'react';
-import { AanganThemeContextType } from './DreamThemeContext.helpers';
+import type { AanganThemeContextType } from './DreamThemeContext.types';
 
-export const AanganThemeContext = createContext<AanganThemeContextType | undefined>(undefined); 
+export const AanganThemeContext = createContext<AanganThemeContextType | undefined>(undefined);
