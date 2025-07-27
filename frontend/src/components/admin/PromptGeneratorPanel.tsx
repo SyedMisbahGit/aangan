@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
+import { logger } from "../../utils/logger";
 import { 
   Brain, 
   Lightbulb, 
@@ -215,7 +216,7 @@ const PromptGeneratorPanel: React.FC = () => {
       setCopiedPrompt(prompt);
       setTimeout(() => setCopiedPrompt(null), 2000);
     } catch (err) {
-      console.error('Failed to copy prompt:', err);
+      logger.error('Failed to copy prompt:', err as Error);
     }
   };
 

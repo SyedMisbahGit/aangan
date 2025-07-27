@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ErrorBoundary } from './ErrorBoundary';
+import { ErrorBoundary } from './shared/ErrorBoundary';
+import React from 'react';
 
 // A component that will throw an error
 const ErrorComponent = () => {
@@ -52,7 +53,7 @@ export const WithError: Story = {
 export const WithCustomFallback: Story = {
   args: {
     children: <ErrorComponent />,
-    FallbackComponent: ({ error, resetErrorBoundary }: any) => (
+    FallbackComponent: ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => (
       <div style={{ padding: '1rem', border: '1px solid #ff6b6b', borderRadius: '4px' }}>
         <h3>Custom Error UI</h3>
         <p>Something went wrong:</p>

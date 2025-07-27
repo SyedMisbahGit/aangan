@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Home } from '../../pages/Home';
+import * as whispersApi from '../../api/whispers';
 import { CreateWhisper } from '../../pages/CreateWhisper';
 import { ViewWhisper } from '../../pages/ViewWhisper';
 
@@ -127,8 +128,7 @@ describe('Whisper Flow', () => {
     await userEvent.click(submitButton);
     
     // Check if the createWhisper API was called with the correct data
-    const { createWhisper } = require('../../api/whispers');
-    expect(createWhisper).toHaveBeenCalledWith({
+    expect(whispersApi.createWhisper).toHaveBeenCalledWith({
       content: 'This is a test whisper',
       isAnonymous: true,
     });
@@ -171,8 +171,7 @@ describe('Whisper Flow', () => {
     await userEvent.click(likeButton);
     
     // Check if the like API was called
-    const { likeWhisper } = require('../../api/whispers');
-    expect(likeWhisper).toHaveBeenCalledWith('1');
+    expect(whispersApi.likeWhisper).toHaveBeenCalledWith('1');
     
     // Check if the button text changes to 'Unlike'
     await waitFor(() => {
@@ -196,8 +195,7 @@ describe('Whisper Flow', () => {
     await userEvent.click(submitButton);
     
     // Check if the addComment API was called with the correct data
-    const { addComment } = require('../../api/whispers');
-    expect(addComment).toHaveBeenCalledWith('1', 'This is a test comment');
+    expect(whispersApi.addComment).toHaveBeenCalledWith('1', 'This is a test comment');
     
     // The comment input should be cleared after submission
     await waitFor(() => {

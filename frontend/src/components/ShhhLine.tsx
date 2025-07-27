@@ -1,9 +1,26 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Loader2, Heart, Clock, MapPin } from 'lucide-react';
 import { useShhhNarrator } from '../contexts/use-shhh-narrator';
 import { useCUJHotspots } from '../contexts/use-cuj-hotspots';
+import { logger } from '../utils/logger';
 import fallbackLines from '../data/shhhFallbackLines.json';
+
+// Type definitions for the fallback lines JSON structure
+interface ZoneLines {
+  [key: string]: string[];
+}
+
+interface FallbackLines {
+  zones: {
+    [key: string]: ZoneLines;
+  };
+  times: {
+    [key: string]: string[];
+  };
+  moods: {
+    [key: string]: string[];
+  };
+  universal: string[];
+}
 
 interface ShhhLineProps {
   variant?: 'header' | 'ambient' | 'micro-moment' | 'memory' | 'arc';
@@ -43,11 +60,22 @@ export const ShhhLine: React.FC<ShhhLineProps> = ({
   };
 
   const getLineFromFallback = useCallback(() => {
-    // Get lines based on different categories
-    const zoneLines = fallbackLines.zones[realTimeData.zone]?.[realTimeData.emotion] || [];
-    const timeLines = fallbackLines.times[realTimeData.timeOfDay] || [];
-    const moodLines = fallbackLines.moods[realTimeData.emotion] || [];
-    const universalLines = fallbackLines.universal || [];
+    const typedFallbackLines = fallbackLines as unknown as FallbackLines;
+    
+    // Get lines based on different categories with type safety
+    const zoneLines = (realTimeData.zone && realTimeData.emotion) 
+      ? typedFallbackLines.zones[realTimeData.zone]?.[realTimeData.emotion] || [] 
+      : [];
+      
+    const timeLines = realTimeData.timeOfDay 
+      ? typedFallbackLines.times[realTimeData.timeOfDay] || [] 
+      : [];
+      
+    const moodLines = realTimeData.emotion 
+      ? typedFallbackLines.moods[realTimeData.emotion] || [] 
+      : [];
+      
+    const universalLines = typedFallbackLines.universal || [];
     
     // Combine all relevant line categories
     const allLines = [...zoneLines, ...timeLines, ...moodLines, ...universalLines];
@@ -97,7 +125,7 @@ export const ShhhLine: React.FC<ShhhLineProps> = ({
       
       setCurrentLine(contextualizedLine);
     } catch (error) {
-      console.error('Error generating Shhh line:', error);
+      logger.error('Error generating Shhh line:', error as Error);
       setCurrentLine(getLineFromFallback());
     } finally {
       setIsGenerating(false);
