@@ -1,7 +1,7 @@
 // backend/vector.ts
 // Vector database operations using ChromaDB
 
-import { ChromaClient, Collection, IncludeEnum } from 'chromadb';
+import { ChromaClient, Collection, IncludeEnum, QueryParams } from 'chromadb';
 import { v4 as uuidv4 } from 'uuid';
 import logger from './utils/logger';
 
@@ -10,8 +10,8 @@ export interface EmbeddingResult {
   id: string;
   embedding: number[];
   metadata: Record<string, unknown>;
-  distance?: number;
-  document?: string;
+  distance: number | null;
+  document?: string | null;
 }
 
 interface VectorDBConfig {
@@ -69,9 +69,10 @@ class VectorDB {
       this.isInitialized = true;
       logger.info('Vector database initialized successfully');
       return true;
-    } catch (error) {
-      logger.error('Failed to initialize vector database', { error });
-      throw new Error(`Vector database initialization failed: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error('Failed to initialize vector database', { error: errorMessage });
+      throw new Error(`Vector database initialization failed: ${errorMessage}`);
     }
   }
 
@@ -143,12 +144,15 @@ class VectorDB {
         throw new Error('Collection not initialized');
       }
 
-      const results = await this.collection.query({
+      // Construct the query with proper typing
+      const queryParams: QueryParams = {
         queryEmbeddings: [queryEmbedding],
         nResults: topK,
-        where: filter,
-        include: include as IncludeEnum[]
-      });
+        include: include as IncludeEnum[],
+        where: filter && Object.keys(filter).length > 0 ? { $or: [filter] } : undefined
+      };
+
+      const results = await this.collection.query(queryParams);
 
       return results.ids[0].map((id, index) => ({
         id: id as string,

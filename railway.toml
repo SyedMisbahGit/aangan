@@ -1,0 +1,21 @@
+[build]
+  builder = "nixpacks"
+  buildCommand = "cd backend && npm install && npm run build"
+  startCommand = "cd backend && ./start.sh"
+
+[deploy]
+  startCommand = "cd backend && NODE_ENV=production node dist/app.js"
+  healthcheckPath = "/api/health"
+  healthcheckTimeout = 60
+  restartPolicyType = "on-failure"
+  restartPolicyMaxRetries = 5
+
+[build.environment]
+  NODE_ENV = "production"
+  NODE_VERSION = "18"
+
+[deploy.environment]
+  NODE_ENV = "production"
+  PORT = "3001"
+  DATABASE_URL = "${DATABASE_URL}"
+  JWT_SECRET = "${JWT_SECRET}"

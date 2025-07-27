@@ -1,6 +1,142 @@
-# Aangan Project
+# College Whisper Platform
 
-Aangan is a full-stack, real-time, AI-powered campus platform built with Node.js/Express (backend), React + Vite (frontend), PostgreSQL, and Socket.IO. The platform enables anonymous, emotional expression and connection through whispers, with features like real-time interactions, emotional mapping, and AI-powered responses.
+A full-stack, real-time, AI-powered campus platform built with Node.js/Express (backend), React + Vite (frontend), PostgreSQL, and Socket.IO. The platform enables anonymous, emotional expression and connection through whispers, with features like real-time interactions, emotional mapping, and AI-powered responses.
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ and npm 9+
+- Docker and Docker Compose (for containerized development)
+- PostgreSQL (or use the included Docker configuration)
+
+### Local Development
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/SyedMisbahGit/college-whisper.git
+   cd college-whisper
+   ```
+
+2. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+3. **Start the development environment**
+   ```bash
+   # Using Docker Compose (recommended)
+   docker-compose up
+   
+   # Or manually:
+   cd backend && npm install && npm run dev
+   cd ../frontend && npm install && npm run dev
+   ```
+
+The application will be available at:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3001
+- pgAdmin: http://localhost:5050 (if using Docker Compose)
+
+## 🐳 Docker Deployment
+
+### Production Build
+```bash
+docker build -t college-whisper .
+docker run -p 3001:3001 --env-file .env college-whisper
+```
+
+### Development with Hot-Reloading
+```bash
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+## ☁️ Railway Deployment
+
+1. Push your code to a GitHub repository
+2. Create a new Railway project and connect your repository
+3. Add required environment variables (see `.env.example`)
+4. Railway will automatically deploy using the `railway.toml` configuration
+
+## 📦 Project Structure
+
+```
+college-whisper/
+├── backend/             # Express.js API server
+│   ├── src/
+│   │   ├── routes/     # API routes
+│   │   ├── middleware/ # Express middleware
+│   │   └── app.js      # Express application
+│   └── start.sh        # Production start script
+│
+├── frontend/           # React + Vite application
+│   ├── src/
+│   │   ├── components/ # Reusable components
+│   │   ├── pages/      # Page components
+│   │   └── App.tsx     # Root component
+│   └── vite.config.ts  # Vite configuration
+│
+├── docker/             # Docker-related files
+├── .env.example        # Environment variables template
+├── docker-compose.yml  # Development environment
+└── railway.toml        # Railway deployment config
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+See `.env.example` for all available configuration options. Key variables:
+
+```env
+# Application
+NODE_ENV=development
+PORT=3001
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/college_whisper
+DB_PATH=./whispers.db  # For SQLite in development
+
+# JWT
+JWT_SECRET=your_jwt_secret_here
+JWT_EXPIRES_IN=30d
+
+# CORS
+CORS_ORIGIN=http://localhost:5173
+```
+
+## 🛠 Development
+
+### Backend Commands
+```bash
+# Install dependencies
+cd backend && npm install
+
+# Run development server
+npm run dev
+
+# Run tests
+npm test
+
+# Run migrations
+npx knex migrate:latest
+```
+
+### Frontend Commands
+```bash
+# Install dependencies
+cd frontend && npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## ✨ Recent Updates (v1.9.3)
 

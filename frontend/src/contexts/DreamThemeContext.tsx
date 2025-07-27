@@ -67,6 +67,12 @@ export const AanganThemeProvider: React.FC<AanganThemeProviderProps> = ({ childr
     setThemeState(newTheme);
   };
 
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+
+  const isDarkMode = theme === 'dark';
+
   // Prevent hydration mismatch by not rendering until initialized
   if (!isInitialized) {
     return (
@@ -79,7 +85,13 @@ export const AanganThemeProvider: React.FC<AanganThemeProviderProps> = ({ childr
   }
 
   return (
-    <AanganThemeContext.Provider value={{ theme, setTheme, isInitialized }}>
+    <AanganThemeContext.Provider value={{ 
+      theme, 
+      setTheme, 
+      toggleTheme, 
+      isDarkMode, 
+      isInitialized 
+    }}>
       {children}
     </AanganThemeContext.Provider>
   );

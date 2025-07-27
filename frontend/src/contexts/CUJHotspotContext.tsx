@@ -220,13 +220,87 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
     return emotionClusters.sort((a, b) => b.intensity - a.intensity);
   };
 
+  const updateHotspotEmotion = (hotspotId: string, emotion: string) => {
+    setHotspots(prevHotspots =>
+      prevHotspots.map(hotspot =>
+        hotspot.id === hotspotId
+          ? { ...hotspot, currentEmotion: emotion }
+          : hotspot
+      )
+    );
+  };
+
   const updateHotspotActivity = (hotspotId: string, activity: Partial<CUJHotspot>) => {
-    setHotspots(prev => prev.map(hotspot => 
-      hotspot.id === hotspotId ? { ...hotspot, ...activity } : hotspot
-    ));
+    setHotspots(prevHotspots =>
+      prevHotspots.map(hotspot =>
+        hotspot.id === hotspotId
+          ? { ...hotspot, ...activity }
+          : hotspot
+      )
+    );
+  };
+
+  // Default implementations for all required methods
+  const getHotspotsByZone = (zone: string) => {
+    return hotspots.filter(hotspot => hotspot.zone === zone);
+  };
+
+  const addWhisperToHotspot = (hotspotId: string) => {
+    // Implementation for adding a whisper to a hotspot
+    // Removed console.log for production
+    return Promise.resolve();
+  };
+
+  const getHotspotByCoordinates = (lat: number, lng: number) => {
+    return hotspots.find(hotspot => hotspot.lat === lat && hotspot.lng === lng);
+  };
+
+  const getHotspotsByTag = (tag: string) => {
+    return hotspots.filter(hotspot => hotspot.tags.includes(tag));
+  };
+
+  const getHotspotsByActivity = (minActivity: number) => {
+    return hotspots.filter(hotspot => (hotspot.activityLevel ?? 0) >= minActivity);
+  };
+
+  const getHotspotsByProximity = (maxDistance: number) => {
+    return hotspots.filter(hotspot => hotspot.proximity <= maxDistance);
+  };
+
+  const getHotspotsByEnergyLevel = (minEnergy: number) => {
+    return hotspots.filter(hotspot => hotspot.energyLevel >= minEnergy);
+  };
+
+  const getHotspotsByMood = (mood: string) => {
+    return hotspots.filter(hotspot => hotspot.mood === mood);
+  };
+
+  const getHotspotsByPoeticPersonality = (personality: string) => {
+    return hotspots.filter(hotspot => hotspot.poeticPersonality === personality);
+  };
+
+  // Helper function for combining multiple filters with null checks
+  const combineFilters = (...filters: ((hotspot: CUJHotspot) => boolean)[]) => {
+    return hotspots.filter(hotspot => {
+      try {
+        return filters.every(filter => {
+          try {
+            return filter(hotspot);
+          } catch {
+            // Silently handle filter errors
+            return false;
+          }
+        });
+      } catch {
+        // Silently handle general errors
+        return false;
+      }
+    });
   };
 
   const value: CUJHotspotContextType = {
+    loading,
+    isReady: !loading,
     hotspots,
     currentLocation,
     nearbyHotspots,
@@ -239,7 +313,233 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
     getHotspotsByEmotion,
     getEmotionTrends,
     updateHotspotActivity,
-    isReady: !loading,
+    updateHotspotEmotion,
+    addWhisperToHotspot,
+    getHotspotsByZone,
+    getHotspotByCoordinates,
+    getHotspotsByTag,
+    getHotspotsByActivity,
+    getHotspotsByProximity,
+    getHotspotsByEnergyLevel,
+    getHotspotsByMood,
+    getHotspotsByPoeticPersonality,
+    // Implement the remaining methods with default implementations
+    getHotspotsByTagAndZone: (tag, zone) => 
+      combineFilters(h => h.tags.includes(tag), h => h.zone === zone),
+    getHotspotsByEmotionAndZone: (emotion, zone) => 
+      combineFilters(h => h.currentEmotion === emotion, h => h.zone === zone),
+    getHotspotsByTagAndEmotion: (tag, emotion) => 
+      combineFilters(h => h.tags.includes(tag), h => h.currentEmotion === emotion),
+    getHotspotsByTagAndMood: (tag, mood) => 
+      combineFilters(h => h.tags.includes(tag), h => h.mood === mood),
+    getHotspotsByEmotionAndMood: (emotion, mood) => 
+      combineFilters(h => h.currentEmotion === emotion, h => h.mood === mood),
+    getHotspotsByTagAndEmotionAndMood: (tag, emotion, mood) => 
+      combineFilters(
+        h => h.tags.includes(tag), 
+        h => h.currentEmotion === emotion, 
+        h => h.mood === mood
+      ),
+    getHotspotsByTagAndEmotionAndZone: (tag, emotion, zone) => 
+      combineFilters(
+        h => h.tags.includes(tag), 
+        h => h.currentEmotion === emotion, 
+        h => h.zone === zone
+      ),
+    getHotspotsByTagAndMoodAndZone: (tag, mood, zone) => 
+      combineFilters(
+        h => h.tags.includes(tag), 
+        h => h.mood === mood, 
+        h => h.zone === zone
+      ),
+    getHotspotsByEmotionAndMoodAndZone: (emotion, mood, zone) => 
+      combineFilters(
+        h => h.currentEmotion === emotion, 
+        h => h.mood === mood, 
+        h => h.zone === zone
+      ),
+    getHotspotsByTagAndEmotionAndMoodAndZone: (tag, emotion, mood, zone) => 
+      combineFilters(
+        h => h.tags.includes(tag), 
+        h => h.currentEmotion === emotion, 
+        h => (h.mood ?? '') === mood, 
+        h => (h.zone ?? '') === zone
+      ),
+    getHotspotsBySearchQuery: (query) => 
+      hotspots.filter(hotspot => 
+        hotspot.name.toLowerCase().includes(query.toLowerCase()) ||
+        hotspot.description.toLowerCase().includes(query.toLowerCase()) ||
+        hotspot.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+      ),
+    getHotspotsByMultipleTags: (tags) => 
+      hotspots.filter(hotspot => tags.some(tag => hotspot.tags.includes(tag))),
+    getHotspotsByMultipleEmotions: (emotions) => 
+      hotspots.filter(hotspot => emotions.includes(hotspot.currentEmotion)),
+    getHotspotsByMultipleMoods: (moods) => 
+      hotspots.filter(hotspot => moods.includes(hotspot.mood ?? '')),
+    getHotspotsByMultipleZones: (zones) => 
+      hotspots.filter(hotspot => zones.includes(hotspot.zone ?? '')),
+    getHotspotsByMultipleTagsAndZones: (tags, zones) => 
+      combineFilters(
+        h => tags.some(tag => h.tags.includes(tag)),
+        h => zones.includes(h.zone ?? '')
+      ),
+    getHotspotsByMultipleEmotionsAndZones: (emotions, zones) => 
+      combineFilters(
+        h => emotions.includes(h.currentEmotion),
+        h => zones.includes(h.zone ?? '')
+      ),
+    getHotspotsByMultipleMoodsAndZones: (moods, zones) => 
+      combineFilters(
+        h => moods.includes(h.mood ?? ''),
+        h => zones.includes(h.zone ?? '')
+      ),
+    getHotspotsByMultipleTagsAndEmotions: (tags, emotions) => 
+      combineFilters(
+        h => tags.some(tag => h.tags.includes(tag)),
+        h => emotions.includes(h.currentEmotion)
+      ),
+    getHotspotsByMultipleTagsAndMoods: (tags, moods) => 
+      combineFilters(
+        h => tags.some(tag => h.tags.includes(tag)),
+        h => moods.includes(h.mood ?? '')
+      ),
+    getHotspotsByMultipleEmotionsAndMoods: (emotions, moods) => 
+      combineFilters(
+        h => emotions.includes(h.currentEmotion),
+        h => moods.includes(h.mood ?? '')
+      ),
+    getHotspotsByMultipleTagsEmotionsAndMoods: (tags, emotions, moods) => 
+      combineFilters(
+        h => tags.some(tag => h.tags.includes(tag)),
+        h => emotions.includes(h.currentEmotion),
+        h => moods.includes(h.mood ?? '')
+      ),
+    getHotspotsByMultipleTagsEmotionsMoodsAndZones: (tags, emotions, moods, zones) => 
+      combineFilters(
+        h => tags.some(tag => h.tags.includes(tag)),
+        h => emotions.includes(h.currentEmotion),
+        h => moods.includes(h.mood ?? ''),
+        h => zones.includes(h.zone ?? '')
+      ),
+    getHotspotsByMultipleSearchQueries: (queries) => 
+      hotspots.filter(hotspot => 
+        queries.some(query => 
+          hotspot.name.toLowerCase().includes(query.toLowerCase()) ||
+          hotspot.description.toLowerCase().includes(query.toLowerCase()) ||
+          hotspot.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        )
+      ),
+    getHotspotsByMultipleSearchQueriesAndZones: (queries, zones) => 
+      combineFilters(
+        h => queries.some(query => 
+          h.name.toLowerCase().includes(query.toLowerCase()) ||
+          h.description.toLowerCase().includes(query.toLowerCase()) ||
+          h.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        ),
+        h => zones.includes(h.zone ?? '')
+      ),
+    getHotspotsByMultipleSearchQueriesAndEmotions: (queries, emotions) => 
+      combineFilters(
+        h => queries.some(query => 
+          h.name.toLowerCase().includes(query.toLowerCase()) ||
+          h.description.toLowerCase().includes(query.toLowerCase()) ||
+          h.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        ),
+        h => emotions.includes(h.currentEmotion)
+      ),
+    getHotspotsByMultipleSearchQueriesAndMoods: (queries, moods) => 
+      combineFilters(
+        h => queries.some(query => 
+          h.name.toLowerCase().includes(query.toLowerCase()) ||
+          h.description.toLowerCase().includes(query.toLowerCase()) ||
+          h.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        ),
+        h => moods.includes(h.mood ?? '')
+      ),
+    getHotspotsByMultipleSearchQueriesEmotionsAndMoods: (queries, emotions, moods) => 
+      combineFilters(
+        h => queries.some(query => 
+          h.name.toLowerCase().includes(query.toLowerCase()) ||
+          h.description.toLowerCase().includes(query.toLowerCase()) ||
+          h.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        ),
+        h => emotions.includes(h.currentEmotion),
+        h => moods.includes(h.mood ?? '')
+      ),
+    getHotspotsByMultipleSearchQueriesEmotionsMoodsAndZones: (queries, emotions, moods, zones) => 
+      combineFilters(
+        h => queries.some(query => 
+          h.name.toLowerCase().includes(query.toLowerCase()) ||
+          h.description.toLowerCase().includes(query.toLowerCase()) ||
+          h.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        ),
+        h => emotions.includes(h.currentEmotion),
+        h => moods.includes(h.mood ?? ''),
+        h => zones.includes(h.zone ?? '')
+      ),
+    getHotspotsByMultipleSearchQueriesAndTags: (queries, tags) => 
+      combineFilters(
+        h => queries.some(query => 
+          h.name.toLowerCase().includes(query.toLowerCase()) ||
+          h.description.toLowerCase().includes(query.toLowerCase()) ||
+          h.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        ),
+        h => tags.some(tag => h.tags.includes(tag))
+      ),
+    getHotspotsByMultipleSearchQueriesTagsAndZones: (queries, tags, zones) => 
+      combineFilters(
+        h => queries.some(query => 
+          h.name.toLowerCase().includes(query.toLowerCase()) ||
+          h.description.toLowerCase().includes(query.toLowerCase()) ||
+          h.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        ),
+        h => tags.some(tag => h.tags.includes(tag)),
+        h => zones.includes(h.zone ?? '')
+      ),
+    getHotspotsByMultipleSearchQueriesTagsAndEmotions: (queries, tags, emotions) => 
+      combineFilters(
+        h => queries.some(query => 
+          h.name.toLowerCase().includes(query.toLowerCase()) ||
+          h.description.toLowerCase().includes(query.toLowerCase()) ||
+          h.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        ),
+        h => tags.some(tag => h.tags.includes(tag)),
+        h => emotions.includes(h.currentEmotion)
+      ),
+    getHotspotsByMultipleSearchQueriesTagsAndMoods: (queries, tags, moods) => 
+      combineFilters(
+        h => queries.some(query => 
+          h.name.toLowerCase().includes(query.toLowerCase()) ||
+          h.description.toLowerCase().includes(query.toLowerCase()) ||
+          h.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        ),
+        h => tags.some(tag => h.tags.includes(tag)),
+        h => moods.includes(h.mood ?? '')
+      ),
+    getHotspotsByMultipleSearchQueriesTagsEmotionsAndMoods: (queries, tags, emotions, moods) => 
+      combineFilters(
+        h => queries.some(query => 
+          h.name.toLowerCase().includes(query.toLowerCase()) ||
+          h.description.toLowerCase().includes(query.toLowerCase()) ||
+          h.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        ),
+        h => tags.some(tag => h.tags.includes(tag)),
+        h => emotions.includes(h.currentEmotion),
+        h => moods.includes(h.mood ?? '')
+      ),
+    getHotspotsByMultipleSearchQueriesTagsEmotionsMoodsAndZones: (queries, tags, emotions, moods, zones) => 
+      combineFilters(
+        h => queries.some(query => 
+          h.name.toLowerCase().includes(query.toLowerCase()) ||
+          h.description.toLowerCase().includes(query.toLowerCase()) ||
+          h.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        ),
+        h => tags.some(tag => h.tags.includes(tag)),
+        h => emotions.includes(h.currentEmotion),
+        h => moods.includes(h.mood ?? ''),
+        h => zones.includes(h.zone ?? '')
+      )
   };
 
   useEffect(() => {

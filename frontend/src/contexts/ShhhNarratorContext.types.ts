@@ -52,6 +52,8 @@ export interface PoeticLine {
     emotionalState?: string;
     previousLine?: string;
     nextLine?: string;
+    memory?: boolean;
+    arc?: boolean;
   };
   metadata: {
     length: number;
@@ -59,6 +61,8 @@ export interface PoeticLine {
     emotionalTone: string;
     keywords: string[];
   };
+  timestamp?: string;
+  variant?: string;
 }
 
 export interface ShhhNarratorContextType {

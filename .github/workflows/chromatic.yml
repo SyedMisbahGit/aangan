@@ -1,0 +1,82 @@
+name: 'Chromatic Visual Testing'
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  # Allow manual triggering of the workflow
+  workflow_dispatch:
+
+# Cancel in-progress runs for pull requests when developers push additional changes
+concurrency:
+  group: chromatic-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromatic-deployment:
+    name: Chromatic Visual Testing
+    # Only run on Ubuntu (runs faster than Windows)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Required to retrieve git history for Chromatic
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: frontend
+
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        # Chromatic GitHub Action options: https://www.chromatic.com/docs/github-actions
+        with:
+          # Chromatic project token
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          # The working directory of your project (where your package.json is located)
+          workingDir: frontend
+          # Chromatic will automatically determine the correct storybook build script
+          buildScriptName: build-storybook
+          # The port number on which to start the local dev server
+          storybookPort: 6006
+          # Only run visual tests on components that changed compared to the target branch
+          onlyChanged: true
+          # Automatically accept all changes when running on the main branch
+          autoAcceptChanges: ${{ github.ref == 'refs/heads/main' }}
+          # The exit code to use when there are visual changes to review
+          exitOnceUploaded: false
+          # Don't fail the build if there are visual changes to review
+          exitZeroOnChanges: true
+          # Custom title for the run
+          title: 'Visual Tests - ${{ github.event.pull_request.title || github.sha }}'
+          # Enable TurboSnap for faster builds
+          enableTurboSnap: true
+          # Don't run tests on stories that haven't changed
+          traceChanged: true
+
+      - name: Upload Storybook as artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: storybook-static
+          path: frontend/storybook-static
+          retention-days: 7
+
+      - name: Upload test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: frontend/test-results
+          retention-days: 7

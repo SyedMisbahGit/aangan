@@ -2,6 +2,7 @@ import { CUJHotspot, EmotionCluster } from './CUJHotspotContext.helpers';
 
 export interface CUJHotspotContextType {
   loading: boolean;
+  isReady: boolean;
   hotspots: CUJHotspot[];
   emotionClusters: EmotionCluster[];
   nearbyHotspots: CUJHotspot[];
@@ -48,6 +49,7 @@ export interface CUJHotspotContextType {
   getHotspotsByMultipleTagsEmotionsMoodsAndZones: (tags: string[], emotions: string[], moods: string[], zones: string[]) => CUJHotspot[];
   getHotspotsByMultipleSearchQueries: (queries: string[]) => CUJHotspot[];
   getHotspotsByMultipleSearchQueriesAndZones: (queries: string[], zones: string[]) => CUJHotspot[];
+  updateHotspotActivity: (hotspotId: string, activity: Partial<CUJHotspot>) => void;
   getHotspotsByMultipleSearchQueriesAndEmotions: (queries: string[], emotions: string[]) => CUJHotspot[];
   getHotspotsByMultipleSearchQueriesAndMoods: (queries: string[], moods: string[]) => CUJHotspot[];
   getHotspotsByMultipleSearchQueriesEmotionsAndMoods: (queries: string[], emotions: string[], moods: string[]) => CUJHotspot[];

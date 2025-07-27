@@ -18,6 +18,13 @@ export interface CUJHotspot {
   poeticPersonality?: string;
   oneLiner?: string;
   backgroundTexture?: string;
+  
+  // Additional properties for type safety
+  mood?: string;
+  zone?: string;
+  lat?: number;
+  lng?: number;
+  activityLevel?: number;
 }
 
 export interface EmotionCluster {
