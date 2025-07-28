@@ -1,6 +1,6 @@
 import { screen, fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../../__tests__/test-utils';
-import { DreamHeader } from '../DreamHeader';
+import { DreamHeader } from '../shared/DreamHeader';
 
 // Mock the useAuth hook
 jest.mock('../../hooks/useAuth', () => ({
@@ -37,7 +37,8 @@ describe('DreamHeader', () => {
   });
 
   it('calls signOut when Sign Out is clicked', () => {
-    const { signOut } = require('../../hooks/useAuth').useAuth();
+    const { useAuth } = jest.requireMock('../../hooks/useAuth');
+    const { signOut } = useAuth();
     renderWithProviders(<DreamHeader />);
     
     // Open user menu

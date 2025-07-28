@@ -7,10 +7,19 @@ const NotFound = () => {
   const mainRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname,
-    );
+    // Log 404 errors in development or if an error tracking service is available
+    if (process.env.NODE_ENV === 'development') {
+      // Only log in development
+      // eslint-disable-next-line no-console
+      console.error(
+        "404 Error: User attempted to access non-existent route:",
+        location.pathname,
+      );
+    }
+    
+    // In production, you might want to send this to an error tracking service
+    // e.g., Sentry.captureMessage(`404: ${location.pathname}`);
+    
     if (mainRef.current) {
       mainRef.current.focus();
     }

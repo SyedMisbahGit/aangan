@@ -7,16 +7,24 @@ const ErrorComponent = () => {
   throw new Error('Test error');
 };
 
+// Define proper type for fallback component props
+interface FallbackProps {
+  error: Error;
+  resetErrorBoundary: () => void;
+}
+
 describe('ErrorBoundary', () => {
   // Mock console.error to avoid error logs in test output
   const originalConsoleError = console.error;
   
   beforeAll(() => {
-    console.error = jest.fn();
+    // Mock console.error but don't show the error in test output
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
   
   afterAll(() => {
-    console.error = originalConsoleError;
+    // Restore original console.error
+    (console.error as jest.Mock).mockRestore();
   });
   
   it('renders children when there is no error', () => {
@@ -56,8 +64,8 @@ describe('ErrorBoundary', () => {
     expect(onReset).toHaveBeenCalledTimes(1);
   });
   
-  it('displays custom fallback UI when provided', () => {
-    const CustomFallback = ({ error, resetErrorBoundary }: any) => (
+  it('renders custom fallback component when provided', () => {
+    const CustomFallback = ({ error, resetErrorBoundary }: FallbackProps) => (
       <div>
         <h2>Custom Error</h2>
         <p>{error.message}</p>

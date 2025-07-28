@@ -77,7 +77,13 @@ export const WhisperReactions: React.FC<WhisperReactionsProps> = ({
         guestId
       });
     } catch (error) {
-      console.error('Error reacting to whisper:', error);
+      // Log error to error reporting service in production
+      if (process.env.NODE_ENV !== 'production') {
+        // Only log in development
+        // eslint-disable-next-line no-console
+        console.error('Error reacting to whisper:', error);
+      }
+      // Optionally show a user-friendly error message here
     }
   };
 

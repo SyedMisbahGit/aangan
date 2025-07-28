@@ -18,10 +18,12 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock IntersectionObserver
 (globalThis as { IntersectionObserver?: typeof IntersectionObserver }).IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
-  unobserve() {}
+  // Empty constructor is intentional for test mocks
+  constructor() { /* noop */ }
+  // Empty methods are intentional for test mocks
+  disconnect() { /* noop */ }
+  observe() { /* noop */ }
+  unobserve() { /* noop */ }
   root: Element | null = null;
   rootMargin: string = '';
   thresholds: ReadonlyArray<number> = [];
@@ -30,8 +32,10 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock ResizeObserver
 (globalThis as { ResizeObserver?: typeof ResizeObserver }).ResizeObserver = class ResizeObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
-  unobserve() {}
+  // Empty constructor is intentional for test mocks
+  constructor() { /* noop */ }
+  // Empty methods are intentional for test mocks
+  disconnect() { /* noop */ }
+  observe() { /* noop */ }
+  unobserve() { /* noop */ }
 }; 

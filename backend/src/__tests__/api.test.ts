@@ -2,8 +2,33 @@ import request from 'supertest';
 import { app } from '../app';
 import { db } from '../db';
 
+interface Whisper {
+  id: number;
+  content: string;
+  emotion?: string;
+  zone?: string;
+  is_ai_generated: boolean;
+  expires_at?: string;
+  created_at: string;
+  guest_id?: string;
+  emotional_tone?: string;
+  whisper_type?: string;
+  soft_title?: string;
+  ai_reply_status?: string;
+  user_id?: number;
+}
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  password_hash: string;
+  created_at: string;
+  updated_at: string;
+}
+
 describe('API Endpoints', () => {
-  let testUser: any;
+  let testUser: User;
   let authToken: string;
 
   beforeAll(async () => {
@@ -68,7 +93,7 @@ describe('API Endpoints', () => {
   });
 
   describe('Whispers API', () => {
-    let testWhisper: any;
+    let testWhisper: Whisper;
 
     beforeEach(async () => {
       // Create a test whisper before each test

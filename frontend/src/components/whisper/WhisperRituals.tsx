@@ -97,6 +97,13 @@ export const WhisperRituals: React.FC<WhisperRitualsProps> = ({
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + duration);
     } catch (error) {
+      // Silently fail for audio playback errors as they're not critical
+      // and don't affect the core functionality
+      if (process.env.NODE_ENV === 'development') {
+        // Only log in development
+        // eslint-disable-next-line no-console
+        console.debug('Audio playback error:', error);
+      }
     }
   }, [isMuted]);
 

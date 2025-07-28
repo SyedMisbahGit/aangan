@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.9.4 (2025-07-29) - TypeScript & ESLint Overhaul
+
+### TypeScript Enhancements
+
+- Replaced all `any` types with proper TypeScript interfaces
+- Fixed prop type mismatches in React components
+- Added comprehensive type definitions for all components
+- Improved type safety across the codebase
+
+### ESLint Configuration
+
+- Migrated from `.eslintignore` to `eslint.config.js`
+- Configured strict TypeScript rules
+- Added rules for consistent code style
+- Resolved all ESLint warnings and errors
+
+### Code Quality
+
+- Removed unused imports and variables
+- Fixed duplicate identifiers
+- Improved error handling with proper types
+- Added proper null/undefined checks
+
 ## v1.9.3 (2025-07-26) - Type Safety & Error Handling
 - **TypeScript & Error Handling**
   - Added centralized error handling with `errorUtils.ts`

@@ -1,7 +1,6 @@
-import React, { useContext, useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, AuthContextType, AuthProviderProps } from './AuthContext.types';
 import { AuthContext } from './AuthContext.helpers';
-// import { useAuth } from "./use-auth";
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -16,7 +15,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const signInWithMagicLink = async (email: string): Promise<{ error: string | null }> => {
+  const signInWithMagicLink = async (_email: string): Promise<{ error: string | null }> => {
+    // The _email parameter is intentionally unused in this mock implementation
+    // In a real implementation, this would be used to send a magic link
     try {
       // For now, just simulate the magic link process
       // In a real implementation, you'd call your Railway backend
@@ -52,9 +53,3 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => {
-  const ctx = React.useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
-  return ctx;
-}; 

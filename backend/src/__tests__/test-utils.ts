@@ -1,6 +1,20 @@
 import { db } from '../db';
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
+import { Express } from 'express';
+import request from 'supertest';
+
+interface WhisperData {
+  id?: string;
+  content?: string;
+  is_anonymous?: boolean;
+  emotion?: string;
+  zone?: string;
+  emotional_tone?: string;
+  whisper_type?: string;
+  soft_title?: string;
+  ai_reply_status?: string;
+}
 
 export interface TestUser {
   id: string;
@@ -31,7 +45,7 @@ export const createTestUser = async (userData?: Partial<TestUser>): Promise<Test
   };
 };
 
-export const createTestWhisper = async (userId: string, whisperData?: any) => {
+export const createTestWhisper = async (userId: string, whisperData?: WhisperData) => {
   const [whisper] = await db('whispers')
     .insert({
       id: whisperData?.id || uuidv4(),
@@ -50,7 +64,7 @@ export const cleanupTestData = async () => {
   await db('users').where('email', 'like', 'test%@example.com').del();
 };
 
-export const loginTestUser = async (app: any, email: string, password: string) => {
+export const loginTestUser = async (app: Express, email: string, password: string) => {
   const response = await request(app)
     .post('/api/auth/login')
     .send({ email, password });

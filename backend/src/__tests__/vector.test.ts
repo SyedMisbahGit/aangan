@@ -23,7 +23,7 @@ describe('Vector Database', () => {
     try {
       await vectorDB.initialize();
     } catch (error) {
-      console.error('Failed to initialize vector database for tests:', error);
+      logger.error('Failed to initialize vector database for tests', { error });
       throw error;
     }
   });
@@ -34,7 +34,7 @@ describe('Vector Database', () => {
       if (testId1) await vectorDB.deleteEmbedding(testId1).catch(() => {});
       if (testId2) await vectorDB.deleteEmbedding(testId2).catch(() => {});
     } catch (error) {
-      console.error('Error during test cleanup:', error);
+      logger.error('Error during test cleanup', { error });
     }
   });
 
