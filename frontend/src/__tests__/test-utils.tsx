@@ -44,8 +44,41 @@ export const renderWithProviders = (
   };
 };
 
-// Re-export everything from testing-library/react
-export * from '@testing-library/react';
+// Export values
+import {
+  render as baseRender,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+  act,
+  cleanup,
+  renderHook,
+  screen as testScreen,
+  waitForElementToBeRemoved
+} from '@testing-library/react';
+
+// Export types
+import type {
+  RenderResult,
+  RenderOptions
+} from '@testing-library/react';
+
+export {
+  baseRender,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+  act,
+  cleanup,
+  renderHook,
+  testScreen,
+  waitForElementToBeRemoved,
+  // Export types as type-only
+  type RenderResult,
+  type RenderOptions
+};
 
 // Named export for renderWithProviders
 export { renderWithProviders as render };

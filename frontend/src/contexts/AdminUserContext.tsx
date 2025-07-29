@@ -1,14 +1,5 @@
-import { createContext, useState, type ReactNode, type FC, useContext } from 'react';
-
-export interface AdminUser {
-  username: string;
-  role: string;
-}
-
-export interface AdminUserContextType {
-  user: AdminUser | null;
-  setUser: (user: AdminUser | null) => void;
-}
+import { createContext, useState, type ReactNode, type FC } from 'react';
+import type { AdminUser, AdminUserContextType } from './types/adminUser.types';
 
 export const AdminUserContext = createContext<AdminUserContextType | null>(null);
 
@@ -31,12 +22,4 @@ export const AdminUserProvider: FC<AdminUserProviderProps> = ({ children }) => {
   );
 };
 
-export const useAdminUser = (): AdminUserContextType => {
-  const context = useContext(AdminUserContext);
-  if (!context) {
-    throw new Error('useAdminUser must be used within an AdminUserProvider');
-  }
-  return context;
-};
-
-export default AdminUserContext;
+export { AdminUserContext as default };
