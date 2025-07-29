@@ -1,8 +1,7 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { CUJHotspot, EmotionCluster } from './CUJHotspotContext.helpers';
 import { CUJHotspotContext } from './CUJHotspotContext.context';
 import { CUJHotspotContextType, CUJHotspotProviderProps } from './CUJHotspotContext.types';
-import { cujHotspots } from '../constants/cujHotspots';
 import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
 
 export const CUJHotspotLoadingFallback = () => (
@@ -124,7 +123,7 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
   const [selectedHotspot, setSelectedHotspot] = useState<CUJHotspot | null>(null);
   const [systemTime, setSystemTime] = useState<string>(new Date().toISOString());
   const [campusActivity, setCampusActivity] = useState<number>(50); // Default to 50% activity
-  const [emotionClusters, setEmotionClusters] = useState<EmotionCluster[]>([
+  const [emotionClusters] = useState<EmotionCluster[]>([
     {
       emotion: 'nostalgia',
       intensity: 0.8,
@@ -230,73 +229,93 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
     );
   };
 
-  const updateHotspotActivity = (hotspotId: string, activity: Partial<CUJHotspot>) => {
-    setHotspots(prevHotspots =>
-      prevHotspots.map(hotspot =>
+  const updateHotspotActivity = useCallback((hotspotId: string, activity: Partial<CUJHotspot>): void => {
+    setHotspots(prev => 
+      prev.map(hotspot => 
         hotspot.id === hotspotId
           ? { ...hotspot, ...activity }
           : hotspot
       )
     );
-  };
+  }, []);
 
   // Default implementations for all required methods
-  const getHotspotsByZone = (zone: string) => {
+  const getHotspotsByZone = useCallback((zone: string): CUJHotspot[] => {
     return hotspots.filter(hotspot => hotspot.zone === zone);
-  };
+  }, [hotspots]);
 
-  const addWhisperToHotspot = (hotspotId: string) => {
-    // Implementation for adding a whisper to a hotspot
-    // Removed console.log for production
+  const addWhisperToHotspot = useCallback((hotspotId: string): Promise<void> => {
+    setHotspots(prevHotspots => 
+      prevHotspots.map(hotspot => 
+        hotspot.id === hotspotId
+          ? { 
+              ...hotspot, 
+              whisperCount: (hotspot.whisperCount || 0) + 1,
+              lastActivity: new Date().toISOString()
+            }
+          : hotspot
+      )
+    );
     return Promise.resolve();
-  };
+  }, []);
 
-  const getHotspotByCoordinates = (lat: number, lng: number) => {
+  const getHotspotByCoordinates = useCallback((lat: number, lng: number): CUJHotspot | undefined => {
     return hotspots.find(hotspot => hotspot.lat === lat && hotspot.lng === lng);
-  };
+  }, [hotspots]);
 
-  const getHotspotsByTag = (tag: string) => {
+  const getHotspotsByTag = useCallback((tag: string): CUJHotspot[] => {
     return hotspots.filter(hotspot => hotspot.tags.includes(tag));
-  };
+  }, [hotspots]);
 
-  const getHotspotsByActivity = (minActivity: number) => {
-    return hotspots.filter(hotspot => (hotspot.activityLevel ?? 0) >= minActivity);
-  };
+  const getHotspotsByActivity = useCallback((minActivity: number): CUJHotspot[] => {
+    return hotspots.filter(hotspot => hotspot.whisperCount >= minActivity);
+  }, [hotspots]);
 
-  const getHotspotsByProximity = (maxDistance: number) => {
-    return hotspots.filter(hotspot => hotspot.proximity <= maxDistance);
-  };
-
-  const getHotspotsByEnergyLevel = (minEnergy: number) => {
-    return hotspots.filter(hotspot => hotspot.energyLevel >= minEnergy);
-  };
-
-  const getHotspotsByMood = (mood: string) => {
-    return hotspots.filter(hotspot => hotspot.mood === mood);
-  };
-
-  const getHotspotsByPoeticPersonality = (personality: string) => {
-    return hotspots.filter(hotspot => hotspot.poeticPersonality === personality);
-  };
-
-  // Helper function for combining multiple filters with null checks
-  const combineFilters = (...filters: ((hotspot: CUJHotspot) => boolean)[]) => {
+  const getHotspotsByProximity = useCallback((maxDistance: number): CUJHotspot[] => {
+    if (!currentLocation) return [];
+    
     return hotspots.filter(hotspot => {
-      try {
-        return filters.every(filter => {
-          try {
-            return filter(hotspot);
-          } catch {
-            // Silently handle filter errors
-            return false;
-          }
-        });
-      } catch {
-        // Silently handle general errors
-        return false;
-      }
+      if (!hotspot.lat || !hotspot.lng) return false;
+      
+      const distance = Math.sqrt(
+        Math.pow(hotspot.lat - currentLocation.lat, 2) +
+        Math.pow(hotspot.lng - currentLocation.lng, 2)
+      ) * 111; // Convert to kilometers
+      
+      return distance <= maxDistance;
     });
-  };
+  }, [currentLocation, hotspots]);
+
+  const getHotspotsByEnergyLevel = useCallback((minEnergy: number): CUJHotspot[] => {
+    return hotspots.filter(hotspot => hotspot.energyLevel >= minEnergy);
+  }, [hotspots]);
+
+  const getHotspotsByMood = useCallback((mood: string): CUJHotspot[] => {
+    return hotspots.filter(hotspot => hotspot.mood === mood);
+  }, [hotspots]);
+
+  const getHotspotsByPoeticPersonality = useCallback((personality: string): CUJHotspot[] => {
+    return hotspots.filter(hotspot => hotspot.poeticPersonality === personality);
+  }, [hotspots]);
+
+  // Helper function for combining multiple filters and applying them to hotspots
+  const combineFilters = useCallback((...filters: ((hotspot: CUJHotspot) => boolean)[]): CUJHotspot[] => {
+    try {
+      return hotspots.filter(hotspot => {
+        try {
+          return filters.every(filter => filter(hotspot));
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error('Error in filter function:', e);
+          return false;
+        }
+      });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Error in combineFilters:', e);
+      return [];
+    }
+  }, [hotspots]);
 
   const value: CUJHotspotContextType = {
     loading,

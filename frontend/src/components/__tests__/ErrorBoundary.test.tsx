@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { Button } from '../ui/button';
 
 // A component that throws an error
 const ErrorComponent = () => {
@@ -14,17 +13,25 @@ interface FallbackProps {
 }
 
 describe('ErrorBoundary', () => {
-  // Mock console.error to avoid error logs in test output
-  const originalConsoleError = console.error;
+  // Mock console methods in beforeAll/afterAll
   
   beforeAll(() => {
-    // Mock console.error but don't show the error in test output
+    // Mock console methods to avoid test output pollution
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     jest.spyOn(console, 'error').mockImplementation(() => {});
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
+  
+  afterEach(() => {
+    // Clear all mocks after each test
+    jest.clearAllMocks();
   });
   
   afterAll(() => {
-    // Restore original console.error
+    // Restore original console methods
     (console.error as jest.Mock).mockRestore();
+    (console.log as jest.Mock).mockRestore();
   });
   
   it('renders children when there is no error', () => {

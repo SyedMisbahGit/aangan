@@ -23,22 +23,28 @@ const safeConsole = (method: ConsoleMethod, ...args: unknown[]): void => {
   }
 
   try {
-    // Check if console is available and has the method
-    if (typeof console !== 'undefined' && typeof console[method] === 'function') {
-      // Use Function.prototype.apply to call the console method
-      // This avoids direct console method references that would trigger the no-console rule
-      const consoleMethod = console[method] as (...args: unknown[]) => void;
+    // In a real app, you would send logs to a logging service here
+    // For example: sendToLoggingService(method, ...args);
+    
+    // For local development, we'll use the console but disable the ESLint rule temporarily
+    // This is the only place where we'll disable the no-console rule
+    // eslint-disable-next-line no-console
+    const consoleMethod = console[method] as (...args: unknown[]) => void;
+    
+    if (process.env.NODE_ENV === 'development') {
+      const timestamp = new Date().toISOString();
+      const message = args.length > 0 
+        ? `[${timestamp}] [${method.toUpperCase()}] ${String(args[0])}`
+        : `[${timestamp}] [${method.toUpperCase()}]`;
       
-      // Format the message with timestamp in development for better debugging
-      if (process.env.NODE_ENV === 'development') {
-        const timestamp = new Date().toISOString();
-        consoleMethod(`[${timestamp}] [${method.toUpperCase()}]`, ...args);
-      } else {
-        consoleMethod(...args);
-      }
+      const logArgs = [message, ...args.slice(1)];
+      consoleMethod(...logArgs);
+    } else if (method === 'error' || method === 'warn') {
+      // In production, only log errors and warnings
+      consoleMethod(...args);
     }
   } catch (e) {
-    // If console method fails, there's nothing we can do
+    // If logging fails, there's nothing we can do
   }
 };
 

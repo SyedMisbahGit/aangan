@@ -1,19 +1,12 @@
-import React, { useEffect, useState, createContext, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminSidebar } from "./AdminSidebar";
 import axios from "axios";
 import { ModerationInbox } from "./ModerationInbox";
+import { AdminUserProvider, useAdminUser } from "../../contexts/AdminUserContext";
 
-interface AdminUser {
-  username: string;
-  role: string;
-}
-
-const AdminUserContext = createContext<AdminUser | null>(null);
-export const useAdminUser = () => useContext(AdminUserContext);
-
-export const AdminShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AdminUser | null>(null);
+const AdminContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, setUser } = useAdminUser();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -37,8 +30,8 @@ export const AdminShell: React.FC<{ children: React.ReactNode }> = ({ children }
         navigate("/admin-login", { replace: true });
       })
       .finally(() => setLoading(false));
-    // eslint-disable-next-line
-  }, []);
+     
+  }, [navigate, setUser]);
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center text-aangan-primary text-xl">Loading admin...</div>;
@@ -46,23 +39,31 @@ export const AdminShell: React.FC<{ children: React.ReactNode }> = ({ children }
   if (!user) return null;
 
   return (
-    <AdminUserContext.Provider value={user}>
-      <div className="flex h-screen bg-cream-50">
-        <AdminSidebar />
-        <main className="flex-1 flex flex-col">
-          <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
-            <div className="font-semibold text-lg text-aangan-primary">Aangan Admin Dashboard</div>
-            <div className="flex items-center gap-8">
-              <ModerationInbox />
-              <div className="flex items-center gap-4">
-                <span className="text-gray-700 font-medium">{user.username}</span>
-                <span className="text-xs bg-aangan-primary text-white rounded px-2 py-1">{user.role}</span>
-              </div>
+    <div className="flex h-screen bg-cream-50">
+      <AdminSidebar />
+      <main className="flex-1 flex flex-col">
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
+          <div className="font-semibold text-lg text-aangan-primary">Aangan Admin Dashboard</div>
+          <div className="flex items-center gap-8">
+            <ModerationInbox />
+            <div className="flex items-center gap-4">
+              <span className="text-gray-700 font-medium">{user.username}</span>
+              <span className="text-xs bg-aangan-primary text-white rounded px-2 py-1">{user.role}</span>
             </div>
-          </header>
-          <div className="flex-1 overflow-y-auto p-8">{children}</div>
-        </main>
-      </div>
-    </AdminUserContext.Provider>
+          </div>
+        </header>
+        <div className="flex-1 overflow-y-auto p-8">{children}</div>
+      </main>
+    </div>
   );
-}; 
+};
+
+const AdminShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <AdminUserProvider>
+      <AdminContent>{children}</AdminContent>
+    </AdminUserProvider>
+  );
+};
+
+export default AdminShell;

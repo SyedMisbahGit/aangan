@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import type { Theme, AanganThemeContextType, AanganThemeProviderProps } from './DreamThemeContext.types';
+import { useEffect, useState } from 'react';
+import type { Theme, AanganThemeProviderProps } from './DreamThemeContext.types';
 import { AanganThemeContext } from './DreamThemeContext.context';
 import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
 
@@ -99,9 +99,3 @@ export const AanganThemeProvider: React.FC<AanganThemeProviderProps> = ({ childr
 
 // Legacy export for backward compatibility
 export const DreamThemeProvider = AanganThemeProvider;
-
-export const useAanganTheme = () => {
-  const ctx = React.useContext(AanganThemeContext);
-  if (!ctx) throw new Error('useAanganTheme must be used within an AanganThemeProvider');
-  return ctx;
-}; 

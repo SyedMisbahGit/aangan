@@ -14,7 +14,7 @@ const createTestQueryClient = () =>
     defaultOptions: {
       queries: {
         retry: false,
-        cacheTime: Infinity,
+        gcTime: Infinity, // Changed from cacheTime to gcTime in @tanstack/query v4+
       },
     },
   });
@@ -44,5 +44,8 @@ export const renderWithProviders = (
   };
 };
 
+// Re-export everything from testing-library/react
 export * from '@testing-library/react';
+
+// Named export for renderWithProviders
 export { renderWithProviders as render };

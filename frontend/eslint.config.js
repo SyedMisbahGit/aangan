@@ -26,7 +26,11 @@ export default [
       '**/*.d.ts',
       '**/*.generated.*',
       'coverage/**',
-      '**/*.css'
+      '**/*.css',
+      // Additional patterns from .eslintignore
+      '*.d.ts',
+      '*.generated.*',
+      '*.css'
     ]
   },
   {

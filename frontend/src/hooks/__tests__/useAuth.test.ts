@@ -1,149 +1,123 @@
-import React from 'react';
-import { renderHook, act } from '@testing-library/react-hooks';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderHook, act } from '@testing-library/react';
+import React, { ReactNode } from 'react';
 import { useAuth } from '../useAuth';
 
-// Mock the API functions
-jest.mock('../../api/auth', () => ({
-  login: jest.fn().mockResolvedValue({
-    user: { id: '1', username: 'testuser', email: 'test@example.com' },
-    token: 'test-token',
-  }),
-  register: jest.fn().mockResolvedValue({
-    user: { id: '1', username: 'testuser', email: 'test@example.com' },
-    token: 'test-token',
-  }),
-  logout: jest.fn().mockResolvedValue({}),
-  getCurrentUser: jest.fn().mockResolvedValue({
-    id: '1',
-    username: 'testuser',
-    email: 'test@example.com',
-  }),
+// Create mock functions
+const mockSignInWithMagicLink = jest.fn();
+const mockSignOut = jest.fn();
+const mockSetOnboardingComplete = jest.fn();
+
+// Create a simple mock context value
+const mockAuthContext = {
+  user: null,
+  loading: false,
+  signInWithMagicLink: mockSignInWithMagicLink,
+  signOut: mockSignOut,
+  setOnboardingComplete: mockSetOnboardingComplete,
+};
+
+// Mock the AuthContext module
+jest.mock('../../contexts/AuthContext.helpers', () => ({
+  AuthContext: {
+    Consumer: ({ children }: { children: (value: typeof mockAuthContext) => ReactNode }) => 
+      children(mockAuthContext),
+    Provider: ({ children }: { children: ReactNode }) => 
+      React.createElement(React.Fragment, {}, children),
+  },
 }));
 
+// Import the actual AuthContext for testing
+import { AuthContext as ActualAuthContext } from '../../contexts/AuthContext.helpers';
+
 describe('useAuth', () => {
-  let queryClient: QueryClient;
-  
   beforeEach(() => {
-    queryClient = new QueryClient();
-    // Clear all mocks before each test
+    // Reset all mocks before each test
     jest.clearAllMocks();
-    // Clear localStorage
-    window.localStorage.clear();
+    
+    // Reset the mock context values
+    mockAuthContext.user = null;
+    mockAuthContext.loading = false;
+    mockSignInWithMagicLink.mockResolvedValue({ error: null });
+    mockSignOut.mockResolvedValue({ error: null });
+    mockSetOnboardingComplete.mockResolvedValue({ error: null });
   });
   
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
-  
-  it('should initially have no user and not be loading', () => {
-    const { result } = renderHook(() => useAuth(), { wrapper });
+  it('should provide auth context with default values', () => {
+    const { result } = renderHook(() => useAuth());
     
-    expect(result.current.user).toBeNull();
-    expect(result.current.isLoading).toBe(false);
+    expect(result.current).toMatchObject({
+      user: null,
+      loading: false,
+      signInWithMagicLink: expect.any(Function),
+      signOut: expect.any(Function),
+      setOnboardingComplete: expect.any(Function),
+    });
   });
-  
-  it('should login a user', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => useAuth(), { wrapper });
-    
-    // Call login
-    await act(async () => {
-      await result.current.login('test@example.com', 'password');
-    });
-    
-    // Wait for state updates
-    await waitForNextUpdate();
-    
-    // Check if user is set
-    expect(result.current.user).toEqual({
-      id: '1',
-      username: 'testuser',
-      email: 'test@example.com',
-    });
-    
-    // Check if token is stored in localStorage
-    expect(localStorage.getItem('token')).toBe('test-token');
-  });
-  
-  it('should register a new user', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => useAuth(), { wrapper });
-    
-    // Call register
-    await act(async () => {
-      await result.current.register('testuser', 'test@example.com', 'password');
-    });
-    
-    // Wait for state updates
-    await waitForNextUpdate();
-    
-    // Check if user is set
-    expect(result.current.user).toEqual({
-      id: '1',
-      username: 'testuser',
-      email: 'test@example.com',
-    });
-    
-    // Check if token is stored in localStorage
-    expect(localStorage.getItem('token')).toBe('test-token');
-  });
-  
-  it('should logout a user', async () => {
-    // First, login a user
-    const { result, waitForNextUpdate } = renderHook(() => useAuth(), { wrapper });
+
+  it('should allow signing in with magic link', async () => {
+    const email = 'test@example.com';
+    const { result } = renderHook(() => useAuth());
     
     await act(async () => {
-      await result.current.login('test@example.com', 'password');
-    });
-    await waitForNextUpdate();
-    
-    // Now logout
-    await act(async () => {
-      await result.current.logout();
+      const response = await result.current.signInWithMagicLink(email);
+      expect(response.error).toBeNull();
     });
     
-    // Check if user is cleared
-    expect(result.current.user).toBeNull();
-    
-    // Check if token is removed from localStorage
-    expect(localStorage.getItem('token')).toBeNull();
+    expect(mockSignInWithMagicLink).toHaveBeenCalledWith(email);
   });
-  
-  it('should load user from token on mount', async () => {
-    // Set a token in localStorage
-    localStorage.setItem('token', 'existing-token');
+
+  it('should handle sign out', async () => {
+    const { result } = renderHook(() => useAuth());
     
-    const { result, waitForNextUpdate } = renderHook(() => useAuth(), { wrapper });
-    
-    // Initially loading should be true
-    expect(result.current.isLoading).toBe(true);
-    
-    // Wait for the effect to complete
-    await waitForNextUpdate();
-    
-    // Loading should be false and user should be set
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.user).toEqual({
-      id: '1',
-      username: 'testuser',
-      email: 'test@example.com',
-    });
-  });
-  
-  it('should handle login error', async () => {
-    // Mock a rejected login
-    const error = new Error('Invalid credentials');
-    require('../../api/auth').login.mockRejectedValueOnce(error);
-    
-    const { result } = renderHook(() => useAuth(), { wrapper });
-    
-    // Call login with invalid credentials
     await act(async () => {
-      await expect(result.current.login('wrong@example.com', 'wrong')).rejects.toThrow('Invalid credentials');
+      result.current.signOut();
     });
     
-    // User should still be null
-    expect(result.current.user).toBeNull();
+    expect(mockSignOut).toHaveBeenCalled();
+  });
+
+  it('should set onboarding as complete', async () => {
+    const { result } = renderHook(() => useAuth());
+    
+    await act(async () => {
+      result.current.setOnboardingComplete();
+    });
+    
+    expect(mockSetOnboardingComplete).toHaveBeenCalled();
+  });
+
+  it('should throw an error when used outside of AuthProvider', () => {
+    // Mock console.error to avoid test output
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    
+    // Test that the hook throws when used outside of AuthProvider
+    let error: Error | undefined;
+    
+    // Mock the useContext hook to return undefined for AuthContext
+    const { useContext: originalUseContext } = jest.requireActual('react');
+    const useContextSpy = jest.spyOn(React, 'useContext');
+    
+    useContextSpy.mockImplementation((context) => {
+      if (context === ActualAuthContext) {
+        return undefined;
+      }
+      return originalUseContext(context);
+    });
+    
+    try {
+      renderHook(() => useAuth());
+    } catch (err) {
+      error = err as Error;
+    } finally {
+      // Always restore the original implementation
+      useContextSpy.mockRestore();
+    }
+    
+    // The hook should have thrown an error
+    expect(error).toBeDefined();
+    expect(error?.message).toContain('useAuth must be used within an AuthProvider');
+    
+    // Clean up
+    errorSpy.mockRestore();
   });
 });

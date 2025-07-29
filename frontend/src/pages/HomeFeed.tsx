@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from 'react';
+import { logger } from '../utils/logger';
 import { WhisperCard } from '../components/whisper/WhisperCard';
 import type { Whisper as APIWhisper } from "../services/api";
 
@@ -15,7 +16,7 @@ type Whisper = APIWhisper & {
   replies?: number;
   created_at: string;
   content: string;
-  emotion: string;
+  emotion: 'joy' | 'nostalgia' | 'calm' | 'anxiety' | 'hope' | 'love';
   timestamp: string;
   id: string;
 };
@@ -32,53 +33,41 @@ interface WhisperCardWithFallbackProps {
 }
 
 // Add a wrapper for WhisperCard to provide fallback for broken images/audio
-const WhisperCardWithFallback = ({ onError, ...props }: WhisperCardWithFallbackProps) => {
+const WhisperCardWithFallback = (props: WhisperCardWithFallbackProps) => {
   const [hasError, setHasError] = useState(false);
   
   const handleError = () => {
     setHasError(true);
-    onError?.();
+    if (props.onError) {
+      props.onError();
+    }
   };
-  
+
   if (hasError) {
     return (
-      <div className="p-4 rounded-lg bg-white/80 dark:bg-gray-800/80 shadow-sm border border-gray-200 dark:border-gray-700">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Couldn't load this whisper</p>
+      <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+        <p className="text-gray-500 dark:text-gray-400">Could not load whisper</p>
       </div>
     );
   }
 
-  return (
-    <WhisperCard 
-      {...props} 
-      onError={handleError}
-    />
-  );
+  // Create a new props object without onError since it's not part of WhisperCardProps
+  const { onError, ...whisperCardProps } = props;
+  
+  // Handle any errors in the component's error boundary
+  try {
+    return <WhisperCard {...whisperCardProps} />;
+  } catch (error) {
+    handleError();
+    return (
+      <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+        <p className="text-gray-500 dark:text-gray-400">Error loading whisper</p>
+      </div>
+    );
+  }
 };
 
-// Skeleton fallback with reload button after 8s
-function SkeletonWithReload() {
-  const [showReload, setShowReload] = useState(false);
-  // ... (rest of the code remains the same)
-    const timer = setTimeout(() => setShowReload(true), 8000);
-    return () => clearTimeout(timer);
-  }, []);
-  return (
-    <div className="space-y-4 my-12 flex flex-col items-center">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <WhisperSkeleton key={i} />
-      ))}
-      {showReload && (
-        <button
-          className="mt-6 px-6 py-2 rounded bg-indigo-600 text-white font-semibold shadow hover:bg-indigo-700 transition"
-          onClick={() => window.location.reload()}
-        >
-          Reload
-        </button>
-      )}
-    </div>
-  );
-}
+// Skeleton fallback component moved to a separate file for better organization
 
 // Implement the WhisperCardWithFallback component
 function HomeFeed() {
@@ -86,16 +75,22 @@ function HomeFeed() {
     {
       id: '1',
       content: 'Hello, world!',
-      emotion: 'happy',
+      emotion: 'joy',
       timestamp: '2023-02-20T14:30:00.000Z',
       created_at: '2023-02-20T14:30:00.000Z',
+      zone: 'general',
+      likes: 0,
+      replies: 0
     },
     {
       id: '2',
       content: 'This is a test whisper.',
-      emotion: 'neutral',
+      emotion: 'calm',
       timestamp: '2023-02-20T14:31:00.000Z',
       created_at: '2023-02-20T14:31:00.000Z',
+      zone: 'general',
+      likes: 0,
+      replies: 0
     },
   ];
 
@@ -106,7 +101,7 @@ function HomeFeed() {
           key={whisper.id}
           whisper={whisper}
           index={index}
-          onError={() => console.error(`Error loading whisper ${whisper.id}`)}
+          onError={() => logger.error(`Error loading whisper ${whisper.id}`)}
         />
       ))}
     </div>

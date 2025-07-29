@@ -1,14 +1,9 @@
-import React, { useEffect, useState, ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import type { RealtimeContextType, RealtimeProviderProps } from './RealtimeContext.types';
 import { RealtimeContext } from './RealtimeContext.context';
-import realtimeService, { 
-  RealtimeWhisper, 
-  ZoneActivity, 
-  EmotionPulse, 
-  RealtimeActivity 
-} from '../services/realtime';
+import realtimeService, { RealtimeWhisper } from '../services/realtime';
 
-export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({ children }) => {
+export const RealtimeProvider = ({ children }: RealtimeProviderProps) => {
   const [isConnected, setIsConnected] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState({
     isConnected: false,
@@ -128,9 +123,3 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({ children }) 
     </RealtimeContext.Provider>
   );
 };
-
-export const useRealtime = () => {
-  const ctx = React.useContext(RealtimeContext);
-  if (!ctx) throw new Error('useRealtime must be used within a RealtimeProvider');
-  return ctx;
-}; 

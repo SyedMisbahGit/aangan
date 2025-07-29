@@ -2,6 +2,30 @@
 
 A full-stack, real-time, AI-powered campus platform built with Node.js/Express (backend), React + Vite (frontend), PostgreSQL, and Socket.IO. The platform enables anonymous, emotional expression and connection through whispers, with features like real-time interactions, emotional mapping, and AI-powered responses.
 
+## 📚 Documentation
+
+- [Code Organization & Linting Guidelines](./docs/CODE_ORGANIZATION.md) - Guidelines for maintaining code quality and consistency
+- [API Documentation](./docs/API.md) - API endpoints and usage
+- [Deployment Guide](./docs/DEPLOYMENT.md) - Instructions for deploying the application
+
+## 🛠 Code Quality
+
+We maintain high code quality through:
+
+- **ESLint** for code linting
+- **TypeScript** for type safety
+- **Prettier** for code formatting
+- **Husky** for git hooks
+
+To run the linter:
+```bash
+# Check for issues
+npm run lint
+
+# Auto-fix fixable issues
+npm run lint:fix
+```
+
 ## 🚀 Quick Start
 
 ### Prerequisites

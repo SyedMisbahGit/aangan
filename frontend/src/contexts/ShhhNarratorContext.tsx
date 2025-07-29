@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { ShhhNarratorContext } from './ShhhNarratorContext.context';
-import { useCUJHotspots } from './use-cuj-hotspots';
+import { useCUJHotspots } from './hooks/useCUJHotspots';
 import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
 import { 
   NarratorState, 
