@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CUJHotspot, EmotionCluster } from './CUJHotspotContext.helpers';
 import { CUJHotspotContext } from './CUJHotspotContext.context';
 import { CUJHotspotContextType, CUJHotspotProviderProps } from './CUJHotspotContext.types';
@@ -576,9 +576,3 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
     </CUJHotspotContext.Provider>
   );
 };
-
-export const useCUJHotspots = () => {
-  const ctx = React.useContext(CUJHotspotContext);
-  if (!ctx) throw new Error('useCUJHotspots must be used within a CUJHotspotProvider');
-  return ctx;
-}; 

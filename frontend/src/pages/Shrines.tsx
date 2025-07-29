@@ -32,7 +32,7 @@ import {
   Target
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCUJHotspots } from "../contexts/CUJHotspotContext";
+import { useCUJHotspots } from "../contexts/useCUJHotspots";
 import ModularWhisperCard from "../components/whisper/ModularWhisperCard";
 import { ShhhLine } from '../components/ShhhLine';
 import { cujHotspots } from '../constants/cujHotspots';

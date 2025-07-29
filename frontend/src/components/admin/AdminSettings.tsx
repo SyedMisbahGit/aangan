@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useAdminUser } from "./AdminShell";
+import { useAdminUser } from "../../contexts/useAdminUser";
 
 interface Admin {
   id: number;
@@ -10,7 +10,7 @@ interface Admin {
 }
 
 export const AdminSettings: React.FC = () => {
-  const user = useAdminUser();
+  const { user } = useAdminUser();
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,8 +73,8 @@ export const AdminSettings: React.FC = () => {
     <div className="space-y-8">
       <div className="bg-white rounded shadow p-6 mb-8">
         <h3 className="font-semibold mb-2">Your Info</h3>
-        <div>Username: <span className="font-bold">{user?.username}</span></div>
-        <div>Role: <span className="font-bold text-aangan-primary">{user?.role}</span></div>
+        <div>Username: <span className="font-bold">{user?.user?.username}</span></div>
+        <div>Role: <span className="font-bold text-aangan-primary">{user?.user?.role}</span></div>
       </div>
       <div className="bg-white rounded shadow p-6">
         <h3 className="font-semibold mb-2">All Admins</h3>
@@ -90,7 +90,7 @@ export const AdminSettings: React.FC = () => {
                 <th>Username</th>
                 <th>Role</th>
                 <th>Email</th>
-                {user?.role === "super_admin" && <th>Actions</th>}
+                {user?.user?.role === "super_admin" && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -99,7 +99,7 @@ export const AdminSettings: React.FC = () => {
                   <td>{a.id}</td>
                   <td>{a.username}</td>
                   <td>
-                    {user?.role === "super_admin" && roleUpdate?.id === a.id ? (
+                    {user?.user?.role === "super_admin" && roleUpdate?.id === a.id ? (
                       <select
                         value={roleUpdate.role}
                         onChange={e => setRoleUpdate({ id: a.id, role: e.target.value })}
@@ -114,7 +114,7 @@ export const AdminSettings: React.FC = () => {
                     )}
                   </td>
                   <td>{a.email || "-"}</td>
-                  {user?.role === "super_admin" && (
+                  {user?.user?.role === "super_admin" && (
                     <td>
                       {roleUpdate?.id === a.id ? (
                         <>

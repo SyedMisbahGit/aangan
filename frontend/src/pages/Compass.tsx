@@ -22,7 +22,7 @@ import {
   Globe
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useCUJHotspots } from "../contexts/CUJHotspotContext";
+import { useCUJHotspots } from "../contexts/useCUJHotspots";
 import { ShhhLine } from '../components/ShhhLine';
 import { cujHotspots } from '../constants/cujHotspots';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator, SelectLabel, SelectGroup } from "../components/ui/select";

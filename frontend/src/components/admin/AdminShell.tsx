@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { AdminSidebar } from "./AdminSidebar";
 import axios from "axios";
 import { ModerationInbox } from "./ModerationInbox";
-import { AdminUserProvider, useAdminUser } from "../../contexts/AdminUserContext";
+import { AdminUserProvider } from "../../contexts/AdminUserContext";
+import { useAdminUser } from "../../contexts/useAdminUser";
 
 const AdminContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, setUser } = useAdminUser();

@@ -24,7 +24,7 @@ import {
   MoreHorizontal
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useCUJHotspots } from "../contexts/CUJHotspotContext";
+import { useCUJHotspots } from "../contexts/useCUJHotspots";
 import { ShhhLine } from '../components/ShhhLine';
 import ErrorBoundary from "../components/shared/ErrorBoundary";
 import { getErrorMessage } from "../lib/errorUtils";

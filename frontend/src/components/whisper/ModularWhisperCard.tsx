@@ -17,7 +17,7 @@ import {
   Brain
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCUJHotspots } from '../../contexts/CUJHotspotContext';
+import { useCUJHotspots } from '../../contexts/useCUJHotspots';
 import { reportWhisper } from '../../services/api';
 import { toast } from 'sonner';
 import { cn } from '../../lib/utils';

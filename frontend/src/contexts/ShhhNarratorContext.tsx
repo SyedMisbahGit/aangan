@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect } from 'react';
 import { ShhhNarratorContext } from './ShhhNarratorContext.context';
 import { useCUJHotspots } from './hooks/useCUJHotspots';
 import AanganLoadingScreen from '../components/shared/AanganLoadingScreen';
@@ -657,6 +657,12 @@ export const ShhhNarratorProvider: React.FC<ShhhNarratorProviderProps> = ({ chil
         memory: context === 'memory',
         arc: context === 'arc'
       },
+      metadata: {
+        length: line.length,
+        complexity: line.split(' ').length, // Simple word count as complexity
+        emotionalTone: targetMood || 'neutral',
+        keywords: line.toLowerCase().match(/\b(\w+)\b/g)?.slice(0, 5) || [] // First 5 words as keywords
+      },
       timestamp: new Date().toISOString(),
       variant
     };
@@ -774,11 +780,3 @@ export const ShhhNarratorProvider: React.FC<ShhhNarratorProviderProps> = ({ chil
 
 export type { ShhhNarratorContextType };
 export { ShhhNarratorContext };
-
-export const useShhhNarrator = () => {
-  const ctx = React.useContext(ShhhNarratorContext);
-  if (!ctx) throw new Error('useShhhNarrator must be used within a ShhhNarratorProvider');
-  return ctx;
-};
-
- 

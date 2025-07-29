@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useCUJHotspots } from '../../contexts/CUJHotspotContext';
+import { useCUJHotspots } from '../../contexts/useCUJHotspots';
 import { useWhispers, Whisper } from '../../services/api';
-import { useRealtime } from '../../contexts/RealtimeContext';
+import { useRealtime } from '../../contexts/useRealtime';
 
 const WhisperMap: React.FC = () => {
   const { hotspots, selectedHotspot, setSelectedHotspot } = useCUJHotspots();
