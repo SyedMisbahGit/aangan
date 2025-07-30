@@ -1,0 +1,6 @@
+# Single Page App (SPA) fallback
+/*    /index.html   200
+
+# Custom error pages
+/404.html    404
+/500.html    500

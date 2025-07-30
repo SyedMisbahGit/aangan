@@ -1,12 +1,43 @@
 {
-  "name": "Aangan",
-  "short_name": "Aangan",
+  "name": "WhisperVerse",
+  "short_name": "WhisperVerse",
   "description": "Anonymous campus social platform for sharing whispers and connecting with your community.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0ea5e9",
-  "theme_color": "#0ea5e9",
+  "scope": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#7c3aed",
   "orientation": "portrait",
+  "categories": ["social", "community", "campus"],
+  "screenshots": [
+    {
+      "src": "/screenshots/screenshot1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/screenshots/screenshot2.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Whisper",
+      "short_name": "New",
+      "description": "Create a new whisper",
+      "url": "/new-whisper",
+      "icons": [{"src": "/icons/plus-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Trending",
+      "short_name": "Trending",
+      "description": "View trending whispers",
+      "url": "/trending"
+    }
+  ],
   "icons": [
     {
       "src": "/logo.svg",

@@ -1,7 +1,8 @@
 import { ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import type { RenderOptions } from '@testing-library/react';
 
 type CustomRenderOptions = RenderOptions & {
   route?: string;
@@ -44,8 +45,8 @@ export const renderWithProviders = (
   };
 };
 
-// Export values
-import {
+// Re-export values from @testing-library/react
+export {
   render as baseRender,
   screen,
   fireEvent,
@@ -55,30 +56,9 @@ import {
   cleanup,
   renderHook,
   screen as testScreen,
-  waitForElementToBeRemoved
-} from '@testing-library/react';
-
-// Export types
-import type {
-  RenderResult,
-  RenderOptions
-} from '@testing-library/react';
-
-export {
-  baseRender,
-  screen,
-  fireEvent,
-  waitFor,
-  within,
-  act,
-  cleanup,
-  renderHook,
-  testScreen,
   waitForElementToBeRemoved,
-  // Export types as type-only
-  type RenderResult,
-  type RenderOptions
-};
+  type RenderResult
+} from '@testing-library/react';
 
 // Named export for renderWithProviders
 export { renderWithProviders as render };

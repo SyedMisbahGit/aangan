@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { AdminShell } from "../components/admin/AdminShell";
+import AdminShell from "../components/admin/AdminShell";
 // Placeholder imports for tab components
 import { ReportList } from "../components/admin/ReportList";
 import { BanTable } from "../components/admin/BanTable";
@@ -10,7 +10,6 @@ import { AdminDashboard } from "../components/admin/AdminDashboard";
 import { AdminSettings } from "../components/admin/AdminSettings";
 import AdminAIJobs from "./AdminAIJobs";
 import ErrorBoundary from "../components/shared/ErrorBoundary";
-import { getErrorMessage } from "../lib/errorUtils";
 import { useRef } from "react";
 
 const Admin: React.FC = () => {

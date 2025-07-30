@@ -17,10 +17,8 @@ describe('ErrorBoundary', () => {
   
   beforeAll(() => {
     // Mock console methods to avoid test output pollution
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(jest.fn());
+    jest.spyOn(console, 'log').mockImplementation(jest.fn());
   });
   
   afterEach(() => {
