@@ -5,12 +5,12 @@ import { LoadingWrapper } from '../shared/LoadingWrapper';
 
 // Mock framer-motion for testing
 vi.mock('framer-motion', async () => {
-  const actual = await vi.importActual('framer-motion');
+  const actual = await vi.importActual('framer-motion') as Record<string, unknown>;
   return {
     ...actual,
     AnimatePresence: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     motion: {
-      ...(actual as any).motion,
+      ...(actual.motion as Record<string, unknown>),
       div: ({ 
         children, 
         className, 
@@ -20,7 +20,7 @@ vi.mock('framer-motion', async () => {
         children: React.ReactNode; 
         className?: string; 
         'data-testid'?: string;
-        [key: string]: any;
+        [key: string]: unknown;
       }) => (
         <div 
           className={className} 

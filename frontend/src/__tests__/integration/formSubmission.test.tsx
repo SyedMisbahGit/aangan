@@ -17,7 +17,7 @@ const TestForm = () => {
     password: z.string().min(8, 'Password too short'),
   });
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: FormData): Promise<{ success: boolean }> => {
     await mockApi.submitForm(data);
     return { success: true };
   };
