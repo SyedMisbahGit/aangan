@@ -2,27 +2,18 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/auth";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-import bcrypt from "bcryptjs";
+import { dirname } from "path";
 import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
-import { readFileSync } from "fs";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import fetch from "node-fetch";
 import { db } from "./db.js";
 import dayjs from "dayjs";
-import adminRoutes from "../routes/admin.js";
-import aiReplyJobQueue from "./aiReplyJobQueue.js";
 import { initServices, shutdownServices } from "./services/index.js";
-import { cache } from "./utils/cache.js";
-import { errorHandler, notFoundHandler, asyncHandler, initErrorTracking } from "./middleware/errorHandler.js";
-import { requestLogger, requestBodyLogger } from "./middleware/requestLogger.js";
-import { getMetrics } from "./middleware/metrics.js";
+import { errorHandler, notFoundHandler, initErrorTracking } from "./middleware/errorHandler.js";
 
 // Load environment variables
 dotenv.config();
@@ -36,7 +27,9 @@ const app = express();
 
 // Trust proxy for rate limiting with X-Forwarded-For headers
 app.set('trust proxy', 1);
-console.log('✅ Express trust proxy is set to 1 (for X-Forwarded-For headers)');
+import logger from './utils/secureLogger';
+
+logger.info('✅ Express trust proxy is set to 1 (for X-Forwarded-For headers)');
 
 const server = createServer(app);
 const io = new Server(server, {
@@ -1281,36 +1274,101 @@ const startServer = async () => {
   }
 }
 
-// WebSocket event handlers with improved stability
+// Import WebSocket utilities
+import { authenticateSocket } from './middleware/wsAuth';
+import { initWebSocketHandlers } from './utils/wsEvents';
+
+// Initialize WebSocket handlers
+initWebSocketHandlers(io);
+
+// WebSocket connection handler
 io.on('connection', (socket) => {
-  console.log(`🔌 New client connected: ${socket.id}`);
+  logger.info(`New WebSocket connection`, { socketId: socket.id, ip: socket.handshake.address });
   
   // Update connection stats
   connectionStats.totalConnections++;
   connectionStats.activeConnections++;
   
-  // Track active connection with timeout
-  const connectionTimeout = setTimeout(() => {
-    if (activeConnections.has(socket.id)) {
-      console.log(`⏰ Connection timeout for ${socket.id}`);
-      socket.disconnect();
-    }
-  }, 5 * 60 * 1000); // 5 minute timeout
-  
-  // Track active connection
-  activeConnections.set(socket.id, {
+  // Track active connection with user info if authenticated
+  const connectionInfo = {
     id: socket.id,
     connectedAt: new Date(),
     currentZone: null,
     currentEmotion: null,
     lastActivity: new Date(),
-    messageCount: 0
+    messageCount: 0,
+    ip: socket.handshake.address,
+    userAgent: socket.handshake.headers['user-agent']
+  };
+  
+  // Add user info if authenticated
+  if (socket.user) {
+    connectionInfo.userId = socket.user.id;
+    connectionInfo.role = socket.user.role;
+  }
+  
+  // Handle disconnection
+  socket.on('disconnect', () => {
+    logger.info(`WebSocket client disconnected`, { socketId: socket.id });
+    
+    // Update connection stats
+    connectionStats.totalDisconnections++;
+    activeSockets.delete(socket.id);
+    
+    // Clean up user tracking
+    if (socket.user) {
+      activeUsers.delete(socket.user.id);
+    }
+  });
+  
+  // Handle new whispers with rate limiting and validation
+  socket.on('whisper-created', async (whisper) => {
+    try {
+      const validZones = ['tapri', 'library', 'hostel', 'canteen', 'auditorium', 'quad'];
+      if (!validZones.includes(whisper.zone)) {
+        logger.warn(`Invalid zone from socket`, { socketId: socket.id, zone: whisper.zone });
+        return;
+      }
+      
+      // Rate limiting: max 10 whispers per minute per user
+      const connection = activeConnections.get(socket.id);
+      if (connection) {
+        const now = new Date();
+        const timeSinceLastWhisper = now.getTime() - connection.lastActivity.getTime();
+        if (timeSinceLastWhisper < 6000) { // 6 seconds between whispers
+          logger.warn('Whisper rate limit exceeded', { socketId: socket.id });
+          return;
+        }
+        connection.lastActivity = now;
+        connection.messageCount = (connection.messageCount || 0) + 1;
+      }
+      
+      // Broadcast new whisper to all connected clients
+      io.emit('new-whisper', {
+        ...whisper,
+        timestamp: formatTimestamp(whisper.created_at || new Date()),
+        realTime: true
+      });
+      
+      // Also broadcast to specific zone if applicable
+      if (whisper.zone) {
+        socket.to(`zone-${whisper.zone}`).emit('zone-whisper', {
+          ...whisper,
+          timestamp: formatTimestamp(whisper.created_at || new Date()),
+          realTime: true
+        });
+      }
+      
+      logger.info('Whisper broadcast', { whisperId: whisper.id, zone: whisper.zone });
+    } catch (error) {
+      logger.error('Error in whisper-created', { error: error.message, stack: error.stack });
+    }
   });
 
   // Handle zone join with validation
   socket.on('join-zone', (zone) => {
     try {
-      const connection = activeConnections.get(socket.id);
+      const connection = activeSockets.get(socket.id);
       if (!connection) {
         console.warn(`⚠️  Connection not found for ${socket.id}`);
         return;
