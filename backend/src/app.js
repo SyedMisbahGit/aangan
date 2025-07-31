@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import authRoutes from "./routes/auth";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -17,6 +18,11 @@ import { db } from "./db.js";
 import dayjs from "dayjs";
 import adminRoutes from "../routes/admin.js";
 import aiReplyJobQueue from "./aiReplyJobQueue.js";
+import { initServices, shutdownServices } from "./services/index.js";
+import { cache } from "./utils/cache.js";
+import { errorHandler, notFoundHandler, asyncHandler, initErrorTracking } from "./middleware/errorHandler.js";
+import { requestLogger, requestBodyLogger } from "./middleware/requestLogger.js";
+import { getMetrics } from "./middleware/metrics.js";
 
 // Load environment variables
 dotenv.config();
@@ -116,17 +122,24 @@ const cleanupOldData = () => {
 // Run cleanup every 15 minutes
 setInterval(cleanupOldData, 15 * 60 * 1000);
 
-// Cleanup expired whispers every 12 hours
-setInterval(async () => {
+// Cleanup expired whispers and cache every 12 hours
+const cleanupExpiredWhispers = async () => {
   try {
     const result = await db.run("DELETE FROM whispers WHERE expires_at IS NOT NULL AND expires_at <= datetime('now')");
     if (result.changes > 0) {
       console.log(`🧹 Cleaned up ${result.changes} expired whispers`);
     }
+    // Clean up expired cache entries (handled by Redis TTL) but reset the cache stats
+    if (cache.isConnected) {
+      await cache.invalidatePattern('whisper:*');
+      console.log('Cleaned up expired cache entries');
+    }
   } catch (error) {
     console.error('Error cleaning up expired whispers:', error);
   }
-}, 12 * 60 * 60 * 1000); // 12 hours
+};
+
+setInterval(cleanupExpiredWhispers, 12 * 60 * 60 * 1000); // 12 hours
 
 // Ambient Whisper System
 let lastWhisperTime = new Date();
@@ -209,7 +222,39 @@ const stopAmbientWhisperSystem = () => {
   console.log("🤖 Ambient whisper system deactivated");
 };
 
+// Initialize services and error tracking
+let services;
+(async () => {
+  try {
+    // Initialize error tracking first
+    initErrorTracking(app);
+    
+    // Initialize application services
+    services = await initServices();
+    console.log('✅ Services initialized');
+  } catch (error) {
+    console.error('❌ Failed to initialize services:', error);
+    process.exit(1);
+  }
+})();
+
+// Graceful shutdown
+const shutdown = async () => {
+  console.log('\nShutting down gracefully...');
+  await shutdownServices();
+  process.exit(0);
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+
 // Middleware
+app.use((req, res, next) => {
+  // Attach services to request object
+  req.services = services;
+  next();
+});
+
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -244,30 +289,77 @@ app.use(
   }),
 );
 
+// Configure allowed origins based on environment
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? [
+      'https://college-whisper.vercel.app',
+      'https://aangan-production.up.railway.app',
+      'https://college-whisper-git-main-syedmisbahgit.vercel.app',
+      'https://college-whisper-*.vercel.app'
+    ]
+  : [
+      'http://localhost:5173',
+      'http://localhost:8080',
+      'http://127.0.0.1:5173',
+      'http://localhost:3000',
+      'http://localhost:8081',
+      'http://localhost:8082',
+      'http://localhost:8083',
+      'http://localhost:8084',
+      'http://localhost:8085',
+      'http://localhost:8086',
+      'http://localhost:8087'
+    ];
+
+// Enhanced CORS configuration
 app.use(
   cors({
-    origin: [
-      process.env.FRONTEND_URL || "http://localhost:5173",
-      "https://college-whisper.vercel.app",
-      "https://college-whisper-git-main-syedmisbahgit.vercel.app",
-      "https://college-whisper-*.vercel.app",
-      "http://localhost:8080",
-      "http://localhost:8081",
-      "http://localhost:8082",
-      "http://localhost:8083",
-      "http://localhost:8084",
-      "http://localhost:8085",
-      "http://localhost:8086",
-      "http://localhost:8087",
-      "http://localhost:8088",
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      
+      // Check if the origin is in the allowed list or matches a wildcard pattern
+      const isAllowed = allowedOrigins.some(allowedOrigin => {
+        if (allowedOrigin.includes('*')) {
+          // Convert wildcard pattern to regex
+          const regex = new RegExp('^' + allowedOrigin.replace(/\*/g, '.*') + '$');
+          return regex.test(origin);
+        }
+        return allowedOrigin === origin;
+      });
+      
+      if (isAllowed) {
+        return callback(null, true);
+      }
+      
+      const msg = `CORS not allowed for ${origin}`;
+      console.warn(msg);
+      return callback(new Error(msg), false);
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+      'X-Auth-Token',
+      'X-API-Key'
     ],
     credentials: true,
-  }),
+    maxAge: 86400, // 24 hours
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+  })
 );
 
-app.use(compression());
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
+app.use(requestLogger);
+if (process.env.NODE_ENV === 'development') {
+  app.use(requestBodyLogger());
+}
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Input validation middleware
 const validateInput = (req, res, next) => {
@@ -371,16 +463,36 @@ const authenticateAdminJWT = async (req, res, next) => {
   }
 };
 
-// Routes
+// API Routes
+app.use('/api/auth', authRoutes);
+
+// 404 Handler - must be after all other routes
+app.use(notFoundHandler);
+
+// Error Handler - must be after all other middleware and routes
+app.use(errorHandler);
 
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ 
-    status: "ok", 
+    status: "ok",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || "development"
+    memory: process.memoryUsage(),
+    env: process.env.NODE_ENV,
   });
+});
+
+// Metrics endpoint
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', 'text/plain');
+    const metrics = await getMetrics();
+    res.end(metrics);
+  } catch (err) {
+    logger.error('Error generating metrics', { error: err.message, stack: err.stack });
+    res.status(500).end('Error generating metrics');
+  }
 });
 
 // Admin login route
@@ -1137,29 +1249,22 @@ function formatTimestamp(timestamp) {
 }
 
 // Start server
-async function startServer() {
+const startServer = async () => {
   try {
-    console.log("🚀 Starting Aangan Backend...");
-    console.log(`🔧 PORT: ${PORT}`);
-    console.log(`🔧 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔧 DB_PATH: ${process.env.DB_PATH || 'default'}`);
+    // Ensure services are initialized
+    if (!services) {
+      services = await initServices();
+    }
     
-    console.log("📊 Database ready via Knex and migrations.");
-
-    // Add a small delay to ensure everything is ready
-    console.log("⏳ Waiting for system to stabilize...");
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    server.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Aangan Backend running on port ${PORT}`);
-      console.log(`📊 Health check: http://0.0.0.0:${PORT}/api/health`);
-      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🔌 WebSocket server ready for real-time connections`);
-      console.log(`🏡 Aangan courtyard is open for whispers...`);
+    const PORT = process.env.PORT || 3001;
+    server.use(errorHandler); // Add error handling middleware
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📊 Cache status: ${cache.isConnected ? '✅ Connected' : '❌ Disabled'}`);
     });
-
     // Handle server errors
     server.on('error', (error) => {
+      Sentry.captureException(error); // Capture server errors with Sentry
       console.error('❌ Server error:', error);
       if (error.code === 'EADDRINUSE') {
         console.error(`❌ Port ${PORT} is already in use`);
@@ -1168,6 +1273,7 @@ async function startServer() {
     });
 
   } catch (error) {
+    Sentry.captureException(error); // Capture startup errors with Sentry
     console.error("❌ Failed to start server:", error);
     console.error("❌ Error details:", error.message);
     console.error("❌ Error stack:", error.stack);

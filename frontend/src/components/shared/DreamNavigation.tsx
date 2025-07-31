@@ -9,7 +9,28 @@ import {
 } from "../ui/tooltip";
 import { Home, MapPin, Pencil, User, HelpCircle } from 'lucide-react';
 
-export const DreamNavigation = () => {
+interface DreamNavigationProps {
+  /**
+   * Callback function when a navigation item is selected
+   * @param path - The path of the selected navigation item
+   */
+  onNavigate?: (path: string) => void;
+  
+  /**
+   * Label for the navigation landmark
+   * @default "Main navigation"
+   */
+  ariaLabel?: string;
+}
+
+/**
+ * A fully accessible navigation component with smooth animations and tooltips.
+ * Provides keyboard navigation and proper ARIA attributes for screen readers.
+ */
+export const DreamNavigation: React.FC<DreamNavigationProps> = ({
+  onNavigate,
+  ariaLabel = "Main navigation",
+}) => {
   const navigationItems = [
     { path: '/', icon: Home, label: 'Whispers', tooltip: 'Whispers from the courtyard' },
     { path: '/zones', icon: MapPin, label: 'Zones', tooltip: 'Explore CUJ zones' },
@@ -45,8 +66,22 @@ export const DreamNavigation = () => {
     localStorage.setItem('aangan_onboarding_step', '3');
   };
 
-  const handleNavClick = (path: string) => {
-    // Optionally handle navigation click events
+  const handleNavClick = (path: string, label: string) => {
+    // Call the onNavigate callback if provided
+    if (onNavigate) {
+      onNavigate(path);
+    }
+    
+    // Announce navigation to screen readers
+    const announcement = `Navigated to ${label}`;
+    const liveRegion = document.getElementById('a11y-announcement');
+    if (liveRegion) {
+      liveRegion.textContent = announcement;
+      // Clear the announcement after a short delay
+      setTimeout(() => {
+        liveRegion.textContent = '';
+      }, 1000);
+    }
   };
 
   const [showHelp, setShowHelp] = useState(false);
@@ -72,17 +107,33 @@ export const DreamNavigation = () => {
           </button>
         </div>
       )}
-      <nav className={cn(
-        "fixed inset-x-0 bottom-0 z-40 h-[72px] pb-safe",
-        "bg-aangan-paper/70 backdrop-blur-lg border-t border-aangan-dusk",
-        "flex justify-around items-center shadow-ambient"
-      )}>
+      <nav 
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-40 h-[72px] pb-safe",
+          "bg-aangan-paper/70 backdrop-blur-lg border-t border-aangan-dusk",
+          "flex justify-around items-center shadow-ambient"
+        )}
+        role="navigation"
+        aria-label={ariaLabel}
+      >
+        {/* Hidden live region for screen reader announcements */}
+        <div 
+          id="a11y-announcement"
+          className="sr-only" 
+          aria-live="polite"
+          aria-atomic="true"
+        />
         {navigationItems.map((item, idx) => (
           <Tooltip key={item.path}>
             <TooltipTrigger asChild>
               <NavLink
                 to={item.path}
-                onClick={() => handleNavClick(item.path)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(item.path, item.label);
+                  // Programmatic navigation after handling
+                  window.location.href = item.path;
+                }}
                 className={({ isActive }) =>
                   cn(
                     "flex flex-col items-center gap-0.5 text-xs transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-aangan-primary/60",
@@ -91,11 +142,24 @@ export const DreamNavigation = () => {
                   )
                 }
                 tabIndex={0}
+                aria-current={({ isActive }) => isActive ? 'page' : undefined}
+                role="menuitem"
                 aria-label={item.label}
+                onKeyDown={(e) => {
+                  // Handle keyboard navigation
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleNavClick(item.path, item.label);
+                    window.location.href = item.path;
+                  }
+                }}
               >
                 {({ isActive }) => (
                   <>
-                    <span className="relative">
+                    <span 
+                      className="relative"
+                      aria-hidden="true"
+                    >
                       <motion.span
                         layoutId="nav-active-underline"
                         className={cn(
@@ -115,10 +179,13 @@ export const DreamNavigation = () => {
                         <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse z-10"></span>
                       )}
                     </span>
-                    <span className={cn(
-                      "text-[12px] tracking-wide transition-all duration-200",
-                      isActive ? "font-bold" : "font-normal"
-                    )}>
+                    <span 
+                      className={cn(
+                        "text-xs transition-colors",
+                        isActive ? "text-green-600 font-bold" : "text-neutral-500"
+                      )}
+                      aria-hidden="true"
+                    >
                       {item.label}
                     </span>
                   </>
