@@ -1,4 +1,4 @@
-# AI Listener in College Whisper (Aangan/CUJ)
+# AI Listener in Aangan (CUJ)
 
 This document explains how the AI listener works, with a focus on its probabilistic, poetic, and CUJ zone/emotion-specific behavior.
 

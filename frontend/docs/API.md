@@ -1,4 +1,4 @@
-# College Whisper Frontend API Reference
+# Aangan Frontend API Reference
 
 ## Table of Contents
 - [Loading Components](#loading-components)

@@ -18,6 +18,25 @@ All notable changes to the College Whisper platform will be documented in this f
 ### Changed
 
 - Improved error handling with custom error boundaries
+
+### Removed
+
+- Removed unused components: `EmotionSlowMode.tsx`, `MidnightConfessional.tsx`
+- Cleaned up admin dashboard by removing unused components:
+  - `AdminAISummaryCard.tsx`
+  - `CommunityStats.tsx`
+  - `ContentSeeder.tsx`
+  - `EngagementAnalytics.tsx`
+  - `ModerationFeedback.tsx`
+  - `ModerationSandbox.tsx`
+  - `SafetyDashboard.tsx`
+  - `SummerSoulAnalytics.tsx`
+- Archived experimental features to `frontend/src/archive/future-features/`:
+  - `WhisperMilestones.tsx`
+  - `WhisperMurmurs.tsx`
+  - `WhisperRituals.tsx`
+  - `WhisperShrines.tsx`
+- Moved unused development scripts to `scripts/archive/`
 - Enhanced form validation with better user feedback
 - Updated loading states for better user experience
 - Refactored form components for better reusability

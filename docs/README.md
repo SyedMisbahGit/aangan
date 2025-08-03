@@ -19,7 +19,7 @@
 
 ## 🌐 Production URLs
 
-- **Frontend (Vercel):** [https://college-whisper.vercel.app/](https://college-whisper.vercel.app/)
+- **Frontend (Vercel):** [https://aangan.vercel.app/](https://aangan.vercel.app/)
 - **Backend (Railway):** [https://aangan-production.up.railway.app/api](https://aangan-production.up.railway.app/api)
 
 ---
@@ -79,8 +79,8 @@
 
 ```bash
 # Clone and install dependencies
-git clone https://github.com/SyedMisbahGit/college-whisper.git
-cd college-whisper
+git clone https://github.com/SyedMisbahGit/aangan.git
+cd aangan
 npm install
 npm run dev
 ```

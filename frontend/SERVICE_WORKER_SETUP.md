@@ -1,6 +1,6 @@
 # Service Worker Setup Guide
 
-This guide provides instructions for setting up and troubleshooting service workers in the College Whisper application.
+This guide provides instructions for setting up and troubleshooting service workers in the Aangan application.
 
 ## Service Workers in This Project
 

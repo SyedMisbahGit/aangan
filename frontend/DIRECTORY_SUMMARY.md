@@ -1,4 +1,4 @@
-# Directory Summary: college-whisper-frontend
+# Directory Summary: Aangan Frontend
 
 ## src/components/
 - All UI and logic components, grouped by feature or domain.

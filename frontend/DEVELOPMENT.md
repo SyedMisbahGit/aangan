@@ -1,4 +1,4 @@
-# Development Guide: college-whisper-frontend
+# Development Guide: Aangan Frontend
 
 ## Setup
 

@@ -1,8 +1,9 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "aangan",
   "private": true,
   "version": "1.6.3",
   "type": "module",
+  "description": "Aangan - A full-stack, real-time, AI-powered campus platform",
   "scripts": {
     "dev": "vite",
     "dev:railway": "VITE_API_URL=https://aangan-production.up.railway.app/api VITE_REALTIME_URL=https://aangan-production.up.railway.app vite",
@@ -123,6 +124,7 @@
     "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.20",
     "barrelsby": "^2.8.1",
+    "depcheck": "^1.4.7",
     "eslint": "^9.9.0",
     "eslint-plugin-boundaries": "^5.0.1",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",

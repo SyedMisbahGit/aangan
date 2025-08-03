@@ -1,4 +1,4 @@
-# Onboarding Checklist: college-whisper-frontend
+# Onboarding Checklist: Aangan Frontend
 
 - [ ] Clone the repository and check out the `frontend` directory
 - [ ] Install Node.js (LTS recommended, e.g., 20.x)

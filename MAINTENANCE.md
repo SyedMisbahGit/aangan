@@ -1,6 +1,6 @@
-# College Whisper - Maintenance Guide
+# Aangan - Maintenance Guide
 
-This document outlines the maintenance procedures and review checklists for the College Whisper platform.
+This document outlines the maintenance procedures and review checklists for the Aangan platform.
 
 ## Table of Contents
 

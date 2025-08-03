@@ -1,15 +1,12 @@
-// Using require for better compatibility with Knex and TypeScript
-import dotenv from 'dotenv';
-import type { Knex } from 'knex';
+import knex from 'knex';
+import * as dotenv from 'dotenv';
 
 // Initialize environment variables
 dotenv.config();
 
-// Use require for Knex to avoid module resolution issues
-const knex = require('knex');
-
 const isProd = process.env.NODE_ENV === 'production';
-const config: Knex.Config = isProd
+
+const config = isProd
   ? {
       client: 'pg',
       connection: process.env.DATABASE_URL,

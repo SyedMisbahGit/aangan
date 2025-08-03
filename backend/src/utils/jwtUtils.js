@@ -26,8 +26,8 @@ const generateTokens = async (user, ipAddress, userAgent) => {
       iat: now,
       
       // Security context
-      iss: 'college-whisper-api',
-      aud: ['college-whisper-web', 'college-whisper-mobile'],
+      iss: 'aangan-api',
+      aud: ['aangan-web', 'aangan-mobile'],
       
       // Device fingerprinting
       ip: ipAddress,
@@ -100,11 +100,11 @@ const verifyAccessToken = (token, ipAddress, userAgent) => {
     }
 
     // Validate standard claims
-    if (decoded.iss !== 'college-whisper-api') {
+    if (decoded.iss !== 'aangan-api') {
       throw new Error('Invalid token issuer');
     }
 
-    if (!decoded.aud?.includes('college-whisper-web')) {
+    if (!decoded.aud?.includes('aangan-web')) {
       throw new Error('Invalid token audience');
     }
 

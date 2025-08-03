@@ -1,11 +1,10 @@
-import nodemailer from 'nodemailer';
 import logger from '../utils/logger';
 
 interface EmailOptions {
   to: string;
   subject: string;
   template: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 }
 
 /**

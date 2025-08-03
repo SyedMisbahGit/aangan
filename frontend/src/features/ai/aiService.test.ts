@@ -28,7 +28,7 @@ const mockSentimentResponse = {
     emotions: ['joy', 'excitement'],
   },
   entities: [
-    { text: 'College Whisper', type: 'ORGANIZATION', score: 0.98 },
+    { text: 'Aangan', type: 'ORGANIZATION', score: 0.98 },
   ],
 };
 
@@ -123,7 +123,7 @@ describe('AIService', () => {
   
   describe('analyzeSentiment', () => {
     it('should analyze the sentiment of the provided text', async () => {
-      const text = 'I love using College Whisper! It\'s amazing!';
+      const text = 'I love using Aangan! It\'s amazing!';
       
       const result = await analyzeSentiment(text);
       

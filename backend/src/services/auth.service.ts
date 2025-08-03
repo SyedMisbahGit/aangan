@@ -13,7 +13,7 @@ import { sendEmail } from './email.service';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_ACCESS_EXPIRES_IN = process.env.JWT_ACCESS_EXPIRES_IN || '15m';
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
-const JWT_ISSUER = process.env.JWT_ISSUER || 'college-whisper-api';
+const JWT_ISSUER = process.env.JWT_ISSUER || 'aangan-api';
 
 // OAuth configuration
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;

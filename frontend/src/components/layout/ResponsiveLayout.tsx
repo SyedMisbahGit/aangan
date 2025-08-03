@@ -17,7 +17,7 @@ interface ResponsiveLayoutProps {
 
 const ResponsiveLayout = ({
   children,
-  title = 'College Whisper',
+  title = 'Aangan',
   showSidebar = true,
   showBottomNav = true,
 }: ResponsiveLayoutProps) => {

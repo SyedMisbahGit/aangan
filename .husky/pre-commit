@@ -3,3 +3,4 @@
 
 npm run lint -- --max-warnings=0
 npm test -- --coverage
+npm run lint && npx depcheck

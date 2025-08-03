@@ -1,4 +1,4 @@
-# Performance Audit: college-whisper-frontend
+# Performance Audit: Aangan Frontend
 
 ## Checklist
 

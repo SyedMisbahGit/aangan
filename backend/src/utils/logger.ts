@@ -1,10 +1,12 @@
 // backend/src/utils/logger.ts
 import winston from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 import path from 'path';
-import 'winston-daily-rotate-file';
 
 // Import types for winston
 import type { Logform } from 'winston';
+// Import types for winston-daily-rotate-file
+import type { DailyRotateFileTransportOptions } from 'winston-daily-rotate-file';
 
 const { combine, timestamp, printf, colorize, json } = winston.format;
 
@@ -18,8 +20,15 @@ const logFormat = printf((info: Logform.TransformableInfo) => {
 // Create logs directory
 const logsDir = path.join(process.cwd(), 'logs');
 
+// Define a new type that extends the Winston logger with the 'stream' property
+type LoggerWithStream = winston.Logger & {
+  stream: {
+    write: (message: string) => void;
+  };
+};
+
 // Create logger instance with proper typing
-const logger = winston.createLogger({
+const logger: LoggerWithStream = winston.createLogger({
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   format: combine(
     timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -35,30 +44,30 @@ const logger = winston.createLogger({
         logFormat
       ),
       handleExceptions: true,
-      handleRejections: true
+      handleRejections: true,
     }),
     
     // Daily rotate file transport for errors
-    new winston.transports.DailyRotateFile({
+    new DailyRotateFile({
       filename: path.join(logsDir, 'error-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
       level: 'error',
       maxSize: '20m',
       maxFiles: '14d',
       format: combine(timestamp(), json())
-    }),
+    } as DailyRotateFileTransportOptions),
     
     // Daily rotate file transport for all logs
-    new winston.transports.DailyRotateFile({
+    new DailyRotateFile({
       filename: path.join(logsDir, 'combined-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
       maxSize: '20m',
       maxFiles: '7d',
       format: combine(timestamp(), json())
-    })
+    } as DailyRotateFileTransportOptions)
   ],
   exitOnError: false
-});
+}) as LoggerWithStream;
 
 // Create the stream object with proper typing
 const stream = {
@@ -68,7 +77,6 @@ const stream = {
 };
 
 // Add the stream to the logger
-// We're using type assertion here to avoid type conflicts with Winston's Logger interface
-(logger as any).stream = stream;
+logger.stream = stream;
 
 export default logger;

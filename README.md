@@ -1,12 +1,16 @@
-# College Whisper Platform
+# 🏫 Aangan
 
 A full-stack, real-time, AI-powered campus platform built with Node.js/Express (backend), React + Vite (frontend), PostgreSQL, and Socket.IO. The platform enables anonymous, emotional expression and connection through whispers, with features like real-time interactions, emotional mapping, and AI-powered responses.
+
+> **Note**: We recently completed a major codebase cleanup (v2.0-beta-cleanup) to improve maintainability and performance. See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ## 📚 Documentation
 
 - [Code Organization & Linting Guidelines](./docs/CODE_ORGANIZATION.md) - Guidelines for maintaining code quality and consistency
 - [API Documentation](./docs/API.md) - API endpoints and usage
 - [Deployment Guide](./docs/DEPLOYMENT.md) - Instructions for deploying the application
+- [Dependencies](./docs/DEPENDENCIES.md) - Documentation about project dependencies and cleanup status
+- [Contributing](./CONTRIBUTING.md) - Guidelines for contributing to the project
 
 ## 🛠 Code Quality
 
@@ -16,6 +20,8 @@ We maintain high code quality through:
 - **TypeScript** for type safety
 - **Prettier** for code formatting
 - **Husky** for git hooks
+- **Depcheck** for identifying unused dependencies
+- **Automated CI/CD** with dependency and security checks
 
 To run the linter:
 ```bash
@@ -24,6 +30,12 @@ npm run lint
 
 # Auto-fix fixable issues
 npm run lint:fix
+
+# Check for unused dependencies
+npx depcheck
+
+# Run tests with coverage
+npm run test:coverage
 ```
 
 ## 🚀 Quick Start
@@ -37,8 +49,8 @@ npm run lint:fix
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/SyedMisbahGit/college-whisper.git
-   cd college-whisper
+   git clone https://github.com/SyedMisbahGit/aangan.git
+   cd aangan
    ```
 
 2. **Set up environment variables**
@@ -66,8 +78,8 @@ The application will be available at:
 
 ### Production Build
 ```bash
-docker build -t college-whisper .
-docker run -p 3001:3001 --env-file .env college-whisper
+docker build -t aangan .
+docker run -p 3001:3001 --env-file .env aangan
 ```
 
 ### Development with Hot-Reloading
@@ -85,7 +97,7 @@ docker-compose -f docker-compose.dev.yml up --build
 ## 📦 Project Structure
 
 ```
-college-whisper/
+aangan/
 ├── backend/             # Express.js API server
 │   ├── src/
 │   │   ├── routes/     # API routes
@@ -118,7 +130,7 @@ NODE_ENV=development
 PORT=3001
 
 # Database
-DATABASE_URL=postgresql://user:password@localhost:5432/college_whisper
+DATABASE_URL=postgresql://user:password@localhost:5432/aangan
 DB_PATH=./whispers.db  # For SQLite in development
 
 # JWT
@@ -219,8 +231,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 1. **Clone the repository**
    ```sh
-   git clone https://github.com/yourusername/college-whisper.git
-   cd college-whisper
+   git clone https://github.com/yourusername/aangan.git
+   cd aangan
    ```
 
 2. **Install dependencies**

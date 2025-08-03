@@ -1,6 +1,6 @@
-# Setup Guide for College Whisper
+# Setup Guide for Aangan
 
-This guide will help you set up the College Whisper platform for local development.
+This guide will help you set up the Aangan platform for local development.
 
 ## Prerequisites
 
@@ -14,8 +14,8 @@ This guide will help you set up the College Whisper platform for local developme
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/SyedMisbahGit/college-whisper.git
-   cd college-whisper
+   git clone https://github.com/SyedMisbahGit/aangan.git
+   cd aangan
    ```
 
 2. **Set up environment variables**
@@ -87,7 +87,7 @@ This guide will help you set up the College Whisper platform for local developme
 
 ```env
 # Database
-DATABASE_URL=postgres://user:password@localhost:5432/college_whisper
+DATABASE_URL=postgres://user:password@localhost:5432/aangan
 
 # JWT
 JWT_SECRET=your_jwt_secret
@@ -180,7 +180,7 @@ npm install
 
 - Check the [FAQ](./FAQ.md)
 
-- Search the [GitHub issues](https://github.com/SyedMisbahGit/college-whisper/issues)
+- Search the [GitHub issues](https://github.com/SyedMisbahGit/aangan/issues)
 
 - Create a new issue if you can't find a solution
 

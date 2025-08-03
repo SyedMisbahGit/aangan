@@ -1,0 +1,67 @@
+name: Dependency Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  depcheck:
+    name: Check Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run depcheck
+      id: depcheck
+      continue-on-error: true
+      run: |
+        # Run depcheck and save output to a file
+        npx depcheck --json > depcheck-result.json
+        
+        # Count unused dependencies
+        UNUSED_COUNT=$(jq -r '.dependencies | length' depcheck-result.json)
+        
+        # Set output for the step
+        echo "unused_count=$UNUSED_COUNT" >> $GITHUB_OUTPUT
+        
+        # Output the results for the log
+        echo "Depcheck found $UNUSED_COUNT unused dependencies"
+        
+        # If there are unused dependencies, output them
+        if [ "$UNUSED_COUNT" -gt 0 ]; then
+          echo "Unused dependencies:"
+          jq -r '.dependencies[]' depcheck-result.json | xargs -I{} echo "- {}"
+          
+          # Upload the full report as an artifact
+          echo "depcheck-result=$(cat depcheck-result.json | jq -c .)" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Upload depcheck results
+      if: steps.depcheck.outputs.unused_count > 0
+      uses: actions/upload-artifact@v3
+      with:
+        name: depcheck-results
+        path: depcheck-result.json
+    
+    - name: Fail if there are unused dependencies
+      if: steps.depcheck.outputs.unused_count > 0
+      run: |
+        echo "❌ Found ${{ steps.depcheck.outputs.unused_count }} unused dependencies"
+        echo "::warning::Found ${{ steps.depcheck.outputs.unused_count }} unused dependencies"
+        echo "Review the depcheck results and remove unused dependencies or mark them as intentional in docs/DEPENDENCIES.md"
+        # Uncomment the next line to make this a blocking check
+        # exit 1

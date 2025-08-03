@@ -1,4 +1,4 @@
-# Contributing to college-whisper-frontend
+# Contributing to Aangan Frontend
 
 Thank you for your interest in contributing! Please follow these guidelines to help us maintain a high-quality codebase.
 
@@ -7,8 +7,8 @@ Thank you for your interest in contributing! Please follow these guidelines to h
 1. **Fork the repository** on GitHub.
 2. **Clone your fork** locally:
    ```sh
-   git clone https://github.com/your-username/college-whisper.git
-   cd college-whisper/frontend
+   git clone https://github.com/your-username/aangan.git
+   cd aangan/frontend
    ```
 3. **Create a new branch** for your feature or fix:
    ```sh

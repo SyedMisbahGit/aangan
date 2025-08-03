@@ -1,7 +1,7 @@
 {
-  "name": "WhisperVerse",
-  "short_name": "WhisperVerse",
-  "description": "Anonymous campus social platform for sharing whispers and connecting with your community.",
+  "name": "🏫 Aangan",
+  "short_name": "Aangan",
+  "description": "A real-time, emotionally intelligent campus platform for anonymous expression and connection within your academic community.",
   "start_url": "/",
   "display": "standalone",
   "scope": "/",
@@ -25,8 +25,8 @@
   ],
   "shortcuts": [
     {
-      "name": "New Whisper",
-      "short_name": "New",
+      "name": "Aangan",
+      "short_name": "Aangan",
       "description": "Create a new whisper",
       "url": "/new-whisper",
       "icons": [{"src": "/icons/plus-192.png", "sizes": "192x192"}]

@@ -1,6 +1,6 @@
 # Scripts Directory
 
-This directory contains various utility scripts for development, testing, maintenance, and deployment of the College Whisper application.
+This directory contains various utility scripts for development, testing, maintenance, and deployment of the Aangan application.
 
 ## Directory Structure
 

@@ -88,7 +88,7 @@ const ModerationLayout = () => {
           borderBottom: '1px solid #f0f0f0'
         }}>
           <Title level={4} style={{ margin: 0, color: '#1890ff' }}>
-            College Whisper Mod
+            Aangan Mod
           </Title>
         </div>
         

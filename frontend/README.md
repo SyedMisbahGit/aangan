@@ -1,4 +1,4 @@
-# college-whisper-frontend
+# Aangan Frontend
 
 ## Project Overview
 

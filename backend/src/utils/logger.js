@@ -72,7 +72,7 @@ const logger = winston.createLogger({
     winston.format.splat(),
     winston.format.json()
   ),
-  defaultMeta: { service: 'college-whisper-api' },
+  defaultMeta: { service: 'aangan-api' },
   transports,
   exceptionHandlers: [
     new winston.transports.File({ 

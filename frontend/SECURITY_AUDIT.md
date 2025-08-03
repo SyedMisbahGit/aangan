@@ -1,4 +1,4 @@
-# Security Audit: college-whisper-frontend
+# Security Audit: Aangan Frontend
 
 ## Checklist
 

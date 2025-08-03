@@ -51,7 +51,7 @@ export const errorHandler = (err, req, res, next) => {
       }
       
       scope.setTag('environment', process.env.NODE_ENV);
-      scope.setTag('service', 'college-whisper-api');
+      scope.setTag('service', 'aangan-api');
       
       Sentry.captureException(err);
     });
@@ -106,7 +106,7 @@ export const initErrorTracking = (app) => {
     Sentry.init({
       dsn: process.env.SENTRY_DSN,
       environment: process.env.NODE_ENV || 'development',
-      release: `college-whisper@${process.env.npm_package_version}`,
+      release: `aangan@${process.env.npm_package_version}`,
       integrations: [
         // Enable HTTP calls tracing
         new Sentry.Integrations.Http({ tracing: true }),

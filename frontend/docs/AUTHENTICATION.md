@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides comprehensive documentation for the College Whisper authentication system, including component architecture, usage examples, and implementation details.
+This document provides comprehensive documentation for the Aangan authentication system, including component architecture, usage examples, and implementation details.
 
 ## Table of Contents
 

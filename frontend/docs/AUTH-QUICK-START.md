@@ -1,6 +1,6 @@
 # Authentication Quick Start
 
-This guide will help you quickly integrate the College Whisper authentication system into your application.
+This guide will help you quickly integrate the Aangan authentication system into your application.
 
 ## Prerequisites
 

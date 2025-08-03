@@ -1,7 +1,7 @@
 {
-  "name": "shhh-backend",
-  "version": "1.6.3",
-  "description": "Shhh - WhisperVerse Backend API and Admin Dashboard",
+  "name": "aangan-backend",
+  "version": "1.0.0",
+  "description": "Backend for Aangan - Real-time anonymous campus communication platform Backend API",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
@@ -54,12 +54,12 @@
     "typescript": "^5.0.0"
   },
   "keywords": [
-    "shhh",
-    "whisperverse",
+    "aangan",
     "campus",
     "anonymous",
     "social",
-    "cuj"
+    "cuj",
+    "community"
   ],
   "author": "CUJ Community",
   "license": "MIT",

@@ -37,7 +37,7 @@ export const DreamLayout: React.FC<DreamLayoutProps> = ({
   useEffect(() => {
     if (pageTitle) {
       const originalTitle = document.title;
-      document.title = `${pageTitle} | College Whisper`;
+      document.title = `${pageTitle} | Aangan`;
       
       return () => {
         document.title = originalTitle;

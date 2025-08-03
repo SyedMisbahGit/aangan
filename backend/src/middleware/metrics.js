@@ -5,8 +5,9 @@ import responseTime from 'response-time';
 const register = new client.Registry();
 
 // Enable collection of default metrics
+const defaultLabels = { service: 'aangan-api' };
 client.collectDefaultMetrics({
-  app: 'college-whisper-api',
+  ...defaultLabels,
   prefix: 'node_',
   timeout: 10000,
   gcDurationBuckets: [0.1, 0.5, 1, 2, 5], // These are the default buckets.

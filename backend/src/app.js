@@ -38,8 +38,8 @@ const io = new Server(server, {
   cors: {
     origin: [
       process.env.FRONTEND_URL || "http://localhost:5173",
-      "https://college-whisper.vercel.app",
-      "https://college-whisper-*.vercel.app"
+      "https://aangan.vercel.app",
+      "https://aangan-*.vercel.app"
     ],
     methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
@@ -460,8 +460,8 @@ app.use(
         connectSrc: [
           "'self'",
           "https://aangan-production.up.railway.app",
-          "https://college-whisper.vercel.app",
-          "https://college-whisper-*.vercel.app",
+          "https://aangan.vercel.app",
+          "https://aangan-*.vercel.app",
           "wss://aangan-production.up.railway.app"
         ],
         fontSrc: ["'self'", "data:"],
@@ -486,10 +486,9 @@ app.use(
 // Configure allowed origins based on environment
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? [
-      'https://college-whisper.vercel.app',
-      'https://aangan-production.up.railway.app',
-      'https://college-whisper-git-main-syedmisbahgit.vercel.app',
-      'https://college-whisper-*.vercel.app'
+      'https://aangan.vercel.app',
+      'https://aangan-git-main-syedmisbahgit.vercel.app',
+      'https://aangan-*.vercel.app'
     ]
   : [
       'http://localhost:5173',

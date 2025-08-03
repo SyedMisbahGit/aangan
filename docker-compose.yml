@@ -10,7 +10,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/college_whisper
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/aangan
     depends_on:
       db:
         condition: service_healthy
@@ -27,7 +27,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: college_whisper
+      POSTGRES_DB: aangan
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

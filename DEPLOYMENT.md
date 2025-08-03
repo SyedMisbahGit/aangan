@@ -1,6 +1,6 @@
-# College Whisper Deployment Guide
+# Aangan Deployment Guide
 
-This document provides comprehensive instructions for deploying the College Whisper platform across different environments.
+This document provides comprehensive instructions for deploying the Aangan platform across different environments.
 
 ## Table of Contents
 
@@ -29,8 +29,8 @@ This document provides comprehensive instructions for deploying the College Whis
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/yourusername/college-whisper.git
-   cd college-whisper
+   git clone https://github.com/SyedMisbahGit/aangan.git
+   cd aangan
    ```
 
 2. **Set up environment variables**
@@ -84,17 +84,17 @@ This document provides comprehensive instructions for deploying the College Whis
 ### Building the Image
 
 ```bash
-docker build -t college-whisper .
+docker build -t aangan .
 ```
 
 ### Running the Container
 
 ```bash
 docker run -d \
-  --name college-whisper \
+  --name aangan \
   -p 3001:3001 \
   --env-file .env \
-  college-whisper
+  aangan
 ```
 
 ### Using Docker Compose for Production
@@ -177,7 +177,7 @@ NODE_ENV=production
 PORT=3001
 
 # Database
-DATABASE_URL=postgresql://user:password@localhost:5432/college_whisper
+DATABASE_URL=postgresql://user:password@localhost:5432/aangan
 
 # Authentication
 JWT_SECRET=your-secure-jwt-secret
@@ -290,7 +290,7 @@ npx knex migrate:latest --knexfile backend/knexfile.js
 
 ### Nginx Configuration
 
-Create an Nginx configuration file at `/etc/nginx/sites-available/college-whisper`:
+Create an Nginx configuration file at `/etc/nginx/sites-available/aangan`:
 
 ```nginx
 server {
@@ -317,7 +317,7 @@ server {
     add_header Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'" always;
     
     # Root directory
-    root /path/to/college-whisper/frontend/dist;
+    root /path/to/aangan/frontend/dist;
     index index.html;
     
     # Handle client-side routing
@@ -350,10 +350,10 @@ server {
 
 ```bash
 # Docker logs
-docker logs college-whisper
+docker logs aangan
 
 # Follow logs
-docker logs -f college-whisper
+docker logs -f aangan
 
 # View logs with timestamps
 docker logs --timestamps college-whisper

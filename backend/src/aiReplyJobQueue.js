@@ -1,4 +1,4 @@
-// AI Reply Job Queue and Worker for College Whisper
+// AI Reply Job Queue and Worker for Aangan
 // Handles background-safe scheduling and processing of AI reply jobs
 
 import { db } from './db.js';

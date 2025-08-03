@@ -1,6 +1,6 @@
 # Development Guide
 
-This document provides comprehensive guidance for developers working on the College Whisper platform.
+This document provides comprehensive guidance for developers working on the Aangan platform.
 
 ## Table of Contents
 - [Getting Started](#getting-started)
@@ -28,8 +28,8 @@ This document provides comprehensive guidance for developers working on the Coll
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/SyedMisbahGit/college-whisper.git
-   cd college-whisper
+   git clone https://github.com/SyedMisbahGit/aangan.git
+   cd aangan
    ```
 
 2. **Install dependencies**
@@ -63,7 +63,7 @@ This document provides comprehensive guidance for developers working on the Coll
 ## Project Structure
 
 ```
-college-whisper/
+aangan/
 ├── backend/             # Express.js API server
 │   ├── src/
 │   │   ├── config/     # Configuration files

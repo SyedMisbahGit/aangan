@@ -157,7 +157,7 @@ const logger = createLogger({
     format.errors({ stack: true }),
     format.json()
   ),
-  defaultMeta: { service: 'college-whisper' },
+  defaultMeta: { service: 'aangan' },
   transports: [
     // Write all logs with level `error` and below to `error.log`
     new transports.DailyRotateFile({
