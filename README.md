@@ -1,6 +1,6 @@
 # 🏫 Aangan
 
-A full-stack, real-time, AI-powered campus platform built with Node.js/Express (backend), React + Vite (frontend), PostgreSQL, and Socket.IO. The platform enables anonymous, emotional expression and connection through whispers, with features like real-time interactions, emotional mapping, and AI-powered responses.
+A full-stack, real-time, AI-powered campus platform built with Node.js/Express (backend), React + Vite (frontend), PostgreSQL, and Socket.IO. Aangan (आंगन) - meaning 'courtyard' in Hindi - serves as a digital gathering space for students to connect, share, and express themselves through anonymous whispers, with features like real-time interactions, emotional mapping, and AI-powered responses.
 
 > **Note**: We recently completed a major codebase cleanup (v2.0-beta-cleanup) to improve maintainability and performance. See [CHANGELOG.md](CHANGELOG.md) for details.
 

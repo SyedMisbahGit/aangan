@@ -1,4 +1,4 @@
-# Accessibility Audit: college-whisper-frontend
+# Accessibility Audit: Aangan Frontend
 
 ## Checklist
 

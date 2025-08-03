@@ -1,4 +1,4 @@
-# API Documentation: college-whisper-frontend
+# API Documentation: Aangan Frontend
 
 ## Components
 
