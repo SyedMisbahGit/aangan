@@ -135,7 +135,7 @@ class AutoModerationService {
           return false;
         }
       },
-      action: async (contentId, contentType, reason) => {
+      action: async (contentId, contentType, reason, metadata) => {
         await this.flagContent(contentId, contentType, reason, 'explicit_content');
       },
     });
@@ -156,7 +156,7 @@ class AutoModerationService {
         const { hasMatch } = containsFilteredKeywords(textFields);
         return hasMatch;
       },
-      action: async (contentId, contentType, reason) => {
+      action: async (contentId, contentType, reason, metadata) => {
         await this.flagContent(contentId, contentType, reason, 'profanity');
       },
     });
@@ -191,7 +191,7 @@ class AutoModerationService {
         
         return false;
       },
-      action: async (contentId, contentType, reason) => {
+      action: async (contentId, contentType, reason, metadata) => {
         await this.flagContent(contentId, contentType, reason, 'spam');
       },
     });

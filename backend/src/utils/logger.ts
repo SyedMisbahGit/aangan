@@ -3,10 +3,14 @@ import winston from 'winston';
 import path from 'path';
 import 'winston-daily-rotate-file';
 
+// Import types for winston
+import type { Logform } from 'winston';
+
 const { combine, timestamp, printf, colorize, json } = winston.format;
 
-// Define log format
-const logFormat = printf(({ level, message, timestamp, ...meta }) => {
+// Define log format with proper typing
+const logFormat = printf((info: Logform.TransformableInfo) => {
+  const { level, message, timestamp, ...meta } = info;
   const metaString = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
   return `${timestamp} [${level}]: ${message}${metaString}`;
 });
@@ -14,9 +18,9 @@ const logFormat = printf(({ level, message, timestamp, ...meta }) => {
 // Create logs directory
 const logsDir = path.join(process.cwd(), 'logs');
 
-// Create logger instance
+// Create logger instance with proper typing
 const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',  
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   format: combine(
     timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     json(),
@@ -56,17 +60,15 @@ const logger = winston.createLogger({
   exitOnError: false
 });
 
-// Create a stream object with a 'write' function that will be used by `morgan`
-interface LoggerStream {
-  write: (message: string) => void;
-}
-
-const stream: LoggerStream = {
-  write: (message: string) => {
+// Create the stream object with proper typing
+const stream = {
+  write: (message: string): void => {
     logger.info(message.trim());
   }
 };
 
-logger.stream = stream;
+// Add the stream to the logger
+// We're using type assertion here to avoid type conflicts with Winston's Logger interface
+(logger as any).stream = stream;
 
 export default logger;

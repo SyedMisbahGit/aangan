@@ -1,8 +1,5 @@
 import rateLimit from 'express-rate-limit';
 import { logger } from '../utils/logger.js';
-import RedisStore from 'rate-limit-redis';
-import { createClient } from 'redis';
-import { promisify } from 'util';
 
 // Configuration
 const RATE_LIMIT_CONFIG = {
@@ -10,220 +7,123 @@ const RATE_LIMIT_CONFIG = {
   standard: {
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // 100 requests per window
-    message: 'Too many requests, please try again later.'
+    message: 'Too many requests, please try again later.',
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    skipFailedRequests: true, // Don't count failed requests (status >= 400)
+    keyGenerator: (req) => {
+      // Use IP + user agent for better rate limiting
+      return `${req.ip}-${req.headers['user-agent'] || 'unknown'}`;
+    }
   },
   
   // Stricter limits for authentication endpoints
   auth: {
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 20, // 20 requests per window
-    message: 'Too many login attempts, please try again later.'
+    message: 'Too many login attempts, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+    skipFailedRequests: true,
+    keyGenerator: (req) => {
+      // For auth endpoints, include the username in the key if available
+      const username = req.body?.username || 'unknown';
+      return `auth-${req.ip}-${username}`;
+    }
   },
   
   // API key rate limits (per hour)
   apiKey: {
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 1000, // 1000 requests per hour
-    message: 'API rate limit exceeded. Please try again later or contact support.'
-  }
-};
-
-// Initialize Redis client with enhanced configuration
-let redisClient;
-let redisStore;
-
-const initRedis = () => {
-  if (!process.env.REDIS_URL) {
-    logger.warn('REDIS_URL not set, using in-memory rate limiting');
-    return null;
-  }
-
-  try {
-    redisClient = createClient({
-      url: process.env.REDIS_URL,
-      socket: {
-        tls: process.env.NODE_ENV === 'production',
-        rejectUnauthorized: false,
-        reconnectStrategy: (retries) => {
-          const maxRetries = 5;
-          if (retries > maxRetries) {
-            logger.warn('Max Redis reconnection attempts reached');
-            return new Error('Max reconnection attempts reached');
-          }
-          // Exponential backoff with jitter
-          const baseDelay = Math.min(100 * Math.pow(2, retries), 5000);
-          const jitter = Math.floor(Math.random() * 100);
-          return baseDelay + jitter;
-        },
-      },
-      pingInterval: 30000, // Send PING every 30 seconds
-    });
-
-    // Redis event handlers
-    redisClient.on('error', (err) => {
-      logger.error('Redis error:', err);
-    });
-
-    redisClient.on('connect', () => {
-      logger.info('Connected to Redis for rate limiting');
-    });
-
-    redisClient.on('reconnecting', () => {
-      logger.info('Reconnecting to Redis...');
-    });
-
-    // Add a ping utility
-    const ping = async () => {
-      try {
-        await redisClient.ping();
-        return true;
-      } catch (err) {
-        logger.error('Redis ping failed:', err);
-        return false;
-      }
-    };
-
-    // Test connection
-    (async () => {
-      try {
-        await redisClient.connect();
-        const isAlive = await ping();
-        if (!isAlive) {
-          logger.warn('Redis connection test failed');
-        }
-      } catch (err) {
-        logger.error('Failed to connect to Redis:', err);
-      }
-    })();
-
-    // Create Redis store with error handling
-    redisStore = new RedisStore({
-      sendCommand: (...args) => {
-        try {
-          return redisClient.sendCommand(args);
-        } catch (err) {
-          logger.error('Redis command failed:', err);
-          throw err;
-        }
-      },
-      prefix: `rl:${process.env.NODE_ENV || 'development'}:`, // Namespace by environment
-      // Add a small jitter to avoid thundering herd problem
-      expiry: Math.floor(RATE_LIMIT_CONFIG.standard.windowMs / 1000) * (0.9 + Math.random() * 0.2)
-    });
-
-    return redisClient;
-  } catch (err) {
-    logger.error('Failed to initialize Redis:', err);
-    return null;
-  }
-};
-
-// Initialize Redis on startup
-initRedis();
-
-// Graceful shutdown handler
-const shutdown = async () => {
-  if (redisClient && redisClient.isOpen) {
-    try {
-      await redisClient.quit();
-      logger.info('Redis connection closed gracefully');
-    } catch (err) {
-      logger.error('Error closing Redis connection:', err);
+    message: 'API rate limit exceeded. Please try again later or contact support.',
+    standardHeaders: true,
+    legacyHeaders: false,
+    skipFailedRequests: true,
+    keyGenerator: (req) => {
+      // Use API key from header or query param
+      const apiKey = req.headers['x-api-key'] || req.query.apiKey || 'unknown';
+      return `api-${apiKey}`;
     }
   }
-  process.exit(0);
 };
 
-// Handle process termination
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+// Whitelist of IPs that bypass rate limiting
+const WHITELISTED_IPS = new Set([
+  '127.0.0.1',
+  '::1',
+  '::ffff:127.0.0.1',
+  ...(process.env.WHITELISTED_IPS?.split(',') || [])
+]);
 
-// Enhanced key generator with additional request context
-const keyGenerator = (req) => {
-  const userId = req.user?.id || 'anonymous';
-  const userAgent = req.headers['user-agent'] || 'unknown';
-  const path = req.path;
-  // Create a fingerprint of the request
-  const fingerprint = crypto
-    .createHash('sha256')
-    .update(`${req.ip}:${userId}:${userAgent}:${path}`)
-    .digest('hex');
-  return fingerprint;
-};
-
-// Request tracking for suspicious activity
-const trackRequest = (req, type = 'standard') => {
-  const requestInfo = {
-    timestamp: new Date().toISOString(),
-    ip: req.ip,
-    method: req.method,
-    path: req.path,
-    userAgent: req.headers['user-agent'],
-    userId: req.user?.id || 'anonymous',
-    type,
-  };
-  
-  // Log detailed info for rate-limited requests
-  if (type === 'rate_limited') {
-    logger.warn('Rate limited request detected', requestInfo);
-    
-    // Here you could add additional logic like:
-    // - Temporary IP blocking for excessive violations
-    // - Alerting for potential attacks
-    // - Request pattern analysis
-  }
-};
-
-// Skip function for whitelisted IPs and health checks
+/**
+ * Check if the request should skip rate limiting
+ * @param {Object} req - Express request object
+ * @returns {boolean} True if rate limiting should be skipped
+ */
 const shouldSkipRateLimit = (req) => {
-  // Skip health checks and monitoring endpoints
-  if (req.path === '/health' || req.path === '/status') {
+  const clientIp = req.ip || req.connection.remoteAddress;
+  
+  // Skip rate limiting for whitelisted IPs
+  if (WHITELISTED_IPS.has(clientIp)) {
     return true;
   }
   
-  // Skip whitelisted IPs
-  const whitelist = (process.env.RATE_LIMIT_WHITELIST || '')
-    .split(',')
-    .map(ip => ip.trim())
-    .filter(ip => ip);
-    
-  return whitelist.includes(req.ip);
+  // Skip rate limiting for health checks and static assets
+  const path = req.path || '';
+  if (path === '/health' || path === '/healthz' || path === '/status' || path.startsWith('/static/')) {
+    return true;
+  }
+  
+  return false;
 };
 
-// Standard rate limiter
+/**
+ * Create a rate limiter with the given configuration
+ * @param {Object} config - Rate limiting configuration
+ * @param {string} [type='standard'] - Type of rate limiter (standard, auth, apiKey)
+ * @returns {Function} Express middleware function
+ */
 const createRateLimiter = (config, type = 'standard') => {
-  return rateLimit({
-    windowMs: config.windowMs,
-    max: config.max,
-    message: config.message,
-    standardHeaders: true,
-    legacyHeaders: false,
-    keyGenerator,
-    store: redisStore,
-    skip: shouldSkipRateLimit,
-    handler: (req, res) => {
-      trackRequest(req, 'rate_limited');
-      res.status(429).json({
+  const limiter = rateLimit({
+    ...config,
+    // Use in-memory store (default)
+    store: new rateLimit.MemoryStore(config.windowMs),
+    
+    // Skip rate limiting for whitelisted IPs and health checks
+    skip: (req) => shouldSkipRateLimit(req),
+    
+    // Custom handler for rate limit exceeded
+    handler: (req, res, next, options) => {
+      logger.warn('Rate limit exceeded', {
+        ip: req.ip,
+        path: req.path,
+        method: req.method,
+        limit: config.max,
+        windowMs: config.windowMs,
+        type
+      });
+      
+      res.status(options.statusCode || 429).json({
         success: false,
-        message: config.message,
-        // Include rate limit info in the response
-        retryAfter: Math.ceil(config.windowMs / 1000),
+        error: options.message,
+        retryAfter: Math.ceil(options.windowMs / 1000)
       });
     },
-    // Add jitter to avoid thundering herd
-    delayMs: 0,
-    ...(type === 'apiKey' && {
-      keyGenerator: (req) => {
-        const apiKey = req.headers['x-api-key'] || 'none';
-        return `api:${apiKey}`;
-      },
-      skip: (req) => {
-        // Don't apply API key rate limiting to non-API routes
-        if (!req.path.startsWith('/api/')) return true;
-        return shouldSkipRateLimit(req);
-      }
-    })
+    
+    // Track rate limited requests
+    onLimitReached: (req) => {
+      logger.warn('Rate limit reached', {
+        ip: req.ip,
+        path: req.path,
+        method: req.method,
+        type,
+        timestamp: new Date().toISOString()
+      });
+    }
   });
+  
+  return limiter;
 };
 
 // Create rate limiters from config
@@ -231,45 +131,46 @@ export const standardLimiter = createRateLimiter(RATE_LIMIT_CONFIG.standard);
 export const authLimiter = createRateLimiter(RATE_LIMIT_CONFIG.auth, 'auth');
 export const apiKeyLimiter = createRateLimiter(RATE_LIMIT_CONFIG.apiKey, 'apiKey');
 
-// Middleware to track all requests for analytics
-// This is separate from rate limiting and runs on all requests
+/**
+ * Middleware to track all requests for analytics
+ * This is separate from rate limiting and runs on all requests
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Next middleware function
+ */
 export const requestTracker = (req, res, next) => {
-  // Skip tracking for static assets and health checks
-  if (
-    req.path.match(/\.(css|js|jpg|jpeg|png|gif|ico|svg)$/) ||
-    req.path === '/health' ||
-    req.path === '/favicon.ico'
-  ) {
-    return next();
-  }
-  
-  // Log request details
   const start = Date.now();
   
+  // Capture response finish to log the request details
   res.on('finish', () => {
     const duration = Date.now() - start;
-    const logData = {
-      method: req.method,
-      path: req.path,
-      status: res.statusCode,
+    const { method, path, ip } = req;
+    const statusCode = res.statusCode;
+    const contentLength = res.get('content-length') || 0;
+    const userAgent = req.headers['user-agent'] || '';
+    
+    // Log the request details
+    logger.info('Request processed', {
+      method,
+      path,
+      statusCode,
       duration,
-      ip: req.ip,
-      userAgent: req.headers['user-agent'],
-      userId: req.user?.id || 'anonymous',
-      timestamp: new Date().toISOString(),
-    };
+      contentLength,
+      ip,
+      userAgent,
+      timestamp: new Date().toISOString()
+    });
     
-    // Log slow requests
-    if (duration > 1000) { // More than 1 second is considered slow
-      logger.warn('Slow request detected', { ...logData, duration });
-    }
-    
-    // Log 4xx and 5xx responses
-    if (res.statusCode >= 400) {
-      logger.error('Request error', { 
-        ...logData, 
+    // Log slow requests (over 1 second)
+    if (duration > 1000) {
+      logger.warn('Slow request', {
+        method,
+        path,
+        duration,
+        statusCode,
+        timestamp: new Date().toISOString(),
         error: res.statusMessage,
-        body: res.statusCode >= 500 ? req.body : undefined,
+        body: res.statusCode >= 500 ? req.body : undefined
       });
     } else {
       logger.info('Request completed', logData);
@@ -278,6 +179,3 @@ export const requestTracker = (req, res, next) => {
   
   next();
 };
-
-// Export the Redis client for use in other parts of the app
-export { redisClient };

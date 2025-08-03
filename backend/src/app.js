@@ -32,39 +32,240 @@ import logger from './utils/secureLogger';
 logger.info('✅ Express trust proxy is set to 1 (for X-Forwarded-For headers)');
 
 const server = createServer(app);
+
+// Configure Socket.IO with memory adapter and optimizations for 500 concurrent users
 const io = new Server(server, {
   cors: {
     origin: [
       process.env.FRONTEND_URL || "http://localhost:5173",
       "https://college-whisper.vercel.app",
-      "https://college-whisper-git-main-syedmisbahgit.vercel.app",
-      "https://college-whisper-*.vercel.app",
-      "http://localhost:8080",
-      "http://localhost:8081",
-      "http://localhost:8082",
-      "http://localhost:8083",
-      "http://localhost:8084",
-      "http://localhost:8085",
-      "http://localhost:8086",
-      "http://localhost:8087",
-      "http://localhost:8088",
+      "https://college-whisper-*.vercel.app"
     ],
     methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
   },
+  // Memory adapter (default, no Redis adapter needed)
+  adapter: undefined,
+  
+  // Optimizations for performance
+  pingTimeout: 30000,      // 30 seconds
+  pingInterval: 25000,     // 25 seconds
+  maxHttpBufferSize: 1e6,  // 1MB max message size
+  serveClient: false,      // Don't serve client files
+  cookie: false,           // Disable cookie
+  // Enable HTTP long-polling as fallback
+  transports: ['websocket', 'polling'],
+  allowUpgrades: true,
+  perMessageDeflate: {
+    threshold: 1024, // Only compress messages > 1KB
+  },
+  // Connection state recovery
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutes
+    skipMiddlewares: true,
+  },
+  // Rate limiting
+  connectTimeout: 10000, // 10 seconds
+  // Enable connection state recovery
+  allowEIO3: true,
+  // Disable per-message deflate for small messages
+  httpCompression: {
+    threshold: 1024, // Only compress if > 1KB
+  },
 });
 
-// Socket.IO authentication middleware (must come after io is defined)
-io.use((socket, next) => {
-  const key = socket.handshake.auth?.clientKey;
-  if (key !== process.env.SOCKET_SHARED_KEY) {
-    return next(new Error("unauthorized"));
+// Track connections and clean up on disconnect
+const cleanupInactiveSockets = () => {
+  const now = Date.now();
+  let disconnectedCount = 0;
+  let activeCount = 0;
+
+  socketConnections.forEach((connection, socketId) => {
+    // Clean up inactive connections (5+ minutes)
+    if (now - connection.lastActivity > 300000) {
+      try {
+        connection.socket.disconnect(true);
+        disconnectedCount++;
+      } catch (error) {
+        logger.error('Error disconnecting socket', { socketId, error: error.message });
+      }
+      socketConnections.delete(socketId);
+    } else {
+      activeCount++;
+    }
+  });
+
+  // Log connection stats periodically
+  if (disconnectedCount > 0 || now % 60000 < 1000) { // Log at least once per minute
+    logger.info('Connection stats', {
+      activeConnections: activeCount,
+      disconnectedInThisCycle: disconnectedCount,
+      timestamp: new Date().toISOString()
+    });
   }
-  return next();
+};
+
+// Clean up every 30 seconds
+const cleanupInterval = setInterval(cleanupInactiveSockets, 30000);
+
+// Handle process termination
+process.on('SIGTERM', () => {
+  clearInterval(cleanupInterval);
+  // Disconnect all clients gracefully
+  socketConnections.forEach(connection => {
+    try {
+      connection.socket.disconnect(true);
+    } catch (error) {
+      logger.error('Error during graceful shutdown', { error: error.message });
+    }
+  });
+  process.exit(0);
 });
 
-// Per-IP rate limiting for socket messages
-const msgBuckets = new Map(); // ip -> { count, ts }
+// WebSocket connection management and rate limiting
+const MAX_CONNECTIONS_PER_IP = 10; // Increased for testing, adjust based on needs
+const MESSAGES_PER_MINUTE = 60; // Max messages per minute per connection
+const CONNECTION_TIMEOUT = 300000; // 5 minutes of inactivity
+
+// Track connection attempts for rate limiting
+const connectionAttempts = new Map();
+
+// Middleware for connection authentication and rate limiting
+io.use((socket, next) => {
+  const ip = socket.handshake.address;
+  const now = Date.now();
+  
+  try {
+    // Authentication
+    const key = socket.handshake.auth?.clientKey;
+    if (key !== process.env.SOCKET_SHARED_KEY) {
+      logger.warn('Authentication failed', { ip, socketId: socket.id });
+      return next(new Error('unauthorized'));
+    }
+
+    // Connection rate limiting by IP
+    const ipData = connectionAttempts.get(ip) || { count: 0, lastAttempt: 0 };
+    
+    // Reset counter if last attempt was more than a minute ago
+    if (now - ipData.lastAttempt > 60000) {
+      ipData.count = 0;
+    }
+    
+    ipData.count++;
+    ipData.lastAttempt = now;
+    connectionAttempts.set(ip, ipData);
+    
+    // Check connection limit
+    if (ipData.count > MAX_CONNECTIONS_PER_IP) {
+      logger.warn('Connection rate limit exceeded', { 
+        ip, 
+        count: ipData.count,
+        socketId: socket.id 
+      });
+      return next(new Error('connection_limit_exceeded'));
+    }
+    
+    // Track the connection
+    socketConnections.set(socket.id, {
+      socket,
+      ip,
+      lastActivity: now,
+      messageCount: 0,
+      lastMessageTime: 0
+    });
+    
+    logger.info('New connection', { 
+      socketId: socket.id, 
+      ip,
+      totalConnections: socketConnections.size 
+    });
+    
+    next();
+  } catch (error) {
+    logger.error('Connection error', { 
+      error: error.message, 
+      ip,
+      socketId: socket.id 
+    });
+    next(new Error('connection_error'));
+  }
+});
+
+// Handle disconnections
+io.on('connection', (socket) => {
+  // Update activity on any message
+  const updateActivity = () => {
+    const connection = socketConnections.get(socket.id);
+    if (connection) {
+      connection.lastActivity = Date.now();
+    }
+  };
+  
+  // Message rate limiting middleware
+  const rateLimitMiddleware = (data, next) => {
+    const connection = socketConnections.get(socket.id);
+    if (!connection) return next(new Error('invalid_connection'));
+    
+    const now = Date.now();
+    
+    // Reset counter if last message was more than a minute ago
+    if (now - connection.lastMessageTime > 60000) {
+      connection.messageCount = 0;
+      connection.lastMessageTime = now;
+    }
+    
+    // Check message rate limit
+    if (connection.messageCount >= MESSAGES_PER_MINUTE) {
+      logger.warn('Message rate limit exceeded', {
+        socketId: socket.id,
+        ip: connection.ip,
+        messageCount: connection.messageCount
+      });
+      return next(new Error('rate_limit_exceeded'));
+    }
+    
+    connection.messageCount++;
+    connection.lastMessageTime = now;
+    updateActivity();
+    next();
+  };
+  
+  // Apply rate limiting to all messages
+  socket.use((packet, next) => {
+    // Skip for internal events
+    if (packet[0].startsWith('_')) return next();
+    return rateLimitMiddleware(packet[1], next);
+  });
+  
+  // Handle disconnection
+  socket.on('disconnect', (reason) => {
+    const connection = socketConnections.get(socket.id);
+    if (connection) {
+      logger.info('Client disconnected', {
+        socketId: socket.id,
+        ip: connection.ip,
+        reason,
+        duration: (Date.now() - connection.lastActivity) / 1000 + 's'
+      });
+      socketConnections.delete(socket.id);
+    }
+  });
+  
+  // Handle errors
+  socket.on('error', (error) => {
+    logger.error('Socket error', {
+      socketId: socket.id,
+      error: error.message,
+      stack: error.stack
+    });
+  });
+  
+  // Initial activity update
+  updateActivity();
+});
+
+// Connection tracking and rate limiting state
+const socketConnections = new Map(); // socket.id -> { socket, ip, lastActivity, messageCount, lastMessageTime }
 
 const PORT = process.env.PORT || 3001;
 

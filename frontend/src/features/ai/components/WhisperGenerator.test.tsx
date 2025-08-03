@@ -151,24 +151,31 @@ describe('WhisperGenerator', () => {
     (generateWhisper as jest.Mock).mockRejectedValue(new Error(errorMessage));
     
     // Mock console.error to avoid error logs in test output
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const originalError = console.error;
+    console.error = jest.fn();
+    
+    // Mock toast.error
+    const mockToastError = jest.fn();
+    toast.error = mockToastError;
     
     render(<WhisperGenerator onGenerate={mockOnGenerate} />);
     
-    // Fill in the form and submit
-    userEvent.type(screen.getByLabelText(/prompt/i), 'Test prompt');
+    // Fill out the form
+    const promptInput = screen.getByLabelText(/prompt/i);
+    fireEvent.change(promptInput, { target: { value: 'Test prompt' } });
+    
+    // Submit the form
     fireEvent.click(screen.getByRole('button', { name: /generate/i }));
     
     // Check that an error toast was shown
     await waitFor(() => {
-      const { toast } = require('react-toastify');
-      expect(toast.error).toHaveBeenCalledWith(
+      expect(mockToastError).toHaveBeenCalledWith(
         `Failed to generate whisper: ${errorMessage}`,
         expect.any(Object)
       );
     });
     
-    consoleError.mockRestore();
+    console.error = originalError;
   });
   
   it('analyzes sentiment when the analyze button is clicked', async () => {

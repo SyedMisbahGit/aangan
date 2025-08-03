@@ -84,7 +84,7 @@ const RATE_LIMIT_CONFIG = {
  * @example
  * {
  *   'join-room': {
- *     handler: async (socket, data) => { /* ... */ },
+ *     handler: async (socket, data) => { /* ... *\/ },
  *     requiredPermissions: ['room:join'],
  *     rateLimit: { windowMs: 10000, max: 10 },
  *     acknowledge: true,

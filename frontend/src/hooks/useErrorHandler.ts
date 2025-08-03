@@ -122,9 +122,9 @@ export function useErrorHandler() {
  * A higher-order component that provides error handling to a component
  */
 export function withErrorHandler<P extends object>(
-  Component: React.ComponentType<P>,
+  Component: React.ComponentType<P & { onError?: (error: unknown) => void }>,
   options: ErrorHandlerOptions = {}
-) {
+): React.FC<P> {
   return function WithErrorHandler(props: P) {
     const { handleError } = useErrorHandler();
     return <Component {...props} onError={handleError} />;

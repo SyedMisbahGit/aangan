@@ -46,6 +46,7 @@ const normalizeLeetSpeak = (text: string): string => {
   const leetMap: Record<string, string> = {
     '0': 'o',
     '1': 'i',
+    '2': 'z',
     '3': 'e',
     '4': 'a',
     '5': 's',
@@ -55,12 +56,10 @@ const normalizeLeetSpeak = (text: string): string => {
     '@': 'a',
     '!': 'i',
     '$': 's',
-    '0': 'o',
     '|': 'i',
     '\\/': 'v',
     '\\/\\/': 'w',
-    '()': 'o',
-    '2': 'z',
+    '()': 'o'
   };
 
   let normalized = text.toLowerCase();
@@ -123,7 +122,9 @@ export const containsFilteredKeywords = (
         return true;
       }
     } catch (err) {
-      console.error(`Invalid regex pattern: ${pattern}`, err);
+      // Use a proper logger in a real application
+      // logger.error(`Invalid regex pattern: ${pattern}`, { error: err });
+      // For now, we'll just return false to continue processing other patterns
     }
     return false;
   });

@@ -80,72 +80,86 @@ export default defineConfig(({ mode }) => {
         template: 'treemap', // or 'sunburst', 'network', 'raw-data', 'table'
       })
     ].filter(Boolean),
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
-  },
-  server: {
-    port: 5173,
-    open: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-        secure: false,
+    
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: mode !== 'production', // Disable sourcemaps in production
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production',
-        drop_debugger: mode === 'production',
-      },
-    },
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
-              return 'vendor-react';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'vendor-ui';
-            }
-            return 'vendor';
-          }
+    
+    server: {
+      port: 5173,
+      open: true,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+          secure: false,
         },
-        chunkFileNames: 'assets/js/[name]-[hash].js',
-        entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: 'assets/[ext]/[name]-[hash][extname]',
       },
     },
-    chunkSizeWarningLimit: 1000,
-    reportCompressedSize: false,
-    cssCodeSplit: true,
-    brotliSize: true,
-  },
-  preview: {
-    port: 4173,
-    open: true,
-  },
-  css: {
-    devSourcemap: false,
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@import "@/styles/variables.scss";`
+    
+    // Build configuration
+    build: {
+      outDir: 'dist',
+      sourcemap: mode !== 'production', // Disable sourcemaps in production
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: mode === 'production',
+          drop_debugger: mode === 'production',
+        },
+      },
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+                return 'vendor-react';
+              }
+              if (id.includes('@radix-ui')) {
+                return 'vendor-ui';
+              }
+              return 'vendor';
+            }
+            return undefined;
+          },
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: 'assets/[ext]/[name]-[hash][extname]',
+        },
+      },
+      chunkSizeWarningLimit: 1000,
+      reportCompressedSize: false,
+      cssCodeSplit: true,
+      brotliSize: true,
+    },
+    
+    // Preview server configuration
+    preview: {
+      port: 4173,
+      open: true,
+    },
+    
+    // CSS configuration
+    css: {
+      devSourcemap: false,
+      preprocessorOptions: {
+        scss: {
+          additionalData: '@import "@/styles/variables.scss";'
+        }
       }
+    },
+    
+    // Dependency optimization
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'react-router-dom'],
+      force: true,
+    },
+    
+    // ESBuild configuration
+    esbuild: {
+      drop: mode === 'production' ? ['console', 'debugger'] : [],
     }
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
-    force: true,
-  },
-  esbuild: {
-    drop: mode === 'production' ? ['console', 'debugger'] : [],
-  },
-}));
+  };
+});

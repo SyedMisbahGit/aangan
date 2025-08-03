@@ -1,7 +1,13 @@
 // backend/vector.ts
 // Vector database operations using ChromaDB
 
-import { ChromaClient, Collection, IncludeEnum, QueryParams } from 'chromadb';
+// Import ChromaDB with proper type definitions
+import {
+  ChromaClient,
+  Collection,
+  IncludeEnum,
+  Where,
+} from 'chromadb';
 import { v4 as uuidv4 } from 'uuid';
 import logger from './utils/logger';
 
@@ -10,7 +16,7 @@ export interface EmbeddingResult {
   id: string;
   embedding: number[];
   metadata: Record<string, unknown>;
-  distance: number | null;
+  distance?: number | null;
   document?: string | null;
 }
 
@@ -24,7 +30,7 @@ interface VectorDBConfig {
 const DEFAULT_CONFIG: VectorDBConfig = {
   url: process.env.CHROMA_DB_URL || 'http://localhost:8000',
   collectionName: 'whisper_embeddings',
-  dimension: 1536  // Default dimension for text-embedding-3-small
+  dimension: 1536, // Default dimension for text-embedding-3-small
 };
 
 class VectorDB {
@@ -47,11 +53,11 @@ class VectorDB {
     try {
       // Test connection
       await this.client.heartbeat();
-      
+
       // Get or create collection
       const collections = await this.client.listCollections();
       const exists = collections.some(c => c.name === this.config.collectionName);
-      
+
       if (exists) {
         this.collection = await this.client.getCollection({
           name: this.config.collectionName,
@@ -59,13 +65,12 @@ class VectorDB {
       } else {
         this.collection = await this.client.createCollection({
           name: this.config.collectionName,
-          metadata: { 
-            "hnsw:space": "cosine",
-            "dimension": this.config.dimension.toString()
-          }
+          metadata: {
+            'hnsw:space': 'cosine',
+          },
         });
       }
-      
+
       this.isInitialized = true;
       logger.info('Vector database initialized successfully');
       return true;
@@ -96,7 +101,7 @@ class VectorDB {
   ): Promise<EmbeddingResult> {
     try {
       await this.ensureInitialized();
-      
+
       if (!this.collection) {
         throw new Error('Collection not initialized');
       }
@@ -104,23 +109,26 @@ class VectorDB {
       const enrichedMetadata = {
         ...metadata,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
-      const documents = document ? [document] : undefined;
-      
-      await this.collection.upsert({
+      const params: Parameters<Collection['upsert']>[0] = {
         ids: [id],
         embeddings: [embedding],
         metadatas: [enrichedMetadata],
-        documents: documents
-      });
+      };
+
+      if (document) {
+        params.documents = [document];
+      }
+
+      await this.collection.upsert(params);
 
       return {
         id,
         embedding,
         metadata: enrichedMetadata,
-        document
+        document,
       };
     } catch (error) {
       logger.error('Failed to upsert embedding', { error, id, metadata });
@@ -134,33 +142,37 @@ class VectorDB {
   async querySimilarEmbeddings(
     queryEmbedding: number[],
     topK: number = 5,
-    filter?: Record<string, unknown>,
-    include: string[] = ['metadatas', 'distances', 'documents']
+    filter?: Where,
+    include: (keyof typeof IncludeEnum)[] = ['metadatas', 'distances', 'documents']
   ): Promise<EmbeddingResult[]> {
     try {
       await this.ensureInitialized();
-      
+
       if (!this.collection) {
         throw new Error('Collection not initialized');
       }
 
-      // Construct the query with proper typing
-      const queryParams: QueryParams = {
+      const results = await this.collection.query({
         queryEmbeddings: [queryEmbedding],
         nResults: topK,
-        include: include as IncludeEnum[],
-        where: filter && Object.keys(filter).length > 0 ? { $or: [filter] } : undefined
-      };
+        include,
+        where: filter,
+      });
 
-      const results = await this.collection.query(queryParams);
+      const embeddingResults: EmbeddingResult[] = [];
+      if (results.ids && results.ids[0]) {
+        results.ids[0].forEach((id: string, index: number) => {
+          embeddingResults.push({
+            id: id,
+            embedding: results.embeddings?.[0]?.[index] || [],
+            metadata: (results.metadatas?.[0]?.[index] as Record<string, unknown>) || {},
+            distance: results.distances?.[0]?.[index],
+            document: results.documents?.[0]?.[index] || null,
+          });
+        });
+      }
 
-      return results.ids[0].map((id, index) => ({
-        id: id as string,
-        embedding: results.embeddings?.[0]?.[index] as number[] || [],
-        metadata: results.metadatas?.[0]?.[index] || {},
-        distance: results.distances?.[0]?.[index],
-        document: results.documents?.[0]?.[index] as string | undefined
-      }));
+      return embeddingResults;
     } catch (error) {
       logger.error('Failed to query similar embeddings', { error });
       throw error;
@@ -173,25 +185,40 @@ class VectorDB {
   async getEmbedding(id: string): Promise<EmbeddingResult | null> {
     try {
       await this.ensureInitialized();
-      
+
       if (!this.collection) {
         throw new Error('Collection not initialized');
       }
 
       const results = await this.collection.get({
         ids: [id],
-        include: ['embeddings', 'metadatas', 'documents']
+        include: ['embeddings', 'metadatas', 'documents'],
       });
 
-      if (!results.ids.length) {
+      if (!results.ids || results.ids.length === 0 || !results.ids[0] || results.ids[0].length === 0) {
         return null;
       }
 
+      const firstResultId = results.ids[0][0];
+      const firstResultEmbedding = results.embeddings?.[0]?.[0];
+      const firstResultMetadata = results.metadatas?.[0]?.[0];
+      const firstResultDocument = results.documents?.[0]?.[0];
+
+      if (!firstResultId) {
+        return null;
+      }
+
+      const embeddingArray = Array.isArray(firstResultEmbedding) ? firstResultEmbedding : [];
+      const metadataObject =
+        typeof firstResultMetadata === 'object' && firstResultMetadata !== null && !Array.isArray(firstResultMetadata)
+          ? (firstResultMetadata as Record<string, unknown>)
+          : {};
+
       return {
-        id: results.ids[0] as string,
-        embedding: results.embeddings?.[0] as number[] || [],
-        metadata: results.metadatas?.[0] || {},
-        document: results.documents?.[0] as string | undefined
+        id: firstResultId,
+        embedding: embeddingArray,
+        metadata: metadataObject,
+        document: firstResultDocument || null,
       };
     } catch (error) {
       logger.error('Failed to get embedding', { error, id });
@@ -205,13 +232,13 @@ class VectorDB {
   async deleteEmbedding(id: string): Promise<boolean> {
     try {
       await this.ensureInitialized();
-      
+
       if (!this.collection) {
         throw new Error('Collection not initialized');
       }
 
       await this.collection.delete({
-        ids: [id]
+        ids: [id],
       });
 
       return true;
@@ -227,7 +254,7 @@ class VectorDB {
   async countEmbeddings(): Promise<number> {
     try {
       await this.ensureInitialized();
-      
+
       if (!this.collection) {
         throw new Error('Collection not initialized');
       }

@@ -5,14 +5,16 @@ import { Toaster } from "./components/ui/toaster";
 import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ParticleFlow } from "./components/ambient/ParticleFlow";
+// ParticleFlow component is not currently used
+// import { ParticleFlow } from "./components/ambient/ParticleFlow";
 import { DreamNavigation } from "./components/shared/DreamNavigation";
 import { AanganThemeProvider } from "./contexts/DreamThemeContext";
 import { ShhhNarratorProvider } from "./contexts/ShhhNarratorContext";
 import { CUJHotspotProvider } from "./contexts/CUJHotspotContext";
 import { useState, useEffect } from "react";
 import messagingPromise from "./firebase-messaging";
-import { getToken, onMessage } from "firebase/messaging";
+// getToken and onMessage are not used directly in this file
+// import { getToken, onMessage } from "firebase/messaging";
 import Admin from "./pages/Admin";
 import AdminInsights from "./pages/AdminInsights";
 import NotFound from "./pages/NotFound";
@@ -22,8 +24,10 @@ import { WhispersProvider } from "./contexts/WhispersContext";
 import { useIsMobile } from './hooks/use-mobile';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 import { SummerSoulProvider } from './contexts/SummerSoulContext';
+// Import AuthProvider from the correct location
 import { AuthProvider } from './contexts/AuthContext';
 import { RealtimeProvider } from './contexts/RealtimeContext';
+import AuthRoutes from './routes/AuthRoutes';
 import AdminLogin from './pages/AdminLogin';
 import PrivacyBanner from './components/PrivacyBanner';
 // RouteObserver is defined below
@@ -31,7 +35,8 @@ import GentleOnboarding from './components/onboarding/GentleOnboarding';
 import { AnimatePresence } from "framer-motion";
 import { ConfettiEffect } from './components/shared/ConfettiEffect';
 import AanganLoadingScreen from './components/shared/AanganLoadingScreen';
-import { DreamHeader, isUserFacingRoute } from './components/shared/DreamHeader';
+// Import only what's needed from DreamHeader
+// import { isUserFacingRoute } from './components/shared/DreamHeader';
 import { logger } from './utils/logger';
 
 const queryClient = new QueryClient({
@@ -59,7 +64,8 @@ const Shrines = lazy(() => import("./pages/Shrines"));
 const Memories = lazy(() => import("./pages/Memories"));
 const Murmurs = lazy(() => import("./pages/Murmurs"));
 const Diary = lazy(() => import("./pages/Diary"));
-const Login = lazy(() => import("./pages/Login"));
+// Login component is imported via AuthRoutes
+// const Login = lazy(() => import("./pages/Login"));
 const Index = lazy(() => import("./pages/Index"));
 const Menu = lazy(() => import("./pages/Menu"));
 
@@ -122,7 +128,7 @@ function OfflineBanner() {
 const AppContent: React.FC = () => {
   const isMobile = useIsMobile();
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(true);
-  const [onboardingComplete, setOnboardingComplete] = useState(localStorage.getItem('aangan_onboarding_complete') === 'true');
+  const [onboardingComplete, _setOnboardingComplete] = useState(localStorage.getItem('aangan_onboarding_complete') === 'true');
   const lastVisitedPath = localStorage.getItem('lastVisitedPath');
   const location = useLocation();
 
@@ -178,7 +184,7 @@ const AppContent: React.FC = () => {
     <>
       <RouteObserver />
       <GentleOnboarding />
-      {showPrivacyBanner && isUserFacingRoute(location.pathname) && (
+      {showPrivacyBanner && (location.pathname.startsWith('/auth/') || ['/about', '/explore', '/lounge'].some(path => location.pathname.startsWith(path))) && (
         <PrivacyBanner onAccept={() => setShowPrivacyBanner(false)} />
       )}
       <ConfettiEffect isActive={false} />
@@ -186,8 +192,13 @@ const AppContent: React.FC = () => {
         <Routes location={location} key={location.pathname}>
           {/* Public routes */}
           <Route path="/" element={lastVisitedPath ? <Navigate to={lastVisitedPath} /> : <Index />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/about" element={<About />} />
+          <Route path="/about" element={<About />} />
+          
+          {/* Auth routes */}
+          <Route path="/auth/*" element={<AuthRoutes />} />
+          
+          {/* Legacy login route redirect */}
+          <Route path="/login" element={<Navigate to="/auth/login" replace />} />
         
         {/* Protected routes */}
         <Route path="/whispers" element={

@@ -38,6 +38,7 @@ export interface AuthContextType {
   // User management
   requestPasswordReset: (email: string) => Promise<{ error: string | null }>;
   resetPassword: (token: string, newPassword: string) => Promise<{ error: string | null }>;
+  updatePassword: (currentPassword: string, newPassword: string) => Promise<{ error: string | null }>;
   verifyEmail: (token: string) => Promise<{ error: string | null }>;
   resendVerificationEmail: (email: string) => Promise<{ error: string | null }>;
   

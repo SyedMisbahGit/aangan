@@ -29,7 +29,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Test component that uses the error handler
-const TestComponent = () => {
+const TestComponent: React.FC = () => {
   const { handleError, resetError, error, isHandling } = useErrorHandler();
   
   return (
