@@ -1,5 +1,5 @@
 import { cache } from '../utils/cache.js';
-import { logger } from '../utils/logger.js';
+import logger from '../utils/logger.js';
 
 /**
  * Base Data Access Layer class with built-in caching

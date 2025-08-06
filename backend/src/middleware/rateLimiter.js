@@ -1,8 +1,14 @@
 import rateLimit from 'express-rate-limit';
 import RedisStore from 'rate-limit-redis';
 import { redis } from '../config/redis.js';
-import { logger } from '../utils/logger.js';
+import logger from '../utils/logger.js';
 import crypto from 'crypto';
+
+// Use in-memory store if Redis is not available
+const store = redis.client ? new RedisStore({
+  sendCommand: (...args) => redis.client.sendCommand(args),
+  prefix: 'rl:',
+}) : new rateLimit.MemoryStore();
 
 // Rate limit configuration with enhanced security
 const RATE_LIMIT_CONFIG = {
@@ -135,15 +141,6 @@ const shouldSkipRateLimit = (req) => {
 
 // Create a rate limiter with the given configuration
 const createRateLimiter = (config, type = 'standard') => {
-  // Use in-memory store if Redis is not available
-  const store = redis.getClient() 
-    ? new RedisStore({
-        sendCommand: (...args) => redis.getClient().sendCommand(args),
-        prefix: `rl:${process.env.NODE_ENV || 'development'}:`,
-        // Expire rate limit counters after windowMs * 2 to handle race conditions
-        expiry: Math.ceil((config.windowMs * 2) / 1000)
-      })
-    : new rateLimit.MemoryStore(config.windowMs);
 
   // Create rate limiter with enhanced configuration
   const limiter = rateLimit({

@@ -1,6 +1,7 @@
 /**
  * Role-based access control (RBAC) configuration
  * Defines permissions for each role in the system
+ * This is a renamed version of permissions.js to work around import issues
  */
 
 // Permission levels

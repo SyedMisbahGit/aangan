@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
-import db from '../db';
-import { getPermissionsForRole } from './permissions';
+import db from '../db.js';
+import { getPermissionsForRole } from './permissions.js';
 
 const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';

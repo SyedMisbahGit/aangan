@@ -1,5 +1,5 @@
 import { vectorDB, EmbeddingResult } from '../vector';
-import logger from '../utils/logger';
+import logger from '../utils/logger.js';
 
 // Mock logger to avoid console output during tests
 jest.mock('../utils/logger', () => ({

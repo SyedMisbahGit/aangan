@@ -1,7 +1,7 @@
 import express from 'express';
-import bcrypt from 'bcrypt';
-import { generateTokens } from '../utils/jwtUtils';
-import { validateEmail, validatePassword } from '../middleware/validation';
+import bcrypt from 'bcryptjs';
+import { generateTokens } from '../utils/jwtUtils.js';
+import { validateEmail, validatePassword } from '../middleware/validation.js';
 
 const router = express.Router();
 

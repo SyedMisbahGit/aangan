@@ -1,5 +1,5 @@
 import { verifyAccessToken } from '../utils/jwtUtils';
-import { PERMISSIONS, checkPermissions } from '../utils/permissions';
+import { PERMISSIONS, checkPermissions } from '../utils/permissions.js';
 import db from '../db';
 
 // Admin-specific security options

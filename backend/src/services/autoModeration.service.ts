@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import db from '../db';
-import logger from '../utils/logger';
+import logger from '../utils/logger.js';
 import { containsFilteredKeywords } from '../utils/moderation/keywordFilter';
 import { imageModerationService, ModerationResult } from './imageModeration.service';
 import { BadRequestError } from '../utils/errors';

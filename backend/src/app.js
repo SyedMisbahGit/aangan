@@ -3,7 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
-import authRoutes from "./routes/auth";
+import authRoutes from "./routes/auth.js";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -27,7 +27,7 @@ const app = express();
 
 // Trust proxy for rate limiting with X-Forwarded-For headers
 app.set('trust proxy', 1);
-import logger from './utils/secureLogger';
+import logger from './utils/secureLogger.js';
 
 logger.info('✅ Express trust proxy is set to 1 (for X-Forwarded-For headers)');
 
@@ -1475,8 +1475,8 @@ const startServer = async () => {
 }
 
 // Import WebSocket utilities
-import { authenticateSocket } from './middleware/wsAuth';
-import { initWebSocketHandlers } from './utils/wsEvents';
+import { authenticateSocket } from './middleware/wsAuth.js';
+import { initWebSocketHandlers } from './utils/wsEvents.js';
 
 // Initialize WebSocket handlers
 initWebSocketHandlers(io);

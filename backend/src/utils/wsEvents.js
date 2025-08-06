@@ -28,8 +28,8 @@
  * httpServer.listen(3000);
  */
 
-import { PERMISSIONS } from './permissions';
-import { logger } from './logger';
+import { PERMISSIONS } from './rbac.js';
+import logger from './logger.js';
 
 /**
  * @constant {number} DEFAULT_RATE_LIMIT_WINDOW_MS

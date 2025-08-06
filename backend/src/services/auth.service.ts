@@ -5,7 +5,7 @@ import { Strategy as AppleStrategy, Profile as AppleProfile } from 'passport-app
 import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import db from '../db';
-import logger from '../utils/logger';
+import logger from '../utils/logger.js';
 import { BadRequestError, UnauthorizedError, ForbiddenError } from '../utils/errors';
 import { sendEmail } from './email.service';
 

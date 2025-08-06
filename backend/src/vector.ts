@@ -9,7 +9,7 @@ import {
   Where,
 } from 'chromadb';
 import { v4 as uuidv4 } from 'uuid';
-import logger from './utils/logger';
+import logger from './utils/logger.js';
 
 // Types for our vector operations
 export interface EmbeddingResult {

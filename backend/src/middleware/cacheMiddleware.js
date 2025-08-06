@@ -1,5 +1,5 @@
 import { cache } from '../utils/cache.js';
-import { logger } from '../utils/logger.js';
+import logger from '../utils/logger.js';
 
 /**
  * Generate a cache key from request parameters

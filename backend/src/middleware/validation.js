@@ -1,5 +1,5 @@
 import { body, param, query, validationResult } from 'express-validator';
-import { logger } from '../utils/logger.js';
+import logger from '../utils/logger.js';
 import mime from 'mime-types';
 import { RateLimiterRedis } from 'rate-limiter-flexible';
 import redis from 'redis';

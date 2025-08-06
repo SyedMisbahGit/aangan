@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BadRequestError, ForbiddenError } from '../utils/errors';
-import logger from '../utils/logger';
+import logger from '../utils/logger.js';
 // Using require for form-data to avoid ES module interop issues
 const FormData = require('form-data');
 import { Readable } from 'stream';

@@ -1,5 +1,5 @@
 import { validationResult } from 'express-validator';
-import logger from './secureLogger';
+import logger from './secureLogger.js';
 
 /**
  * Async handler wrapper that catches errors and passes them to Express error handling

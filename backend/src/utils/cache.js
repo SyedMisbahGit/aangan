@@ -12,7 +12,7 @@
  */
 
 import { createClient } from 'redis';
-import { logger } from './logger.js';
+import logger from './logger.js';
 
 /**
  * Redis-based caching client with automatic reconnection and error handling

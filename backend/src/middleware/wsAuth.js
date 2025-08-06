@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { verifyAccessToken } from './jwtUtils';
-import { getPermissionsForRole } from './permissions';
-import db from '../db';
+import { verifyAccessToken } from '../utils/jwtUtils.js';
+// Import the RBAC module using the new file name
+import { getPermissionsForRole } from '../utils/rbac.js';
+import db from '../db.js';
 
 // WebSocket authentication middleware
 const authenticateSocket = async (socket, next) => {
