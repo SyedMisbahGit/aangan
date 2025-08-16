@@ -48,7 +48,9 @@
     "verify:backend": "cd backend && npm run type-check",
     "verify:frontend": "cd frontend && npm run type-check",
     "type-check:backend": "tsc --project backend --noEmit",
-    "type-check:frontend": "tsc --project frontend --noEmit"
+    "type-check:frontend": "tsc --project frontend --noEmit",
+    "validate:staging": "node scripts/validate-staging-readiness.js",
+    "pre-deploy:staging": "npm run validate:staging && echo 'Ready for staging deployment!'"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
