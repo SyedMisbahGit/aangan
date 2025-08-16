@@ -34,7 +34,17 @@
   "exclude": [
     "node_modules",
     "dist",
+    "dev-dist",
+    "coverage",
+    ".dist",
     "**/*.js",
-    "**/*.d.ts"
+    "**/workbox-*.js",
+    "backend/build/**",
+    "backend/dist/**",
+    "frontend/dist/**",
+    "frontend/build/**",
+    "*.config.js",
+    "**/*.config.js",
+    "scripts/**/*.js"
   ]
 }

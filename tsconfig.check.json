@@ -1,0 +1,59 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["frontend/src/*"],
+      "@lib/*": ["frontend/lib/*"],
+      "@theme": ["frontend/theme/theme.ts"]
+    },
+    "types": ["@testing-library/jest-dom", "jest"],
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "allowJs": false
+  },
+  "include": [
+    "frontend/src/**/*",
+    "frontend/lib/**/*",
+    "backend/src/**/*",
+    "frontend/env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dev-dist",
+    "coverage",
+    ".dist",
+    "**/*.js",
+    "**/workbox-*.js",
+    "backend/build/**",
+    "backend/dist/**", 
+    "frontend/dist/**",
+    "frontend/build/**",
+    "*.config.js",
+    "**/*.config.js",
+    "scripts/**/*.js",
+    "**/__tests__/**",
+    "**/*.test.*",
+    "**/*.stories.*"
+  ]
+}

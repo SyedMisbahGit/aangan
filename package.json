@@ -23,7 +23,7 @@
     "test:email": "node scripts/test/test-email.cjs",
     "test:fcm": "node scripts/test/test-fcm-push.js",
     "test:login": "node scripts/test/test-login.js",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit -p tsconfig.check.json",
     "preview": "vite preview",
     "prepare": "husky install",
     "maintenance": "node scripts/maintenance/maintenance.js",
