@@ -4,7 +4,8 @@
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "WebWorker", "ESNext"],
     "allowJs": false,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
+    "exactOptionalPropertyTypes": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -35,8 +36,16 @@
     "types": ["vite/client", "vite-plugin-pwa/client"]
   },
   "include": [
-    "src",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "**/*.d.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
 }

@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 import { AuthContextType } from './AuthContext.types';
 
 
@@ -29,21 +29,15 @@ export const useAuth = (): AuthContextType => {
  * * @param Component - The component to wrap with auth props
  * @returns A new component with auth props injected
  */
-// Define the prop types for components that use withAuth
-type WithAuthProps = {
-  auth: AuthContextType;
-};
-
-
-// A type-safe implementation of withAuth using a type assertion
-export function withAuth<P extends WithAuthProps>(
-  Component: React.ComponentType<P>
-): React.FC<Omit<P, 'auth'>> {
-  const WithAuth: React.FC<Omit<P, 'auth'>> = (props) => {
+// A type-safe implementation of withAuth
+export function withAuth<P extends object>(
+  Component: React.ComponentType<P & { auth: AuthContextType }>
+): React.FC<P> {
+  const WithAuth: React.FC<P> = (props) => {
     const auth = useAuth();
-    // We use a type assertion here as we know the combined props will be valid
-    const componentProps = { ...props, auth } as unknown as P;
-    return <Component {...componentProps} />;
+    // Create a new props object with auth included
+    const componentProps = { ...props, auth } as P & { auth: AuthContextType };
+    return React.createElement(Component, componentProps);
   };
 
   const displayName = Component.displayName || Component.name || 'Component';

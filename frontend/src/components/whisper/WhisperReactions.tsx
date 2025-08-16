@@ -80,7 +80,7 @@ export const WhisperReactions: React.FC<WhisperReactionsProps> = ({
       // Log error to error reporting service in production
       if (process.env.NODE_ENV !== 'production') {
         // Only log in development
-        // eslint-disable-next-line no-console
+         
         console.error('Error reacting to whisper:', error);
       }
       // Optionally show a user-friendly error message here

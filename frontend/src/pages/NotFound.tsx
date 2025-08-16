@@ -10,7 +10,7 @@ const NotFound = () => {
     // Log 404 errors in development or if an error tracking service is available
     if (process.env.NODE_ENV === 'development') {
       // Only log in development
-      // eslint-disable-next-line no-console
+       
       console.error(
         "404 Error: User attempted to access non-existent route:",
         location.pathname,

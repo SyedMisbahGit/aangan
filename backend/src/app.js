@@ -10,10 +10,16 @@ import { dirname } from "path";
 import jwt from "jsonwebtoken";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { db } from "./db.js";
+import db from "./db.js";
 import dayjs from "dayjs";
 import { initServices, shutdownServices } from "./services/index.js";
 import { errorHandler, notFoundHandler, initErrorTracking } from "./middleware/errorHandler.js";
+import { requestLogger, requestBodyLogger } from "./middleware/requestLogger.js";
+import cache from './utils/cache.js';
+import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcrypt';
+// import adminRoutes from './routes/admin.js'; // Comment out until admin routes are implemented
+// import { aiReplyJobQueue } from './services/aiReplyJobQueue.js'; // Comment out until AI reply queue is implemented
 
 // Load environment variables
 dotenv.config();
@@ -129,6 +135,8 @@ const CONNECTION_TIMEOUT = 300000; // 5 minutes of inactivity
 
 // Track connection attempts for rate limiting
 const connectionAttempts = new Map();
+// Message rate limiting buckets for WebSocket messages
+const msgBuckets = new Map();
 
 // Middleware for connection authentication and rate limiting
 io.use((socket, next) => {
@@ -435,8 +443,40 @@ let services;
 // Graceful shutdown
 const shutdown = async () => {
   console.log('\nShutting down gracefully...');
-  await shutdownServices();
-  process.exit(0);
+  
+  try {
+    // Close WebSocket connections
+    if (io) {
+      console.log('Closing WebSocket connections...');
+      io.sockets.sockets.forEach(socket => {
+        socket.disconnect(true);
+      });
+      
+      // Close WebSocket server
+      io.close(() => {
+        console.log('WebSocket server closed');
+      });
+    }
+    
+    // Clean up WebSocket handlers if they were initialized
+    if (cleanupWebSocketHandlers) {
+      console.log('Cleaning up WebSocket handlers...');
+      await cleanupWebSocketHandlers();
+    }
+    
+    // Close the HTTP server
+    if (server) {
+      server.close(() => {
+        console.log('HTTP server closed');
+        process.exit(0);
+      });
+    } else {
+      process.exit(0);
+    }
+  } catch (error) {
+    console.error('Error during shutdown:', error);
+    process.exit(1);
+  }
 };
 
 process.on('SIGTERM', shutdown);
@@ -585,6 +625,34 @@ const validateInput = (req, res, next) => {
 
 app.use(validateInput);
 
+// IP key generator for rate limiting
+const ipKeyGenerator = (req) => {
+  // Get the real IP address from various sources
+  const forwarded = req.headers['x-forwarded-for'];
+  let ip;
+  
+  if (forwarded) {
+    ip = forwarded.split(',')[0].trim();
+  } else {
+    ip = req.connection?.remoteAddress || 
+         req.socket?.remoteAddress || 
+         req.ip || 
+         '127.0.0.1';
+  }
+  
+  // Normalize IPv6 addresses
+  if (ip === '::1') {
+    return '127.0.0.1'; // IPv6 localhost to IPv4
+  }
+  
+  if (ip?.startsWith('::ffff:')) {
+    return ip.substring(7); // Remove IPv6-mapped IPv4 prefix
+  }
+  
+  // For other IPv6 addresses, return as-is (they're valid keys)
+  return ip || '127.0.0.1';
+};
+
 // Rate limiting with proper IP detection
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -659,12 +727,6 @@ const authenticateAdminJWT = async (req, res, next) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 
-// 404 Handler - must be after all other routes
-app.use(notFoundHandler);
-
-// Error Handler - must be after all other middleware and routes
-app.use(errorHandler);
-
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ 
@@ -676,11 +738,20 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// Heartbeat endpoint
+app.post("/api/health/heartbeat", async (req, res) => {
+  try {
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: "Heartbeat failed" });
+  }
+});
+
 // Metrics endpoint
 app.get('/metrics', async (req, res) => {
   try {
     res.set('Content-Type', 'text/plain');
-    const metrics = await getMetrics();
+    const metrics = 'Metrics not implemented yet'; // await getMetrics();
     res.end(metrics);
   } catch (err) {
     logger.error('Error generating metrics', { error: err.message, stack: err.stack });
@@ -765,15 +836,6 @@ app.post("/api/admin/change-password", authenticateAdminJWT, async (req, res) =>
     res.json({ success: true, message: "Password changed and all tokens revoked." });
   } catch (error) {
     res.status(500).json({ error: "Failed to change password" });
-  }
-});
-
-// Heartbeat endpoint
-app.post("/api/health/heartbeat", async (req, res) => {
-  try {
-    res.json({ ok: true });
-  } catch (e) {
-    res.status(500).json({ error: "Heartbeat failed" });
   }
 });
 
@@ -937,13 +999,15 @@ app.post("/api/whispers", whisperLimiter, async (req, res) => {
         // Enqueue AI reply job instead of setTimeout
         const EMOTIONS = ['calm', 'joy', 'nostalgia', 'hope', 'anxiety', 'love'];
         const aiEmotion = EMOTIONS[Math.floor(Math.random() * EMOTIONS.length)];
+        /*
         aiReplyJobQueue.enqueueJob({
           whisperId: id,
           zone,
           emotion: aiEmotion,
           delayMs
         });
-        console.log(`[AIReply] Enqueued AI reply job for whisper ${id} in zone ${zone} (delay ${Math.round(delayMs/1000)}s)`);
+        */
+        // console.log(`[AIReply] Enqueued AI reply job for whisper ${id} in zone ${zone} (delay ${Math.round(delayMs/1000)}s)`);
       }
     }
     // --- End AI Reply Scheduling ---
@@ -1365,13 +1429,15 @@ app.post("/api/whispers/:id/check-ai-reply", async (req, res) => {
       // Enqueue a job with a short delay (30s)
       const EMOTIONS = ['calm', 'joy', 'nostalgia', 'hope', 'anxiety', 'love'];
       const aiEmotion = EMOTIONS[Math.floor(Math.random() * EMOTIONS.length)];
+      /*
       await aiReplyJobQueue.enqueueJob({
         whisperId: id,
         zone: original.zone,
         emotion: aiEmotion,
         delayMs: 30 * 1000
       });
-      console.log(`[AIReply] Manual pull: enqueued AI reply job for whisper ${id} in zone ${original.zone}`);
+      */
+      // console.log(`[AIReply] Manual pull: enqueued AI reply job for whisper ${id} in zone ${original.zone}`);
     } else {
       console.log(`[AIReply] Manual pull: job already queued for whisper ${id}`);
     }
@@ -1450,14 +1516,14 @@ const startServer = async () => {
     }
     
     const PORT = process.env.PORT || 3001;
-    server.use(errorHandler); // Add error handling middleware
+    app.use(errorHandler); // Add error handling middleware
     server.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📊 Cache status: ${cache.isConnected ? '✅ Connected' : '❌ Disabled'}`);
     });
     // Handle server errors
     server.on('error', (error) => {
-      Sentry.captureException(error); // Capture server errors with Sentry
+      // Sentry.captureException(error); // Capture server errors with Sentry - commented out
       console.error('❌ Server error:', error);
       if (error.code === 'EADDRINUSE') {
         console.error(`❌ Port ${PORT} is already in use`);
@@ -1466,7 +1532,7 @@ const startServer = async () => {
     });
 
   } catch (error) {
-    Sentry.captureException(error); // Capture startup errors with Sentry
+    // Sentry.captureException(error); // Capture startup errors with Sentry - commented out
     console.error("❌ Failed to start server:", error);
     console.error("❌ Error details:", error.message);
     console.error("❌ Error stack:", error.stack);
@@ -1476,10 +1542,15 @@ const startServer = async () => {
 
 // Import WebSocket utilities
 import { authenticateSocket } from './middleware/wsAuth.js';
-import { initWebSocketHandlers } from './utils/wsEvents.js';
+import { initWebSocketHandlers, broadcast, joinRoom, leaveRoom } from './utils/wsEvents.js';
 
 // Initialize WebSocket handlers
-initWebSocketHandlers(io);
+let cleanupWebSocketHandlers;
+initWebSocketHandlers(io).then(cleanup => {
+  cleanupWebSocketHandlers = cleanup;
+}).catch(error => {
+  console.error('Failed to initialize WebSocket handlers:', error);
+});
 
 // WebSocket connection handler
 io.on('connection', (socket) => {
@@ -1509,18 +1580,30 @@ io.on('connection', (socket) => {
   
   // Handle disconnection
   socket.on('disconnect', () => {
-    logger.info(`WebSocket client disconnected`, { socketId: socket.id });
+    console.log(`Client disconnected: ${socket.id}`);
+    // Clean up connection tracking
+    activeConnections.delete(socket.id);
     
     // Update connection stats
+    connectionStats.activeConnections--;
     connectionStats.totalDisconnections++;
-    activeSockets.delete(socket.id);
     
-    // Clean up user tracking
-    if (socket.user) {
-      activeUsers.delete(socket.user.id);
-    }
+    // Log the disconnection
+    logger.info('Client disconnected', {
+      socketId: socket.id,
+      activeConnections: connectionStats.activeConnections,
+      totalConnections: connectionStats.totalConnections,
+      totalDisconnections: connectionStats.totalDisconnections,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Leave all rooms this socket was in
+    const rooms = Object.keys(socket.rooms).filter(room => room !== socket.id);
+    rooms.forEach(room => {
+      leaveRoom(socket.id, room);
+    });
   });
-  
+
   // Handle new whispers with rate limiting and validation
   socket.on('whisper-created', async (whisper) => {
     try {
@@ -1568,7 +1651,7 @@ io.on('connection', (socket) => {
   // Handle zone join with validation
   socket.on('join-zone', (zone) => {
     try {
-      const connection = activeSockets.get(socket.id);
+      const connection = activeConnections.get(socket.id);
       if (!connection) {
         console.warn(`⚠️  Connection not found for ${socket.id}`);
         return;
@@ -1656,6 +1739,7 @@ io.on('connection', (socket) => {
     try {
       // Per-IP rate limiting
       const ip = socket.handshake.address;
+      // Per-IP rate limiting
       const bucket = msgBuckets.get(ip) ?? { count: 0, ts: Date.now() };
       if (Date.now() - bucket.ts > 60_000) bucket.count = 0; // reset each min
       if (++bucket.count > 20) {
@@ -1729,7 +1813,7 @@ io.on('connection', (socket) => {
         connectionStats.activeConnections--;
         connectionStats.totalDisconnections++;
         
-        clearTimeout(connectionTimeout);
+        // clearTimeout(connectionTimeout);
       }
       
       console.log(`🔌 Client disconnected: ${socket.id} (${reason})`);
@@ -1919,8 +2003,8 @@ const ROLES = {
 // Middleware for admin routes (kept for backward compatibility)
 const extractUserFromJWT = authenticateJWT();
 
-// Mount modular admin routes
-app.use("/api/admin", extractUserFromJWT, adminRoutes);
+// Mount modular admin routes - commented out until adminRoutes is implemented
+// app.use("/api/admin", extractUserFromJWT, adminRoutes);
 
 // --- Admin Moderation Endpoints ---
 // Middleware: require admin JWT
@@ -1967,7 +2051,7 @@ app.delete("/api/whisper_reports/:id", requireAdminJWT, async (req, res) => {
   }
 });
 
-// After all other app setup, start the AI reply worker
-aiReplyJobQueue.startWorker();
+// After all other app setup, start the AI reply worker - commented out until implemented
+// aiReplyJobQueue.startWorker();
 
 startServer();

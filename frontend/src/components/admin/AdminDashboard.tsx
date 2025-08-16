@@ -168,31 +168,41 @@ export const AdminDashboard: React.FC = () => {
   // Show error message if there's an error
   if (error) {
     return (
-      <div className="p-4">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            <p className="mb-2">{error}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRetry}
-              className="mt-2"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                  Retrying...
-                </>
-              ) : (
-                'Try Again'
-              )}
-            </Button>
-          </AlertDescription>
-        </Alert>
-      </div>
+      <DashboardErrorBoundary onReset={handleRetry}>
+        <Suspense fallback={
+          <div className="p-4">
+            <DashboardStatsSkeleton />
+            <ChartsSkeleton />
+            <RecentActivitySkeleton />
+          </div>
+        }>
+          <div className="p-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>
+                <p className="mb-2">{error}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRetry}
+                  className="mt-2"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Retrying...
+                    </>
+                  ) : (
+                    'Try Again'
+                  )}
+                </Button>
+              </AlertDescription>
+            </Alert>
+          </div>
+        </Suspense>
+      </DashboardErrorBoundary>
     );
   }
   
@@ -235,111 +245,115 @@ export const AdminDashboard: React.FC = () => {
         <p className="text-gray-500">No analytics data available</p>
         <Button variant="outline" onClick={handleRetry} className="mt-2">
           Refresh Data
+        </Button>
+      </div>
+    );
+  }
+  
+  // Main dashboard content
+  return (
+    <DashboardErrorBoundary onReset={handleRetry}>
+      <Suspense fallback={<CustomSkeletonCard className="my-12" />}>
+        <div className="container mx-auto p-4" data-testid="dashboard-content">
+          <h1 className="text-2xl font-bold mb-6">Dashboard Overview</h1>
 
-// Main dashboard content
-return (
-<DashboardErrorBoundary onReset={handleRetry}>
-<Suspense fallback={<CustomSkeletonCard className="my-12" />}>
-<div className="container mx-auto p-4" data-testid="dashboard-content">
-<h1 className="text-2xl font-bold mb-6">Dashboard Overview</h1>
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-white rounded-lg shadow p-6" data-testid="total-whispers">
+              <h3 className="text-gray-500 text-sm font-medium">Total Whispers</h3>
+              <p className="text-3xl font-bold">{analytics.total}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow p-6" data-testid="top-emotion">
+              <h3 className="text-gray-500 text-sm font-medium">Top Emotion</h3>
+              <p className="text-3xl font-bold capitalize">
+                {Object.entries(analytics.byEmotion).sort((a, b) => (b[1] as number) - (a[1] as number))[0]?.[0] || 'N/A'}
+              </p>
+            </div>
+            <div className="bg-white rounded-lg shadow p-6" data-testid="top-zone">
+              <h3 className="text-gray-500 text-sm font-medium">Top Zone</h3>
+              <p className="text-3xl font-bold">
+                {Object.entries(analytics.byZone).sort((a, b) => (b[1] as number) - (a[1] as number))[0]?.[0] || 'N/A'}
+              </p>
+            </div>
+          </div>
 
-{/* Stats */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-<div className="bg-white rounded-lg shadow p-6" data-testid="total-whispers">
-<h3 className="text-gray-500 text-sm font-medium">Total Whispers</h3>
-<p className="text-3xl font-bold">{analytics.total}</p>
-</div>
-<div className="bg-white rounded-lg shadow p-6" data-testid="top-emotion">
-<h3 className="text-gray-500 text-sm font-medium">Top Emotion</h3>
-<p className="text-3xl font-bold capitalize">
-{Object.entries(analytics.byEmotion).sort((a, b) => (b[1] as number) - (a[1] as number))[0]?.[0] || 'N/A'}
-</p>
-</div>
-<div className="bg-white rounded-lg shadow p-6" data-testid="top-zone">
-<h3 className="text-gray-500 text-sm font-medium">Top Zone</h3>
-<p className="text-3xl font-bold">
-{Object.entries(analytics.byZone).sort((a, b) => (b[1] as number) - (a[1] as number))[0]?.[0] || 'N/A'}
-</p>
-</div>
-</div>
+          {/* Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow p-6" data-testid="emotion-distribution">
+              <h3 className="text-gray-500 text-sm font-medium mb-4">Emotion Distribution</h3>
+              <div className="space-y-2">
+                {Object.entries(analytics.byEmotion).map(([emotion, count]) => (
+                  <div key={emotion} className="flex items-center">
+                    <div className="w-1/3 capitalize">{emotion}</div>
+                    <div className="w-2/3">
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div 
+                          className="bg-aangan-primary h-2.5 rounded-full" 
+                          style={{ width: `${(count as number / Math.max(...Object.values(analytics.byEmotion).map(v => v as number), 1)) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                    <div className="w-8 text-right text-sm font-medium">
+                      {count as number}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-{/* Charts */}
-<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-<div className="bg-white rounded-lg shadow p-6" data-testid="emotion-distribution">
-<h3 className="text-gray-500 text-sm font-medium mb-4">Emotion Distribution</h3>
-<div className="space-y-2">
-{Object.entries(analytics.byEmotion).map(([emotion, count]) => (
-<div key={emotion} className="flex items-center">
-<div className="w-1/3 capitalize">{emotion}</div>
-<div className="w-2/3">
-<div className="w-full bg-gray-200 rounded-full h-2.5">
-<div 
-className="bg-aangan-primary h-2.5 rounded-full" 
-style={{ width: `${(count as number / Math.max(...Object.values(analytics.byEmotion).map(v => v as number), 1)) * 100}%` }}
-/>
-</div>
-</div>
-<div className="w-8 text-right text-sm font-medium">
-{count as number}
-</div>
-</div>
-))}
-</div>
-</div>
+            {/* Zone Distribution */}
+            <div className="bg-white rounded-lg shadow p-6" data-testid="zone-distribution">
+              <h3 className="text-gray-500 text-sm font-medium mb-4">Top Zones</h3>
+              <div className="space-y-4">
+                {zones.slice(0, 5).map((zone) => (
+                  <div key={zone.zone} className="flex items-center">
+                    <div className="w-1/3">{zone.zone}</div>
+                    <div className="w-2/3">
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div 
+                          className="bg-aangan-primary h-2.5 rounded-full" 
+                          style={{ 
+                            width: `${(zone.whisper_count / Math.max(...zones.map(z => z.whisper_count), 1)) * 100}%` 
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="w-8 text-right text-sm font-medium">
+                      {zone.whisper_count}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-{/* Zone Distribution */}
-<div className="bg-white rounded-lg shadow p-6" data-testid="zone-distribution">
-<h3 className="text-gray-500 text-sm font-medium mb-4">Top Zones</h3>
-<div className="space-y-4">
-{zones.slice(0, 5).map((zone) => (
-<div key={zone.zone} className="flex items-center">
-<div className="w-1/3">{zone.zone}</div>
-<div className="w-2/3">
-<div className="w-full bg-gray-200 rounded-full h-2.5">
-<div 
-className="bg-aangan-primary h-2.5 rounded-full" 
-style={{ 
-width: `${(zone.whisper_count / Math.max(...zones.map(z => z.whisper_count), 1)) * 100}%` 
-}}
-/>
-</div>
-</div>
-<div className="w-8 text-right text-sm font-medium">
-{zone.whisper_count}
-</div>
-</div>
-))}
-</div>
-</div>
-</div>
-
-{/* Recent Activity */}
-<div className="bg-white rounded-lg shadow p-6" data-testid="recent-activity">
-<h3 className="text-gray-500 text-sm font-medium mb-4">Recent Activity</h3>
-<div className="space-y-2">
-{analytics.recentActivity && analytics.recentActivity.length > 0 ? (
-analytics.recentActivity.map((activity, index) => (
-<div key={index} className="py-2 border-b last:border-b-0">
-<p className="text-sm">{activity.content}</p>
-<div className="flex justify-between text-xs text-gray-500 mt-1">
-<span>{activity.zone}</span>
-<div>
-{activity.emotion && <span className="capitalize">{activity.emotion.toLowerCase()}</span>}
-{activity.emotion && activity.created_at && <span> • </span>}
-{activity.created_at && (
-<span>{new Date(activity.created_at).toLocaleString()}</span>
-)}
-</div>
-</div>
-</div>
-))
-) : (
-<p className="text-gray-500 text-sm">No recent activity</p>
-)}
-</div>
-</div>
-</div>
-</Suspense>
-</DashboardErrorBoundary>
-);
+          {/* Recent Activity */}
+          <div className="bg-white rounded-lg shadow p-6" data-testid="recent-activity">
+            <h3 className="text-gray-500 text-sm font-medium mb-4">Recent Activity</h3>
+            <div className="space-y-2">
+              {analytics.recentActivity && analytics.recentActivity.length > 0 ? (
+                analytics.recentActivity.map((activity, index) => (
+                  <div key={index} className="py-2 border-b last:border-b-0">
+                    <p className="text-sm">{activity.content}</p>
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>{activity.zone}</span>
+                      <div>
+                        {activity.emotion && <span className="capitalize">{activity.emotion.toLowerCase()}</span>}
+                        {activity.emotion && activity.created_at && <span> • </span>}
+                        {activity.created_at && (
+                          <span>{new Date(activity.created_at).toLocaleString()}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 text-sm">No recent activity</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </Suspense>
+    </DashboardErrorBoundary>
+  );
 };

@@ -1,6 +1,6 @@
 import { verifyAccessToken } from '../utils/jwtUtils';
 import { PERMISSIONS, checkPermissions } from '../utils/permissions.js';
-import db from '../db';
+import db from '../db.js';
 
 // Admin-specific security options
 const DEFAULT_ADMIN_OPTIONS = {

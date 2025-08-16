@@ -10,8 +10,8 @@ export const errorHandler = (err, req, res, next) => {
   const message = err.message || 'Internal Server Error';
   const stack = process.env.NODE_ENV === 'development' ? err.stack : undefined;
   
-  // Log the error
-  logger.error({
+  // Enhanced error logging
+  const errorDetails = {
     message: err.message,
     status: statusCode,
     path: req.path,
@@ -20,9 +20,17 @@ export const errorHandler = (err, req, res, next) => {
     userAgent: req.get('user-agent'),
     userId: req.user?.id,
     stack: stack,
+    errorName: err.name,
+    errorConstructor: err.constructor?.name,
     ...(err.errors && { errors: err.errors }),
     ...(err.code && { code: err.code }),
-  });
+    ...(err.context && { context: err.context }),
+    ...(err.errorCode && { errorCode: err.errorCode }),
+  };
+
+  // Log the error with all available details
+  console.error('Error handler received error:', JSON.stringify(errorDetails, null, 2));
+  logger.error('Error handler processing error', errorDetails);
 
   // Capture to Sentry in production
   if (process.env.NODE_ENV === 'production') {

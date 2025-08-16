@@ -19,6 +19,39 @@ This document outlines the testing strategy for the College Whisper application,
 /____________________\
 ```
 
+## Backend Testing
+
+For comprehensive backend testing details, see the [Backend Testing Guide](../backend/TESTING.md).
+
+### Key Components
+- **API Endpoints**: Test all routes and middleware
+- **Services**: Test business logic in isolation
+- **Database**: Test database operations and models
+- **Authentication**: Test auth flows and security
+
+### Example: API Endpoint Test
+
+```typescript
+// Example test for auth endpoint
+describe('POST /api/auth/register', () => {
+  it('should register a new user', async () => {
+    const userData = {
+      email: 'test@example.com',
+      password: 'Password123!',
+      name: 'Test User'
+    };
+    
+    const response = await request(app)
+      .post('/api/auth/register')
+      .send(userData);
+      
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('id');
+    expect(response.body.email).toBe(userData.email);
+  });
+});
+```
+
 ## 1. Unit Testing
 
 ### Tools

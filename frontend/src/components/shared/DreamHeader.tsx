@@ -242,3 +242,23 @@ export const AanganHeader: React.FC<AanganHeaderProps> = ({
 
 // Legacy export for backward compatibility
 export const DreamHeader = AanganHeader;
+
+// Utility function to check if a route is a user-facing route
+export const isUserFacingRoute = (pathname: string): boolean => {
+  const userFacingRoutes = [
+    '/',
+    '/explore',
+    '/constellation',
+    '/compass',
+    '/lounge',
+    '/diary',
+    '/profile',
+    '/about',
+    '/memories',
+    '/murmurs',
+    '/shrines'
+  ];
+  return userFacingRoutes.some(route => 
+    pathname === route || pathname.startsWith(`${route}/`)
+  );
+};

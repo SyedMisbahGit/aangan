@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app } from '../app';
-import { db } from '../db';
+import db from '../db.js';
 
 interface Whisper {
   id: number;

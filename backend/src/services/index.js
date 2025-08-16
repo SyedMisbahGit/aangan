@@ -1,12 +1,14 @@
-import { cache } from '../utils/cache.js';
+import cache from '../utils/cache.js';
 import { WhisperDal } from '../dal/whisperDal.js';
 import { initReactionDal } from '../dal/reactionDal.js';
-import { db } from '../db.js';
-import { metrics, trackError } from '../middleware/metrics.js';
+import db from '../db.js';
+import metricsModule from '../middleware/metrics.js';
+const { trackError } = metricsModule;
 import logger from '../utils/logger.js';
 
 // Initialize cache
 let isCacheInitialized = false;
+const USE_REDIS = process.env.USE_REDIS === 'true';
 
 // Track service initialization metrics
 const serviceStartTime = process.hrtime();
@@ -18,20 +20,26 @@ export async function initServices() {
   try {
     const initStartTime = process.hrtime();
     
-    // Initialize cache with metrics
-    if (!isCacheInitialized) {
+    // Initialize cache with metrics if Redis is enabled
+    if (USE_REDIS && !isCacheInitialized) {
       const cacheStartTime = process.hrtime();
       try {
         await cache.connect();
         isCacheInitialized = true;
         const [seconds, nanoseconds] = process.hrtime(cacheStartTime);
-        metrics.trackRedisOperation('connect', { duration: seconds * 1000 + nanoseconds / 1e6 });
-        logger.info('✅ Cache service initialized', { duration: seconds * 1000 + nanoseconds / 1e6 });
+        metricsModule.trackRedisOperation('connect', { duration: seconds * 1000 + nanoseconds / 1e6 });
+        metricsModule.trackDatabaseQuery('init_services', 'services');
+        logger.info(`✅ Services initialized in ${(seconds * 1000 + nanoseconds / 1e6).toFixed(2)}ms`);
+        logger.info('✅ Redis cache service initialized', { duration: seconds * 1000 + nanoseconds / 1e6 });
       } catch (error) {
-        trackError('initServices', 500, 'cache_initialization_failed');
-        logger.error('❌ Failed to initialize cache service', { error: error.message, stack: error.stack });
+        metricsModule.trackError('initServices', 500, 'cache_initialization_failed');
+        logger.error('❌ Failed to initialize Redis cache service', { error: error.message, stack: error.stack });
         throw error;
       }
+    } else if (!isCacheInitialized) {
+      // Initialize in-memory cache
+      isCacheInitialized = true;
+      logger.info('✅ In-memory cache service initialized');
     }
 
     // Initialize DALs with metrics
@@ -43,7 +51,7 @@ export async function initServices() {
       const [seconds, nanoseconds] = process.hrtime(dalStartTime);
       logger.info('✅ Data Access Layers initialized', { duration: seconds * 1000 + nanoseconds / 1e6 });
     } catch (error) {
-      trackError('initServices', 500, 'dal_initialization_failed');
+      metricsModule.trackError('initServices', 500, 'dal_initialization_failed');
       logger.error('❌ Failed to initialize Data Access Layers', { error: error.message, stack: error.stack });
       throw error;
     }
@@ -61,11 +69,11 @@ export async function initServices() {
       cache,
       whisperDal,
       reactionDal,
-      metrics,
+      metrics: metricsModule,
       logger
     };
   } catch (error) {
-    trackError('initServices', 500, 'service_initialization_failed');
+    metricsModule.trackError('initServices', 500, 'service_initialization_failed');
     logger.error('❌ Failed to initialize services', { 
       error: error.message, 
       stack: error.stack,

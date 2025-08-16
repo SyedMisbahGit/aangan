@@ -13,11 +13,27 @@ const REFRESH_THRESHOLD = 300; // 5 minutes in seconds
 
 // API client with interceptors
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Helper function to check if token is expired
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const decoded = jwtDecode<{ exp: number }>(token);
+    return decoded.exp < Date.now() / 1000;
+  } catch (error) {
+    return true;
+  }
+};
+
+// Default token values
+const DEFAULT_TOKENS: Omit<Tokens, 'accessToken' | 'refreshToken'> = {
+  expiresIn: 3600, // 1 hour
+  tokenType: 'Bearer'
+};
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -25,66 +41,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [tokens, setTokens] = useState<Tokens | null>(null);
   const navigate = useNavigate();
 
-  // Initialize auth state from storage
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const storedTokens = localStorage.getItem(TOKEN_KEY);
-        const storedUser = localStorage.getItem(USER_KEY);
-        
-        if (storedTokens && storedUser) {
-          const parsedTokens = JSON.parse(storedTokens);
-          const parsedUser = JSON.parse(storedUser);
-          
-          // Verify token is not expired
-          if (!isTokenExpired(parsedTokens.accessToken)) {
-            setTokens(parsedTokens);
-            setUser(parsedUser);
-            setupAxiosInterceptors(parsedTokens.accessToken);
-          } else {
-            // Attempt to refresh token
-            const refreshed = await refreshToken();
-            if (!refreshed) {
-              clearAuth();
-            }
-          }
-        } else {
-          // Check for guest session
-          const guestId = localStorage.getItem('guestId');
-          if (guestId) {
-            setUser({
-              id: guestId,
-              email: '',
-              name: 'Guest',
-              role: 'user',
-              isGuest: true,
-              isOnboarded: false,
-              emailVerified: false,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Failed to initialize auth:', error);
-        clearAuth();
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Setup axios interceptors
+  const setupAxiosInterceptors = useCallback((token: string) => {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }, []);
 
-    initAuth();
-    // Add all dependencies used inside the effect
-  }, [refreshToken, clearAuth, isTokenExpired, setupAxiosInterceptors]);
-
-  // Check if token is expired
-  const isTokenExpired = useCallback((token: string): boolean => {
-    try {
-      const decoded = jwtDecode<{ exp: number }>(token);
-      return decoded.exp < Date.now() / 1000;
-    } catch (error) {
-      return true;
-    }
+  // Clear auth data from storage
+  const clearAuth = useCallback(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    setTokens(null);
+    setUser(null);
+    delete api.defaults.headers.common['Authorization'];
   }, []);
 
   // Store auth data in storage
@@ -96,42 +64,68 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setupAxiosInterceptors(newTokens.accessToken);
   }, [setupAxiosInterceptors]);
 
-  // Clear auth data from storage
-  const clearAuth = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    setTokens(null);
-    setUser(null);
-    delete api.defaults.headers.common['Authorization'];
-  }, []);
-
-  // Setup axios interceptors
-  const setupAxiosInterceptors = useCallback((token: string) => {
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  }, []);
-
   // Refresh access token
   const refreshToken = useCallback(async (): Promise<boolean> => {
     try {
       const storedTokens = localStorage.getItem(TOKEN_KEY);
       if (!storedTokens) return false;
       
-      const { refreshToken } = JSON.parse(storedTokens);
-      const response = await api.post('/auth/refresh', { refreshToken });
+      const { refreshToken } = JSON.parse(storedTokens) as Tokens;
+      const response = await api.post<Partial<Tokens>>('/auth/refresh', { refreshToken });
       
-      if (response.data.accessToken) {
-        const newTokens = response.data as Tokens;
-        const userData = JSON.parse(localStorage.getItem(USER_KEY) || '{}');
+      if (response.data?.accessToken) {
+        const newTokens: Tokens = {
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken || refreshToken,
+          ...DEFAULT_TOKENS
+        };
+        const userData = JSON.parse(localStorage.getItem(USER_KEY) || '{}') as User;
         storeAuthData(newTokens, userData);
         return true;
       }
       return false;
     } catch (error) {
-      console.error('Failed to refresh token:', error);
+      console.error('Error refreshing token:', error);
+      clearAuth();
       return false;
     }
-  }, [storeAuthData]);
+  }, [clearAuth, storeAuthData]);
 
+  // Initialize auth state from storage
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const storedTokens = localStorage.getItem(TOKEN_KEY);
+        const storedUser = localStorage.getItem(USER_KEY);
+        
+        if (storedTokens && storedUser) {
+          const parsedTokens = JSON.parse(storedTokens) as Tokens;
+          const userData = JSON.parse(storedUser) as User;
+          
+          // Verify token is not expired
+          if (!isTokenExpired(parsedTokens.accessToken)) {
+            setTokens(parsedTokens);
+            setUser(userData);
+            setupAxiosInterceptors(parsedTokens.accessToken);
+          } else {
+            // Try to refresh token if expired
+            const refreshed = await refreshToken();
+            if (!refreshed) {
+              clearAuth();
+            }
+          }
+        } else {
+          clearAuth();
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        clearAuth();
+      } finally {
+        setLoading(false);
+      }
+    };
+    initAuth();
+  }, [clearAuth, refreshToken, setupAxiosInterceptors]);
   // Get access token with auto-refresh
   const getAccessToken = useCallback(async (): Promise<string | null> => {
     if (!tokens) return null;
@@ -154,31 +148,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [tokens, refreshToken, clearAuth]);
 
   // Login with email and password
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
-      const { accessToken, refreshToken, expiresIn, tokenType } = response.data;
+      const response = await api.post<{
+        accessToken: string;
+        refreshToken: string;
+        user: User;
+      }>('/auth/login', { email, password });
       
-      // Get user profile
-      const profileResponse = await api.get('/users/me', {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      });
-      
-      const userData = {
-        ...profileResponse.data,
-        isGuest: false,
-      };
-      
-      storeAuthData({ accessToken, refreshToken, expiresIn, tokenType }, userData);
-      return { error: null };
+      if (response.data.accessToken) {
+        const newTokens: Tokens = {
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+          ...DEFAULT_TOKENS
+        };
+        const userData = response.data.user;
+        storeAuthData(newTokens, userData);
+        return { error: null };
+      }
+      return { error: 'Login failed. Please try again.' };
     } catch (error) {
-      return { 
-        error: isApiError(error) 
-          ? error.response?.data?.message || 'Login failed. Please try again.'
-          : 'Login failed. Please try again.'
-      };
+      console.error('Login failed:', error);
+      return { error: isApiError(error) ? error.response?.data?.message || 'Login failed. Please try again.' : 'Login failed. Please try again.' };
     }
-  };
+  }, [storeAuthData]);
 
   // Register new user
   const register = async (email: string, password: string, name: string) => {
@@ -382,7 +375,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {loading ? null : children}
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;

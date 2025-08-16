@@ -385,7 +385,7 @@ class ImageModerationService {
     
     // We create a Blob from the buffer to ensure compatibility with FormData in some environments.
     const formData = new FormData();
-    formData.append('media', new Blob([file.buffer]), file.originalname);
+    formData.append('media', new Blob([file.buffer as BlobPart]), file.originalname);
     formData.append('api_user', config.apiKey);
     formData.append('api_secret', config.apiSecret);
     formData.append('workflow', 'wfl_2uQ2ZnF2Xxnr0YoIwHrnxn'); // Default workflow

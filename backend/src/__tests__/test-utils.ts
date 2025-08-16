@@ -1,4 +1,4 @@
-import { db } from '../db';
+import db from '../db.js';
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { Express } from 'express';

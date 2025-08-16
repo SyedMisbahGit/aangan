@@ -101,7 +101,7 @@ export const WhisperRituals: React.FC<WhisperRitualsProps> = ({
       // and don't affect the core functionality
       if (process.env.NODE_ENV === 'development') {
         // Only log in development
-        // eslint-disable-next-line no-console
+         
         console.debug('Audio playback error:', error);
       }
     }

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Test Client</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #messages {
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+            background-color: #e9f7fe;
+            border-left: 4px solid #2196F3;
+        }
+        .system-message {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            font-style: italic;
+        }
+        .error-message {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 8px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        button:hover {
+            background-color: #0b7dda;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            background-color: #e3f2fd;
+            font-weight: bold;
+        }
+        .connected { background-color: #e8f5e9; color: #2e7d32; }
+        .disconnected { background-color: #ffebee; color: #c62828; }
+    </style>
+</head>
+<body>
+    <h1>Socket.IO Test Client</h1>
+    <div id="status" class="status disconnected">Disconnected</div>
+    
+    <div class="controls">
+        <button id="connectBtn">Connect</button>
+        <button id="disconnectBtn" disabled>Disconnect</button>
+    </div>
+    
+    <div class="controls">
+        <input type="text" id="channelInput" placeholder="Enter channel name" value="test-channel">
+        <button id="setChannelBtn">Set Channel</button>
+    </div>
+    
+    <div class="controls">
+        <button id="subscribeBtn" disabled>Subscribe to Channel</button>
+        <button id="publishBtn" disabled>Publish Test Message</button>
+    </div>
+    
+    <div class="controls">
+        <input type="text" id="messageInput" placeholder="Type your message" disabled>
+        <button id="sendBtn" disabled>Send Message</button>
+    </div>
+    
+    <h3>Messages:</h3>
+    <div id="messages"></div>
+
+    <script>
+        // DOM elements
+        const statusDiv = document.getElementById('status');
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const subscribeBtn = document.getElementById('subscribeBtn');
+        const publishBtn = document.getElementById('publishBtn');
+        const setChannelBtn = document.getElementById('setChannelBtn');
+        const sendBtn = document.getElementById('sendBtn');
+        const channelInput = document.getElementById('channelInput');
+        const messageInput = document.getElementById('messageInput');
+        const messagesDiv = document.getElementById('messages');
+        
+        // Socket.IO instance
+        let socket = null;
+        let currentChannel = 'test-channel';
+        let isSubscribed = false;
+        
+        // Add a message to the UI
+        function addMessage(message, type = 'message') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        // Update connection status
+        function updateStatus(connected) {
+            if (connected) {
+                statusDiv.textContent = 'Connected to server';
+                statusDiv.className = 'status connected';
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                subscribeBtn.disabled = false;
+                setChannelBtn.disabled = false;
+                publishBtn.disabled = false;
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+            } else {
+                statusDiv.textContent = 'Disconnected';
+                statusDiv.className = 'status disconnected';
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                subscribeBtn.disabled = true;
+                setChannelBtn.disabled = true;
+                publishBtn.disabled = true;
+                messageInput.disabled = true;
+                sendBtn.disabled = true;
+            }
+        }
+        
+        // Connect to Socket.IO server
+        function connect() {
+            addMessage('Connecting to Socket.IO server...', 'system-message');
+            
+            // Close existing connection if any
+            if (socket) {
+                socket.disconnect();
+            }
+            
+            // Create new Socket.IO connection
+            socket = io('http://localhost:3001', {
+                reconnection: true,
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000,
+                timeout: 20000,
+                transports: ['websocket', 'polling']
+            });
+            
+            // Connection established
+            socket.on('connect', () => {
+                addMessage('Connected to Socket.IO server', 'system-message');
+                updateStatus(true);
+            });
+            
+            // Handle disconnection
+            socket.on('disconnect', (reason) => {
+                addMessage(`Disconnected: ${reason}`, 'system-message');
+                updateStatus(false);
+                isSubscribed = false;
+                subscribeBtn.textContent = 'Subscribe to Channel';
+            });
+            
+            // Handle errors
+            socket.on('connect_error', (error) => {
+                addMessage(`Connection error: ${error.message}`, 'error-message');
+                updateStatus(false);
+            });
+            
+            // Handle custom messages
+            socket.on('message', (data) => {
+                if (data && data.channel && data.message) {
+                    addMessage(`[${data.channel}] ${JSON.stringify(data.message)}`);
+                } else {
+                    addMessage(`Received: ${JSON.stringify(data)}`, 'system-message');
+                }
+            });
+            
+            // Handle reconnection attempts
+            socket.io.on('reconnect_attempt', (attempt) => {
+                addMessage(`Reconnection attempt ${attempt}`, 'system-message');
+            });
+            
+            socket.io.on('reconnect', (attempt) => {
+                addMessage(`Reconnected after ${attempt} attempts`, 'system-message');
+            });
+            
+            socket.io.on('reconnect_error', (error) => {
+                addMessage(`Reconnection error: ${error.message}`, 'error-message');
+            });
+            
+            socket.io.on('reconnect_failed', () => {
+                addMessage('Reconnection failed', 'error-message');
+            });
+        }
+        
+        // Event listeners
+        connectBtn.addEventListener('click', connect);
+        
+        disconnectBtn.addEventListener('click', () => {
+            if (socket) {
+                addMessage('Disconnecting...', 'system-message');
+                socket.disconnect();
+            }
+        });
+        
+        setChannelBtn.addEventListener('click', () => {
+            const newChannel = channelInput.value.trim();
+            if (newChannel) {
+                currentChannel = newChannel;
+                addMessage(`Channel set to: ${currentChannel}`, 'system-message');
+                
+                // Unsubscribe from previous channel if subscribed
+                if (isSubscribed) {
+                    addMessage(`Unsubscribed from previous channel`, 'system-message');
+                    isSubscribed = false;
+                    subscribeBtn.textContent = 'Subscribe to Channel';
+                }
+            }
+        });
+        
+        subscribeBtn.addEventListener('click', () => {
+            if (!socket || !socket.connected) {
+                addMessage('Not connected to server', 'error-message');
+                return;
+            }
+            
+            if (isSubscribed) {
+                // Unsubscribe (note: server might not support unsubscribing)
+                addMessage(`Unsubscribed from ${currentChannel}`, 'system-message');
+                isSubscribed = false;
+                subscribeBtn.textContent = 'Subscribe to Channel';
+            } else {
+                // Subscribe to channel
+                socket.emit('subscribe', currentChannel);
+                addMessage(`Subscribed to ${currentChannel}`, 'system-message');
+                isSubscribed = true;
+                subscribeBtn.textContent = 'Unsubscribe';
+            }
+        });
+        
+        publishBtn.addEventListener('click', () => {
+            if (!socket || !socket.connected) {
+                addMessage('Not connected to server', 'error-message');
+                return;
+            }
+            
+            const testMessage = {
+                text: 'Test message from client',
+                timestamp: new Date().toISOString(),
+                from: 'test-client'
+            };
+            
+            socket.emit('publish', {
+                channel: currentChannel,
+                message: testMessage
+            });
+            
+            addMessage(`Published test message to ${currentChannel}`, 'system-message');
+        });
+        
+        sendBtn.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            if (!socket || !socket.connected) {
+                addMessage('Not connected to server', 'error-message');
+                return;
+            }
+            
+            const messageObj = {
+                text: message,
+                timestamp: new Date().toISOString(),
+                from: 'test-client'
+            };
+            
+            socket.emit('publish', {
+                channel: currentChannel,
+                message: messageObj
+            });
+            
+            addMessage(`[You to ${currentChannel}] ${message}`, 'system-message');
+            messageInput.value = '';
+        }
+        
+        // Initial message
+        addMessage('Click "Connect" to start testing Socket.IO', 'system-message');
+    </script>
+</body>
+</html>

@@ -21,7 +21,7 @@ import SmartCampusLearning from "../components/cuj/SmartCampusLearning";
 import DogriHinglishPrompts from "../components/DogriHinglishPrompts";
 import PWAInstallPrompt from "../components/PWAInstallPrompt";
 import WhisperTimeCapsules from "../components/whisper/WhisperTimeCapsules";
-import WhisperMurmurs from "../components/whisper/WhisperMurmurs";
+// import WhisperMurmurs from "../components/whisper/WhisperMurmurs";
 import { UserProfile } from "../components/UserProfile";
 import { HelpCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -314,7 +314,7 @@ const IndexPage: React.FC = () => {
           {tabComponents[activeTab]}
         </main>
         <PWAInstallPrompt />
-        <WhisperMurmurs />
+        {/* <WhisperMurmurs /> */}
       </div>
     </ErrorBoundary>
   );

@@ -337,23 +337,23 @@ const App: React.FC = () => {
           <ShhhNarratorProvider>
             <SummerPulseProvider>
               <WhispersProvider>
-                <AuthProvider>
-                  <RealtimeProvider>
-                    <TooltipProvider>
-                      <Toaster />
-                      <Sonner />
-                      <SummerSoulProvider>
-                        <BrowserRouter>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <SummerSoulProvider>
+                    <BrowserRouter>
+                      <AuthProvider>
+                        <RealtimeProvider>
                           <OfflineBanner />
                           <RouteObserver />
                           <ErrorBoundary narratorLine="A gentle hush falls over the campus. Something went adrift in the courtyard.">
                             <AppContent />
                           </ErrorBoundary>
-                        </BrowserRouter>
-                      </SummerSoulProvider>
-                    </TooltipProvider>
-                  </RealtimeProvider>
-                </AuthProvider>
+                        </RealtimeProvider>
+                      </AuthProvider>
+                    </BrowserRouter>
+                  </SummerSoulProvider>
+                </TooltipProvider>
               </WhispersProvider>
             </SummerPulseProvider>
           </ShhhNarratorProvider>

@@ -3,6 +3,15 @@ import type { RealtimeContextType, RealtimeProviderProps } from './RealtimeConte
 import { RealtimeContext } from './RealtimeContext.context';
 import realtimeService, { RealtimeWhisper } from '../services/realtime';
 
+// Custom hook to access realtime context
+export const useRealtime = (): RealtimeContextType => {
+  const context = React.useContext(RealtimeContext);
+  if (context === undefined) {
+    throw new Error('useRealtime must be used within a RealtimeProvider');
+  }
+  return context;
+};
+
 export const RealtimeProvider = ({ children }: RealtimeProviderProps) => {
   const [isConnected, setIsConnected] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState({

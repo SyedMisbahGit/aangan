@@ -12,6 +12,7 @@
  * - Configurable rate limiting per event type
  * - Consistent error handling and response formatting
  * - Request tracing and logging
+ * - Redis or in-memory pub/sub for broadcasting
  * 
  * @example
  * // Basic usage in your application:
@@ -30,6 +31,7 @@
 
 import { PERMISSIONS } from './rbac.js';
 import logger from './logger.js';
+import pubSubAdapter from './pubSubAdapter.js';
 
 /**
  * @constant {number} DEFAULT_RATE_LIMIT_WINDOW_MS
@@ -343,20 +345,112 @@ const registerAllHandlers = (io) => {
 };
 
 /**
+ * Broadcast a message to all connected clients
+ * @param {string} event - Event name
+ * @param {any} data - Data to broadcast
+ * @param {string} [room] - Optional room to broadcast to
+ */
+const broadcast = (event, data, room = null) => {
+  const message = JSON.stringify({ event, data });
+  if (room) {
+    pubSubAdapter.publish(`room:${room}`, message);
+  } else {
+    pubSubAdapter.publish('broadcast', message);
+  }
+};
+
+/**
+ * Join a room
+ * @param {string} socketId - Socket ID
+ * @param {string} room - Room name
+ */
+const joinRoom = (socketId, room) => {
+  pubSubAdapter.publish(`room:${room}:join`, { socketId, room });
+};
+
+/**
+ * Leave a room
+ * @param {string} socketId - Socket ID
+ * @param {string} room - Room name
+ */
+const leaveRoom = (socketId, room) => {
+  pubSubAdapter.publish(`room:${room}:leave`, { socketId, room });
+};
+
+/**
  * Initializes WebSocket event handlers and sets up the Socket.IO connection handling
  * @param {SocketIO.Server} io - Socket.IO server instance
- * @returns {void}
+ * @returns {Promise<() => Promise<void>>} A cleanup function to close all handlers
  */
-const initWebSocketHandlers = (io) => {
+const initWebSocketHandlers = async (io) => {
   if (!io || typeof io.on !== 'function') {
     throw new Error('Valid Socket.IO server instance is required');
+  }
+
+  // Set up pub/sub handlers
+  await pubSubAdapter.init();
+
+  // Store unsubscribe functions
+  const unsubscribeCallbacks = [];
+
+  // Handle broadcast messages
+  const broadcastUnsubscribe = await pubSubAdapter.subscribe('broadcast', (message) => {
+    try {
+      const { event, data } = JSON.parse(message);
+      io.emit(event, data);
+    } catch (error) {
+      logger.error('Error handling broadcast message:', error);
+    }
+  });
+  if (typeof broadcastUnsubscribe === 'function') {
+    unsubscribeCallbacks.push(broadcastUnsubscribe);
+  }
+
+  // Handle room broadcasts
+  const roomBroadcastUnsubscribe = await pubSubAdapter.psubscribe('room:*', (message, channel) => {
+    try {
+      const room = channel.replace('room:', '');
+      const { event, data } = JSON.parse(message);
+      io.to(room).emit(event, data);
+    } catch (error) {
+      logger.error('Error handling room broadcast:', error);
+    }
+  });
+  if (typeof roomBroadcastUnsubscribe === 'function') {
+    unsubscribeCallbacks.push(roomBroadcastUnsubscribe);
+  }
+
+  // Handle room join events
+  const roomJoinUnsubscribe = await pubSubAdapter.psubscribe('room:*:join', (message, channel) => {
+    try {
+      const { socketId, room } = JSON.parse(message);
+      io.sockets.sockets.get(socketId)?.join(room);
+    } catch (error) {
+      logger.error('Error handling room join:', error);
+    }
+  });
+  if (typeof roomJoinUnsubscribe === 'function') {
+    unsubscribeCallbacks.push(roomJoinUnsubscribe);
+  }
+
+  // Handle room leave events
+  const roomLeaveUnsubscribe = await pubSubAdapter.psubscribe('room:*:leave', (message, channel) => {
+    try {
+      const { socketId, room } = JSON.parse(message);
+      io.sockets.sockets.get(socketId)?.leave(room);
+    } catch (error) {
+      logger.error('Error handling room leave:', error);
+    }
+  });
+  if (typeof roomLeaveUnsubscribe === 'function') {
+    unsubscribeCallbacks.push(roomLeaveUnsubscribe);
   }
 
   // Register all application event handlers
   registerAllHandlers(io);
 
   // Set up connection handler for new WebSocket connections
-  io.on('connection', (socket) => {
+  const connectionHandler = (socket) => {
     const clientId = socket.id;
     console.log(`Client connected: ${clientId}`);
 
@@ -425,18 +519,57 @@ const initWebSocketHandlers = (io) => {
     // Set up message handler
     socket.on('message', handleIncomingMessage);
 
-    // Handle disconnection
-    socket.on('disconnect', (reason) => {
-      console.log(`Client disconnected: ${clientId} (${reason})`);
-      // Clean up any resources associated with this connection
-      // e.g., remove from presence tracking, notify other users, etc.
+    // Clean up on disconnect
+    socket.on('disconnect', () => {
+      // Remove rate limiting data
+      Object.keys(rateLimits).forEach(eventName => {
+        const userLimits = rateLimits[eventName];
+        delete userLimits[clientId];
+      });
+      
+      // Leave all rooms
+      Object.keys(socket.rooms).forEach(room => {
+        if (room !== socket.id) { // Skip the default room (socket's own room)
+          pubSubAdapter.publish(`room:${room}:leave`, { socketId: socket.id, room });
+        }
+      });
     });
 
     // Handle connection errors
     socket.on('error', (error) => {
       console.error(`WebSocket error (${clientId}):`, error);
     });
-  });
+  };
+
+  // Add the connection handler
+  io.on('connection', connectionHandler);
+
+  // Return a cleanup function
+  return async () => {
+    try {
+      // Remove the connection handler
+      io.off('connection', connectionHandler);
+      
+      // Unsubscribe from all pub/sub channels
+      for (const unsubscribe of unsubscribeCallbacks) {
+        try {
+          if (typeof unsubscribe === 'function') {
+            await Promise.resolve(unsubscribe());
+          }
+        } catch (error) {
+          logger.error('Error during pub/sub unsubscribe:', error);
+        }
+      }
+      
+      // Close the pub/sub adapter
+      await pubSubAdapter.close();
+      
+      logger.info('WebSocket handlers cleaned up successfully');
+    } catch (error) {
+      logger.error('Error during WebSocket handler cleanup:', error);
+      throw error;
+    }
+  };
 };
 
 /**
@@ -446,10 +579,18 @@ const initWebSocketHandlers = (io) => {
  * @property {Object} [rateLimit] - Rate limiting configuration
  */
 
-export {
-  registerEventHandler,
-  getEventHandler,
-  initWebSocketHandlers
+export { 
+  initWebSocketHandlers, 
+  registerEventHandler, 
+  getEventHandler, 
+  broadcast, 
+  joinRoom, 
+  leaveRoom 
+};
+
+// For testing only
+export const _testing = {
+  pubSubAdapter
 };
 
 // Default export for easier importing

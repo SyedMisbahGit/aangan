@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #messages {
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+            background-color: #e9f7fe;
+            border-left: 4px solid #2196F3;
+        }
+        .system-message {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            font-style: italic;
+        }
+        .error-message {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 8px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0b7dda;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Test Client</h1>
+    <div class="controls">
+        <button id="connectBtn">Connect</button>
+        <button id="disconnectBtn" disabled>Disconnect</button>
+        <button id="subscribeBtn" disabled>Subscribe to Channel</button>
+    </div>
+    
+    <div class="controls">
+        <input type="text" id="channelInput" placeholder="Enter channel name" value="test-channel">
+        <button id="setChannelBtn">Set Channel</button>
+    </div>
+    
+    <div class="controls">
+        <input type="text" id="messageInput" placeholder="Type your message" disabled>
+        <button id="sendBtn" disabled>Send Message</button>
+    </div>
+    
+    <h3>Messages:</h3>
+    <div id="messages"></div>
+
+    <script>
+        // DOM elements
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const subscribeBtn = document.getElementById('subscribeBtn');
+        const setChannelBtn = document.getElementById('setChannelBtn');
+        const sendBtn = document.getElementById('sendBtn');
+        const channelInput = document.getElementById('channelInput');
+        const messageInput = document.getElementById('messageInput');
+        const messagesDiv = document.getElementById('messages');
+        
+        // WebSocket connection
+        let socket = null;
+        let currentChannel = 'test-channel';
+        let isSubscribed = false;
+        
+        // Add a message to the UI
+        function addMessage(message, type = 'message') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        // Set up WebSocket connection
+        function connectWebSocket() {
+            // Close existing connection if any
+            if (socket) {
+                socket.close();
+            }
+            
+            // Create new WebSocket connection
+            const wsUrl = `ws://localhost:3001`;
+            socket = new WebSocket(wsUrl);
+            
+            // Connection opened
+            socket.addEventListener('open', (event) => {
+                addMessage('Connected to WebSocket server', 'system-message');
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                subscribeBtn.disabled = false;
+                setChannelBtn.disabled = false;
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+            });
+            
+            // Listen for messages
+            socket.addEventListener('message', (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.channel && data.message) {
+                        addMessage(`[${data.channel}] ${JSON.stringify(data.message)}`);
+                    } else {
+                        addMessage(`Received: ${event.data}`, 'system-message');
+                    }
+                } catch (e) {
+                    addMessage(`Received: ${event.data}`, 'system-message');
+                }
+            });
+            
+            // Handle errors
+            socket.addEventListener('error', (error) => {
+                addMessage(`WebSocket error: ${error.message}`, 'error-message');
+                updateUIForDisconnected();
+            });
+            
+            // Handle connection close
+            socket.addEventListener('close', (event) => {
+                addMessage('Disconnected from WebSocket server', 'system-message');
+                updateUIForDisconnected();
+            });
+        }
+        
+        // Update UI when disconnected
+        function updateUIForDisconnected() {
+            connectBtn.disabled = false;
+            disconnectBtn.disabled = true;
+            subscribeBtn.disabled = true;
+            setChannelBtn.disabled = true;
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+            isSubscribed = false;
+            subscribeBtn.textContent = 'Subscribe to Channel';
+        }
+        
+        // Event listeners
+        connectBtn.addEventListener('click', () => {
+            addMessage('Connecting to WebSocket server...', 'system-message');
+            connectWebSocket();
+        });
+        
+        disconnectBtn.addEventListener('click', () => {
+            if (socket) {
+                addMessage('Disconnecting...', 'system-message');
+                socket.close();
+            }
+        });
+        
+        setChannelBtn.addEventListener('click', () => {
+            const newChannel = channelInput.value.trim();
+            if (newChannel) {
+                currentChannel = newChannel;
+                addMessage(`Channel set to: ${currentChannel}`, 'system-message');
+                isSubscribed = false;
+                subscribeBtn.textContent = 'Subscribe to Channel';
+            }
+        });
+        
+        subscribeBtn.addEventListener('click', () => {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                addMessage('Not connected to WebSocket server', 'error-message');
+                return;
+            }
+            
+            if (isSubscribed) {
+                // Unsubscribe (not implemented in server yet)
+                addMessage(`Unsubscribed from ${currentChannel}`, 'system-message');
+                isSubscribed = false;
+                subscribeBtn.textContent = 'Subscribe to Channel';
+            } else {
+                // Subscribe
+                socket.send(JSON.stringify({
+                    event: 'subscribe',
+                    channel: currentChannel
+                }));
+                addMessage(`Subscribed to ${currentChannel}`, 'system-message');
+                isSubscribed = true;
+                subscribeBtn.textContent = 'Unsubscribe';
+            }
+        });
+        
+        sendBtn.addEventListener('click', () => {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                addMessage('Not connected to WebSocket server', 'error-message');
+                return;
+            }
+            
+            const messageObj = {
+                text: message,
+                timestamp: new Date().toISOString(),
+                from: 'test-client'
+            };
+            
+            // Send publish message
+            socket.send(JSON.stringify({
+                event: 'publish',
+                channel: currentChannel,
+                message: messageObj
+            }));
+            
+            addMessage(`[You] ${message}`, 'system-message');
+            messageInput.value = '';
+        });
+        
+        // Allow sending message with Enter key
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendBtn.click();
+            }
+        });
+        
+        // Initial message
+        addMessage('Click "Connect" to start testing WebSocket', 'system-message');
+    </script>
+</body>
+</html>

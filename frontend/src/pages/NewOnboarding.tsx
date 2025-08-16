@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { DreamLayout } from '../components/shared/DreamLayout';
-import { DreamHeader, isUserFacingRoute } from '../components/shared/DreamHeader';
+import { DreamHeader } from '../components/shared/DreamHeader';
+import { isUserFacingRoute } from '../utils/headerUtils';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cujHotspots } from '../constants/cujHotspots';
+import { cujHotspots, type Hotspot } from '../constants/cujHotspots';
 import WaterTheCourtyard from '../components/onboarding/WaterTheCourtyard';
 import ErrorBoundary from "../components/shared/ErrorBoundary";
-import { getErrorMessage } from "../lib/errorUtils";
-import { useRef } from "react";
-import { useLocation } from 'react-router-dom';
 
 const steps = [
   {
@@ -38,13 +35,13 @@ const steps = [
 
 const NewOnboarding: React.FC = () => {
   const [step, setStep] = useState(0);
-  const [whisperName, setWhisperName] = useState('');
   const [location, setLocation] = useState('');
+  const [whisperName, setWhisperName] = useState('');
   const [locationStatus, setLocationStatus] = useState<'idle' | 'detecting' | 'success' | 'error'>('idle');
   const [showAnimation, setShowAnimation] = useState(false);
-  const navigate = useNavigate();
   const mainRef = useRef<HTMLDivElement>(null);
   const routerLocation = useLocation();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     if (mainRef.current) {
@@ -65,13 +62,13 @@ const NewOnboarding: React.FC = () => {
   const handleLocationDetect = () => {
     setLocationStatus('detecting');
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      () => {
         // Here you would typically use the position to find the nearest hotspot.
         // For this example, we'll just simulate a successful detection.
         setLocationStatus('success');
         setTimeout(() => handleNext(), 1000);
       },
-      (error) => {
+      () => {
         setLocationStatus('error');
         setTimeout(() => handleNext(), 1000);
       }
@@ -146,11 +143,18 @@ const NewOnboarding: React.FC = () => {
               )}
               {step === 3 && (
                 <div className="mt-4 space-y-4">
-                  {Object.entries(Object.groupBy(cujHotspots, ({ group }) => group)).map(([group, hotspots]) => (
+                  {Object.entries(
+                    cujHotspots.reduce<Record<string, Hotspot[]>>((groups, hotspot) => {
+                      const group = hotspot.group;
+                      if (!groups[group]) groups[group] = [];
+                      groups[group].push(hotspot);
+                      return groups;
+                    }, {})
+                  ).map(([group, groupHotspots]) => (
                     <div key={group}>
                       <h3 className="text-lg font-semibold mb-2">{group}</h3>
                       <div className="grid grid-cols-2 gap-4">
-                        {hotspots.map((hotspot) => (
+                        {groupHotspots.map((hotspot) => (
                           <Button
                             key={hotspot.id}
                             variant={location === hotspot.id ? 'default' : 'outline'}

@@ -84,6 +84,17 @@ const ensureContrast = (colors) => {
   return result;
 };
 
+// Emotion colors mapping
+export const emotionColors = {
+  happy: '#FFD700',
+  sad: '#3498db',
+  angry: '#e74c3c',
+  anxious: '#9b59b6',
+  excited: '#2ecc71',
+  tired: '#95a5a6',
+  neutral: '#bdc3c7',  
+};
+
 // Create theme with accessibility in mind
 const theme = createTheme({
   palette: ensureContrast(BASE_COLORS),

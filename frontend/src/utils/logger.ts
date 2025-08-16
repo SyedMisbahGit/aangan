@@ -28,7 +28,7 @@ const safeConsole = (method: ConsoleMethod, ...args: unknown[]): void => {
     
     // For local development, we'll use the console but disable the ESLint rule temporarily
     // This is the only place where we'll disable the no-console rule
-    // eslint-disable-next-line no-console
+     
     const consoleMethod = console[method] as (...args: unknown[]) => void;
     
     if (process.env.NODE_ENV === 'development') {

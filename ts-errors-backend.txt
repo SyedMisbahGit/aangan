@@ -1,0 +1,37 @@
+﻿backend/src/__tests__/test-utils.ts(4,25): error TS7016: Could not find a declaration file for module 'express'. 'C:/Users/zsyed/college-whisper/backend/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+backend/src/__tests__/test-utils.ts(5,21): error TS7016: Could not find a declaration file for module 'supertest'. 'C:/Users/zsyed/college-whisper/node_modules/supertest/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/supertest` if it exists or add a new declaration (.d.ts) file containing `declare module 'supertest';`
+backend/src/routes/auth.routes.ts(1,57): error TS7016: Could not find a declaration file for module 'express'. 'C:/Users/zsyed/college-whisper/backend/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+backend/src/routes/auth.routes.ts(4,27): error TS6133: 'ValidationError' is declared but its value is never read.
+backend/src/routes/auth.routes.ts(10,31): error TS6133: 'res' is declared but its value is never read.
+backend/src/routes/auth.routes.ts(12,68): error TS2339: Property 'run' does not exist on type 'ValidationChain'.
+backend/src/routes/auth.routes.ts(57,25): error TS2339: Property 'notEmpty' does not exist on type 'ValidationChain'.
+backend/src/routes/auth.routes.ts(75,22): error TS2339: Property 'notEmpty' does not exist on type 'ValidationChain'.
+backend/src/routes/auth.routes.ts(92,26): error TS2339: Property 'notEmpty' does not exist on type 'ValidationChain'.
+backend/src/routes/auth.routes.ts(109,26): error TS2339: Property 'notEmpty' does not exist on type 'ValidationChain'.
+backend/src/routes/auth.routes.ts(143,19): error TS2339: Property 'notEmpty' does not exist on type 'ValidationChain'.
+backend/src/routes/auth.routes.ts(161,20): error TS2339: Property 'notEmpty' does not exist on type 'ValidationChain'.
+backend/src/services/auth.service.ts(2,30): error TS2307: Cannot find module 'google-auth-library' or its corresponding type declarations.
+backend/src/services/auth.service.ts(6,34): error TS7016: Could not find a declaration file for module 'jsonwebtoken'. 'C:/Users/zsyed/college-whisper/backend/node_modules/jsonwebtoken/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jsonwebtoken` if it exists or add a new declaration (.d.ts) file containing `declare module 'jsonwebtoken';`
+backend/src/services/autoModeration.service.ts(5,1): error TS6192: All imports in import declaration are unused.
+backend/src/services/autoModeration.service.ts(138,54): error TS6133: 'metadata' is declared but its value is never read.
+backend/src/services/autoModeration.service.ts(159,54): error TS6133: 'metadata' is declared but its value is never read.
+backend/src/services/autoModeration.service.ts(170,34): error TS6133: 'metadata' is declared but its value is never read.
+backend/src/services/autoModeration.service.ts(176,49): error TS7006: Parameter 'w' implicitly has an 'any' type.
+backend/src/services/autoModeration.service.ts(194,54): error TS6133: 'metadata' is declared but its value is never read.
+backend/src/services/autoModeration.service.ts(222,54): error TS6133: 'metadata' is declared but its value is never read.
+backend/src/services/imageModeration.service.ts(388,40): error TS2322: Type 'Buffer<ArrayBufferLike>' is not assignable to type 'BlobPart'.
+  Type 'Buffer<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.
+    Types of property 'buffer' are incompatible.
+      Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+        Type 'SharedArrayBuffer' is not assignable to type 'ArrayBuffer'.
+          Types of property '[Symbol.toStringTag]' are incompatible.
+            Type '"SharedArrayBuffer"' is not assignable to type '"ArrayBuffer"'.
+backend/src/test-auto-moderation.ts(2,1): error TS6133: 'autoModerationService' is declared but its value is never read.
+backend/src/test-knex-import.ts(2,1): error TS6133: 'Knex' is declared but its value is never read.
+backend/src/utils/logger.ts(80,1): error TS2322: Type '{ write: (message: string) => void; }' is not assignable to type '((options?: any) => ReadableStream) & { write: (message: string) => void; }'.
+  Type '{ write: (message: string) => void; }' is not assignable to type '(options?: any) => ReadableStream'.
+    Type '{ write: (message: string) => void; }' provides no match for the signature '(options?: any): ReadableStream'.

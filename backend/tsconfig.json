@@ -11,6 +11,8 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
+    "noEmit": true,
+    "exactOptionalPropertyTypes": false,
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {

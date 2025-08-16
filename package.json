@@ -9,11 +9,13 @@
     "dev:railway": "VITE_API_URL=https://aangan-production.up.railway.app/api VITE_REALTIME_URL=https://aangan-production.up.railway.app vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "lint": "eslint frontend/src backend/src",
-    "lint:fix": "eslint frontend/src backend/src --fix",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run -c vite.config.test.js",
+    "test:watch": "vitest -c vite.config.test.js",
+    "test:coverage": "vitest run --coverage -c vite.config.test.js",
+    "test:unit": "vitest run backend/__tests__/*.test.js -c vite.config.test.js",
+    "test:integration": "vitest run backend/__tests__/integration/*.test.js -c vite.config.test.js",
     "test:security": "npm audit --audit-level moderate",
     "test:performance": "npm run build && npx lighthouse http://localhost:8080 --output=json --output-path=./lighthouse-report.json",
     "test:endpoints": "node scripts/test/test-all-endpoints.js",
@@ -41,7 +43,12 @@
     "dev:seed-ai": "node scripts/dev/seed-ai-whispers.js",
     "dev:analytics": "node scripts/dev/send-analytics-summary.cjs",
     "dev:gemini": "node scripts/dev/apply-gemini-output.js",
-    "dev:gemini-auto": "node scripts/dev/automate-gemini.ps1"
+    "dev:gemini-auto": "node scripts/dev/automate-gemini.ps1",
+    "verify:local": "npm run verify:backend && npm run verify:frontend",
+    "verify:backend": "cd backend && npm run type-check",
+    "verify:frontend": "cd frontend && npm run type-check",
+    "type-check:backend": "tsc --project backend --noEmit",
+    "type-check:frontend": "tsc --project frontend --noEmit"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -86,6 +93,7 @@
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
+    "express-validator": "^7.2.1",
     "firebase": "^11.9.1",
     "framer-motion": "^12.18.1",
     "input-otp": "^1.2.4",
@@ -102,7 +110,6 @@
     "react-window": "^1.8.11",
     "recharts": "^2.12.7",
     "remark-gfm": "^4.0.1",
-    "socket.io-client": "^4.8.1",
     "sonner": "^1.5.0",
     "sqlite3": "^5.1.7",
     "tailwind-merge": "^2.5.2",
@@ -115,7 +122,7 @@
   "devDependencies": {
     "@eslint/js": "^9.9.0",
     "@tailwindcss/typography": "^0.5.15",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.5.5",
@@ -126,6 +133,7 @@
     "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.20",
     "barrelsby": "^2.8.1",
+    "cross-env": "^10.0.0",
     "depcheck": "^1.4.7",
     "eslint": "^9.9.0",
     "eslint-plugin-boundaries": "^5.0.1",
@@ -140,6 +148,8 @@
     "lint-staged": "^16.1.2",
     "lovable-tagger": "^1.1.7",
     "postcss": "^8.4.47",
+    "socket.io-client": "^4.8.1",
+    "supertest": "^7.1.4",
     "tailwindcss": "^3.4.11",
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
@@ -147,6 +157,6 @@
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1",
     "vite-plugin-pwa": "^1.0.0",
-    "vitest": "^3.2.4"
+    "vitest": "^1.6.1"
   }
 }

@@ -1,4 +1,4 @@
-import { cache } from '../utils/cache.js';
+import cache from '../utils/cache.js';
 import logger from '../utils/logger.js';
 
 /**

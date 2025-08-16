@@ -1,4 +1,10 @@
-export const cujHotspots = [
+export interface Hotspot {
+  id: string;
+  name: string;
+  group: string;
+}
+
+export const cujHotspots: Hotspot[] = [
   // 🏫 In-Campus
   { id: 'main-gate', name: 'Main Gate', group: 'Inside Campus' },
   { id: 'bus-stop-outside', name: 'Bus stop (outside the main gate)', group: 'Inside Campus' },
@@ -16,8 +22,6 @@ export const cujHotspots = [
   { id: 'pfab-building', name: 'P.Fab building', group: 'Inside Campus' },
   { id: 'spm-boys-hostel', name: 'SPM Boys Hostel', group: 'Inside Campus' },
   { id: 'pmm-building', name: 'PMM building', group: 'Inside Campus' },
-  { id: 'spm-badminton', name: 'SPM Badminton court', group: 'Inside Campus' },
-  { id: 'spm-gym', name: 'SPM Gym', group: 'Inside Campus' },
   { id: 'isro-building', name: 'ISRO building', group: 'Inside Campus' },
   { id: 'science-block', name: 'Science block', group: 'Inside Campus' },
   { id: 'drdo', name: 'DRDO', group: 'Inside Campus' },

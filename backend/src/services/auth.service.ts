@@ -4,7 +4,7 @@ import { Strategy as FacebookStrategy, Profile as FacebookProfile } from 'passpo
 import { Strategy as AppleStrategy, Profile as AppleProfile } from 'passport-apple';
 import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
-import db from '../db';
+import db from '../db.js';
 import logger from '../utils/logger.js';
 import { BadRequestError, UnauthorizedError, ForbiddenError } from '../utils/errors';
 import { sendEmail } from './email.service';

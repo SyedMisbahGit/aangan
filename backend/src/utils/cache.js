@@ -1,9 +1,10 @@
 /**
- * @file Redis-based caching utility with automatic reconnection and error handling
+ * @file Caching utility with automatic fallback to in-memory storage
  * @module utils/cache
  * @description 
- * Provides a high-level interface for Redis caching operations with the following features:
- * - Automatic connection management with reconnection
+ * Provides a high-level interface for caching operations with the following features:
+ * - Redis-based caching with automatic fallback to in-memory storage
+ * - Automatic connection management with reconnection (for Redis)
  * - JSON serialization/deserialization
  * - Key pattern-based invalidation
  * - Graceful shutdown handling
@@ -13,6 +14,7 @@
 
 import { createClient } from 'redis';
 import logger from './logger.js';
+import inMemoryCache from './inMemoryCache.js';
 
 /**
  * Redis-based caching client with automatic reconnection and error handling
@@ -356,11 +358,21 @@ class Cache {
 const DEFAULT_REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
 /**
- * Default cache TTL in seconds (1 hour)
+ * Default TTL in seconds (1 hour)
  * @constant
  * @type {number}
  */
-const DEFAULT_CACHE_TTL = 3600;
+const DEFAULT_TTL = 3600;
+
+/**
+ * Global flag to track if Redis is enabled
+ * @type {boolean}
+ */
+const USE_REDIS = process.env.USE_REDIS === 'true';
+
+if (!USE_REDIS) {
+  logger.warn('Redis is disabled. Using in-memory cache fallback.');
+}
 
 /**
  * Singleton cache instance for application-wide use
@@ -375,13 +387,29 @@ const DEFAULT_CACHE_TTL = 3600;
  * // Get a value
  * const value = await cache.get('key');
  */
-export const cache = new Cache({
-  redisUrl: DEFAULT_REDIS_URL,
-  defaultTTL: DEFAULT_CACHE_TTL
-});
+let cache;
+
+if (USE_REDIS) {
+  cache = new Cache({
+    defaultTTL: DEFAULT_TTL,
+    redisUrl: DEFAULT_REDIS_URL
+  });
+} else {
+  // Use in-memory cache
+  cache = inMemoryCache;
+  
+  // Add Redis-compatible methods that might be expected
+  cache.on = () => {}; // No-op for event handlers
+  cache.quit = () => Promise.resolve();
+  cache.disconnect = () => Promise.resolve();
+  cache.ping = () => Promise.resolve('PONG');
+  cache.duplicate = () => cache;
+}
+
+export default cache;
 
 // Auto-connect when imported (non-blocking)
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && USE_REDIS) {
   cache.connect().catch(err => {
     logger.error('Failed to connect to Redis on startup:', err);
   });

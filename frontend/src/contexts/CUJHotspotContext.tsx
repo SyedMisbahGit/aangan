@@ -305,13 +305,13 @@ export const CUJHotspotProvider: React.FC<CUJHotspotProviderProps> = ({ children
         try {
           return filters.every(filter => filter(hotspot));
         } catch (e) {
-          // eslint-disable-next-line no-console
+           
           console.error('Error in filter function:', e);
           return false;
         }
       });
     } catch (e) {
-      // eslint-disable-next-line no-console
+       
       console.error('Error in combineFilters:', e);
       return [];
     }

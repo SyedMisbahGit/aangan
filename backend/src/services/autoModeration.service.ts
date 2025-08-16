@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import db from '../db';
+import db from '../db.js';
 import logger from '../utils/logger.js';
 import { containsFilteredKeywords } from '../utils/moderation/keywordFilter';
-import { imageModerationService, ModerationResult } from './imageModeration.service';
+// import { imageModerationService, ModerationResult } from './imageModeration.service';
 import { BadRequestError } from '../utils/errors';
 
 type ContentType = 'whisper' | 'comment' | 'user_profile' | 'media';
@@ -135,7 +135,7 @@ class AutoModerationService {
           return false;
         }
       },
-      action: async (contentId, contentType, reason, metadata) => {
+      action: async (contentId, contentType, reason, _metadata) => {
         await this.flagContent(contentId, contentType, reason, 'explicit_content');
       },
     });
@@ -156,7 +156,7 @@ class AutoModerationService {
         const { hasMatch } = containsFilteredKeywords(textFields);
         return hasMatch;
       },
-      action: async (contentId, contentType, reason, metadata) => {
+      action: async (contentId, contentType, reason, _metadata) => {
         await this.flagContent(contentId, contentType, reason, 'profanity');
       },
     });
@@ -167,13 +167,13 @@ class AutoModerationService {
       description: 'Detects and flags potential spam content',
       isActive: true,
       priority: 80,
-      condition: async (content, metadata) => {
+      condition: async (content, _metadata) => {
         // Check for repetitive content
         if (content.text && content.text.length > 0) {
           // Simple check for repeated phrases (basic spam detection)
           const words = content.text.split(/\s+/);
           const wordCount = words.length;
-          const uniqueWords = new Set(words.map(w => w.toLowerCase()));
+          const uniqueWords = new Set(words.map((w: string) => w.toLowerCase()));
           const uniqueRatio = uniqueWords.size / wordCount;
           
           // If more than 50% of words are repeated, flag as potential spam
@@ -191,7 +191,8 @@ class AutoModerationService {
         
         return false;
       },
-      action: async (contentId, contentType, reason, metadata) => {
+      action: async (contentId, contentType, reason, _metadata) => {
+
         await this.flagContent(contentId, contentType, reason, 'spam');
       },
     });
@@ -219,7 +220,7 @@ class AutoModerationService {
         
         return false;
       },
-      action: async (contentId, contentType, reason, metadata) => {
+      action: async (contentId, contentType, reason, _metadata) => {
         // For new users, we might want to hold the content for review
         // instead of outright flagging it
         await this.flagContent(

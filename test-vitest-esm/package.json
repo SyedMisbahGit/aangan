@@ -1,0 +1,21 @@
+{
+  "name": "test-vitest-esm",
+  "version": "1.0.0",
+  "description": "Minimal test project for Vitest with ESM",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  }
+}

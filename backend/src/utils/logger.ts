@@ -77,6 +77,6 @@ const stream = {
 };
 
 // Add the stream to the logger
-logger.stream = stream;
+(logger as any).stream = stream;
 
 export default logger;
