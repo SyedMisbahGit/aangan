@@ -38,16 +38,90 @@ module.exports = {
     },
   },
   rules: {
+    // Code Quality
     'prettier/prettier': 'error',
+    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    'no-debugger': 'error',
+    'no-var': 'error',
+    'prefer-const': 'error',
+    'object-shorthand': 'error',
+    'prefer-template': 'error',
+    'no-useless-rename': 'error',
+    'no-duplicate-imports': 'error',
+    'no-param-reassign': 'error',
+    'no-unsafe-optional-chaining': 'error',
+
+    // React & JSX
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'warn',
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+    'react/display-name': 'off',
+    'react/jsx-key': 'error',
+    'react/jsx-no-useless-fragment': 'error',
+    'react/jsx-pascal-case': 'error',
+    'react/self-closing-comp': 'error',
     'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'warn',
+    'react-hooks/exhaustive-deps': 'error',
+
+    // TypeScript
+    '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
+    '@typescript-eslint/explicit-module-boundary-types': 'error',
+    '@typescript-eslint/no-explicit-any': 'error',
+    '@typescript-eslint/no-non-null-assertion': 'error',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrors: 'all',
+        ignoreRestSiblings: true
+      }
+    ],
+    '@typescript-eslint/consistent-type-imports': 'error',
+    '@typescript-eslint/consistent-type-exports': 'error',
+    '@typescript-eslint/ban-ts-comment': [
+      'error',
+      { 'ts-expect-error': 'allow-with-description' }
+    ],
+
+    // Import/Export
+    'import/order': [
+      'error',
+      {
+        'groups': [
+          'builtin',
+          'external',
+          'internal',
+          'parent',
+          'sibling',
+          'index',
+          'object',
+          'type'
+        ],
+        'alphabetize': { order: 'asc', caseInsensitive: true },
+        'newlines-between': 'always'
+      }
+    ],
+    'import/no-unresolved': 'error',
+    'import/named': 'error',
+    'import/default': 'error',
+    'import/namespace': 'error',
+    'import/no-cycle': 'error',
+    'import/no-self-import': 'error',
+    'import/no-useless-path-segments': 'error',
+    'import/export': 'error',
+    'import/first': 'error',
+    'import/no-duplicates': 'error',
+    'import/no-named-as-default': 'off',
+    'import/no-named-as-default-member': 'off',
+
+    // Accessibility
+    'jsx-a11y/alt-text': 'error',
+    'jsx-a11y/anchor-has-content': 'error',
+    'jsx-a11y/aria-props': 'error',
+    'jsx-a11y/aria-proptypes': 'error',
+    'jsx-a11y/aria-role': 'error',
+    'jsx-a11y/role-has-required-aria-props': 'error',
+    'jsx-a11y/role-supports-aria-props': 'error',
     'import/order': [
       'error',
       {

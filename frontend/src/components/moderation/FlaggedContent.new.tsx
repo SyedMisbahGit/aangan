@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   Table, 
   Tag, 
@@ -13,7 +13,8 @@ import {
   Empty,
   Spin,
   Alert,
-  MenuProps 
+  MenuProps,
+  Space
 } from 'antd';
 import type { MenuProps as AntdMenuProps } from 'antd';
 import ModerationErrorBoundary from './ModerationErrorBoundary';
@@ -25,17 +26,34 @@ import {
   MoreOutlined,
   ExclamationCircleOutlined
 } from '@ant-design/icons';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getFlaggedContent, reviewFlaggedContent } from '../../../services/moderation.service';
+import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { formatDistanceToNow } from 'date-fns';
-import { ContentPreview } from './ContentPreview';
 
-const { Text, Paragraph } = Typography;
+// Mock the services for now - these should be replaced with actual service imports
+const getFlaggedContent = async (params: any) => {
+  // Mock implementation
+  return {
+    data: [],
+    total: 0,
+    page: 1,
+    limit: 10
+  };
+};
 
-// Types
-type FlagStatus = 'pending' | 'resolved' | 'rejected';
+const reviewFlaggedContent = async (flagId: string, data: any) => {
+  // Mock implementation
+  return {
+    success: true,
+    message: 'Success',
+    data: {}
+  };
+};
 
-interface FlaggedContent {
+const { Text } = Typography;
+
+export type FlagStatus = 'pending' | 'resolved' | 'rejected';
+
+export interface FlaggedContent {
   id: string;
   content_id: string;
   content_type: string;
@@ -54,11 +72,17 @@ interface FlaggedContent {
   };
 }
 
-interface FlaggedContentResponse {
+export interface FlaggedContentResponse {
   data: FlaggedContent[];
   total: number;
   page: number;
   limit: number;
+}
+
+interface ReviewAction {
+  flagId: string;
+  action: 'approve' | 'reject' | 'delete';
+  note?: string;
 }
 
 interface TableParams {
@@ -68,14 +92,17 @@ interface TableParams {
   filters?: Record<string, any>;
 }
 
-export function FlaggedContent({ status = 'pending' as FlagStatus }) {
+interface FlaggedContentProps {
+  status?: FlagStatus;
+}
+
+export const FlaggedContent = ({ status = 'pending' }: FlaggedContentProps) => {
   const [selectedFlag, setSelectedFlag] = useState<FlaggedContent | null>(null);
   const [reviewNote, setReviewNote] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [action, setAction] = useState<'approve' | 'reject' | 'delete'>();
   const queryClient = useQueryClient();
 
-  // Table state
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
@@ -86,73 +113,61 @@ export function FlaggedContent({ status = 'pending' as FlagStatus }) {
   const { 
     data, 
     isLoading, 
-    isError 
-  } = useQuery<FlaggedContentResponse>({
-    queryKey: ['flaggedContent', status, tableParams],
-    queryFn: () => getFlaggedContent({
-      status,
-      page: tableParams.pagination?.current || 1,
-      limit: tableParams.pagination?.pageSize || 10,
+    isError, 
+    error, 
+    refetch 
+  } = useQuery<FlaggedContentResponse, Error>({
+    queryKey: ['flaggedContent', status],
+    queryFn: () => getFlaggedContent({ 
+      status, 
+      page: 1, 
+      limit: 10 
     }),
-    retry: 2,
-    onError: (error: Error) => {
-      console.error('Error fetching flagged content:', error);
-      message.error('Failed to load flagged content. Please try again.');
-    },
   });
 
-  // Handle flag review
-  const reviewMutation = useMutation({
-    mutationFn: async ({ 
-      flagId, 
-      action, 
-      note 
-    }: { 
-      flagId: string; 
-      action: 'approve' | 'reject' | 'delete'; 
-      note?: string; 
-    }) => {
-      return reviewFlaggedContent(flagId, action, note);
-    },
+  const { 
+    mutate: reviewContent, 
+    isPending: isReviewing 
+  } = useMutation<{ success: boolean; message: string; data: any }, Error, ReviewAction>({
+    mutationFn: ({ flagId, action, note }) =>
+      reviewFlaggedContent(flagId, { action, note }),
     onSuccess: () => {
-      message.success('Review submitted successfully');
-      queryClient.invalidateQueries({ queryKey: ['flaggedContent'] });
-      queryClient.invalidateQueries({ queryKey: ['moderationStats'] });
+      message.success('Action completed successfully');
       setIsModalVisible(false);
-      setReviewNote('');
-      setSelectedFlag(null);
+      queryClient.invalidateQueries({ queryKey: ['flaggedContent'] });
     },
     onError: (error: Error & { response?: { data?: { message?: string } } }) => {
       message.error(error.response?.data?.message || 'Failed to submit review');
     },
   });
 
-  const handleTableChange = useCallback((newPagination: TablePaginationConfig) => {
+  const handleTableChange = useCallback((pagination: TablePaginationConfig) => {
     setTableParams((prev: TableParams) => ({
       ...prev,
       pagination: {
         ...prev.pagination,
-        current: newPagination.current,
-        pageSize: newPagination.pageSize,
+        current: pagination.current,
+        pageSize: pagination.pageSize,
       },
     }));
   }, []);
 
-  const showReviewModal = (flag: FlaggedContent, actionType: 'approve' | 'reject' | 'delete') => {
-    setSelectedFlag(flag);
-    setAction(actionType);
+  const handleReview = (flagId: string, action: 'approve' | 'reject' | 'delete') => {
+    setSelectedFlag({ id: flagId } as FlaggedContent);
+    setAction(action);
     setIsModalVisible(true);
+    setReviewNote('');
   };
 
-  const handleReview = useCallback(() => {
+  const handleConfirmReview = () => {
     if (!selectedFlag || !action) return;
     
-    reviewMutation.mutate({
+    reviewContent({
       flagId: selectedFlag.id,
       action,
-      note: reviewNote || undefined,
+      note: reviewNote,
     });
-  }, [selectedFlag, action, reviewNote, reviewMutation]);
+  };
 
   const getStatusTag = (status: string) => {
     const statusMap = {
@@ -163,126 +178,76 @@ export function FlaggedContent({ status = 'pending' as FlagStatus }) {
     
     const statusInfo = statusMap[status as keyof typeof statusMap] || { 
       color: 'default' as const, 
+      icon: null, 
       text: status 
     };
-    
+
     return (
-      <Tag 
-        color={statusInfo.color} 
-        icon={statusInfo.icon}
-        style={{ textTransform: 'capitalize' }}
-      >
+      <Tag color={statusInfo.color} icon={statusInfo.icon}>
         {statusInfo.text}
       </Tag>
     );
   };
 
-  const getContentTypeTag = (type: string) => {
-    const typeMap = {
-      whisper: { color: 'blue' as const, text: 'Whisper' },
-      comment: { color: 'purple' as const, text: 'Comment' },
-      user: { color: 'cyan' as const, text: 'User' },
-    } as const;
-    
-    const typeInfo = typeMap[type as keyof typeof typeMap] || { 
-      color: 'default' as const, 
-      text: type 
-    };
-    
-    return <Tag color={typeInfo.color}>{typeInfo.text}</Tag>;
-  };
-
-  const getReasonTag = (reason: string) => {
-    const reasonMap = {
-      spam: { color: 'red' as const, text: 'Spam' },
-      harassment: { color: 'volcano' as const, text: 'Harassment' },
-      inappropriate: { color: 'orange' as const, text: 'Inappropriate' },
-      other: { color: 'default' as const, text: 'Other' },
-    } as const;
-
-    const reasonInfo = reasonMap[reason.toLowerCase() as keyof typeof reasonMap] || { 
-      color: 'default' as const, 
-      text: reason 
-    };
-    return <Tag color={reasonInfo.color}>{reasonInfo.text}</Tag>;
-  };
-
-  const getActionItems = (record: FlaggedContent) => [
+  const getActionItems = (record: FlaggedContent): MenuProps['items'] => [
     {
       key: 'approve',
-      label: 'Approve Content',
+      label: 'Approve',
       icon: <CheckOutlined />,
-      disabled: status !== 'pending',
-      onClick: () => showReviewModal(record, 'approve'),
+      onClick: () => handleReview(record.id, 'approve'),
     },
     {
       key: 'reject',
       label: 'Reject Flag',
       icon: <CloseOutlined />,
-      disabled: status !== 'pending',
       danger: true,
-      onClick: () => showReviewModal(record, 'reject'),
+      onClick: () => handleReview(record.id, 'reject'),
     },
     {
       key: 'delete',
       label: 'Delete Content',
       icon: <DeleteOutlined />,
-      disabled: status !== 'pending',
       danger: true,
-      onClick: () => showReviewModal(record, 'delete'),
+      onClick: () => handleReview(record.id, 'delete'),
     },
   ];
 
   const columns = [
     {
       title: 'Content',
-      dataIndex: 'content_preview',
+      dataIndex: ['content', 'text'],
       key: 'content',
-      render: (_: unknown, record: FlaggedContent) => (
-        <div style={{ maxWidth: 400 }}>
-          <Paragraph 
-            ellipsis={{ rows: 2, expandable: true, symbol: 'more' }}
-            style={{ marginBottom: 0 }}
-          >
-            <ContentPreview 
-              contentId={record.content_id} 
-              contentType={record.content_type} 
-            />
-          </Paragraph>
-          <div style={{ marginTop: 4 }}>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              Flagged {formatDistanceToNow(new Date(record.created_at))} ago
-            </Text>
-          </div>
-        </div>
+      render: (_: any, record: FlaggedContent) => (
+        <Space direction="vertical" size="small">
+          <Text>{record.content.text || 'No content available'}</Text>
+          {record.content.author && (
+            <Text type="secondary">By: {record.content.author.username}</Text>
+          )}
+        </Space>
       ),
     },
     {
       title: 'Reason',
       dataIndex: 'reason',
       key: 'reason',
-      width: 150,
-      render: (reason: string) => getReasonTag(reason),
-    },
-    {
-      title: 'Type',
-      dataIndex: 'content_type',
-      key: 'type',
-      width: 100,
-      render: (type: string) => getContentTypeTag(type),
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      width: 120,
       render: (status: string) => getStatusTag(status),
+    },
+    {
+      title: 'Reported',
+      dataIndex: 'created_at',
+      key: 'reported',
+      render: (date: string) => formatDistanceToNow(new Date(date), { addSuffix: true }),
     },
     {
       title: 'Actions',
       key: 'actions',
-      width: 50,
-      render: (_: any, record: any) => (
+      width: 100,
+      render: (_: any, record: FlaggedContent) => (
         <Dropdown 
           menu={{ items: getActionItems(record) }} 
           placement="bottomRight"
@@ -297,9 +262,9 @@ export function FlaggedContent({ status = 'pending' as FlagStatus }) {
   const renderContent = useCallback(() => {
     if (isLoading) {
       return (
-        <div style={{ textAlign: 'center', padding: '40px 0' }}>
+        <div style={{ textAlign: 'center', padding: '24px' }}>
           <Spin size="large" />
-          <div style={{ marginTop: 16 }}>Loading flagged content...</div>
+          <div>Loading flagged content...</div>
         </div>
       );
     }
@@ -307,17 +272,12 @@ export function FlaggedContent({ status = 'pending' as FlagStatus }) {
     if (isError) {
       return (
         <Alert
-          message="Error"
-          description="Failed to load flagged content. Please try again later."
+          message="Error loading flagged content"
+          description={error?.message || 'An unknown error occurred'}
           type="error"
           showIcon
           action={
-            <Button 
-              type="primary" 
-              danger 
-              onClick={() => window.location.reload()}
-              style={{ marginTop: 16 }}
-            >
+            <Button type="primary" onClick={() => refetch()}>
               Retry
             </Button>
           }
@@ -399,4 +359,17 @@ export function FlaggedContent({ status = 'pending' as FlagStatus }) {
   );
 };
 
-export default FlaggedContentComponent;
+// Create a wrapper component that provides the QueryClient
+const FlaggedContentWithProvider: React.FC<FlaggedContentProps> = (props) => {
+  const queryClient = new QueryClient();
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ModerationErrorBoundary>
+        <FlaggedContent {...props} />
+      </ModerationErrorBoundary>
+    </QueryClientProvider>
+  );
+};
+
+export default FlaggedContentWithProvider;

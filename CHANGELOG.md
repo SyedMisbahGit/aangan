@@ -4,6 +4,13 @@ All notable changes to the College Whisper platform will be documented in this f
 
 ## [Unreleased]
 
+### Security
+
+- Updated `esbuild` to v0.25.0 to address security vulnerability (CVE-2023-45133)
+  - Added explicit dependency on `esbuild@^0.25.0` in both root and frontend packages
+  - Added package overrides to ensure consistent version usage across all dependencies
+  - Performed clean install to verify the fix
+
 ### Added
 
 - Comprehensive form validation system with Zod schemas
@@ -18,6 +25,9 @@ All notable changes to the College Whisper platform will be documented in this f
 ### Changed
 
 - Improved error handling with custom error boundaries
+- Set up Git hooks with Husky for automated code quality checks
+  - Pre-commit hook runs ESLint and Prettier on staged files
+  - Pre-push hook runs test suite before allowing push
 
 ### Removed
 

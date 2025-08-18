@@ -1,0 +1,20 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-typescript-next",
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "streetsidesoftware.code-spell-checker",
+    "eamodio.gitlens",
+    "prisma.prisma",
+    "bradlc.vscode-tailwindcss",
+    "graphql.vscode-graphql",
+    "mikestead.dotenv",
+    "wix.vscode-import-cost",
+    "visualstudioexptteam.vscodeintellicode",
+    "ms-vsliveshare.vsliveshare",
+    "ms-azuretools.vscode-docker",
+    "github.vscode-pull-request-github"
+  ]
+}

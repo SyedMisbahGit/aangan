@@ -20,35 +20,77 @@ A full-stack, real-time, AI-powered campus platform built with Node.js/Express (
 - [Backend Troubleshooting](./backend/TROUBLESHOOTING.md) - Solutions to common backend issues
 - [Backend API Reference](./docs/API.md) - Detailed API documentation for backend endpoints
 
-## 🛠 Code Quality
+## 🛠 Code Quality & Development
 
-We maintain high code quality through:
+We maintain high code quality through a comprehensive set of tools and automated workflows:
 
-- **ESLint** for code linting
-- **TypeScript** for type safety
-- **Prettier** for code formatting
-- **Husky** for git hooks
-- **Depcheck** for identifying unused dependencies
-- **Automated CI/CD** with dependency and security checks
+### Core Tools
 
-To run the linter:
+- **ESLint** - JavaScript/TypeScript linting with custom rules
+- **TypeScript** - Static type checking for type safety
+- **Prettier** - Consistent code formatting
+- **Husky** - Git hooks for pre-commit and pre-push checks
+- **lint-staged** - Run linters on git staged files
+- **Depcheck** - Identify unused dependencies
+
+### Development Workflow
+
+1. **Install Dependencies**
+   ```bash
+   npm install
+   npx husky install
+   ```
+
+2. **Run Development Server**
+   ```bash
+   npm run dev
+   ```
+
+3. **Before Committing**
+   - Code is automatically formatted with Prettier
+   - Linting errors are checked
+   - TypeScript type checking is performed
+   - Tests are run before pushing
+
+### Common Commands
+
 ```bash
-# Check for issues
-npm run lint
+# Run linter
+npm run lint          # Check for issues
+npm run lint:fix      # Auto-fix fixable issues
 
-# Auto-fix fixable issues
-npm run lint:fix
+# Type checking
+npm run typecheck     # Run TypeScript type checking
+npm run typecheck:watch  # Watch mode for type checking
 
-# Check for unused dependencies
-npx depcheck
+# Formatting
+npm run format        # Format all supported files
 
-# Run tests with coverage
-npm run test:coverage
+# Testing
+npm test              # Run all tests
+npm run test:watch    # Run tests in watch mode
+npm run test:coverage # Run tests with coverage report
+npm run test:unit     # Run unit tests only
+npm run test:integration  # Run integration tests only
+
+# Code Quality
+npx depcheck          # Check for unused dependencies
+npm run validate      # Run all validations (lint + typecheck + build)
 ```
+
+### Git Hooks
+
+- **Pre-commit**: Runs lint-staged to check and fix staged files
+- **Pre-push**: Runs type checking and tests to ensure code quality
+
+### Editor Configuration
+
+We provide editor configurations (`.editorconfig`, `.vscode/`) to ensure consistent coding styles across different editors and IDEs.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ and npm 9+
 - Docker and Docker Compose (for containerized development)
 - PostgreSQL (or use the included Docker configuration)
@@ -68,6 +110,7 @@ npm run test:coverage
    ```
 
 3. **Start the development environment**
+
    ```bash
    # Using Docker Compose (recommended)
    docker-compose up
@@ -78,19 +121,22 @@ npm run test:coverage
    ```
 
 The application will be available at:
+
 - Frontend: http://localhost:5173
-- Backend API: http://localhost:3001
+- Backend API: <http://localhost:3001>
 - pgAdmin: http://localhost:5050 (if using Docker Compose)
 
 ## 🐳 Docker Deployment
 
 ### Production Build
+
 ```bash
 docker build -t aangan .
 docker run -p 3001:3001 --env-file .env aangan
 ```
 
 ### Development with Hot-Reloading
+
 ```bash
 docker-compose -f docker-compose.dev.yml up --build
 ```
@@ -152,6 +198,7 @@ CORS_ORIGIN=http://localhost:5173
 ## 🛠 Development
 
 ### Backend Commands
+
 ```bash
 # Install dependencies
 cd backend && npm install
@@ -167,6 +214,7 @@ npx knex migrate:latest
 ```
 
 ### Frontend Commands
+
 ```bash
 # Install dependencies
 cd frontend && npm install
@@ -185,6 +233,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## ✨ Recent Updates (v1.9.3)
 
 ### Type Safety & Error Handling
+
 - Added centralized error handling with `errorUtils.ts`
 - Implemented robust error boundaries with proper typing
 - Fixed all remaining TypeScript errors across the codebase
@@ -193,22 +242,26 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### v1.9.2 - Codebase Audit & Polish
 
 ### Code Quality & Type Safety
+
 - Replaced all console statements with a centralized logger utility
 - Fixed TypeScript errors across frontend and backend
 - Implemented proper error handling with type checking
 - Standardized error handling patterns
 
 ### Security Enhancements
+
 - Added comprehensive JWT verification middleware
 - Improved authentication flow with role-based access control
 - Enhanced service worker registration and security
 
 ### Developer Experience
+
 - Added comprehensive test suite for vector database operations
 - Improved API documentation and type definitions
 - Standardized code style and naming conventions
 
 ### Performance
+
 - Optimized real-time event handling
 - Improved error boundaries and fallback UIs
 - Enhanced logging for better debugging
@@ -238,12 +291,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### Installation
 
 1. **Clone the repository**
+
    ```sh
    git clone https://github.com/yourusername/aangan.git
    cd aangan
    ```
 
 2. **Install dependencies**
+
    ```sh
    # Install root dependencies
    npm install
