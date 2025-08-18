@@ -39,6 +39,56 @@ out
 *.swp
 *.swo
 
+# Code quality
+.eslintcache
+.prettiercache
+.vercel
+.next
+out
+
+# Testing
+coverage/
+*.lcov
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local development
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build output
+.next
+out
+build
+
+# Misc
+.DS_Store
+*.pem
+
+# IDE specific files
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Dependency directories
+node_modules/
+.pnp
+.pnp.js
+
+# Environment variables
+.env
+
 # Sensitive files
 serviceAccountKey*.json
 bfg-*.jar
