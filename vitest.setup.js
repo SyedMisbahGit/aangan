@@ -1,6 +1,33 @@
 // Global test setup
-import { beforeAll, afterAll, afterEach, vi } from 'vitest';
-import { cleanup } from '@testing-library/react';
+import { beforeAll, afterAll, afterEach, vi, expect } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/react';
+import matchers from '@testing-library/jest-dom/matchers';
+import { toHaveNoViolations } from 'jest-axe';
+
+// Extend Vitest's expect with jest-dom matchers
+expect.extend(matchers);
+expect.extend({ toHaveNoViolations });
+
+// Mock global objects
+const localStorageMock = (() => {
+  let store = {};
+  return {
+    getItem: (key) => store[key] || null,
+    setItem: (key, value) => {
+      store[key] = value.toString();
+    },
+    removeItem: (key) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+});
 
 // Mock WebSocket server for testing
 class MockWebSocket {
@@ -38,8 +65,20 @@ class MockWebSocket {
 
 global.WebSocket = MockWebSocket;
 
+// Global test utilities
+global.render = render;
+global.screen = screen;
+
 // Cleanup after each test
 afterEach(() => {
+  // Clear all mocks
+  vi.clearAllMocks();
+  
+  // Clean up any rendered components
+  cleanup();
+  
+  // Clear local storage
+  localStorage.clear();
   cleanup();
   vi.clearAllMocks();
 });

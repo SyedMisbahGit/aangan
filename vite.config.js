@@ -5,8 +5,9 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'node', // Use 'jsdom' for browser-like environment if needed
+    environment: 'jsdom',
     setupFiles: ['./vitest.setup.js'],
+    include: ['**/*.{test,spec}.{js,jsx,ts,tsx}'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -20,8 +21,24 @@ export default defineConfig({
         '**/*.config.js',
         '**/*.cjs',
         '**/*.mjs',
+        '**/*.d.ts',
+        '**/types/**',
       ],
+      thresholds: {
+        lines: 80,
+        branches: 80,
+        functions: 80,
+        statements: 80,
+      },
     },
-    testTimeout: 30000, // Increase timeout for tests
+    testTimeout: 30000,
+    typecheck: {
+      tsconfig: './tsconfig.json',
+    },
+  },
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
   },
 });

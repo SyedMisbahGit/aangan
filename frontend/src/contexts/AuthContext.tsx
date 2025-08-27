@@ -1,15 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { User, AuthContextType, AuthProviderProps, Tokens } from './AuthContext.types';
 import { isApiError } from '@/types/api.types';
 import { AuthContext } from './AuthContext.helpers';
+import { logger } from '@/utils/logger';
 
 // Constants
 const TOKEN_KEY = 'auth_tokens';
 const USER_KEY = 'user_data';
 const REFRESH_THRESHOLD = 300; // 5 minutes in seconds
+const MAX_REFRESH_ATTEMPTS = 3;
+const REFRESH_RETRY_DELAY = 1000; // 1 second
 
 // API client with interceptors
 const api = axios.create({
@@ -64,11 +67,52 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setupAxiosInterceptors(newTokens.accessToken);
   }, [setupAxiosInterceptors]);
 
-  // Refresh access token
+    // Track refresh attempts
+  const refreshAttempts = useRef(0);
+  const isRefreshing = useRef(false);
+  const refreshQueue = useRef<Array<() => void>>([]);
+
+  // Process queued requests after successful refresh
+  const processQueue = (error: Error | null) => {
+    refreshQueue.current.forEach(promise => {
+      if (error) {
+        promise();
+      } else {
+        promise();
+      }
+    });
+    refreshQueue.current = [];
+  };
+
+  // Add request to queue
+  const addToQueue = (resolve: (value: boolean) => void) => {
+    refreshQueue.current.push(() => resolve(!isRefreshing.current));
+  };
+
+  // Refresh access token with rate limiting and retry logic
   const refreshToken = useCallback(async (): Promise<boolean> => {
+    // If already refreshing, add to queue
+    if (isRefreshing.current) {
+      return new Promise(resolve => {
+        addToQueue(resolve);
+      });
+    }
+
+    // Check rate limits
+    if (refreshAttempts.current >= MAX_REFRESH_ATTEMPTS) {
+      logger.warn('Maximum refresh attempts reached');
+      clearAuth();
+      return false;
+    }
+
+    isRefreshing.current = true;
+    refreshAttempts.current += 1;
+
     try {
       const storedTokens = localStorage.getItem(TOKEN_KEY);
-      if (!storedTokens) return false;
+      if (!storedTokens) {
+        throw new Error('No stored tokens found');
+      }
       
       const { refreshToken } = JSON.parse(storedTokens) as Tokens;
       const response = await api.post<Partial<Tokens>>('/auth/refresh', { refreshToken });
@@ -81,13 +125,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
         const userData = JSON.parse(localStorage.getItem(USER_KEY) || '{}') as User;
         storeAuthData(newTokens, userData);
+        refreshAttempts.current = 0; // Reset attempts on success
+        processQueue(null);
         return true;
       }
-      return false;
+      throw new Error('Invalid token response');
     } catch (error) {
-      console.error('Error refreshing token:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error('Error refreshing token', { 
+        error: errorMessage,
+        attempt: refreshAttempts.current,
+        maxAttempts: MAX_REFRESH_ATTEMPTS 
+      });
+      
+      // If not the last attempt, wait before retrying
+      if (refreshAttempts.current < MAX_REFRESH_ATTEMPTS) {
+        await new Promise(resolve => setTimeout(resolve, REFRESH_RETRY_DELAY));
+        return refreshToken();
+      }
+      
+      // If all attempts failed, clear auth and process queue with error
+      processQueue(new Error('Refresh failed'));
       clearAuth();
       return false;
+    } finally {
+      isRefreshing.current = false;
     }
   }, [clearAuth, storeAuthData]);
 

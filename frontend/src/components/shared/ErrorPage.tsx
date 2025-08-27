@@ -1,15 +1,26 @@
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
-import React, { useState } from "react";
+import React, { useState, FormEvent } from "react";
 
-interface ErrorPageProps {
+export interface ErrorPageProps {
+  /** Main error title */
   title?: string;
-  message?: string;
+  /** Detailed error message */
+  message?: string | Error;
+  /** Optional narrator line for accessibility */
   narratorLine?: string;
+  /** Callback when retry button is clicked */
   onRetry?: () => void;
+  /** Callback when home button is clicked */
+  onGoHome?: () => void;
+  /** Whether to show the home button */
   showHome?: boolean;
+  /** Whether to show the report issue button */
   showReport?: boolean;
-  errorDetails?: string;
+  /** Additional error details for reporting */
+  errorDetails?: string | Error;
+  /** Custom className for the root element */
+  className?: string;
 }
 
 const ErrorPage: React.FC<ErrorPageProps> = ({
@@ -17,16 +28,22 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
   message = "A gentle hush has settled over the courtyard. Your whispers rest safely in the dusk. Try again, or let the silence hold you for a moment.",
   narratorLine,
   onRetry,
+  onGoHome,
   showHome = true,
   showReport = true,
   errorDetails,
+  className,
 }) => {
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [feedback, setFeedback] = useState("");
-  const [feedbackSent, setFeedbackSent] = useState(false);
-  const [sending, setSending] = useState(false);
+  const [showFeedback, setShowFeedback] = useState<boolean>(false);
+  const [feedback, setFeedback] = useState<string>("");
+  const [feedbackSent, setFeedbackSent] = useState<boolean>(false);
+  const [sending, setSending] = useState<boolean>(false);
 
-  const handleFeedbackSubmit = async (e: React.FormEvent) => {
+  // Extract error message from Error object if provided
+  const errorMessage = message instanceof Error ? message.message : message;
+  const details = errorDetails instanceof Error ? errorDetails.message : errorDetails;
+
+  const handleFeedbackSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
     try {
@@ -35,8 +52,8 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           feedback,
-          errorDetails,
-          url: typeof window !== "undefined" ? window.location.href : undefined,
+          errorDetails: details,
+          url: typeof window !== "undefined" ? window.location.href : '',
           userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
           timestamp: new Date().toISOString(),
           sessionId: typeof window !== "undefined" ? localStorage.getItem('aangan_guest_id') : undefined,
@@ -56,7 +73,7 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
       role="main"
       aria-labelledby="page-title"
       tabIndex={-1}
-      className="min-h-screen flex items-center justify-center bg-red-50 dark:bg-gray-900 transition-colors"
+      className={`min-h-screen flex items-center justify-center bg-red-50 dark:bg-gray-900 transition-colors ${className}`}
     >
       <section className="text-center w-full max-w-md p-6 rounded-xl shadow-lg bg-white/90 dark:bg-gray-800/90 border border-red-200 dark:border-gray-700">
         <motion.div
@@ -87,7 +104,7 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
           <p className="text-lg text-indigo-700 dark:text-indigo-300 mb-2 italic">{narratorLine}</p>
         )}
         <p className="text-muted text-base dark:text-gray-200 mb-6" tabIndex={0}>
-          {message}
+          {errorMessage}
         </p>
         {errorDetails && (
           <details className="mb-4 text-left">
@@ -104,20 +121,23 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
             </Button>
           )}
           {showHome && (
-            <a href="/">
-              <Button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition">
-                Return to Home
-              </Button>
-            </a>
+            <Button
+              variant="outline"
+              onClick={onGoHome || (() => { window.location.href = "/"; })}
+              className="px-6 py-2 text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              Return Home
+            </Button>
           )}
           {showReport && (
-            <a
-              href="mailto:support@aangan.app?subject=Error%20Report"
-              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 underline text-base focus:outline-none focus:ring-2 focus:ring-red-400 rounded transition"
-              tabIndex={0}
+            <Button
+              variant="outline"
+              onClick={() => setShowFeedback(true)}
+              className="w-full sm:w-auto"
+              data-testid="report-button"
             >
               Report Issue
-            </a>
+            </Button>
           )}
           <Button variant="outline" className="mt-2" onClick={() => setShowFeedback(true)}>
             Send Feedback
@@ -143,8 +163,13 @@ const ErrorPage: React.FC<ErrorPageProps> = ({
                     <Button type="button" variant="ghost" onClick={() => setShowFeedback(false)}>
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={sending || !feedback.trim()}>
-                      {sending ? 'Sending...' : 'Submit'}
+                    <Button
+                      type="submit"
+                      disabled={!feedback.trim() || sending}
+                      className="w-full sm:w-auto"
+                      data-testid="submit-report-button"
+                    >
+                      {sending ? 'Sending...' : 'Submit Report'}
                     </Button>
                   </div>
                 </form>

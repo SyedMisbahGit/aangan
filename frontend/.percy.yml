@@ -1,0 +1,15 @@
+version: 2
+snapshot:
+  widths: [375, 768, 1280]  # Mobile, tablet, desktop
+  min-height: 1024
+  percy-css: |
+    /* Hide dynamic elements that might cause false positives */
+    [data-percy-hide], .percy-hide { 
+      visibility: hidden; 
+    }
+    
+    /* Fix for animations */
+    *, *:before, *:after {
+      animation-duration: 0s !important;
+      transition: none !important;
+    }

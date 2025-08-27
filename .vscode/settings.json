@@ -13,5 +13,24 @@
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
     ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
-  "git.ignoreLimitWarning": true
-} 
+  "git.ignoreLimitWarning": true,
+  "vitest.enable": true,
+  "vitest.commandLine": "npx vitest",
+  "vitest.include": ["src/**/*.{test,spec}.{ts,tsx}"],
+  "vitest.watchExclude": ["**/node_modules/**", "**/dist/**"],
+  "vitest.debugConfig": {
+    "type": "node",
+    "request": "launch",
+    "name": "Debug Vitest",
+    "runtimeExecutable": "npx",
+    "runtimeArgs": ["vitest", "run"],
+    "console": "integratedTerminal",
+    "internalConsoleOptions": "neverOpen"
+  },
+  "testing.autoRun": {
+    "enabled": false
+  },
+  "testing.showInExplorer": true,
+  "testing.followRunningTest": true,
+  "vitest.disableWorkspaceWarning": true
+}

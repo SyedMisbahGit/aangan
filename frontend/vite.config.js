@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import basicSsl from '@vitejs/plugin-basic-ssl';
+import istanbul from 'vite-plugin-istanbul';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -33,6 +34,15 @@ export default defineConfig(({ mode }) => {
     
     // Plugins
     plugins: [
+      // Code coverage for Cypress
+      istanbul({
+        include: 'src/**/*.{js,jsx,ts,tsx}',
+        exclude: ['node_modules', 'test/', 'cypress/'],
+        extension: ['.js', '.jsx', '.ts', '.tsx'],
+        requireEnv: false,
+        forceBuildInstrument: process.env.CYPRESS_COVERAGE === 'true',
+      }),
+
       // React plugin with Fast Refresh (enabled by default)
       react({
         // Babel configuration

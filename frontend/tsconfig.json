@@ -3,7 +3,7 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "WebWorker", "ESNext"],
-    "allowJs": false,
+    "allowJs": true,
     "skipLibCheck": true,
     "exactOptionalPropertyTypes": false,
     "esModuleInterop": true,
@@ -17,7 +17,7 @@
     "noImplicitThis": true,
     "alwaysStrict": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
@@ -28,6 +28,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "types": ["vite/client", "jest", "vite-plugin-pwa/client"],
     "baseUrl": ".",
     "typeRoots": [
       "./node_modules/@types",
@@ -35,8 +36,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "types": ["vite/client", "vite-plugin-pwa/client"]
+    }
   },
   "include": [
     "src/**/*.ts",

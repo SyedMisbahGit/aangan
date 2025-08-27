@@ -1,0 +1,52 @@
+name: k6 Load Testing
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'k6/**'
+      - '.github/workflows/k6-load-test.yml'
+
+jobs:
+  k6-load-test:
+    runs-on: ubuntu-latest
+    container: loadimpact/k6
+    
+    services:
+      # Add your backend service here if needed
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Run k6 load test
+        run: |
+          k6 run --out json=test-results.json k6/smoke-test.js
+          
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: k6-test-results
+          path: test-results.json
+          retention-days: 7
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          
+      - name: Process and report results
+        if: always()
+        run: |
+          npm install -g json2html
+          cat test-results.json | json2html > test-results.html
+          
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: k6-html-report
+          path: test-results.html
+          retention-days: 7
