@@ -7,6 +7,64 @@ import aiReplyJobQueue from '../src/aiReplyJobQueue.js';
 
 const router = express.Router();
 
+/**
+ * @route GET /api/admin/users
+ * @description Get a list of all users (admin only)
+ * @access Private/Admin
+ */
+router.get('/users', requireRole('admin'), async (req, res) => {
+  try {
+    const { page = 1, limit = 20, search = '', role = '' } = req.query;
+    const offset = (page - 1) * limit;
+    
+    // Base query
+    let query = db('users')
+      .select(
+        'id',
+        'email',
+        'username',
+        'role',
+        'is_active',
+        'created_at',
+        'last_login'
+      )
+      .orderBy('created_at', 'desc');
+    
+    // Apply filters
+    if (search) {
+      const searchTerm = `%${search}%`;
+      query = query.where(builder => {
+        builder
+          .where('email', 'ilike', searchTerm)
+          .orWhere('username', 'ilike', searchTerm);
+      });
+    }
+    
+    if (role) {
+      query = query.where('role', role);
+    }
+    
+    // Get paginated results and total count
+    const [users, total] = await Promise.all([
+      query.clone().limit(limit).offset(offset),
+      query.clone().count('id as count').first()
+    ]);
+    
+    res.json({
+      users,
+      pagination: {
+        total: parseInt(total?.count || 0),
+        page: parseInt(page),
+        limit: parseInt(limit),
+        pages: Math.ceil((total?.count || 0) / limit)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
 // --- RBAC Middleware ---
 function requireRole(role) {
   return (req, res, next) => {

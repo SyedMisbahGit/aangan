@@ -28,6 +28,8 @@
   },
   "include": [
     "frontend/src/**/*",
+    "backend/src/**/*.ts",
+    "backend/__tests__/**/*.test.ts",
     "frontend/lib/**/*",
     "backend/src/**/*"
   ],

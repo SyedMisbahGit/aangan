@@ -15,23 +15,17 @@ const validate = (validations: ValidationChain[]) => {
         return next();
       }
       
-      // Format errors in a way that matches our error handler's expectations
-      const errorMap: Record<string, string[]> = {};
-      errors.array().forEach((err: any) => {
-        if (!errorMap[err.param]) {
-          errorMap[err.param] = [];
-        }
-        errorMap[err.param].push(err.msg);
-      });
+      // Format errors in the expected format
+      const errorDetails = errors.array().map((err: any) => ({
+        msg: err.msg,
+        param: err.param,
+        location: err.location,
+        value: err.value
+      }));
       
       // Create a BadRequestError with the validation errors
       const error = new BadRequestError('Validation failed', 'VALIDATION_ERROR', { 
-        details: Object.entries(errorMap).map(([param, messages]) => ({
-          param,
-          messages,
-          location: 'body',
-          type: 'field'
-        }))
+        details: errorDetails
       });
       
       // Ensure the error has a status code
@@ -168,6 +162,23 @@ router.get(
       }
       await authService.verifyEmail(token);
       res.json({ message: 'Email verified successfully' });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// Google authentication
+router.post(
+  '/google',
+  validate([
+    body('idToken').isLength({ min: 1 }),
+  ]),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { idToken } = req.body;
+      const tokens = await authService.authenticateWithGoogle(idToken);
+      res.json(tokens);
     } catch (error) {
       next(error);
     }

@@ -10,6 +10,7 @@ A full-stack, real-time, AI-powered campus platform built with Node.js/Express (
 
 - [Code Organization & Linting Guidelines](./docs/CODE_ORGANIZATION.md) - Guidelines for maintaining code quality and consistency
 - [API Documentation](./docs/API.md) - API endpoints and usage
+- [API Contracts](./API_CONTRACTS.md) - Detailed API contracts with request/response examples
 - [Deployment Guide](./docs/DEPLOYMENT.md) - Instructions for deploying the application
 - [Dependencies](./docs/DEPENDENCIES.md) - Documentation about project dependencies and cleanup status
 - [Contributing](./CONTRIBUTING.md) - Guidelines for contributing to the project

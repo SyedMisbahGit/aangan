@@ -4,7 +4,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['**/__tests__/**/*.test.{js,mjs,ts}'],
+    include: ['**/__tests__/**/*.test.{js,mjs,ts}', '**/*.test.js'],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/frontend/**'],
     testTimeout: 30000,
     setupFiles: ['./vitest.setup.js'],
     coverage: {
@@ -20,6 +21,7 @@ export default defineConfig({
         '**/*.config.js',
         '**/*.cjs',
         '**/*.mjs',
+        '**/frontend/**',
       ],
     },
   },

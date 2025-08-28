@@ -1,39 +1,38 @@
-// Global test setup
+// Global test setup for Vitest
 import { beforeAll, afterAll, afterEach, vi, expect } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
-import matchers from '@testing-library/jest-dom/matchers';
-import { toHaveNoViolations } from 'jest-axe';
 
-// Extend Vitest's expect with jest-dom matchers
-expect.extend(matchers);
-expect.extend({ toHaveNoViolations });
+// Mock localStorage for Node.js environment
+if (typeof window === 'undefined') {
+  const localStorageMock = (() => {
+    let store = {};
+    return {
+      getItem: (key) => store[key] || null,
+      setItem: (key, value) => {
+        store[key] = value.toString();
+      },
+      removeItem: (key) => {
+        delete store[key];
+      },
+      clear: () => {
+        store = {};
+      },
+    };
+  })();
 
-// Mock global objects
-const localStorageMock = (() => {
-  let store = {};
-  return {
-    getItem: (key) => store[key] || null,
-    setItem: (key, value) => {
-      store[key] = value.toString();
-    },
-    removeItem: (key) => {
-      delete store[key];
-    },
-    clear: () => {
-      store = {};
-    },
+  global.localStorage = localStorageMock;
+  global.sessionStorage = {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+    clear: vi.fn(),
   };
-})();
+}
 
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
-});
-
-// Mock WebSocket server for testing
+// Mock WebSocket for testing
 class MockWebSocket {
   constructor(url) {
     this.url = url;
-    this.readyState = WebSocket.OPEN;
+    this.readyState = 1; // OPEN
     this.onopen = null;
     this.onmessage = null;
     this.onclose = null;
@@ -41,45 +40,51 @@ class MockWebSocket {
     this.sentMessages = [];
     
     // Auto-connect
-    setTimeout(() => {
+    setImmediate(() => {
       if (this.onopen) this.onopen({ type: 'open' });
-    }, 0);
+    });
   }
-
+  
   send(data) {
-    this.sentMessages.push(JSON.parse(data));
+    this.sentMessages.push(data);
   }
-
+  
   close() {
-    this.readyState = WebSocket.CLOSED;
-    if (this.onclose) this.onclose({ code: 1000, reason: 'Test closure' });
+    this.readyState = 3; // CLOSED
+    if (this.onclose) this.onclose({ type: 'close' });
   }
-
-  // Test helper methods
+  
+  // Test helper method
   simulateMessage(data) {
     if (this.onmessage) {
-      this.onmessage({ data: JSON.stringify(data) });
+      this.onmessage({ data });
     }
   }
 }
 
 global.WebSocket = MockWebSocket;
 
-// Global test utilities
-global.render = render;
-global.screen = screen;
+// Mock timers
+global.setImmediate = global.setImmediate || ((fn, ...args) => global.setTimeout(fn, 0, ...args));
+
+// Mock requestIdleCallback for testing
+global.requestIdleCallback = global.requestIdleCallback || function (cb) {
+  const start = Date.now();
+  return setTimeout(() => {
+    cb({
+      didTimeout: false,
+      timeRemaining: () => Math.max(0, 50 - (Date.now() - start)),
+    });
+  }, 1);
+};
+
+global.cancelIdleCallback = global.cancelIdleCallback || function (id) {
+  clearTimeout(id);
+};
 
 // Cleanup after each test
 afterEach(() => {
   // Clear all mocks
-  vi.clearAllMocks();
-  
-  // Clean up any rendered components
-  cleanup();
-  
-  // Clear local storage
-  localStorage.clear();
-  cleanup();
   vi.clearAllMocks();
 });
 

@@ -727,6 +727,10 @@ const authenticateAdminJWT = async (req, res, next) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 
+// User routes
+import userRoutes from '../routes/user.js';
+app.use('/api/user', userRoutes);
+
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ 
@@ -2054,4 +2058,9 @@ app.delete("/api/whisper_reports/:id", requireAdminJWT, async (req, res) => {
 // After all other app setup, start the AI reply worker - commented out until implemented
 // aiReplyJobQueue.startWorker();
 
-startServer();
+// Start the server if this file is run directly
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
+
+export { app, server };

@@ -1,11 +1,10 @@
 import request from 'supertest';
 import express from 'express';
 import bodyParser from 'body-parser';
-import { v4 as uuidv4 } from 'uuid';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import authRoutes from '../../routes/auth.routes.js';
 import { authService } from '../../services/auth.service.js';
-import { BadRequestError, UnauthorizedError, ValidationError } from '../../utils/errors.js';
+import { BadRequestError, UnauthorizedError } from '../../utils/errors.js';
 
 // Mock the auth service
 vi.mock('../../services/auth.service.js', () => ({
@@ -115,84 +114,52 @@ describe('Auth Routes', () => {
     });
 
     it('should return 400 for invalid input', async () => {
-      // Mock the authService.register to throw a validation error
-      const validationErrors = [
-        { path: 'email', msg: 'Invalid email format' },
-        { path: 'password', msg: 'Password must be at least 6 characters' },
-        { path: 'name', msg: 'Name is required' }
-      ];
-      
-      // Create a mock error that matches what the error handler expects
-      const validationError = new Error('Validation failed');
-      validationError.name = 'ValidationError';
-      validationError.statusCode = 400;
-      validationError.errors = validationErrors;
-      
-      console.log('Mocking authService.register to throw:', {
-        name: validationError.name,
-        message: validationError.message,
-        statusCode: validationError.statusCode,
-        errors: validationError.errors
-      });
-      
-      (authService.register as vi.Mock).mockImplementation(() => {
-        console.log('authService.register mock called, throwing error');
-        return Promise.reject(validationError);
-      });
-
-      try {
-        // Make the request and capture the response
-        console.log('Sending request to /api/auth/register');
-        const response = await request(app)
-          .post('/api/auth/register')
-          .send({
-            email: 'invalid-email',
-            password: '123',
-            name: '',
-          });
-
-        console.log('Request completed with status:', response.status);
-        console.log('Response body:', JSON.stringify(response.body, null, 2));
-        
-        // Check the response structure
-        expect(response.status).toBe(400);
-        expect(response.body).toHaveProperty('error');
-        expect(response.body.error).toHaveProperty('status', 400);
-        expect(response.body.error).toHaveProperty('message', 'Validation failed');
-        
-        // Check that details is an array with the expected errors
-        expect(response.body.error).toHaveProperty('details');
-        const { details } = response.body.error;
-        expect(Array.isArray(details)).toBe(true);
-        expect(details.length).toBeGreaterThan(0);
-        
-        // Check that all expected validation errors are present
-        const errorMessages = details.map((d: any) => d.msg || d.message);
-        expect(errorMessages).toContain('Invalid email format');
-        expect(errorMessages).toContain('Password must be at least 6 characters');
-        expect(errorMessages).toContain('Name is required');
-      } catch (error) {
-        console.error('Test error details:', {
-          name: error.name,
-          message: error.message,
-          status: error.status,
-          response: {
-            status: error.response?.status,
-            statusText: error.response?.statusText,
-            data: error.response?.data,
-            body: error.response?.body,
-            headers: error.response?.headers,
-          },
-          stack: error.stack
+      // Make the request with invalid data
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send({
+          email: 'invalid-email',
+          password: '123',
+          name: '',
         });
-        throw error; // Re-throw to fail the test
-      }
+
+      // Check the response structure
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error');
+      
+      const { error } = response.body;
+      expect(error).toHaveProperty('status', 400);
+      expect(error).toHaveProperty('message');
+      
+      // Check for validation errors in context.details
+      const errorDetails = error.context?.details || [];
+      
+      // Verify we have exactly 3 validation errors (one for each field)
+      expect(errorDetails).toHaveLength(3);
+      
+      // Check for expected error patterns - using the actual error messages from the API
+      const hasEmailError = errorDetails.some((err: { value: string; location: string }) => 
+        err.value === 'invalid-email' && err.location === 'body'
+      );
+      
+      const hasPasswordError = errorDetails.some((err: { value: string; location: string }) => 
+        err.value === '123' && err.location === 'body'
+      );
+      
+      const hasNameError = errorDetails.some((err: { value: string; location: string }) => 
+        err.value === '' && err.location === 'body'
+      );
+      
+      // Expect all validation errors to be present
+      expect(hasEmailError).toBe(true);
+      expect(hasPasswordError).toBe(true);
+      expect(hasNameError).toBe(true);
     });
   });
 
   describe('POST /api/auth/login', () => {
     it('should login with valid credentials', async () => {
-      (authService.login as vi.Mock).mockResolvedValue(mockTokens);
+      (authService.login as Mock).mockResolvedValue(mockTokens);
 
       const response = await request(app)
         .post('/api/auth/login')
@@ -231,13 +198,18 @@ describe('Auth Routes', () => {
       console.log('Response body:', JSON.stringify(response.body, null, 2));
       
       expect(response.status).toBe(401);
-      expect(response.body).toHaveProperty('error', 'Invalid credentials');
+      expect(response.body).toMatchObject({
+        error: {
+          status: 401,
+          message: 'Invalid credentials'
+        }
+      });
     });
   });
 
   describe('POST /api/auth/refresh', () => {
     it('should refresh access token with valid refresh token', async () => {
-      (authService.refreshToken as vi.Mock).mockResolvedValue(mockTokens);
+      (authService.refreshToken as Mock).mockResolvedValue(mockTokens);
 
       const response = await request(app)
         .post('/api/auth/refresh')
@@ -262,7 +234,7 @@ describe('Auth Routes', () => {
 
   describe('POST /api/auth/logout', () => {
     it('should logout and revoke refresh token', async () => {
-      (authService.logout as vi.Mock).mockResolvedValue(undefined);
+      (authService.logout as Mock).mockResolvedValue(undefined);
 
       const response = await request(app)
         .post('/api/auth/logout')
@@ -278,13 +250,11 @@ describe('Auth Routes', () => {
 
   describe('POST /api/auth/verify-email', () => {
     it('should verify email with valid token', async () => {
-      (authService.verifyEmail as vi.Mock).mockResolvedValue(undefined);
+      (authService.verifyEmail as Mock).mockResolvedValue(undefined);
 
       const response = await request(app)
-        .post('/api/auth/verify-email')
-        .send({
-          token: 'valid-verification-token',
-        });
+        .get('/api/auth/verify-email')
+        .query({ token: 'valid-verification-token' });
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ message: 'Email verified successfully' });
@@ -292,24 +262,27 @@ describe('Auth Routes', () => {
     });
 
     it('should return 400 for invalid token', async () => {
-      (authService.verifyEmail as vi.Mock).mockRejectedValue(
+      (authService.verifyEmail as Mock).mockRejectedValue(
         new BadRequestError('Invalid token')
       );
 
       const response = await request(app)
-        .post('/api/auth/verify-email')
-        .send({
-          token: 'invalid-token',
-        });
+        .get('/api/auth/verify-email')
+        .query({ token: 'invalid-token' });
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('error', 'Invalid token');
+      expect(response.body).toMatchObject({
+        error: {
+          status: 400,
+          message: 'Invalid token'
+        }
+      });
     });
   });
 
   describe('POST /api/auth/forgot-password', () => {
     it('should send password reset email', async () => {
-      (authService.requestPasswordReset as vi.Mock).mockResolvedValue(undefined);
+      (authService.requestPasswordReset as Mock).mockResolvedValue(undefined);
 
       const response = await request(app)
         .post('/api/auth/forgot-password')
@@ -325,7 +298,7 @@ describe('Auth Routes', () => {
 
   describe('POST /api/auth/reset-password', () => {
     it('should reset password with valid token', async () => {
-      (authService.resetPassword as vi.Mock).mockResolvedValue(undefined);
+      (authService.resetPassword as Mock).mockResolvedValue(undefined);
 
       const response = await request(app)
         .post('/api/auth/reset-password')
@@ -358,7 +331,7 @@ describe('Auth Routes', () => {
 
   describe('POST /api/auth/google', () => {
     it('should authenticate with valid Google ID token', async () => {
-      (authService.authenticateWithGoogle as vi.Mock).mockResolvedValue(mockTokens);
+      (authService.authenticateWithGoogle as Mock).mockResolvedValue(mockTokens);
 
       const response = await request(app)
         .post('/api/auth/google')

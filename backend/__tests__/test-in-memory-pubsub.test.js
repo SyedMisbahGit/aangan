@@ -50,7 +50,7 @@ describe('InMemoryPubSub', () => {
       const message = { text: 'existing message' };
       await pubsub.publish(channel, message);
       
-      const callback = jest.fn();
+      const callback = vi.fn();
       const unsubscribe = await pubsub.subscribe(channel, callback);
       
       expect(callback).toHaveBeenCalledWith(message);
@@ -61,7 +61,7 @@ describe('InMemoryPubSub', () => {
     
     it('should call callback with new messages after subscribing', async () => {
       const channel = 'test-channel';
-      const callback = jest.fn();
+      const callback = vi.fn();
       
       const unsubscribe = await pubsub.subscribe(channel, callback);
       
@@ -76,8 +76,8 @@ describe('InMemoryPubSub', () => {
     
     it('should handle multiple subscribers to the same channel', async () => {
       const channel = 'test-channel';
-      const callback1 = jest.fn();
-      const callback2 = jest.fn();
+      const callback1 = vi.fn();
+      const callback2 = vi.fn();
       
       const unsubscribe1 = await pubsub.subscribe(channel, callback1);
       const unsubscribe2 = await pubsub.subscribe(channel, callback2);
@@ -95,7 +95,7 @@ describe('InMemoryPubSub', () => {
     
     it('should not call unsubscribed callbacks', async () => {
       const channel = 'test-channel';
-      const callback = jest.fn();
+      const callback = vi.fn();
       
       const unsubscribe = await pubsub.subscribe(channel, callback);
       unsubscribe();
@@ -110,7 +110,7 @@ describe('InMemoryPubSub', () => {
     it('should handle errors in subscriber callbacks', async () => {
       const channel = 'test-channel';
       const error = new Error('Test error');
-      const badCallback = jest.fn().mockImplementation(() => {
+      const badCallback = vi.fn().mockImplementation(() => {
         throw error;
       });
       
